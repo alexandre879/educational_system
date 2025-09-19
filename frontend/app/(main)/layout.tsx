@@ -1,68 +1,68 @@
-'use client'
+'use client';
 
-import React, { ReactNode, useState, useEffect } from 'react';
-import { FaBars, FaHome, FaUser, FaCog, FaBell } from 'react-icons/fa';
+import React, { ReactNode, useEffect, useState } from 'react';
+import { FaBars, FaHome, FaTrophy, FaFileAlt, FaBookOpen, FaSchool, FaBullhorn} from 'react-icons/fa';
 import styles from './MainLayout.module.scss';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
-interface MainLayoutProps {
-  children: ReactNode;
-}
-
-const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
-  const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [isMobile, setIsMobile] = useState(false);
+export default function MainLayout({ children }: { children: ReactNode }) {
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const pathname = usePathname();
 
   useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth < 768);
-    handleResize();
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
+    setSidebarOpen(false);
+  }, [pathname]);
 
-  const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
+  const toggleSidebar = () => setSidebarOpen(prev => !prev);
 
   return (
-    <div className={styles.mainLayout}>
-      {/* Sidebar */}
-      <aside
-        className={`${styles.sidebar} ${!sidebarOpen ? styles.collapsed : ''} ${isMobile ? styles.mobile : ''}`}
-      >
-        <div className={styles.logo}>
-          {sidebarOpen ? 'My App' : 'App'}
+    <div className={styles.layoutMainContainer}>
+
+      <nav className={`${styles.navBar} ${sidebarOpen ? styles.navBarOpen : ''}`}>
+        <div className={styles.mainLogoContainer}>
+          <FaSchool className={styles.schoolIcon} /> My School
         </div>
-        <nav className={styles.nav}>
-          <button><FaHome /> {sidebarOpen && 'Home'}</button>
-          <button><FaUser /> {sidebarOpen && 'Profile'}</button>
-          <button><FaCog /> {sidebarOpen && 'Settings'}</button>
-        </nav>
-      </aside>
 
-      {/* Main Area */}
-      <div className={styles.mainArea}>
-        {/* Header */}
-        <header className={styles.header}>
-          <button className={styles.menuBtn} onClick={toggleSidebar}>
-            <FaBars />
-          </button>
-          <div className={styles.headerTitle}>Dashboard</div>
-          <div className={styles.headerRight}>
-            <FaBell className={styles.bellIcon} />
-            <div className={styles.avatar}>A</div>
+        <Link className={styles.redirectionCaptions} href="/home">
+          <div className={styles.pageRedirectionWrapper}>
+            <FaHome className={styles.navIcon} /> Home
           </div>
+        </Link>
+
+        <Link className={styles.redirectionCaptions} href="/announcement">
+          <div className={styles.pageRedirectionWrapper}>
+            <FaBullhorn className={styles.navIcon} /> Announcement
+          </div>
+        </Link>
+
+        <Link className={styles.redirectionCaptions} href="/leader-board">
+          <div className={styles.pageRedirectionWrapper}>
+            <FaTrophy className={styles.navIcon} /> Leader-board
+          </div>
+        </Link>
+
+        <Link className={styles.redirectionCaptions} href="/exercise">
+          <div className={styles.pageRedirectionWrapper}>
+            <FaBookOpen className={styles.navIcon} /> Exercise
+          </div>
+        </Link>
+
+        <Link className={styles.redirectionCaptions} href="/exam">
+          <div className={styles.pageRedirectionWrapper}>
+            <FaFileAlt className={styles.navIcon} /> Exam
+          </div>
+        </Link>
+      </nav>
+
+      <div className={styles.headerAndMainWrapper}>
+        <header className={styles.headerSection}>
+          <FaBars className={styles.burgerIcon} onClick={toggleSidebar} />
         </header>
-
-        {/* Content */}
-        <main className={styles.content}>
-          {children}
-        </main>
-
-        {/* Footer */}
-        <footer className={styles.footer}>
-          © 2025 My Application. All rights reserved.
-        </footer>
+        <main className={styles.childrenPassingContainer}>{children}</main>
       </div>
+
+      {sidebarOpen && <div className={styles.overlay} onClick={toggleSidebar}></div>}
     </div>
   );
-};
-
-export default MainLayout;
+}

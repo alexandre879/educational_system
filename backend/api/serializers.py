@@ -55,12 +55,18 @@ class ExamSerializer(serializers.ModelSerializer):
     
     
     
+class ExamSerializerOnStart(serializers.ModelSerializer):
+    
+    questions = QuestionSerializer(many=True)
+    
+    class Meta:
+        model = Exam
+        fields = ['id', 'title', 'subject', 'duration', 'questions']
     
     
 class UserExamSessionSerializer(serializers.ModelSerializer):
 
-
-    exam = serializers.SerializerMethodField()
+    exam = ExamSerializerOnStart()
 
     
     class Meta:
@@ -68,11 +74,6 @@ class UserExamSessionSerializer(serializers.ModelSerializer):
         fields = ['id', 'started', 'finished', 'exam']
         
     
-    def get_exam(self, exam_session):
-        return ExamSerializer(exam_session.exam).data
-
-
-
 
 
 class UserSerializer(serializers.ModelSerializer):

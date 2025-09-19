@@ -1,0 +1,69 @@
+@import "../../../../colors.scss";
+
+.examMainContainer {
+  background-color: $dark_background;
+  color: $light_text;
+  padding: 20px;
+  border-radius: 12px;
+  min-height: 80vh;
+}
+
+.currentQuestionWrapper {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  width: 100%;
+}
+
+.specificQuestionWrapper {
+  display: flex;
+  flex: 1 1;
+}
+
+.loading, .noExams, .finished {
+  text-align: center;
+  margin-top: 50px;
+  font-size: 18px;
+  color: $color-accent;
+}
+
+.questionText {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 15px;
+}
+
+.optionsList {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.optionButton {
+  background-color: $color-gray;
+  color: $secondary_text;
+  border: none;
+  padding: 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  flex: 1 1;
+  display: flex;
+  
+
+  &:hover {
+    background-color: $color-accent;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+.progress, .score {
+  margin-top: 15px;
+  font-size: 16px;
+  color: $secondary_text;
+}

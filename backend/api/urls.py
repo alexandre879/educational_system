@@ -7,7 +7,7 @@ from api.views import (
     VerifyOtpView,
     UserMeView,
     AvailableExamsView,
-    StartExamSessionView,
+    StartOrResumeExamSessionView,
     ExamQuestionView,
     SubmitAnswerView, 
     FinishExamSessionView,
@@ -30,7 +30,7 @@ urlpatterns = [
     
     
     path('exams/', AvailableExamsView.as_view(), name='available_exams'),
-    path('exams/<int:exam_id>/start/', StartExamSessionView.as_view(), name='start_exam'),
+    path('exams/<int:exam_id>/start_or_resume/', StartOrResumeExamSessionView.as_view(), name='start_exam'),
     path('sessions/<int:session_id>/question/<int:question_index>/', ExamQuestionView.as_view(), name='get_question'),
     path('sessions/<int:session_id>/answer/', SubmitAnswerView.as_view(), name='submit_answer'),
     path('sessions/<int:session_id>/finish/', FinishExamSessionView.as_view(), name='finish_exam'),

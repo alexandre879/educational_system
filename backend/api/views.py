@@ -147,41 +147,88 @@ class AvailableExamsView(generics.ListAPIView):
         context['request'] = self.request
         return context
     
-
-
-
-
-
-class StartExamSessionView(APIView):
-    permission_classes = [IsAuthenticated]
     
+    
+# class StartExamSessionView(APIView):
+#     permission_classes = [IsAuthenticated]
+    
+#     def post(self, request: Request, exam_id):
+#         exam = get_object_or_404(Exam, pk=exam_id)
+#         user = request.user
+        
+#         existing_session = UserExamSession.objects.select_related(
+#             "exam"
+#         ).prefetch_related(
+#             "exam__questions"   
+#         ).filter(user=user, exam=exam).first()
+        
+#         if existing_session:
+#             if existing_session.finished:
+#                 return Response(
+#                     {'error': 'You have already completed this exam.'},
+#                     status=status.HTTP_400_BAD_REQUEST
+#                 )
+#             serializer = UserExamSessionSerializer(existing_session)
+#             return Response(serializer.data)
+        
+#         session = UserExamSession.objects.create(
+#             user=user,
+#             exam=exam,
+#             started=True
+#         )
+        
+#         session = UserExamSession.objects.prefetch_related(
+#             "exam__questions"
+#         ).get(pk=session.pk)
+        
+#         serializer = UserExamSessionSerializer(session)
+#         return Response(serializer.data)
+
+
+
+
+
+
+class StartOrResumeExamSessionView(APIView):
+    permission_classes = [IsAuthenticated]
+
     def post(self, request: Request, exam_id):
         exam = get_object_or_404(Exam, pk=exam_id)
         user = request.user
-        
-        existing_session = UserExamSession.objects.filter(
-            user=user, 
-            exam=exam
-        ).first()
-        
-        if existing_session:
-            if existing_session.finished:
-                return Response(
-                    {'error': 'You have already completed this exam.'},
-                    status=status.HTTP_400_BAD_REQUEST
-                )
-            serializer = UserExamSessionSerializer(existing_session)
-            return Response(serializer.data)
-        
-        session = UserExamSession.objects.create(
-            user=user,
-            exam=exam,
-            started=True
-        )
-        
-        serializer = UserExamSessionSerializer(session)
-        return Response(serializer.data)
 
+
+        session = UserExamSession.objects.filter(user=user, exam=exam).first()
+
+        if session:
+            if session.finished:
+                return Response({"error": "You have already completed this exam."}, status=400)
+
+
+            questions = list(session.exam.questions.order_by('id'))
+            current_index = session.current_question_index
+            current_question = questions[current_index]
+            question_data = QuestionSerializer(current_question).data
+
+            return Response({
+                "session_id": session.id,
+                "current_index": current_index,
+                "current_question": question_data,
+                "score_so_far": session.score_so_far
+            })
+
+
+        session = UserExamSession.objects.create(user=user, exam=exam, started=True)
+        questions = list(exam.questions.order_by('id'))
+        current_question = questions[0]
+        question_data = QuestionSerializer(current_question).data
+
+        return Response({
+            "session_id": session.id,
+            "current_index": 0,
+            "current_question": question_data,
+            "score_so_far": 0,
+            "len_questions": len(questions)
+        })
 
 
 
@@ -198,7 +245,7 @@ class ExamQuestionView(APIView):
             user=request.user
         )
         
-        if session.finished_at:
+        if session.finished:
             return Response(
                 {'error': 'This exam session has already been completed.'},
                 status=status.HTTP_400_BAD_REQUEST
@@ -231,7 +278,7 @@ class SubmitAnswerView(APIView):
             user=request.user
         )
 
-        if session.finished_at:
+        if session.finished:
             return Response(
                 {'error': 'This exam session has already been completed.'},
                 status=status.HTTP_400_BAD_REQUEST

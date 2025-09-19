@@ -65,14 +65,7 @@ const Login = () => {
         <Title level={2} className={styles.title}>Welcome Back</Title>
 
         {step === 'email' && (
-          <Form
-            name="emailForm"
-            layout="vertical"
-            style={{ width: "100%" }}
-            initialValues={{ remember: true }}
-            onFinish={onEmailFinish}
-            autoComplete="on"
-          >
+          <Form name="emailForm" layout="vertical" style={{ width: "100%" }} initialValues={{ remember: true }} onFinish={onEmailFinish} autoComplete="on" >
             <Form.Item
               label="Email"
               name="username"
@@ -94,18 +87,8 @@ const Login = () => {
         )}
 
         {step === 'otp' && (
-          <Form
-            key="otpForm"
-            name="otpForm"
-            layout="vertical"
-            style={{ width: "100%" }}
-            onFinish={onOtpFinish}
-          >
-            <Form.Item
-              label="OTP"
-              name="otp"
-              rules={[{ required: true, message: "Please input the OTP!" }]}
-            >
+          <Form key="otpForm" name="otpForm" layout="vertical" style={{ width: "100%" }} onFinish={onOtpFinish} >
+            <Form.Item label="OTP" name="otp" rules={[{ required: true, message: "Please input the OTP!" }]} >
               <Input placeholder="Enter OTP" />
             </Form.Item>
 

@@ -1,44 +1,46 @@
-/* Full-page container */
+@import "../../colors.scss";
+
 .loginPageMainContainer {
   width: 100%;
-  min-height: 100dvh; /* dynamic viewport height for mobile */
+  min-height: 100dvh;
   display: flex;
   justify-content: center;
   align-items: center;
-  background: linear-gradient(135deg, #4f5bd5, #962fbf);
-  padding: 10px; /* small padding for mobile */
+  background: $color_gray;
+  padding: 10px;
   box-sizing: border-box;
 }
 
-/* Card container */
+
+
 .loginCard {
   width: 100%;
   max-width: 400px;
-  max-height: 90dvh; /* prevent overflow on small screens */
+  max-height: 90dvh;
   padding: 30px 20px;
   border-radius: 16px;
-  background-color: #fff;
-  overflow-y: auto; /* scroll inside card if content too tall */
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+  background-color: $light_text;
+  overflow-y: auto;
+  box-shadow: 0 20px 50px rgba($dark_background, 0.8);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 
   &:hover {
     transform: translateY(-5px);
-    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.25);
+    box-shadow: 0 25px 60px rgba($dark_background, 0.85);
   }
 
   @media (max-width: 480px) {
     padding: 20px 15px;
     max-height: 95dvh;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 10px 30px rgba($dark_background, 0.6);
   }
 }
 
-/* Title */
+
 .title {
   text-align: center;
   margin-bottom: 30px;
-  color: #333;
+  color: $dark_background;
   font-size: 1.8rem;
   font-weight: 600;
 
@@ -48,7 +50,7 @@
   }
 }
 
-/* Inputs */
+
 .ant-input,
 .ant-input-password {
   border-radius: 8px;
@@ -57,38 +59,43 @@
 
 .ant-input:focus,
 .ant-input-password:focus {
-  box-shadow: 0 0 0 2px rgba(79, 91, 213, 0.2);
-  border-color: #4f5bd5;
+  box-shadow: 0 0 0 2px rgba($color-accent, 0.2);
+  border-color: $color-accent;
 }
 
-/* Submit Button */
+
+
 .submitButton {
   height: 45px;
   border-radius: 8px;
   font-weight: 600;
-  background: #4f5bd5;
+  background: $color-gray;
   border: none;
+  color: $light_text;
   transition: all 0.3s ease;
 
   &:hover {
-    background: #3a45b5;
+    background: darken($color-accent, 10%);
   }
 }
 
-/* Checkbox */
+
+
 .ant-checkbox-inner {
   border-radius: 4px;
 }
 
 .ant-checkbox + span {
   font-size: 0.9rem;
+  color: $dark_background;
 
   @media (max-width: 480px) {
     font-size: 0.85rem;
   }
 }
 
-/* Form items */
+
+
 .ant-form-item {
   margin-bottom: 20px;
 
