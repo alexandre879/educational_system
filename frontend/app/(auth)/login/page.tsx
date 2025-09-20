@@ -27,7 +27,7 @@ const Login = () => {
       message.success('OTP sent to your email!');
       setStep('otp');
     } 
-    catch (error: any) {
+    catch (error) {
       message.error('Failed to send OTP. Try again.');
       console.error(error);
     }
@@ -50,7 +50,7 @@ const Login = () => {
       
 
     }
-    catch (error: any) {
+    catch (error) {
       message.error('Invalid OTP. Try again.');
       console.error(error);
     }

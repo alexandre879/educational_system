@@ -78,12 +78,10 @@ class UserExamSessionSerializer(serializers.ModelSerializer):
 
 class UserSerializer(serializers.ModelSerializer):
     
-    exam_sessions = UserExamSessionSerializer(many=True)
-
     
     class Meta:
         model = User
-        fields = ['id', 'first_name', 'last_name', 'role', 'points', 'exam_sessions']
+        fields = ['id', 'first_name', 'last_name']
         
         
 
@@ -101,8 +99,7 @@ class ExamDetailSerializer(serializers.ModelSerializer):
 
 
 
-class UserAnswerSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = UserAnswer
-        fields = ['question', 'answer_option']
-
+class UserAnswerSerializer(serializers.Serializer):
+    
+    question_id = serializers.IntegerField()
+    option_id = serializers.IntegerField()

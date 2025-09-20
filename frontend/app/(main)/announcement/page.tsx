@@ -2,10 +2,12 @@
 import styles from "./announcement.module.scss";
 
 
-export default () => {
+const Announcement = () => {
     return (
         <div className={styles.announcementMainContainer} >
             announcement
         </div>
     )
 }
+
+export default Announcement;

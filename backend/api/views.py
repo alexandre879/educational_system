@@ -112,6 +112,27 @@ class RefreshTokenView(APIView):
 
 
 
+
+class LogoutView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request: Request):
+        refresh_token = request.data.get("refresh")
+
+        if not refresh_token:
+            return Response({"error": "Refresh token is required"}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            token = RefreshToken(refresh_token)
+            token.blacklist()  
+        except TokenError:
+            return Response({"error": "Invalid or expired refresh token"}, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response({"message": "Logout successful"}, status=status.HTTP_200_OK)
+
+
+
+
         
 
 class UserMeView(APIView):
@@ -125,9 +146,6 @@ class UserMeView(APIView):
         
         return Response(serializer.data)
     
-    
-    
-
     
 
 
@@ -149,42 +167,6 @@ class AvailableExamsView(generics.ListAPIView):
     
     
     
-# class StartExamSessionView(APIView):
-#     permission_classes = [IsAuthenticated]
-    
-#     def post(self, request: Request, exam_id):
-#         exam = get_object_or_404(Exam, pk=exam_id)
-#         user = request.user
-        
-#         existing_session = UserExamSession.objects.select_related(
-#             "exam"
-#         ).prefetch_related(
-#             "exam__questions"   
-#         ).filter(user=user, exam=exam).first()
-        
-#         if existing_session:
-#             if existing_session.finished:
-#                 return Response(
-#                     {'error': 'You have already completed this exam.'},
-#                     status=status.HTTP_400_BAD_REQUEST
-#                 )
-#             serializer = UserExamSessionSerializer(existing_session)
-#             return Response(serializer.data)
-        
-#         session = UserExamSession.objects.create(
-#             user=user,
-#             exam=exam,
-#             started=True
-#         )
-        
-#         session = UserExamSession.objects.prefetch_related(
-#             "exam__questions"
-#         ).get(pk=session.pk)
-        
-#         serializer = UserExamSessionSerializer(session)
-#         return Response(serializer.data)
-
-
 
 
 
@@ -208,12 +190,15 @@ class StartOrResumeExamSessionView(APIView):
             current_index = session.current_question_index
             current_question = questions[current_index]
             question_data = QuestionSerializer(current_question).data
+            
 
             return Response({
-                "session_id": session.id,
+                "subject": UserExamSession.objects.filter(exam=exam, user=user).values_list('exam__subject__name', flat=True)[0],
+                "session_id": session.pk,
                 "current_index": current_index,
+                "exam_id": session.exam.pk,
                 "current_question": question_data,
-                "score_so_far": session.score_so_far
+                "len_questions": len(questions),
             })
 
 
@@ -223,46 +208,16 @@ class StartOrResumeExamSessionView(APIView):
         question_data = QuestionSerializer(current_question).data
 
         return Response({
+            "subject": UserExamSession.objects.filter(exam=exam, user=user).values_list('exam__subject__name', flat=True)[0],
             "session_id": session.id,
             "current_index": 0,
             "current_question": question_data,
-            "score_so_far": 0,
             "len_questions": len(questions)
         })
 
 
 
 
-
-
-class ExamQuestionView(APIView):
-    permission_classes = [IsAuthenticated]
-    
-    def get(self, request: Request, session_id, question_index):
-        session = get_object_or_404(
-            UserExamSession, 
-            pk=session_id, 
-            user=request.user
-        )
-        
-        if session.finished:
-            return Response(
-                {'error': 'This exam session has already been completed.'},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-        
-        questions = session.exam.questions.all().order_by('id')
-        
-        if question_index >= questions.count():
-            return Response(
-                {'error': 'Question index out of bounds.'},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-        
-        question = questions[question_index]
-        serializer = QuestionSerializer(question)
-        
-        return Response(serializer.data)
 
 
 
@@ -277,78 +232,67 @@ class SubmitAnswerView(APIView):
             pk=session_id,
             user=request.user
         )
-
+        
         if session.finished:
             return Response(
                 {'error': 'This exam session has already been completed.'},
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-        # Get questions once and ordered
         questions = list(session.exam.questions.prefetch_related('options').order_by('id'))
         current_index = session.current_question_index
 
-        # Ensure the index is valid
         if current_index >= len(questions):
             return Response({'error': 'Invalid question index.'}, status=400)
 
         current_question = questions[current_index]
 
-        # Validate answer
         serializer = UserAnswerSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        answer_option_id = serializer.validated_data['answer_option'].id
+        answer_option_id = serializer.validated_data['option_id']
         answer_option = get_object_or_404(Option, pk=answer_option_id)
 
-        # Check correctness
         is_correct = answer_option.is_correct
 
-        # Create or update answer
         UserAnswer.objects.update_or_create(
             session=session,
             question=current_question,
             defaults={'answer_option': answer_option, 'is_correct': is_correct}
         )
 
-        # Update score
         if is_correct:
             session.score_so_far += current_question.points
 
-        # Move to next question
         next_index = current_index + 1
         finished = next_index >= len(questions)
-        response_data = {
-            'is_correct': is_correct,
-            'current_score': session.score_so_far,
-        }
-
         if not finished:
-            # Update session index for next question
             session.current_question_index = next_index
             session.save()
 
             next_question = questions[next_index]
-            response_data.update({
-                'message': 'Answer submitted successfully.',
-                'next_question': QuestionSerializer(next_question).data,
-                'progress': f"{next_index + 1}/{len(questions)}"
+            
+            return Response({
+                "subject": session.exam.subject.name,
+                "exam_id": session.exam.pk,
+                "session_id": session.pk,  
+                "current_index": next_index,
+                "current_question": QuestionSerializer(next_question).data,
+                "len_questions": len(questions),
             })
+            
+            
         else:
-            # Finish exam
-            session.finished_at = timezone.now()
+            session.finished = True
             session.save()
 
             request.user.points += session.score_so_far
             request.user.save()
-
-            response_data.update({
+            
+            return Response({
                 'message': 'Exam completed successfully!',
                 'final_score': session.score_so_far,
                 'total_questions': len(questions)
             })
-
-        return Response(response_data)
-
 
 
 

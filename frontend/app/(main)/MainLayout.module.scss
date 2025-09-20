@@ -120,6 +120,26 @@
 }
 
 
+.myProfileWrapper {
+  cursor: pointer;
+  width: 100%;
+  display: flex;
+  justify-content: end;
+}
+
+
+.profilePictureWrapper {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+.outerWrapperProfile {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+}
 
 
 .childrenPassingContainer {
@@ -149,8 +169,20 @@
 @media (max-width: 1024px) {
 
   .headerSection {
+    width: 100%;
     display: flex;
-    justify-content: end;
+    flex-direction: row-reverse;
+    justify-content: space-between;
+  }
+
+  .myProfileWrapper {
+    display: flex;
+    justify-content: start;
+  }
+
+  .outerWrapperProfile {
+    display: flex;
+    flex-direction: row-reverse;
   }
 
   .navBar {

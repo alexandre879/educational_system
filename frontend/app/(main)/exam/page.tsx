@@ -16,30 +16,36 @@ export default function Exam() {
       try {
         const res = await api.get<ExamListData[]>("/exams/");
         setExams(res.data);
-      } 
+      }
       catch (err) {
         console.error(err);
-      } 
+      }
       finally {
         setLoading(false);
       }
     };
     fetchExams();
   }, []);
+  
 
-  if (loading) return <div className={styles.loading}>⏳ Loading exams...</div>;
+  if (loading) return (
+    <div className={styles.loaderWrapper}>
+      <div className={styles.loader}/>
+    </div>
+    );
+
   if (exams.length === 0) return <p className={styles.noExams}>😢 No exams available</p>;
 
   return (
     <div className={styles.examMainContainer}>
-      {exams.map((exam) => (
+      {exams.map(({ id, title, subject, duration, questions_count }: ExamListData) => (
         <ExamSectionComponent
-          key={exam.id}
-          id={exam.id}
-          title={exam.title}
-          subject={exam.subject}
-          duration={exam.duration}
-          questions_count={exam.questions_count}
+          key={id}
+          id={id}
+          title={title}
+          subject={subject}
+          duration={duration}
+          questions_count={questions_count}
         />
       ))}
     </div>

@@ -1,3 +1,5 @@
+
+
 export interface OptionData {
     id: number;
     title: string;
@@ -11,13 +13,24 @@ export interface QuestionData {
 }
 
 export interface ExamSessionData {
+    subject: string;
     session_id: number;
     current_index: number;
     current_question: QuestionData;
+    exam_id: number;
     score_so_far: number;
-    finished: boolean;
     len_questions: number;
 }
+
+
+// 
+export interface ExamSessionEndResponse {
+    message: string;
+    final_score: number;
+    total_questions: number;
+}
+
+// 
 
 
 export interface ExamListData {
