@@ -20,18 +20,38 @@ function isExamSessionEndResponse(data: ExamSessionData | ExamSessionEndResponse
 
 
 export default function SpecificExam() {
-  const { id } = useParams();
+  const { id: ExamId } = useParams();
   const router = useRouter()
   const [data, setData] = useState<ExamSessionData | ExamSessionEndResponse | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
+
+
+
   useEffect(() => {
     setLoading(true);
-    api.post<ExamSessionData | ExamSessionEndResponse>(`exams/${id}/start_or_resume/`)
-      .then((res: AxiosResponse<ExamSessionData | ExamSessionEndResponse>) => setData(res.data))
-      .catch((error: AxiosError) => console.log(error.message))
+    api.post<ExamSessionData | ExamSessionEndResponse>(`exams/${ExamId}/start_or_resume/`)
+      .then((res: AxiosResponse<ExamSessionData | ExamSessionEndResponse>) => {
+        setData(res.data);
+      })
+      .catch((error: AxiosError) => {
+        if (error.response?.status === 401) {
+          return router.push('/login');
+        } 
+        else if (error.response?.status === 403) {
+          return router.push('/exam');
+        } 
+        else if(error.response?.status === 404) {
+          return router.push('/exam')
+        }
+        else if (error.response?.status === 400) {
+          alert("You already completed this exam");
+          return router.push('/exam');
+        }
+      })
       .finally(() => setLoading(false));
-  }, [id]);
+  }, [ExamId]);
+
 
 
 
@@ -51,6 +71,8 @@ export default function SpecificExam() {
       setLoading(false);
     }
   };
+
+
 
 
 
@@ -110,7 +132,7 @@ export default function SpecificExam() {
         <div className={styles.finalScore}>Score: {data.final_score}</div>
         <div className={styles.finalTotal}>Total Questions: {data.total_questions}</div>
         <div className={styles.finalMessage}>
-          {data.final_score < 8 && data.final_score > 5 && <span>Normal result! keep going achievements getting reached from your dedication. 😏</span>}
+          {data.final_score < 8 && data.final_score > 5 && <span>Normal result! keep going achievements are slowly getting reached from your dedication. 😏</span>}
           {data.final_score > 8 && <span>Well done! You have completed the exam successfully. 😊</span>}
           {data.final_score == 10 && <span>Well done! You have completed the exam successfully. 🥳 </span>}
           {data.final_score < 5 && <span>Bad result! You should take more time for a learning. 🙁</span>}

@@ -1,3 +1,5 @@
+import os
+from dotenv import load_dotenv
 import random
 from tokenize import TokenError
 from rest_framework.response import Response
@@ -20,11 +22,12 @@ from .serializers import (
 )
 
 
+load_dotenv()
 
 
-BOT_TOKEN = "8291605075:AAHRi1FC_OKIOlmuKVjy88CVtm906FBNihA"
-OTP_TIMEOUT = 300
-OTP_RATE_LIMIT = 30
+BOT_TOKEN = os.getenv("BOT_TOKEN")
+OTP_TIMEOUT = os.getenv("OTP_TIMEOUT")
+OTP_RATE_LIMIT = os.getenv("OTP_RATE_LIMIT")
 
 
 
@@ -147,28 +150,46 @@ class UserMeView(APIView):
         return Response(serializer.data)
     
     
-
-
-class AvailableExamsView(generics.ListAPIView):
+    
+    
+    
+    
+class AvailableExamsView(APIView):
     permission_classes = [IsAuthenticated]
-    serializer_class = ExamSerializer
-    
-    def get_queryset(self):
-        user: User = self.request.user
-        
-        return Exam.objects.filter(
-            grade=user.grade_in,
+
+    def get(self, request: Request):
+
+
+        finished_exam_ids = UserExamSession.objects.filter(
+            user=request.user,
+            finished=True
+        ).values_list("exam_id", flat=True)
+
+
+
+        available_exams = (
+            Exam.objects.filter(grade=request.user.grade_in)
+            .exclude(pk__in=finished_exam_ids)
+            .prefetch_related("questions")
         )
-    
-    def get_serializer_context(self):
-        context = super().get_serializer_context()
-        context['request'] = self.request
-        return context
-    
-    
-    
 
+        response_data = [
+            {
+                "id": exam.pk,
+                "title": exam.title,
+                "subject": exam.subject.name,
+                "duration": exam.duration,
+                "questions_count": exam.questions.count(),
+            }
+            for exam in available_exams
+        ]
 
+        return Response(response_data, status=status.HTTP_200_OK)
+        
+        
+        
+        
+        
 
 
 class StartOrResumeExamSessionView(APIView):
@@ -178,6 +199,10 @@ class StartOrResumeExamSessionView(APIView):
         exam = get_object_or_404(Exam, pk=exam_id)
         user = request.user
 
+
+        if exam.grade and exam.grade != user.grade_in:
+            return Response({"error": "You are not allowed to access this exam"}, status=status.HTTP_403_FORBIDDEN)
+        
 
         session = UserExamSession.objects.filter(user=user, exam=exam).first()
 
