@@ -28,12 +28,10 @@ export default function LeaderBoard() {
 
   return (
     <div className={styles.leaderboardMainContainer}>
-      <h1>Leaderboard</h1>
       <table>
         <thead>
           <tr>
-            <th>First Name</th>
-            <th>Last Name</th>
+            <th>Name</th>
             <th>Email</th>
             <th>Points</th>
             <th>Position</th>
@@ -42,11 +40,17 @@ export default function LeaderBoard() {
         <tbody>
           {data.map((user, index) => (
             <tr key={index}>
-              <td>{user.first_name}</td>
-              <td>{user.last_name}</td>
-              <td>{user.email}</td>
+              <td>{user.first_name} {user.last_name}</td>
+              <td>{user.email.slice(0, 3) + '...@gmail.com'}</td>
               <td>{user.points}</td>
-              <td>{index + 1}</td>
+              <td>
+                <div className={`${index + 1 == 1 ?
+                  styles.positionWrapperGold :
+                  index + 1 == 2 ?
+                  styles.positionWrapperSilver :
+                  styles.positionWrapperBronce}`} >
+                  {index + 1}</div>
+              </td>
             </tr>
           ))}
         </tbody>
