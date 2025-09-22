@@ -1,6 +1,7 @@
 import styles from "./ExamSectionComponent.module.scss";
 import { ExamListData } from "../../interface";
 import { useRouter } from "next/navigation";
+import Cookies from "js-cookie";
 
 const ExamSectionComponent = (props: ExamListData) => {
 
@@ -22,12 +23,13 @@ const ExamSectionComponent = (props: ExamListData) => {
     }
   }
 
-  const onExamSectionClick = (examId: number) => {
+  const onExamSectionClick = (examId: number, subject: string) => {
     router.push(`/exam/${examId}/start`)
+    Cookies.set(subject.toLowerCase(), subject)
   }
 
   return (
-    <div className={styles.ExamSectionMainContainer} onClick={() => onExamSectionClick(props.id)} >
+    <div className={styles.ExamSectionMainContainer} onClick={() => onExamSectionClick(props.id, props.subject)} >
       <h3 className={styles.examTitle}>
         {subjectEmoji(props.subject)} {props.title}
       </h3>
