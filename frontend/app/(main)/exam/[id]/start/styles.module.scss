@@ -2,43 +2,39 @@
 
 .examMainContainer {
   background-color: $dark_background;
-  color: $light_text;
+  color: $text_primary;
   padding: 20px;
   border-radius: 12px;
   min-height: 80vh;
 }
 
-.currentQuestionWrapper {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  width: 100%;
-}
-
+.currentQuestionWrapper,
 .specificQuestionWrapper {
   display: flex;
   align-items: center;
   gap: 5px;
-  flex: 1 1;
+  width: 100%;
+  flex: 1 1 auto;
 }
+
 .buttonStyle {
   height: 40px;
-  width: 120px; // slightly wider for better text fit
-  border-radius: 8px; // softer corners
-  background-color: #ff4d4f; // vibrant red
-  color: #fff; // white text
+  width: 120px;
+  border-radius: 8px;
+  background-color: $highlight_accent; 
+  color: black;
   font-weight: 600;
   font-size: 14px;
   border: none;
   cursor: pointer;
-  transition: all 0.3s ease;
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: all 0.3s ease;
 
   &:hover {
-    background-color: #ff7875; // lighter red on hover
-    transform: translateY(-2px); // subtle lift effect
+    background-color: lighten($highlight_accent, 10%);
+    transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   }
 
@@ -49,7 +45,7 @@
 
   &:focus {
     outline: none;
-    box-shadow: 0 0 0 3px rgba(255, 77, 79, 0.5); 
+    box-shadow: 0 0 0 3px rgba($highlight_accent, 0.5);
   }
 }
 
@@ -68,17 +64,17 @@
 }
 
 .optionButton {
-  background-color: $color-gray;
-  color: $light_text;
+  background-color: $table_background;
+  color: $text_primary;
   border: none;
   padding: 12px;
   border-radius: 8px;
   cursor: pointer;
-  flex: 1 1;
+  flex: 1 1 auto;
   display: flex;
 
   &:hover {
-    background-color: $color-accent;
+    background-color: $table_row_hover;
   }
 
   &:disabled {
@@ -93,7 +89,7 @@
   gap: 7px;
   margin-top: 15px;
   font-size: 16px;
-  color: $secondary_text;
+  color: $text_secondary;
 }
 
 .loader {
@@ -101,7 +97,7 @@
   padding: 8px;
   aspect-ratio: 1;
   border-radius: 50%;
-  background: #25b09b;
+  background: $highlight_accent;
   --_m: conic-gradient(#0000 10%, #000), linear-gradient(#000 0 0) content-box;
   -webkit-mask: var(--_m);
   mask: var(--_m);
@@ -118,10 +114,9 @@
   min-height: 60vh;
 }
 
-
 .finalExamContainer {
-  background-color: $color-gray;
-  color: $light_text;
+  background-color: $table_background;
+  color: $text_primary;
   padding: 40px;
   border-radius: 12px;
   text-align: center;
@@ -135,21 +130,21 @@
 .finalHeader {
   font-size: 28px;
   font-weight: bold;
-  color: $color-accent;
+  color: $header_background; 
 }
 
 .finalScore {
   font-size: 22px;
   font-weight: 600;
-  color: tan;
+  color: $highlight_accent;
 }
 
 .finalTotal {
   font-size: 18px;
-  color: $light_text;
+  color: $text_primary;
 }
 
 .finalMessage {
   font-size: 16px;
-  color: $secondary_text;
+  color: $text_secondary;
 }

@@ -12,14 +12,19 @@ from .models import User
 from api.serializers import VerifyOtpSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 from asgiref.sync import async_to_sync
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.utils import timezone
 from django.shortcuts import get_object_or_404
 from .models import Exam, UserExamSession, Option, UserAnswer
 from .serializers import (
-    ExamSerializer, QuestionSerializer, 
-    UserAnswerSerializer, UserExamSessionSerializer, UserSerializer, RequestOtpSerializer
+    QuestionSerializer, 
+    UserAnswerSerializer, 
+    UserExamSessionSerializer, 
+    UserSerializer, 
+    RequestOtpSerializer, 
+    PointListViewPerSubjectSerializer
 )
+from django.db.models import Sum
 
 
 load_dotenv()
@@ -195,7 +200,7 @@ class AvailableExamsView(APIView):
 class StartOrResumeExamSessionView(APIView):
     permission_classes = [IsAuthenticated]
 
-    def post(self, request: Request, exam_id):
+    def post(self, request: Request, exam_id: int):
         exam = get_object_or_404(Exam, pk=exam_id)
         user = request.user
 
@@ -251,7 +256,7 @@ class StartOrResumeExamSessionView(APIView):
 class SubmitAnswerView(APIView):
     permission_classes = [IsAuthenticated]
 
-    def post(self, request: Request, session_id):
+    def post(self, request: Request, session_id: int):
         session = get_object_or_404(
             UserExamSession,
             pk=session_id,
@@ -324,50 +329,35 @@ class SubmitAnswerView(APIView):
 
 
 
-class FinishExamSessionView(APIView):
+class PointListViewPerSubject(APIView):
+    
     permission_classes = [IsAuthenticated]
     
-    def post(self, request: Request, session_id):
-        session = get_object_or_404(
-            UserExamSession, 
-            id=session_id, 
-            user=request.user
-        )
+    def post(self, request: Request):
         
-        if not session.finished_at:
-            session.finished_at = timezone.now()
-            session.save()
-            
-
-            request.user.points += session.score_so_far
-            request.user.save()
-            
-            return Response({
-                'message': 'Exam session finished.',
-                'final_score': session.score_so_far
-            })
-        else:
-            return Response({
-                'message': 'Exam session was already finished.',
-                'final_score': session.score_so_far
-            })
-
-
-
-
-
-
-class ExamResultsView(generics.RetrieveAPIView):
-    permission_classes = [IsAuthenticated]
-    serializer_class = UserExamSessionSerializer
-    
-    def get_object(self):
-        exam_id = self.kwargs.get('exam_id')
-        user = self.request.user
+        user: User = request.user
         
-        return get_object_or_404(
-            UserExamSession, 
-            exam_id=exam_id, 
-            user=user,
-            finished_at__isnull=False
+        subject = request.data.get('subject', None)
+        
+        if not subject:
+            global_points = (User.objects
+                .filter(grade_in=user.grade_in)
+                .values('first_name', 'last_name', 'email', 'points')
+            )
+            
+            return Response(global_points, status=status.HTTP_200_OK)
+        
+        serializer = PointListViewPerSubjectSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        
+        subject = serializer.validated_data.get('subject')
+        
+        
+        leaderboard = (UserExamSession.objects
+            .filter(exam__grade=user.grade_in, exam__subject__name__iexact=subject)
+            .values('user__id', 'user__first_name', 'user__email')
+            .annotate(total_points=Sum('score_so_far'))
+            .order_by('-total_points')
+            .values('user__first_name', 'user__last_name', 'user__email', 'total_points')
         )
+        return Response(leaderboard, status=status.HTTP_200_OK)

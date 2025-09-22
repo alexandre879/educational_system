@@ -103,3 +103,7 @@ class UserAnswerSerializer(serializers.Serializer):
     
     question_id = serializers.IntegerField()
     option_id = serializers.IntegerField()
+    
+    
+class PointListViewPerSubjectSerializer(serializers.Serializer):
+    subject = serializers.CharField()

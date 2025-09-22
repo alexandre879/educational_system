@@ -1,49 +1,35 @@
 @import "../../../../colors.scss";
 
-$color-purple: #9b59b6;
-$color-blue: #3498db;
-$color-orange: #e67e22;
-$color-green: #25a259;
-$color-pink: #cc2ea7;
-$color-yellow: #ccc42e;
-$color-red: #cc2e2e;
-$color-grey: #afafaf;
-$color-red: #2ec7cc;
-$color-red: #97cc2e;
-
 .ExamSectionMainContainer {
   padding: 15px 20px;
   border-radius: 12px;
-  background-color: $color-gray;
-  color: $light_text;
+  background-color: $table_background;
+  color: $text_primary;
   display: flex;
   flex-direction: column;
   gap: 8px;
   cursor: pointer;
 
-  &:nth-child(4n+1) { background-color: $color-purple; }
-  &:nth-child(4n+2) { background-color: $color-blue; }
-  &:nth-child(4n+3) { background-color: $color-orange; }
-  &:nth-child(4n+4) { background-color: $color-green; }
-  &:nth-child(4n+5) { background-color: $color-pink; }
-  &:nth-child(4n+6) { background-color: $color-yellow; }
-  &:nth-child(4n+7) { background-color: $color-green; }
+  &:nth-child(n) {
+    background-color: #3D4250;
+  }
 
   &:hover {
     transform: scale(1.02);
     transition: transform 0.2s ease-in-out;
+    background-color: lighten(#3D4250, 5%);
   }
 }
 
 .examTitle {
   font-size: 20px;
   font-weight: bold;
-  color: $secondary_text; // headings are more visible
+  color: $text_secondary; 
 }
 
 .examSubject {
   font-size: 14px;
-  color: rgb(38, 38, 38); // secondary info
+  color: $text_secondary;
 }
 
 .examInfoList {
@@ -54,9 +40,8 @@ $color-red: #97cc2e;
   gap: 15px;
 }
 
-
 .examDuration,
 .examQuestions {
   font-size: 14px;
-  color: rgb(39, 39, 39);
+  color: $text_secondary;
 }

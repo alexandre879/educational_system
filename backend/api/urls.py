@@ -8,10 +8,9 @@ from api.views import (
     UserMeView,
     StartOrResumeExamSessionView,
     SubmitAnswerView, 
-    FinishExamSessionView,
-    ExamResultsView,
     LogoutView,
-    AvailableExamsView
+    AvailableExamsView,
+    PointListViewPerSubject,
     )
 
 
@@ -36,7 +35,6 @@ urlpatterns = [
     path('exams/<int:exam_id>/start_or_resume/', StartOrResumeExamSessionView.as_view(), name='start_exam'),
     path('sessions/<int:session_id>/answer/', SubmitAnswerView.as_view(), name='submit_answer'),
     
-    path('sessions/<int:session_id>/finish/', FinishExamSessionView.as_view(), name='finish_exam'),
-    path('results/<int:exam_id>/', ExamResultsView.as_view(), name='exam_results'),
+    path("points/leaderboard/", PointListViewPerSubject.as_view(), name="leaderboard"),
     
 ]

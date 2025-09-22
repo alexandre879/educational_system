@@ -134,3 +134,6 @@ class UserAnswer(models.Model):
 
     def __str__(self):
         return f"{self.session.user.username} - Q{self.question.pk} ({'Correct' if self.is_correct else 'Wrong'})"
+    
+    
+    

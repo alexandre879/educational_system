@@ -1,0 +1,56 @@
+
+
+@import "../../colors.scss";
+
+.leaderboardMainContainer {
+  background-color: $dark_background;
+  color: $text_primary;
+  padding: 40px;
+  min-height: 100vh;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+
+  h1 {
+    color: $header_background;
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 2rem;
+    font-weight: 700;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid #3c3e46; 
+
+    thead {
+      background-color: $dark_background;
+      color: $text_secondary;
+      font-weight: bold;
+
+      th {
+        padding: 12px 15px;
+        text-align: left;
+        border-bottom: 1px solid #3c3e46; 
+      }
+    }
+
+    tbody {
+      tr {
+        td {
+          padding: 12px 15px;
+          background-color: #2C2F38; 
+          color: $text_primary;
+          border-bottom: 1px solid #3c3e46;
+          transition: background-color 0.2s ease;
+        }
+
+        &:hover td {
+          background-color: #3c3e46;
+        }
+      }
+    }
+  }
+}
