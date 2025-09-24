@@ -23,7 +23,7 @@ const Login = () => {
   const onEmailFinish = async ({ username }: EmailFormType) => {
     try {
       setEmail(username);
-      await axios.post('http://192.168.100.200:8000/api/otp/request/', { email: username });
+      await axios.post('http://192.168.100.213:8000/api/otp/request/', { email: username });
       message.success('OTP sent to your email!');
       setStep('otp');
     } 
@@ -39,7 +39,7 @@ const Login = () => {
 
   const onOtpFinish = async (values: OtpFormType) => {
     try {
-      const res = await axios.post('http://192.168.100.200:8000/api/otp/verify/', {
+      const res = await axios.post('http://192.168.100.213:8000/api/otp/verify/', {
         email: email,
         otp: values.otp
       });

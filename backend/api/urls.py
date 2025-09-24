@@ -6,12 +6,14 @@ from api.views import (
     RequestOtpView,
     VerifyOtpView,
     UserMeView,
-    StartOrResumeExamSessionView,
+    StartOrResumeOrFinishExamSessionView,
     SubmitAnswerView, 
     LogoutView,
     AvailableExamsView,
     PointListViewPerSubject,
-    )
+    AnnouncementCreateView,
+    AnnouncementListView,
+)
 
 
 
@@ -32,9 +34,12 @@ urlpatterns = [
     path('exams/', AvailableExamsView.as_view(), name='available_exams'),
     
     
-    path('exams/<int:exam_id>/start_or_resume/', StartOrResumeExamSessionView.as_view(), name='start_exam'),
+    path('exams/<int:exam_id>/start_or_resume/', StartOrResumeOrFinishExamSessionView.as_view(), name='start_exam'),
     path('sessions/<int:session_id>/answer/', SubmitAnswerView.as_view(), name='submit_answer'),
     
     path("points/leaderboard/", PointListViewPerSubject.as_view(), name="leaderboard"),
+    
+    path('announcements/list/', AnnouncementListView.as_view(), name='announcements-list'),
+    path('announcements/create/', AnnouncementCreateView.as_view(), name='announcements-create'),
     
 ]

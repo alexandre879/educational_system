@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import api from "@/interceptors";
 import styles from "./leader-board.module.scss";
+import Image from "next/image";
 
 interface LeaderboardEntry {
   first_name: string;
@@ -42,13 +43,19 @@ export default function LeaderBoard() {
             <tr key={index}>
               <td>{user.first_name} {user.last_name}</td>
               <td>{user.email.slice(0, 3) + '...@gmail.com'}</td>
-              <td>{user.points}</td>
+              <td>
+                <div className={styles.pointWrapper} >
+                  <Image className={styles.pointIcon} src={'/point.svg'} width={25} height={25} alt="Point-icon" />
+                  {user.points}
+                </div>
+              </td>
               <td>
                 <div className={`${index + 1 == 1 ?
                   styles.positionWrapperGold :
                   index + 1 == 2 ?
-                  styles.positionWrapperSilver :
-                  styles.positionWrapperBronce}`} >
+                    styles.positionWrapperSilver :
+                    styles.positionWrapperBronce}`}
+                >
                   {index + 1}</div>
               </td>
             </tr>

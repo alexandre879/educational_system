@@ -1,6 +1,7 @@
 # api/serializers.py
+from django.forms import ValidationError
 from rest_framework import serializers
-from .models import Exam, Question, Option, UserExamSession, UserAnswer, User
+from .models import Announcement, Exam, Grade, Question, Option, Subject, UserExamSession, UserAnswer, User, GradeCategory
 
 
 
@@ -22,6 +23,7 @@ class OptionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Option
         fields = ['id', 'title']
+
 
 
 
@@ -55,6 +57,8 @@ class ExamSerializer(serializers.ModelSerializer):
     
     
     
+    
+    
 class ExamSerializerOnStart(serializers.ModelSerializer):
     
     questions = QuestionSerializer(many=True)
@@ -62,6 +66,9 @@ class ExamSerializerOnStart(serializers.ModelSerializer):
     class Meta:
         model = Exam
         fields = ['id', 'title', 'subject', 'duration', 'questions']
+    
+    
+    
     
     
 class UserExamSessionSerializer(serializers.ModelSerializer):
@@ -74,6 +81,8 @@ class UserExamSessionSerializer(serializers.ModelSerializer):
         fields = ['id', 'started', 'finished', 'exam']
         
     
+
+
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -98,11 +107,80 @@ class ExamDetailSerializer(serializers.ModelSerializer):
 
 
 
+class CategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = GradeCategory
+        fields = ('name', )
+
+
+
+
+
+class GradeSerializer(serializers.ModelSerializer):
+    
+    category = CategorySerializer()
+    
+    class Meta:
+        model = Grade
+        fields = ('name', 'category')
+
+
+
+
+class AnnouncementSerializer(serializers.ModelSerializer):
+    
+    grade = GradeSerializer()
+    user = serializers.SerializerMethodField()
+    subject = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = Announcement
+        fields = ["id", "title", "content", "grade", "subject", "user", "created_at"]
+        read_only_fields = ["created_by", "created_at"]
+
+
+    def get_user(self, obj: Announcement):
+        return obj.created_by.email
+    
+    def get_subject(self, obj: Announcement):
+        return obj.subject.name
+
+
+class AnnouncementValidatorSerializer(serializers.Serializer):
+    title = serializers.CharField()
+    content = serializers.CharField()
+    grade_name = serializers.CharField(write_only=True) 
+    subject_id = serializers.IntegerField(write_only=True)
+    category_id = serializers.IntegerField(write_only=True)
+
+    def create(self, validated_data):
+        title = validated_data.pop('title')
+        content = validated_data.pop('content')
+        grade_name = validated_data.pop('grade_name')
+        subject_id = validated_data.pop("subject_id")
+        category_id = validated_data.pop('category_id')
+
+        subject_qs = Subject.objects.get(pk=subject_id)
+        category_qs = GradeCategory.objects.get(pk=category_id)
+        grade_qs = Grade.objects.get(name=grade_name, category=category_qs)
+
+        return Announcement.objects.create(
+            title=title,
+            content=content,
+            grade=grade_qs,
+            subject=subject_qs,
+            created_by=self.context["request"].user,
+        )
+
+
 
 class UserAnswerSerializer(serializers.Serializer):
     
     question_id = serializers.IntegerField()
     option_id = serializers.IntegerField()
+    
+    
+    
     
     
 class PointListViewPerSubjectSerializer(serializers.Serializer):

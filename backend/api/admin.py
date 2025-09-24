@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-from .models import User, Grade, Subject, Exam, Question, Option, UserExamSession, UserAnswer
+from .models import User, Grade, Subject, Exam, Question, Option, UserExamSession, UserAnswer, Announcement, GradeCategory
 from .forms import UserCreationForm, UserChangeForm
 
 
@@ -37,3 +37,5 @@ admin.site.register(Question)
 admin.site.register(Option)
 admin.site.register(UserExamSession)
 admin.site.register(UserAnswer)
+admin.site.register(Announcement)
+admin.site.register(GradeCategory)

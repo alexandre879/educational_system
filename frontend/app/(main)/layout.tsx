@@ -108,7 +108,7 @@ export default function MainLayout({ children }: { children: ReactNode }) {
           <FaBars className={styles.burgerIcon} onClick={toggleSidebar} />
 
           <div className={styles.myProfileWrapper}>
-            <Dropdown menu={{ items: dropdownItems, onClick: onDropdownClick }} placement="bottomRight">
+            <Dropdown trigger={['click']} menu={{ items: dropdownItems, onClick: onDropdownClick }} placement="bottomRight">
               <a onClick={(e) => e.preventDefault()}>
                 <Space>
                   <div className={styles.outerWrapperProfile}>
