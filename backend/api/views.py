@@ -6,23 +6,23 @@ from rest_framework.response import Response
 from rest_framework.request import Request
 from django.core.cache import cache
 from rest_framework.views import APIView
-from rest_framework import status, generics
+from rest_framework import status
 from telegram import Bot
-from .models import User
+from .models import Announcement, Grade, GradeCategory, Subject, User
 from api.serializers import VerifyOtpSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 from asgiref.sync import async_to_sync
-from rest_framework.permissions import IsAuthenticated, AllowAny
-from django.utils import timezone
+from rest_framework.permissions import IsAuthenticated
 from django.shortcuts import get_object_or_404
 from .models import Exam, UserExamSession, Option, UserAnswer
 from .serializers import (
     QuestionSerializer, 
     UserAnswerSerializer, 
-    UserExamSessionSerializer, 
     UserSerializer, 
     RequestOtpSerializer, 
-    PointListViewPerSubjectSerializer
+    PointListViewPerSubjectSerializer,
+    AnnouncementSerializer,
+    AnnouncementValidatorSerializer,
 )
 from django.db.models import Sum
 
@@ -39,7 +39,7 @@ OTP_RATE_LIMIT = os.getenv("OTP_RATE_LIMIT")
 
 
 class RequestOtpView(APIView):
-    def post(self, request: Request):
+    def post(self, request: Request) -> Response:
         
         serializer = RequestOtpSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -57,6 +57,7 @@ class RequestOtpView(APIView):
 
         otp = f"{random.randint(1000, 9999)}"
         cache.set(f"otp_{email}", otp, timeout=300)
+        
 
         bot = Bot(token=BOT_TOKEN)
         
@@ -69,13 +70,16 @@ class RequestOtpView(APIView):
 
 
 
+
+
 class VerifyOtpView(APIView):
-    def post(self, request: Request):
+    def post(self, request: Request) -> Response:
         serializer = VerifyOtpSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
         email = serializer.validated_data["email"].lower()
         otp = serializer.validated_data["otp"]
+        
 
         user = User.objects.get(email__iexact=email)
 
@@ -104,7 +108,7 @@ class VerifyOtpView(APIView):
 class RefreshTokenView(APIView):
     permission_classes = [IsAuthenticated]
 
-    def post(self, request: Request):
+    def post(self, request: Request) -> Response:
         refresh_token = request.data.get("refresh")
         if not refresh_token:
             return Response({"error": "Refresh token required"}, status=status.HTTP_400_BAD_REQUEST)
@@ -124,7 +128,7 @@ class RefreshTokenView(APIView):
 class LogoutView(APIView):
     permission_classes = [IsAuthenticated]
 
-    def post(self, request: Request):
+    def post(self, request: Request) -> Response:
         refresh_token = request.data.get("refresh")
 
         if not refresh_token:
@@ -144,7 +148,6 @@ class LogoutView(APIView):
         
 
 class UserMeView(APIView):
-    
     permission_classes = [IsAuthenticated]
     
     def get(self, request: Request):
@@ -159,10 +162,13 @@ class UserMeView(APIView):
     
     
     
+    
 class AvailableExamsView(APIView):
     permission_classes = [IsAuthenticated]
 
-    def get(self, request: Request):
+    def get(self, request: Request) -> Response:
+
+        user: User = request.user
 
 
         finished_exam_ids = UserExamSession.objects.filter(
@@ -173,7 +179,7 @@ class AvailableExamsView(APIView):
 
 
         available_exams = (
-            Exam.objects.filter(grade=request.user.grade_in)
+            Exam.objects.filter(grade=user.grade_in)
             .exclude(pk__in=finished_exam_ids)
             .prefetch_related("questions")
         )
@@ -195,14 +201,15 @@ class AvailableExamsView(APIView):
         
         
         
+        
 
 
-class StartOrResumeExamSessionView(APIView):
+class StartOrResumeOrFinishExamSessionView(APIView):
     permission_classes = [IsAuthenticated]
 
-    def post(self, request: Request, exam_id: int):
+    def post(self, request: Request, exam_id: int) -> Response:
         exam = get_object_or_404(Exam, pk=exam_id)
-        user = request.user
+        user: User = request.user
 
 
         if exam.grade and exam.grade != user.grade_in:
@@ -256,7 +263,7 @@ class StartOrResumeExamSessionView(APIView):
 class SubmitAnswerView(APIView):
     permission_classes = [IsAuthenticated]
 
-    def post(self, request: Request, session_id: int):
+    def post(self, request: Request, session_id: int) -> Response:
         session = get_object_or_404(
             UserExamSession,
             pk=session_id,
@@ -329,11 +336,11 @@ class SubmitAnswerView(APIView):
 
 
 
+
 class PointListViewPerSubject(APIView):
-    
     permission_classes = [IsAuthenticated]
     
-    def post(self, request: Request):
+    def post(self, request: Request) -> Response:
         
         user: User = request.user
         
@@ -361,3 +368,118 @@ class PointListViewPerSubject(APIView):
             .values('user__first_name', 'user__last_name', 'user__email', 'total_points')
         )
         return Response(leaderboard, status=status.HTTP_200_OK)
+    
+    
+    
+    
+    
+    
+    
+
+class AnnouncementCreateView(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def post(self, request: Request) -> Response:
+        user: User = request.user
+        
+        if user.role != User.Role.TEACHER:
+            return Response({'detail': 'Only teachers are allowed to post announcements'}, status=status.HTTP_403_FORBIDDEN)
+        
+        serializer = AnnouncementValidatorSerializer(data=request.data, context={"request": request})
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    
+    
+    
+    
+
+
+class AnnouncementListView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request: Request):
+        user: User = request.user
+        subject_id = request.query_params.get("subject", None)
+
+        qs = Announcement.objects.all().select_related(
+            "grade", "grade__category", "subject", "created_by"
+        )
+
+        if user.grade_in:
+            qs = qs.filter(
+                grade=user.grade_in,
+                grade__category=user.grade_in.category
+            )
+
+        if subject_id:
+            qs = qs.filter(subject__pk=subject_id)
+
+        announcements_data = AnnouncementSerializer(qs, many=True).data
+
+
+        if user.role == User.Role.STUDENT and user.grade_in:
+            subjects_qs = (
+                Subject.objects.filter(
+                    grade=user.grade_in,
+                    grade__category=user.grade_in.category
+                )
+                .select_related("grade", "grade__category")
+                .order_by("name")
+            )
+        elif user.role == User.Role.TEACHER:
+            subjects_qs = (
+                Subject.objects.all()
+                .select_related("grade", "grade__category")
+                .order_by("name")
+            )
+        else:
+            subjects_qs = Subject.objects.none()
+
+
+        subjects_qs = subjects_qs.distinct("name")
+        
+
+        subjects_data = [
+            {
+                "id": s.pk,
+                "name": s.name,
+                "grade": {
+                    "grade_id": s.grade.pk,
+                    "grade_name": s.grade.name,
+                    "grade_category_id": s.grade.category.pk,
+                    "grade_category_name": s.grade.category.name,
+                }
+            }
+            for s in subjects_qs
+        ]
+
+
+        grades_qs = (
+            Grade.objects.all()
+            .select_related("category")
+        )
+        
+        grades_data = [
+            {
+                "id": g.pk,
+                "name": g.name,
+                "category_id": g.category.pk,
+                "category_name": g.category.name,
+            }
+            for g in grades_qs
+        ]
+        
+        categories = GradeCategory.objects.all().values('id', 'name')
+        
+
+        return Response(
+            {
+                "announcements": announcements_data,
+                "subjects": subjects_data,
+                "grades": grades_data,
+                "role": user.role,
+                'categories': categories,
+            },
+            status=status.HTTP_200_OK
+        )

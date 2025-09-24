@@ -9,17 +9,17 @@
 
 
 
-
   .positionWrapperGold {
     width: 30px;
     height: 30px;
-    background-color: gold;
-    color: #1E1F26;
+    background-color: rgb(252, 182, 1);
+    color: white;
+    font-weight: bold;
     border-radius: 10px;
     display: flex;
     justify-content: center;
     align-items: center;
-    box-shadow: 0 2px 5px rgba(255, 215, 0, 0.6);
+    box-shadow: 0 0 5px 5px rgba(118,148,164,.165);
   }
 
   .positionWrapperSilver {
@@ -31,19 +31,30 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    box-shadow: 0 2px 5px rgba(192, 192, 192, 0.6);
+    box-shadow: 0 0 5px 5px rgba(118,148,164,.165);
   }
 
   .positionWrapperBronze {
     width: 30px;
     height: 30px;
-    background-color: #cd7f32; 
+    background-color: #cd7f32;
     color: #1E1F26;
     border-radius: 10px;
     display: flex;
     justify-content: center;
     align-items: center;
-    box-shadow: 0 2px 5px rgba(205, 127, 50, 0.6);
+    box-shadow: 0 0 5px 5px rgba(118,148,164,.165);
+  }
+
+  .pointWrapper {
+    width: 100px;
+    height: 40px;
+    background-color: #1E1F26;
+    border-radius: 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
   }
 
 
@@ -90,18 +101,23 @@
   @media (max-width: 1024px) {
     padding: 30px;
 
-    .positionWrapperGold, .positionWrapperSilver, .positionWrapperBronze {
+    .positionWrapperGold,
+    .positionWrapperSilver,
+    .positionWrapperBronze {
       width: 20px;
       height: 20px;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.5);
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
       border-radius: 7px;
     }
 
 
     table {
-      th, td {
+
+      th,
+      td {
         padding: 10px 12px;
       }
+
       font-size: 0.95rem;
     }
   }
@@ -111,29 +127,47 @@
   @media (max-width: 767px) {
     padding: 20px;
 
+    .pointIcon {
+      width: 15px;
+      height: 15px;
+    }
+
+    .pointWrapper {
+      width: 70px;
+      height: 30px;
+      background-color: #1E1F26;
+      border-radius: 8px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 5px;
+    }
+
     .positionWrapperGold {
       width: 18px;
       height: 18px;
       border-radius: 6px;
-      box-shadow: 0 1px 3px rgba(255, 215, 0, 0.6);
+      box-shadow: 0 0 5px 5px rgba(118,148,164,.165);
     }
-    
+
     .positionWrapperSilver {
       width: 18px;
       height: 18px;
       border-radius: 6px;
-      box-shadow: 0 1px 3px rgba(192, 192, 192, 0.6);
+      box-shadow: 0 0 5px 5px rgba(118,148,164,.165);
     }
-    
+
     .positionWrapperBronze {
       width: 18px;
       height: 18px;
       border-radius: 6px;
-      box-shadow: 0 1px 3px rgba(205, 127, 50, 0.6);
+      box-shadow: 0 0 5px 5px rgba(118,148,164,.165);
     }
 
     table {
-      th, td {
+
+      th,
+      td {
         padding: 8px 10px;
         font-size: 0.70rem;
       }

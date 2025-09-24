@@ -4,12 +4,24 @@ from api.managers import UserManager
 
 
 
-class Grade(models.Model):
+
+class GradeCategory(models.Model):
     name = models.CharField(max_length=50)
 
     def __str__(self):
         return self.name
 
+
+
+
+
+
+class Grade(models.Model):
+    name = models.CharField(max_length=50)
+    category = models.ForeignKey(GradeCategory, on_delete=models.CASCADE, blank=True, null=True)
+
+    def __str__(self):
+        return f"{self.name} ({self.category.name})"
 
 
 
@@ -40,9 +52,10 @@ class User(AbstractUser):
     objects = UserManager()
     
     def __str__(self,):
-        return self.first_name
-
-
+        return f"{self.first_name} {self.last_name}: {'student' if self.grade_in and self.grade_in.category else 'teacher'}"
+    
+    
+    
 
 
 
@@ -54,7 +67,7 @@ class Subject(models.Model):
     
     
     def __str__(self):
-        return f"{self.name} of {self.grade.name} grade"
+        return f"{self.name} ({self.grade.name}-{self.grade.category.name})"
     
 
 
@@ -136,4 +149,22 @@ class UserAnswer(models.Model):
         return f"{self.session.user.username} - Q{self.question.pk} ({'Correct' if self.is_correct else 'Wrong'})"
     
     
+
+    
+
+
+class Announcement(models.Model):
+    
+    title = models.CharField(max_length=255)
+    content = models.TextField()
+    grade = models.ForeignKey(Grade, on_delete=models.CASCADE, related_name='announcements')
+    subject = models.ForeignKey(Subject, on_delete=models.CASCADE, related_name='announcements', null=True, blank=True)
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='announcements')
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        if self.subject:
+            return f"{self.title} {self.grade.name} {self.subject.name}"
+        return f"{self.title} {self.grade.name} - Global"
+        
     

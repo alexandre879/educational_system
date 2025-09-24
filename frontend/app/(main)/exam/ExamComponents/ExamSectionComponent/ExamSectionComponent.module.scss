@@ -3,33 +3,33 @@
 .ExamSectionMainContainer {
   padding: 15px 20px;
   border-radius: 12px;
-  background-color: $table_background;
-  color: $text_primary;
+  background-color: #2C2F38; // dark background to match announcement page
+  color: #ffffff;             // primary text color
   display: flex;
   flex-direction: column;
   gap: 8px;
   cursor: pointer;
+  transition: transform 0.2s ease-in-out, background-color 0.2s ease-in-out;
 
   &:nth-child(n) {
-    background-color: #3D4250;
+    background-color: #3c3e46; // slightly lighter for alternating effect
   }
 
   &:hover {
     transform: scale(1.02);
-    transition: transform 0.2s ease-in-out;
-    background-color: lighten(#3D4250, 5%);
+    background-color: #46484f; // hover slightly lighter
   }
 }
 
 .examTitle {
   font-size: 20px;
   font-weight: bold;
-  color: $text_secondary; 
+  color: #FFD700; // highlight color like announcements
 }
 
 .examSubject {
   font-size: 14px;
-  color: $text_secondary;
+  color: #aaa; // secondary text color
 }
 
 .examInfoList {
@@ -43,5 +43,5 @@
 .examDuration,
 .examQuestions {
   font-size: 14px;
-  color: $text_secondary;
+  color: white; 
 }
