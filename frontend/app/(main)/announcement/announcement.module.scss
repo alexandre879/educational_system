@@ -46,6 +46,26 @@
   color: #1469d0;
 }
 
+.titleAndCommentsWrapper {
+  display: flex !important;
+  align-items: center;
+  gap: 10px;
+  margin-right: 20px;
+}
+
+.commentsWrapper {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background-color: #6b6b6b;
+  padding: 4px;
+  border-radius: 5px;
+}
+
+.commentsCountStyle {
+  font-size: 18px !important;
+}
+
 .announcementHeader {
   display: flex;
   justify-content: space-between;
@@ -105,7 +125,7 @@
   width: 100% !important;
   display: flex !important;
   flex-direction: column !important;
-  justify-content: start;
+  justify-content: start !important;
   gap: 2px !important;
 
   .innerCommentItemSectionWrapper {

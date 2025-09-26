@@ -25,7 +25,7 @@ from .serializers import (
     AnnouncementSerializer,
     AnnouncementValidatorSerializer,
 )
-from django.db.models import Sum, IntegerField
+from django.db.models import Sum, IntegerField, Count
 from django.db.models.functions import Cast
 
 
@@ -418,7 +418,7 @@ class AnnouncementListView(APIView):
 
         qs = Announcement.objects.all().select_related(
             "grade", "grade__category", "subject", "created_by"
-        )
+        ).prefetch_related('comments')
         
 
         if user.grade_in and user.grade_in.category:

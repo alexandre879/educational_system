@@ -13,6 +13,7 @@ export interface Announcement {
     grade: {name: string, category: {name: string}};
     user: string;
     created_at: string;
+    len_comments: number;
 }
 
 

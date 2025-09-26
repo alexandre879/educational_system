@@ -7,6 +7,7 @@ import { Button, Dropdown, Form, Input, List, Modal, Select } from "antd";
 import TextArea from "antd/es/input/TextArea";
 import { Announcement, Subject, CreateAnnouncementData, Grades, Categories, Comment } from "./interface";
 import { FiInbox } from "react-icons/fi";
+import { MdComment } from "react-icons/md";
 
 
 export default function AnnouncementPage() {
@@ -33,6 +34,9 @@ export default function AnnouncementPage() {
         try {
             const res = await api.post<Comment>('comments/create/', { comment: values.comment, announcement: announcementId })
             setComments(prev => [...prev, res.data])
+            setAnnouncements(prev => (
+                prev.map(item => item.id === announcementId ? { ...item, len_comments: item.len_comments + 1 } : item)
+            ))
             commentForm.resetFields()
         }
         catch (error) {
@@ -259,7 +263,15 @@ export default function AnnouncementPage() {
                                     onClick={() => showSectionModal(item.title, item.id)}
                                 >
                                     <div className={styles.announcementHeader}>
-                                        <h3 className={styles.announcementTitle}>{item.title}</h3>
+                                        <div className={styles.titleAndCommentsWrapper}>
+                                            <h3 className={styles.announcementTitle}>{item.title}</h3>
+                                            <div className={styles.commentsWrapper}>
+                                                <MdComment size={22} />
+                                                <span className={styles.commentsCountStyle}>
+                                                    {item.len_comments}
+                                                </span>
+                                            </div>
+                                        </div>
                                         <span className={styles.announcementDate}>
                                             {new Date(item.created_at).toLocaleString()}
                                         </span>
@@ -289,7 +301,7 @@ export default function AnnouncementPage() {
                 )}
             </div>
             <Modal
-                title={announcementModalCaption}
+                title={`${announcementModalCaption} - Comments`}
                 open={isSectionModalOpen}
                 onCancel={handleSectionModalCancel}
                 footer={null}
@@ -306,7 +318,6 @@ export default function AnnouncementPage() {
                             <div className={styles.outerWrapper} >
                                 <div className={styles.innerCommentItemSectionWrapper} >
                                     <div>
-                                        <span>•</span>
                                         <u className={styles.insideCommentsAuthorStyle}>{item.user}</u>
                                     </div>
                                     <span className={styles.commentsDateTimeStyle} >{new Date(item.created_at).toLocaleString()}</span>

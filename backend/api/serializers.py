@@ -132,10 +132,11 @@ class AnnouncementSerializer(serializers.ModelSerializer):
     grade = GradeSerializer()
     user = serializers.SerializerMethodField()
     subject = serializers.SerializerMethodField()
+    len_comments = serializers.SerializerMethodField()
     
     class Meta:
         model = Announcement
-        fields = ["id", "title", "content", "grade", "subject", "user", "created_at"]
+        fields = ["id", "title", "content", "grade", "subject", "user", "created_at", "len_comments"]
         read_only_fields = ["created_by", "created_at"]
 
 
@@ -144,6 +145,9 @@ class AnnouncementSerializer(serializers.ModelSerializer):
     
     def get_subject(self, obj: Announcement):
         return obj.subject.name
+    
+    def get_len_comments(self, obj: Announcement):
+        return len(obj.comments.all())
 
 
 
