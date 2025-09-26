@@ -8,7 +8,7 @@ from django.core.cache import cache
 from rest_framework.views import APIView
 from rest_framework import status
 from telegram import Bot
-from .models import Announcement, Grade, GradeCategory, Subject, User
+from .models import Announcement, Grade, GradeCategory, Subject, User, Comment
 from api.serializers import VerifyOtpSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 from asgiref.sync import async_to_sync
@@ -16,6 +16,7 @@ from rest_framework.permissions import IsAuthenticated
 from django.shortcuts import get_object_or_404
 from .models import Exam, UserExamSession, Option, UserAnswer
 from .serializers import (
+    CommentsCreateSerializer,
     QuestionSerializer, 
     UserAnswerSerializer, 
     UserSerializer, 
@@ -24,7 +25,10 @@ from .serializers import (
     AnnouncementSerializer,
     AnnouncementValidatorSerializer,
 )
-from django.db.models import Sum
+from django.db.models import Sum, IntegerField
+from django.db.models.functions import Cast
+
+
 
 
 load_dotenv()
@@ -387,8 +391,17 @@ class AnnouncementCreateView(APIView):
         
         serializer = AnnouncementValidatorSerializer(data=request.data, context={"request": request})
         serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        new_announcement = serializer.save()
+        
+        announcement_with_related = Announcement.objects.select_related(
+            "grade__category", "subject", "created_by"
+        ).get(pk=new_announcement.pk)
+        
+        response_serializer = AnnouncementSerializer(announcement_with_related)
+        
+        return Response(response_serializer.data, status=status.HTTP_201_CREATED)
+    
+    
     
     
     
@@ -398,24 +411,30 @@ class AnnouncementCreateView(APIView):
 class AnnouncementListView(APIView):
     permission_classes = [IsAuthenticated]
 
-    def get(self, request: Request):
+    def get(self, request: Request) -> Response:
         user: User = request.user
         subject_id = request.query_params.get("subject", None)
+        
 
         qs = Announcement.objects.all().select_related(
             "grade", "grade__category", "subject", "created_by"
         )
+        
 
-        if user.grade_in:
+        if user.grade_in and user.grade_in.category:
             qs = qs.filter(
                 grade=user.grade_in,
                 grade__category=user.grade_in.category
             )
+            
+            
 
         if subject_id:
             qs = qs.filter(subject__pk=subject_id)
+            
 
         announcements_data = AnnouncementSerializer(qs, many=True).data
+        
 
 
         if user.role == User.Role.STUDENT and user.grade_in:
@@ -456,9 +475,14 @@ class AnnouncementListView(APIView):
 
 
         grades_qs = (
-            Grade.objects.all()
+            Grade.objects
+            .all()
             .select_related("category")
+            .annotate(num=Cast("name", IntegerField()))
+            .order_by("num")
+            .distinct("num")
         )
+        
         
         grades_data = [
             {
@@ -483,3 +507,44 @@ class AnnouncementListView(APIView):
             },
             status=status.HTTP_200_OK
         )
+        
+        
+        
+        
+        
+class CreateCommentView(APIView):
+    
+    permission_classes = [IsAuthenticated]
+    
+    def post(self, request: Request) -> Response:
+
+        user: User = request.user
+        
+        serializer = CommentsCreateSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        comment = serializer.validated_data.get('comment')
+        announcement_id = serializer.validated_data.get('announcement')
+        
+        
+        announcement = Announcement.objects.get(pk=announcement_id)
+        
+        created_comment = Comment.objects.create(content=comment, announcement=announcement, user=user)
+        
+        return Response({ "comment": created_comment.content, "user": created_comment.user.email }, status=status.HTTP_201_CREATED)
+        
+        
+        
+        
+        
+
+
+class ListCommentsView(APIView):
+    def get(self, request: Request) -> Response:
+        announcement_id = request.query_params.get("announcement")
+        if not announcement_id:
+            return Response({"detail": "announcement ID is required"}, status=400)
+
+        comments = Comment.objects.filter(announcement_id=announcement_id).select_related("user")
+        data = [{"user": c.user.email, "comment": c.content} for c in comments]
+
+        return Response(data, status=200)

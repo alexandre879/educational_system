@@ -10,8 +10,13 @@ from telegram.ext import (
 )
 from asgiref.sync import sync_to_async
 from api.models import User
+import os
+from dotenv import load_dotenv
 
-BOT_TOKEN = '8291605075:AAGGMDZMjrhoz418Wv2yZvYePDthliwN_nk'
+
+load_dotenv()
+
+BOT_TOKEN = os.getenv("BOT_TOKEN")
 
 
 

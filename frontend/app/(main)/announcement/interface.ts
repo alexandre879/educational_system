@@ -57,3 +57,9 @@ export interface Categories {
     id: number;
     name: string
 }
+
+
+export interface Comment {
+    user: string
+    comment: string;
+}

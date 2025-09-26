@@ -3,27 +3,71 @@
 import { useEffect, useState } from "react";
 import styles from "./announcement.module.scss";
 import api from "@/interceptors";
-import { Button, Dropdown, Form, Input, Modal, Select, Typography } from "antd";
+import { Button, Dropdown, Form, Input, List, Modal, Select } from "antd";
 import TextArea from "antd/es/input/TextArea";
-import { Announcement, Subject, CreateAnnouncementData, Grades, Categories } from "./interface";
+import { Announcement, Subject, CreateAnnouncementData, Grades, Categories, Comment } from "./interface";
+import { FiInbox } from "react-icons/fi";
 
-const { Text } = Typography;
 
 export default function AnnouncementPage() {
+
     const [announcements, setAnnouncements] = useState<Announcement[]>([]);
     const [subjects, setSubjects] = useState<Subject[]>([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isSectionModalOpen, setIsSectionModalOpen] = useState(false);
     const [selectedSubjectId, setSelectedSubjectId] = useState<number | undefined>(undefined);
     const [grades, setGrades] = useState<Grades[] | null>(null);
     const [userRole, setUserRole] = useState<string | null>(null);
     const [categories, setCategories] = useState<Categories[] | null>(null);
+    const [announcementModalCaption, setAnnouncementModalCaption] = useState<string | null>(null)
+    const [announcementId, setAnnoucementId] = useState<number | null>(null);
+    const [comments, setComments] = useState<Comment[]>([]);
 
-    const [form] = Form.useForm();
+    const [announcementForm] = Form.useForm();
+    const [commentForm] = Form.useForm();
+
+
+    const onCommentSend = async (values: { comment: string }) => {
+        if (!values.comment) return;
+
+        try {
+            const res = await api.post<Comment>('comments/create/', { comment: values.comment, announcement: announcementId })
+            setComments(prev => [...prev, { user: res.data.user, comment: res.data.comment }])
+            commentForm.resetFields()
+        }
+        catch (error) {
+            console.log(error)
+        }
+    }
+
 
     const showModal = () => setIsModalOpen(true);
+
     const handleCancel = () => {
-        form.resetFields();
+        announcementForm.resetFields();
         setIsModalOpen(false);
+    };
+
+
+    const showSectionModal = async (caption: string, id: number) => {
+        try {
+            const res = await api.get<Comment[]>('comments/', {
+                params: { announcement: id }
+            });
+            setComments(res.data);
+        } catch (error) {
+            console.log(error);
+        }
+
+        setAnnouncementModalCaption(caption);
+        setAnnoucementId(id);
+        setIsSectionModalOpen(true);
+    };
+
+
+
+    const handleSectionModalCancel = () => {
+        setIsSectionModalOpen(false);
     };
 
     const fetchAnnouncements = async (subjectId?: number) => {
@@ -31,6 +75,10 @@ export default function AnnouncementPage() {
             const response = await api.get("announcements/list/", {
                 params: subjectId ? { subject: subjectId } : {},
             });
+
+            {
+
+            }
             const { announcements: fetchedAnnouncements, subjects: fetchedSubjects, categories, grades, role } = response.data;
 
             setCategories(categories)
@@ -44,20 +92,22 @@ export default function AnnouncementPage() {
         }
     };
 
+
     const createAnnouncement = async (data: CreateAnnouncementData) => {
 
-
         try {
-            await api.post("announcements/create/", data);
-        } 
+            const res = await api.post<Announcement>("announcements/create/", data);
+            setAnnouncements(prev => [...prev, res.data])
+        }
         catch (error) {
             console.error("Error creating announcement:", error);
         }
     };
 
     const handleOk = async () => {
+        const values: CreateAnnouncementData = await announcementForm.validateFields();
+
         try {
-            const values: CreateAnnouncementData = await form.validateFields();
 
             const payload = {
                 title: values.title,
@@ -67,9 +117,11 @@ export default function AnnouncementPage() {
                 subject_id: values.subject_id,
             };
 
+            console.log(payload)
+
 
             await createAnnouncement(payload);
-            form.resetFields();
+            announcementForm.resetFields();
             setIsModalOpen(false);
         }
         catch (error) {
@@ -127,7 +179,7 @@ export default function AnnouncementPage() {
                 onCancel={handleCancel}
                 okText="Submit"
             >
-                <Form form={form} layout="vertical">
+                <Form form={announcementForm} layout="vertical">
                     <Form.Item
                         label="Title"
                         name="title"
@@ -157,9 +209,9 @@ export default function AnnouncementPage() {
                         rules={[{ required: true, message: "Please select a grade!" }]}
                     >
                         <Select placeholder="Select a grade">
-                            {grades?.slice(0, 12).map((g) => (
+                            {grades?.map((g, i) => (
                                 <Select.Option key={g.id} value={g.name}>
-                                    {g.name}
+                                    {g.name}{i === 0 ? 'st' : i === 1 ? 'nd' : i === 2 ? 'rd' : 'th'}
                                 </Select.Option>
                             ))}
                         </Select>
@@ -195,18 +247,82 @@ export default function AnnouncementPage() {
 
 
             <div className={styles.announcementList}>
-                {announcements.map((item) => (
-                    <div key={item.id} className={styles.announcementCard}>
-                        <div className={styles.announcementTitle}>{item.title}</div>
-                        <div className={styles.announcementMeta}>
-                            {" "}
-                            <u>{item.user}</u> <span>{">"}</span> <u>{item.subject}</u>{" "} {`(${item.grade?.category.name})`}<br /> <br />
-                            {new Date(item.created_at).toLocaleString()}
-                        </div>
-                        <div className={styles.announcementContent}>{item.content}</div>
+                {announcements.length > 0 ? (
+                    <>
+                        {announcements
+                            .slice()
+                            .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+                            .map((item) => (
+                                <div
+                                    key={item.id}
+                                    className={styles.announcementCard}
+                                    onClick={() => showSectionModal(item.title, item.id)}
+                                >
+                                    <div className={styles.announcementHeader}>
+                                        <h3 className={styles.announcementTitle}>{item.title}</h3>
+                                        <span className={styles.announcementDate}>
+                                            {new Date(item.created_at).toLocaleString()}
+                                        </span>
+                                    </div>
+
+                                    <div className={styles.announcementMeta}>
+                                        <span className={styles.metaItem}>
+                                            <strong>Author:</strong> {item.user}
+                                        </span>
+                                        <span className={styles.metaItem}>
+                                            <strong>Subject:</strong> {item.subject}
+                                        </span>
+                                        <span className={styles.metaItem}>
+                                            <strong>Grade:</strong> {item.grade.name} ({item.grade?.category.name})
+                                        </span>
+                                    </div>
+
+                                    <p className={styles.announcementContent}>{item.content}</p>
+                                </div>
+                            ))}
+                    </>
+                ) : (
+                    <div className={styles.emptyAnnouncementWrapper}>
+                        Empty
+                        <FiInbox size={48} />
                     </div>
-                ))}
+                )}
             </div>
+            <Modal
+                title={announcementModalCaption}
+                open={isSectionModalOpen}
+                onCancel={handleSectionModalCancel}
+                footer={null}
+            >
+                <List
+                    size="small"
+                    bordered
+                    dataSource={comments}
+                    style={{ maxHeight: 250, overflowY: "auto", marginBottom: 16 }}
+                    renderItem={(item: Comment) => (
+                        <List.Item>
+                            • <u className={styles.insideCommentsAuthorStyle} >{item.user}</u><span> - {item.comment}</span>
+                        </List.Item>
+                    )}
+                    locale={{ emptyText: "No comments yet" }}
+                />
+                <Form form={commentForm} layout="inline" onFinish={onCommentSend} style={{ width: "100%" }}>
+                    <Form.Item
+                        name="comment"
+                        style={{ flex: 1 }}
+                        rules={[{ required: true, message: "Please type something!" }]}
+                    >
+                        <Input placeholder="Type your comment..." />
+                    </Form.Item>
+
+                    <Form.Item>
+                        <Button type="primary" htmlType="submit">
+                            Send
+                        </Button>
+                    </Form.Item>
+                </Form>
+            </Modal>
         </div>
+
     );
 }

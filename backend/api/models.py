@@ -148,9 +148,7 @@ class UserAnswer(models.Model):
     def __str__(self):
         return f"{self.session.user.username} - Q{self.question.pk} ({'Correct' if self.is_correct else 'Wrong'})"
     
-    
 
-    
 
 
 class Announcement(models.Model):
@@ -162,9 +160,22 @@ class Announcement(models.Model):
     created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='announcements')
     created_at = models.DateTimeField(auto_now_add=True)
     
+    
     def __str__(self):
         if self.subject:
             return f"{self.title} {self.grade.name} {self.subject.name}"
         return f"{self.title} {self.grade.name} - Global"
         
+    
+    
+
+
+class Comment(models.Model):
+    content = models.TextField()
+    announcement = models.ForeignKey(Announcement, on_delete=models.CASCADE, related_name='comments', null=True, blank=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='comments')
+    
+    def __str__(self):
+        return f"comment of: {self.user.email}"
+
     

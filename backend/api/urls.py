@@ -2,6 +2,7 @@
 
 from django.urls import path
 from api.views import (
+    ListCommentsView,
     RefreshTokenView,
     RequestOtpView,
     VerifyOtpView,
@@ -13,6 +14,7 @@ from api.views import (
     PointListViewPerSubject,
     AnnouncementCreateView,
     AnnouncementListView,
+    CreateCommentView
 )
 
 
@@ -41,5 +43,9 @@ urlpatterns = [
     
     path('announcements/list/', AnnouncementListView.as_view(), name='announcements-list'),
     path('announcements/create/', AnnouncementCreateView.as_view(), name='announcements-create'),
+    
+    path('comments/create/', CreateCommentView.as_view(), name='comments-create'),
+    
+    path('comments/', ListCommentsView.as_view(), name='comments-list'), 
     
 ]

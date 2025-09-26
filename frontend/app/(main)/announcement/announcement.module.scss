@@ -10,7 +10,18 @@
   gap: 10px;
 }
 
-/* Announcements container */
+.emptyAnnouncementWrapper {
+  width: 100%;
+  height: 300px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid grey;
+  border-radius: 10px;
+}
+
 .announcementList {
   display: flex;
   flex-direction: column;
@@ -31,20 +42,55 @@
   }
 }
 
+.insideCommentsAuthorStyle {
+  color: #1469d0;
+}
+
+.announcementHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
 .announcementTitle {
   font-size: 18px;
   font-weight: 600;
-  margin-bottom: 6px;
-  color: #FFD700;
+  color: #ffd700;
+  margin: 0;
+}
+
+.announcementDate {
+  font-size: 12px;
+  color: #aaa;
+}
+
+.announcementMeta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  font-size: 13px;
+  color: rgb(196, 196, 196);
+  margin-bottom: 10px;
+}
+
+.metaItem strong {
+  color: #fff;
+  font-weight: 500;
+}
+
+.badge {
+  display: inline-block;
+  background: #2c2f38;
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #ddd;
 }
 
 .announcementContent {
   font-size: 14px;
   line-height: 1.5;
-  margin-top: 10px;
-}
-
-.announcementMeta {
-  font-size: 12px;
-  color: #aaa;
+  color: #ddd;
 }
