@@ -32,7 +32,7 @@ export default function AnnouncementPage() {
 
         try {
             const res = await api.post<Comment>('comments/create/', { comment: values.comment, announcement: announcementId })
-            setComments(prev => [...prev, { user: res.data.user, comment: res.data.comment }])
+            setComments(prev => [...prev, res.data])
             commentForm.resetFields()
         }
         catch (error) {
@@ -297,16 +297,32 @@ export default function AnnouncementPage() {
                 <List
                     size="small"
                     bordered
-                    dataSource={comments}
-                    style={{ maxHeight: 250, overflowY: "auto", marginBottom: 16 }}
+                    dataSource={comments.slice().sort(
+                        (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+                    )}
+                    className={styles.commentsList}
                     renderItem={(item: Comment) => (
-                        <List.Item>
-                            • <u className={styles.insideCommentsAuthorStyle} >{item.user}</u><span> - {item.comment}</span>
+                        <List.Item className={styles.commentItem}>
+                            <div className={styles.outerWrapper} >
+                                <div className={styles.innerCommentItemSectionWrapper} >
+                                    <div>
+                                        <span>•</span>
+                                        <u className={styles.insideCommentsAuthorStyle}>{item.user}</u>
+                                    </div>
+                                    <span className={styles.commentsDateTimeStyle} >{new Date(item.created_at).toLocaleString()}</span>
+                                </div>
+                                <span>{item.comment}</span>
+                            </div>
                         </List.Item>
                     )}
                     locale={{ emptyText: "No comments yet" }}
                 />
-                <Form form={commentForm} layout="inline" onFinish={onCommentSend} style={{ width: "100%" }}>
+                <Form
+                    form={commentForm}
+                    layout="inline"
+                    onFinish={onCommentSend}
+                    style={{ width: "100%" }}
+                >
                     <Form.Item
                         name="comment"
                         style={{ flex: 1 }}

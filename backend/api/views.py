@@ -530,8 +530,13 @@ class CreateCommentView(APIView):
         
         created_comment = Comment.objects.create(content=comment, announcement=announcement, user=user)
         
-        return Response({ "comment": created_comment.content, "user": created_comment.user.email }, status=status.HTTP_201_CREATED)
-        
+        return Response({ 
+            "comment": created_comment.content, 
+            "user": created_comment.user.email, 
+            "created_at": created_comment.created_at
+            },
+            status=status.HTTP_201_CREATED
+        )
         
         
         
@@ -545,6 +550,6 @@ class ListCommentsView(APIView):
             return Response({"detail": "announcement ID is required"}, status=400)
 
         comments = Comment.objects.filter(announcement_id=announcement_id).select_related("user")
-        data = [{"user": c.user.email, "comment": c.content} for c in comments]
+        data = [{"user": c.user.email, "comment": c.content, "created_at": c.created_at} for c in comments]
 
         return Response(data, status=200)

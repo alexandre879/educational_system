@@ -62,4 +62,5 @@ export interface Categories {
 export interface Comment {
     user: string
     comment: string;
+    created_at: string;
 }
