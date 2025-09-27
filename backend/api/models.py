@@ -28,6 +28,20 @@ class Grade(models.Model):
 
 
 
+
+class Subject(models.Model):
+    name = models.CharField(max_length=255)
+    grade = models.ForeignKey(Grade, on_delete=models.CASCADE, related_name='subjects')
+    
+    
+    def __str__(self):
+        return f"{self.name} ({self.grade.name}-{self.grade.category.name})"
+    
+
+
+
+
+
 class User(AbstractUser):
     
     class Role(models.TextChoices):
@@ -43,6 +57,9 @@ class User(AbstractUser):
     role = models.CharField(max_length=255, choices=Role.choices, null=True, blank=True)
     grade_in = models.ForeignKey(Grade, on_delete=models.SET_NULL, related_name='users', null=True, blank=True)
     points = models.IntegerField(null=True, default=None)
+    subjects_taught = models.ManyToManyField(Subject, related_name='teachers', blank=True, null=True)
+    
+    
     
     username = None  
     USERNAME_FIELD = 'email'
@@ -54,20 +71,6 @@ class User(AbstractUser):
     def __str__(self,):
         return f"{self.first_name} {self.last_name}: {'student' if self.grade_in and self.grade_in.category else 'teacher'}"
     
-    
-    
-
-
-
-
-
-class Subject(models.Model):
-    name = models.CharField(max_length=255)
-    grade = models.ForeignKey(Grade, on_delete=models.CASCADE, related_name='subjects')
-    
-    
-    def __str__(self):
-        return f"{self.name} ({self.grade.name}-{self.grade.category.name})"
     
 
 

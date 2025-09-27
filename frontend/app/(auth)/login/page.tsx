@@ -1,109 +1,127 @@
-'use client'
+"use client";
 
-import '@ant-design/v5-patch-for-react-19';
 import React, { useState } from "react";
-import { Form, Input, Checkbox, Button, Card, Typography, message } from "antd";
 import styles from "./login.module.scss";
-import axios from 'axios';
-import { EmailFormType, OtpFormType } from './interface';
-import { useRouter } from 'next/navigation';
-import Cookies from 'cookies-js';
-
-const { Title } = Typography;
-
+import axios from "axios";
+import { useRouter } from "next/navigation";
+import Cookies from "cookies-js";
 
 const Login = () => {
-  const [step, setStep] = useState<'email' | 'otp'>('email');
-  const [email, setEmail] = useState('');
+  const [step, setStep] = useState<"email" | "otp">("email");
+  const [email, setEmail] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
 
-  const router = useRouter()
+  const router = useRouter();
 
+  const onEmailFinish = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const username = formData.get("username") as string;
 
-
-  const onEmailFinish = async ({ username }: EmailFormType) => {
     try {
+      setError(null);
+      setSuccess(null);
       setEmail(username);
-      await axios.post('http://192.168.100.213:8000/api/otp/request/', { email: username });
-      message.success('OTP sent to your email!');
-      setStep('otp');
-    } 
-    catch (error) {
-      message.error('Failed to send OTP. Try again.');
-      console.error(error);
-    }
-  };
 
-
-
-
-
-  const onOtpFinish = async (values: OtpFormType) => {
-    try {
-      const res = await axios.post('http://192.168.100.213:8000/api/otp/verify/', {
-        email: email,
-        otp: values.otp
+      await axios.post("http://192.168.100.213:8000/api/otp/request/", {
+        email: username,
       });
-      message.success('Login successful!');
-      Cookies.set('access', res.data.access)
-      Cookies.set('refresh', res.data.refresh)
-      router.push('/home')
-      
 
-    }
-    catch (error) {
-      message.error('Invalid OTP. Try again.');
-      console.error(error);
+      setSuccess("OTP sent to your school bot!");
+      setStep("otp");
+    } 
+    catch (err) {
+      setError("Failed to send OTP. Try again.");
+      console.error(err);
     }
   };
 
+  const onOtpFinish = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const otp = formData.get("otp") as string;
 
+    try {
+      setError(null);
+      setSuccess(null);
 
+      const res = await axios.post("http://192.168.100.213:8000/api/otp/verify/", {
+        email: email,
+        otp,
+      });
+
+      setSuccess("Login successful!");
+      Cookies.set("access", res.data.access);
+      Cookies.set("refresh", res.data.refresh);
+      router.push("/home");
+    } catch (err) {
+      setError("Invalid OTP. Try again.");
+      console.error(err);
+    }
+  };
 
   return (
     <div className={styles.loginPageMainContainer}>
-      <Card className={styles.loginCard}>
-        <Title level={2} className={styles.title}>Welcome Back</Title>
+      <div className={styles.loginCard}>
+        <h2 className={styles.title}>Welcome Back</h2>
 
-        {step === 'email' && (
-          <Form name="emailForm" layout="vertical" style={{ width: "100%" }} initialValues={{ remember: true }} onFinish={onEmailFinish} autoComplete="on" >
-            <Form.Item
-              label="Email"
+        {error && <div className={styles.errorMessage}>{error}</div>}
+        {success && <div className={styles.successMessage}>{success}</div>}
+
+        {step === "email" && (
+          <form className={styles.form} onSubmit={onEmailFinish}>
+            <label className={styles.label} htmlFor="username">
+              Email
+            </label>
+            <input
+              id="username"
               name="username"
-              rules={[{ required: true, message: "Please input your email!" }]}
+              type="email"
+              className={styles.input}
+              placeholder="Enter your email"
+              required
+            />
+
+            <div className={styles.checkboxWrapper}>
+              <input type="checkbox" id="remember" name="remember" />
+              <label htmlFor="remember">Remember me</label>
+            </div>
+
+            <button type="submit" className={styles.submitButton}>
+              Send OTP
+            </button>
+          </form>
+        )}
+
+        {step === "otp" && (
+          <form className={styles.form} onSubmit={onOtpFinish}>
+            <label className={styles.label} htmlFor="otp">
+              OTP
+            </label>
+            <input
+              id="otp"
+              name="otp"
+              type="text"
+              className={styles.input}
+              placeholder="Enter OTP"
+              required
+            />
+
+            <button type="submit" className={styles.submitButton}>
+              Verify OTP
+            </button>
+
+            <button
+              type="button"
+              className={styles.backButton}
+              onClick={() => setStep("email")}
             >
-              <Input placeholder="Enter your email" />
-            </Form.Item>
-
-            <Form.Item name="remember" valuePropName="checked">
-              <Checkbox>Remember me</Checkbox>
-            </Form.Item>
-
-            <Form.Item>
-              <Button type="primary" htmlType="submit" className={styles.submitButton} block>
-                Send OTP
-              </Button>
-            </Form.Item>
-          </Form>
-        )}
-
-        {step === 'otp' && (
-          <Form key="otpForm" name="otpForm" layout="vertical" style={{ width: "100%" }} onFinish={onOtpFinish} >
-            <Form.Item label="OTP" name="otp" rules={[{ required: true, message: "Please input the OTP!" }]} >
-              <Input placeholder="Enter OTP" />
-            </Form.Item>
-
-            <Form.Item>
-              <Button type="primary" htmlType="submit" className={styles.submitButton} block>
-                Verify OTP
-              </Button>
-            </Form.Item>
-
-            <Button type="link" onClick={() => setStep('email')}>
               Back to email
-            </Button>
-          </Form>
+            </button>
+          </form>
         )}
-      </Card>
+      </div>
     </div>
   );
 };
