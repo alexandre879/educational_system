@@ -39,7 +39,7 @@ export default function LeaderBoard() {
           </tr>
         </thead>
         <tbody>
-          {data.map((user, index) => (
+          {data.sort((a, b) => b.points - a.points).map((user, index) => (
             <tr key={index}>
               <td>{user.first_name} {user.last_name}</td>
               <td>{user.email.slice(0, 3) + '...@gmail.com'}</td>
@@ -56,7 +56,8 @@ export default function LeaderBoard() {
                     styles.positionWrapperSilver :
                     styles.positionWrapperBronce}`}
                 >
-                  {index + 1}</div>
+                  {index + 1}
+                </div>
               </td>
             </tr>
           ))}

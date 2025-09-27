@@ -1,9 +1,9 @@
 @import "../../colors.scss";
 
 .leaderboardMainContainer {
+  padding: 20px;
   background-color: $dark_background;
   color: $text_primary;
-  padding: 40px;
   height: 100%;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 
@@ -125,7 +125,7 @@
 
 
   @media (max-width: 767px) {
-    padding: 20px;
+    padding: 20px !important;
 
     .pointIcon {
       width: 15px;
@@ -133,8 +133,8 @@
     }
 
     .pointWrapper {
-      width: 70px;
-      height: 30px;
+      width: 50px;
+      height: 40px;
       background-color: #1E1F26;
       border-radius: 8px;
       display: flex;
@@ -169,7 +169,7 @@
       th,
       td {
         padding: 8px 10px;
-        font-size: 0.58rem;
+        font-size: 0.78rem;
       }
     }
   }
