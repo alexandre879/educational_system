@@ -6,7 +6,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  background: #1E1F26; // deep dark background
+  background: $dark_background;
   padding: 10px;
   box-sizing: border-box;
 }
@@ -14,101 +14,95 @@
 .loginCard {
   width: 100%;
   max-width: 400px;
-  max-height: 90dvh;
-  padding: 30px 20px;
-  border-radius: 16px;
-  background: #2C2F38; // slightly lighter dark card
-  overflow-y: auto;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-
-  &:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8);
-  }
-
-  @media (max-width: 480px) {
-    padding: 20px 15px;
-    max-height: 95dvh;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
-  }
+  background: $table_background;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.5);
 }
 
 .title {
+  color: $text_primary;
   text-align: center;
-  margin-bottom: 30px;
-  color: #FFD700; // golden accent for the title
-  font-size: 1.8rem;
-  font-weight: 700;
-
-  @media (max-width: 480px) {
-    font-size: 1.5rem;
-    margin-bottom: 20px;
-  }
+  margin-bottom: 1.5rem;
 }
 
-// Inputs
-.ant-input,
-.ant-input-password {
+.form {
+  display: flex;
+  flex-direction: column;
+}
+
+.label {
+  color: $text_secondary;
+  font-size: 14px;
+  margin-bottom: 6px;
+}
+
+.input {
+  background: $dark_background;
+  border: 1px solid $table_row_hover;
   border-radius: 8px;
-  transition: all 0.3s ease;
-  background-color: #3c3e46; // soft dark input
-  color: #EEEEEE; // light text
-  border: 1px solid #55595E;
+  padding: 10px;
+  color: $text_primary;
+  margin-bottom: 1rem;
+  outline: none;
 
   &:focus {
-    box-shadow: 0 0 0 2px rgba(255, 215, 0, 0.3); // golden focus
-    border-color: #FFD700;
-  }
-
-  &::placeholder {
-    color: #BBBBBB;
+    border-color: $primary_blue;
+    box-shadow: 0 0 4px $primary_blue;
   }
 }
 
-// Submit button
+.checkboxWrapper {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: $text_secondary;
+  margin-bottom: 1rem;
+}
+
 .submitButton {
-  height: 45px;
-  border-radius: 8px;
-  font-weight: 600;
-  background: #FFD700; // golden button
+  background: $primary_blue;
   border: none;
-  color: #1E1F26; // dark text for contrast
-  transition: all 0.3s ease;
+  border-radius: 8px;
+  padding: 12px;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
 
   &:hover {
-    background: #FFC200; // darker gold on hover
+    background: $primary_blue_hover;
+  }
+
+  &:active {
+    background: $primary_blue_active;
   }
 }
 
-// Checkbox
-.ant-checkbox-inner {
-  border-radius: 4px;
-  border-color: #AAAAAA;
-  background-color: #2C2F38;
-}
+.backButton {
+  margin-top: 1rem;
+  background: transparent;
+  border: none;
+  color: $highlight_accent;
+  cursor: pointer;
 
-.ant-checkbox + span {
-  font-size: 0.9rem;
-  color: #CCCCCC;
-
-  @media (max-width: 480px) {
-    font-size: 0.85rem;
+  &:hover {
+    text-decoration: underline;
   }
 }
 
-// Form items
-.ant-form-item {
-  margin-bottom: 20px;
-
-  @media (max-width: 480px) {
-    margin-bottom: 15px;
-  }
+.errorMessage {
+  color: #ff4d4f;
+  background: rgba(255, 77, 79, 0.1);
+  padding: 8px;
+  border-radius: 6px;
+  margin-bottom: 1rem;
 }
 
-// Optional subtle animations for focus
-.ant-input:focus,
-.ant-input-password:focus {
-  outline: none;
-  transform: scale(1.02);
+.successMessage {
+  color: #52c41a;
+  background: rgba(82, 196, 26, 0.1);
+  padding: 8px;
+  border-radius: 6px;
+  margin-bottom: 1rem;
 }

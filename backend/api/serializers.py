@@ -153,28 +153,30 @@ class AnnouncementSerializer(serializers.ModelSerializer):
 
 
 class AnnouncementValidatorSerializer(serializers.ModelSerializer):
-    grade_name = serializers.CharField(write_only=True)
-    subject_id = serializers.IntegerField(write_only=True)
+    subject_name = serializers.CharField(write_only=True)
+    grade_id = serializers.IntegerField(write_only=True)
     category_id = serializers.IntegerField(write_only=True)
 
     class Meta:
         model = Announcement
-        fields = ["id", "title", "content", "grade_name", "subject_id", "category_id", "grade", "subject", "created_by"]
+        fields = ["id", "title", "content", "grade_id", "subject_name", "category_id", "grade", "subject", "created_by"]
         read_only_fields = ["id", "grade", "subject", "created_by"]
 
     def create(self, validated_data):
-        grade_name = validated_data.pop("grade_name")
-        subject_id = validated_data.pop("subject_id")
+        
+        subject_name = validated_data.pop("subject_name")
+        grade_id = validated_data.pop("grade_id")
         category_id = validated_data.pop("category_id")
-
-        subject_qs = Subject.objects.get(pk=subject_id)
+        
+        
+        subject_qs = Subject.objects.get(name=subject_name, grade__pk=grade_id, grade__category__pk=category_id)
         category_qs = GradeCategory.objects.get(pk=category_id)
-        grade_qs = Grade.objects.get(name=grade_name, category=category_qs)
+        grade_qs = Grade.objects.get(pk=grade_id, category=category_qs)
 
         return Announcement.objects.create(
             **validated_data,
-            grade=grade_qs,
             subject=subject_qs,
+            grade=grade_qs,
             created_by=self.context["request"].user,
         )
 

@@ -24,6 +24,7 @@ from .serializers import (
     PointListViewPerSubjectSerializer,
     AnnouncementSerializer,
     AnnouncementValidatorSerializer,
+    GradeSerializer
 )
 from django.db.models import Sum, IntegerField, Count
 from django.db.models.functions import Cast
@@ -436,28 +437,23 @@ class AnnouncementListView(APIView):
         announcements_data = AnnouncementSerializer(qs, many=True).data
         
 
-
+    
         if user.role == User.Role.STUDENT and user.grade_in:
             subjects_qs = (
                 Subject.objects.filter(
                     grade=user.grade_in,
-                    grade__category=user.grade_in.category
+                    grade__category__name__iexact=user.grade_in.category.name
                 )
                 .select_related("grade", "grade__category")
                 .order_by("name")
             )
-        elif user.role == User.Role.TEACHER:
-            subjects_qs = (
-                Subject.objects.all()
-                .select_related("grade", "grade__category")
-                .order_by("name")
-            )
+        elif user.role == User.Role.TEACHER and user.subjects_taught:
+            subjects_qs = user.subjects_taught.all().select_related("grade", "grade__category").order_by("name")
         else:
             subjects_qs = Subject.objects.none()
+            
 
 
-        subjects_qs = subjects_qs.distinct("name")
-        
 
         subjects_data = [
             {

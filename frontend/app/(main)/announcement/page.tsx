@@ -59,7 +59,8 @@ export default function AnnouncementPage() {
                 params: { announcement: id }
             });
             setComments(res.data);
-        } catch (error) {
+        }
+        catch (error) {
             console.log(error);
         }
 
@@ -109,25 +110,25 @@ export default function AnnouncementPage() {
     };
 
     const handleOk = async () => {
-        const values: CreateAnnouncementData = await announcementForm.validateFields();
-
         try {
+            const values = await announcementForm.validateFields();
+            if (!values.subject) return;
 
-            const payload = {
+            const [sName, sgID, sgcID] = values.subject.split("-")
+
+            const payload: CreateAnnouncementData = {
                 title: values.title,
                 content: values.content,
-                grade_name: values.grade_name,
-                category_id: values.category_id,
-                subject_id: values.subject_id,
+                subject_name: sName,
+                grade_id: sgID,
+                category_id: sgcID,
             };
 
-            console.log(payload)
-
-
             await createAnnouncement(payload);
+
             announcementForm.resetFields();
             setIsModalOpen(false);
-        }
+        } 
         catch (error) {
             console.log("Validation failed:", error);
         }
@@ -157,7 +158,7 @@ export default function AnnouncementPage() {
                         items: [
                             ...subjects.map((s) => ({
                                 key: s.id,
-                                label: `${s.name} (${s.grade.grade_name})`,
+                                label: `${s.name} (${s.grade.grade_name}-${s.grade.grade_category_name})`,
                                 onClick: () => setSelectedSubjectId(s.id),
                             })),
                         ],
@@ -195,42 +196,13 @@ export default function AnnouncementPage() {
 
                     <Form.Item
                         label="Subject"
-                        name="subject_id"
+                        name="subject"
                         rules={[{ required: true, message: "Please select a subject!" }]}
                     >
                         <Select placeholder="Select a subject">
                             {subjects.map((s) => (
-                                <Select.Option key={s.id} value={s.id}>
-                                    {s.name}
-                                </Select.Option>
-                            ))}
-                        </Select>
-                    </Form.Item>
-
-                    <Form.Item
-                        label="Grade"
-                        name="grade_name"
-                        rules={[{ required: true, message: "Please select a grade!" }]}
-                    >
-                        <Select placeholder="Select a grade">
-                            {grades?.map((g, i) => (
-                                <Select.Option key={g.id} value={g.name}>
-                                    {g.name}{i === 0 ? 'st' : i === 1 ? 'nd' : i === 2 ? 'rd' : 'th'}
-                                </Select.Option>
-                            ))}
-                        </Select>
-                    </Form.Item>
-
-
-                    <Form.Item
-                        label="Category"
-                        name="category_id"
-                        rules={[{ required: true, message: "Please select a category!" }]}
-                    >
-                        <Select placeholder="Select a category">
-                            {categories?.map((c) => (
-                                <Select.Option key={c.id} value={c.id}>
-                                    {c.name}
+                                <Select.Option key={s.id} value={`${s.name}-${s.grade.grade_id}-${s.grade.grade_category_id}`}>
+                                    {`${s.name} (${s.grade.grade_name}-${s.grade.grade_category_name})`}
                                 </Select.Option>
                             ))}
                         </Select>

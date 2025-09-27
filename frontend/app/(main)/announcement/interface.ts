@@ -20,22 +20,23 @@ export interface Announcement {
 export interface CreateAnnouncementData {
     title: string;
     content: string;
-    grade_name: string;
-    subject_id: number;
+    subject_name: string;
+    grade_id: number;
     category_id: number;
 }
 
 
-export interface GradeCategory {
-    id: number;
-    name: string;
-}
+// export interface GradeCategory {
+//     id: number;
+//     name: string;
+// }
 
 
 export interface Grade {
     grade_id: number;
     grade_name: string;
-    grade_category: GradeCategory;
+    grade_category_id: number;
+    grade_category_name: string;
 }
 
 
