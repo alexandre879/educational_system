@@ -30,7 +30,9 @@ export default function MainLayout({ children }: { children: ReactNode }) {
   const toggleSidebar = () => setSidebarOpen(prev => !prev);
 
 
-  const onDropdownClick = ({ key }: { key: string }) => { if (key === 'logout') handleLogout() }
+  const onDropdownClick = ({ key }: { key: string }) => { 
+    if (key === 'logout') handleLogout() 
+  }
 
 
   const handleLogout = async () => {
