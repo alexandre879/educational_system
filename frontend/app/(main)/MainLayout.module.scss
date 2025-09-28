@@ -7,6 +7,12 @@
   background-color: $dark_background;
 }
 
+.myProfileOuterWrapper {
+  width: 100%;
+  display: flex;
+  justify-content: end;
+}
+
 
 
 
@@ -106,7 +112,7 @@
 
 .myProfileWrapper {
   cursor: pointer;
-  width: 100%;
+  width: fit-content;
   display: flex;
   justify-content: end;
 }
@@ -120,7 +126,7 @@
 
 .outerWrapperProfile {
   display: flex;
-  gap: 15px;
+  gap: 10px;
   align-items: center;
 }
 

@@ -1,7 +1,6 @@
 @import "../../colors.scss";
 
 .dropDownWrapper {
-  cursor: pointer;
   padding: 20px;
 }
 
@@ -38,6 +37,7 @@
   transition: transform 0.2s ease, background 0.2s ease;
 
   &:hover {
+    cursor: pointer;
     background: #46484f;
     transform: translateY(-2px);
   }
