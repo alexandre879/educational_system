@@ -4,13 +4,9 @@ import React, { useEffect, useState } from "react";
 import api from "@/interceptors";
 import styles from "./leader-board.module.scss";
 import Image from "next/image";
+import { LeaderboardEntry } from "./interface";
 
-interface LeaderboardEntry {
-  first_name: string;
-  last_name: string;
-  email: string;
-  points: number;
-}
+
 
 export default function LeaderBoard() {
   const [data, setData] = useState<LeaderboardEntry[]>([]);

@@ -65,13 +65,14 @@
 
 .optionButton {
   background-color: $table_background;
-  color: $text_primary;
+  color: rgb(173, 173, 173);
   border: none;
   padding: 12px;
   border-radius: 8px;
   cursor: pointer;
   flex: 1 1 auto;
   display: flex;
+  font-size: 0.9rem;
 
   &:hover {
     background-color: $table_row_hover;

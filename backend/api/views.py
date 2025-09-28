@@ -304,12 +304,16 @@ class SubmitAnswerView(APIView):
 
         if is_correct:
             session.score_so_far += current_question.points
+            
+        # print('current_question_point = ', current_question.points)
 
         next_index = current_index + 1
         finished = next_index >= len(questions)
         if not finished:
             session.current_question_index = next_index
             session.save()
+            
+            print(session.score_so_far)
 
             next_question = questions[next_index]
             

@@ -143,9 +143,7 @@ class UserExamSession(models.Model):
 class UserAnswer(models.Model):
     session = models.ForeignKey(UserExamSession, on_delete=models.SET_NULL, related_name="answers", null=True)
     question = models.ForeignKey(Question, on_delete=models.SET_NULL, related_name="user_answers", null=True)
-    answer_option = models.ForeignKey(
-        Option, on_delete=models.SET_NULL, null=True, blank=True, related_name="user_answers"
-    )
+    answer_option = models.ForeignKey(Option, on_delete=models.SET_NULL, null=True, blank=True, related_name="user_answers")
     is_correct = models.BooleanField(default=False)
 
     def __str__(self):

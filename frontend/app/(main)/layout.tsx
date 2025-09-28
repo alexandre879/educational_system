@@ -6,7 +6,7 @@ import styles from './MainLayout.module.scss';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { Dropdown, Space } from 'antd';
+import { Dropdown, Modal, Space } from 'antd';
 import api from '@/interceptors';
 import { UserMeData } from './profile/interface';
 import { AxiosError, AxiosResponse } from 'axios';
@@ -15,8 +15,25 @@ import Cookies from 'js-cookie';
 export default function MainLayout({ children }: { children: ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [userMe, setUserMe] = useState<UserMeData | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   const pathname = usePathname();
   const router = useRouter();
+
+
+  const showModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleOk = () => {
+    setIsModalOpen(false);
+    handleLogout()
+  };
+
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
+
 
 
 
@@ -30,9 +47,7 @@ export default function MainLayout({ children }: { children: ReactNode }) {
   const toggleSidebar = () => setSidebarOpen(prev => !prev);
 
 
-  const onDropdownClick = ({ key }: { key: string }) => { 
-    if (key === 'logout') handleLogout() 
-  }
+  const onDropdownClick = ({ key }: { key: string }) => {if(key === 'logout') showModal()}
 
 
   const handleLogout = async () => {
@@ -132,6 +147,14 @@ export default function MainLayout({ children }: { children: ReactNode }) {
 
 
       {sidebarOpen && <div className={styles.overlay} onClick={toggleSidebar}></div>}
+      <Modal
+        title="Are you sure you wanan log out ?"
+        closable={{ 'aria-label': 'Custom Close Button' }}
+        open={isModalOpen}
+        onOk={handleOk}
+        onCancel={handleCancel}
+      >
+      </Modal>
     </div>
   );
 }
