@@ -22,11 +22,37 @@
     box-shadow: 0 0 5px 5px rgba(118,148,164,.165);
   }
 
+  .positionWrapperNormal {
+    width: 30px;
+    height: 30px;
+    color: white;
+    border-radius: 10px;
+    font-weight: bold;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 0 5px 5px rgba(118,148,164,.165);
+  }
+
+  .positionWrapperBronce {
+    width: 30px;
+    height: 30px;
+    background-color: #cd7f32;
+    color: white;
+    font-weight: bold;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 0 5px 5px rgba(118,148,164,.165);
+  }
+
   .positionWrapperSilver {
     width: 30px;
     height: 30px;
-    background-color: silver;
-    color: #1E1F26;
+    background-color: rgb(157, 157, 157);
+    color: white;
+    font-weight: bold;
     border-radius: 10px;
     display: flex;
     justify-content: center;

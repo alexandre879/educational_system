@@ -357,7 +357,7 @@ class PointListViewPerSubject(APIView):
         
         if not subject:
             global_points = (User.objects
-                .filter(grade_in=user.grade_in)
+                .filter(role__iexact='student')
                 .values('first_name', 'last_name', 'email', 'points')
             )
             

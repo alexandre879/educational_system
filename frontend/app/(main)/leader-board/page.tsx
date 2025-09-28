@@ -16,7 +16,8 @@ export default function LeaderBoard() {
       try {
         const res = await api.post("/points/leaderboard/", {});
         setData(res.data);
-      } catch (error) {
+      }
+      catch (error) {
         console.error(error);
       }
     };
@@ -50,7 +51,8 @@ export default function LeaderBoard() {
                   styles.positionWrapperGold :
                   index + 1 == 2 ?
                     styles.positionWrapperSilver :
-                    styles.positionWrapperBronce}`}
+                    index + 1 == 3 ?
+                      styles.positionWrapperBronce : styles.positionWrapperNormal}`}
                 >
                   {index + 1}
                 </div>
