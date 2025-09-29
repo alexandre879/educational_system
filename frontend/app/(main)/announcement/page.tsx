@@ -81,9 +81,6 @@ export default function AnnouncementPage() {
                 params: subjectId ? { subject: subjectId } : {},
             });
 
-            {
-
-            }
             const { announcements: fetchedAnnouncements, subjects: fetchedSubjects, categories, grades, role } = response.data;
 
             setCategories(categories)

@@ -8,11 +8,20 @@ from django.core.cache import cache
 from rest_framework.views import APIView
 from rest_framework import status
 from telegram import Bot
-from .models import Announcement, Grade, GradeCategory, Subject, User, Comment
+from .models import (
+    Announcement,
+    Grade,
+    GradeCategory,
+    Subject,
+    User,
+    Comment,
+    UserSubjectPoints,
+    Question,
+)
 from api.serializers import VerifyOtpSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 from asgiref.sync import async_to_sync
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.shortcuts import get_object_or_404
 from .models import Exam, UserExamSession, Option, UserAnswer
 from .serializers import (
@@ -26,7 +35,7 @@ from .serializers import (
     AnnouncementValidatorSerializer,
     GradeSerializer
 )
-from django.db.models import Sum, IntegerField, Count
+from django.db.models import Sum, IntegerField, Count, F
 from django.db.models.functions import Cast
 
 
@@ -205,8 +214,10 @@ class AvailableExamsView(APIView):
         
         
         
-        
-        
+
+
+
+
 
 
 class StartOrResumeOrFinishExamSessionView(APIView):
@@ -216,26 +227,34 @@ class StartOrResumeOrFinishExamSessionView(APIView):
         exam = get_object_or_404(Exam, pk=exam_id)
         user: User = request.user
 
-
         if exam.grade and exam.grade != user.grade_in:
-            return Response({"error": "You are not allowed to access this exam"}, status=status.HTTP_403_FORBIDDEN)
-        
+            return Response(
+                {"error": "You are not allowed to access this exam"}, 
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        usp, created = UserSubjectPoints.objects.get_or_create(
+            user=user,
+            subject=exam.subject,
+            defaults={"points": 0}
+        )
 
         session = UserExamSession.objects.filter(user=user, exam=exam).first()
 
         if session:
             if session.finished:
-                return Response({"error": "You have already completed this exam."}, status=400)
-
+                return Response(
+                    {"error": "You have already completed this exam."}, 
+                    status=status.HTTP_400_BAD_REQUEST
+                )
 
             questions = list(session.exam.questions.order_by('id'))
             current_index = session.current_question_index
             current_question = questions[current_index]
             question_data = QuestionSerializer(current_question).data
-            
 
             return Response({
-                "subject": UserExamSession.objects.filter(exam=exam, user=user).values_list('exam__subject__name', flat=True)[0],
+                "subject": exam.subject.name,
                 "session_id": session.pk,
                 "current_index": current_index,
                 "exam_id": session.exam.pk,
@@ -250,13 +269,13 @@ class StartOrResumeOrFinishExamSessionView(APIView):
         question_data = QuestionSerializer(current_question).data
 
         return Response({
-            "subject": UserExamSession.objects.filter(exam=exam, user=user).values_list('exam__subject__name', flat=True)[0],
-            "session_id": session.id,
+            "subject": exam.subject.name,
+            "session_id": session.pk,
             "current_index": 0,
+            "exam_id": session.exam.pk,
             "current_question": question_data,
-            "len_questions": len(questions)
+            "len_questions": len(questions),
         })
-
 
 
 
@@ -274,7 +293,7 @@ class SubmitAnswerView(APIView):
             pk=session_id,
             user=request.user
         )
-        
+
         if session.finished:
             return Response(
                 {'error': 'This exam session has already been completed.'},
@@ -287,7 +306,7 @@ class SubmitAnswerView(APIView):
         if current_index >= len(questions):
             return Response({'error': 'Invalid question index.'}, status=400)
 
-        current_question = questions[current_index]
+        current_question: Question = questions[current_index]
 
         serializer = UserAnswerSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -304,42 +323,47 @@ class SubmitAnswerView(APIView):
 
         if is_correct:
             session.score_so_far += current_question.points
-            
-        # print('current_question_point = ', current_question.points)
 
         next_index = current_index + 1
         finished = next_index >= len(questions)
+
         if not finished:
             session.current_question_index = next_index
             session.save()
-            
-            print(session.score_so_far)
 
             next_question = questions[next_index]
-            
+
             return Response({
                 "subject": session.exam.subject.name,
                 "exam_id": session.exam.pk,
-                "session_id": session.pk,  
+                "session_id": session.pk,
                 "current_index": next_index,
                 "current_question": QuestionSerializer(next_question).data,
                 "len_questions": len(questions),
             })
-            
-            
+
         else:
             session.finished = True
             session.save()
 
-            request.user.points += session.score_so_far
+            request.user.points = (request.user.points or 0) + session.score_so_far
             request.user.save()
-            
+
+            usp, created = UserSubjectPoints.objects.get_or_create(
+                user=request.user,
+                subject=session.exam.subject,
+                defaults={"points": 0}
+            )
+            usp.points += session.score_so_far
+            usp.save()
+
             return Response({
                 'message': 'Exam completed successfully!',
                 'final_score': session.score_so_far,
-                'total_questions': len(questions)
+                'total_questions': len(questions),
+                'subject_points': usp.points,
+                'global_points': request.user.points
             })
-
 
 
 
@@ -539,6 +563,8 @@ class CreateCommentView(APIView):
             status=status.HTTP_201_CREATED
         )
         
+            
+        
         
         
         
@@ -554,3 +580,59 @@ class ListCommentsView(APIView):
         data = [{"user": c.user.email, "comment": c.content, "created_at": c.created_at} for c in comments]
 
         return Response(data, status=200)
+    
+
+
+
+
+
+
+
+
+class MySubjectsListView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        user = request.user
+
+        subject_list = (
+            user.grade_in.subjects.all()
+            .values('pk', 'name', 'grade__pk', 'grade__category__pk')
+            .order_by('pk')
+        )
+
+        return Response(list(subject_list), status=status.HTTP_200_OK)
+    
+    
+    
+    
+    
+    
+    
+    
+    
+class LeaderBoardListView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request: Request, subject_pk, grade_pk, category_pk) -> Response:
+        
+        print(subject_pk, grade_pk, grade_pk)
+        
+        leaderboard = (
+            UserSubjectPoints.objects
+            .filter(
+                subject__pk=subject_pk,
+                subject__grade__pk=grade_pk,
+                subject__grade__category__pk=category_pk
+            )
+            .select_related('user', 'subject')
+            .annotate(
+                first_name=F('user__first_name'),
+                last_name=F('user__last_name'),
+                email=F('user__email')
+            )
+            .values('first_name', 'last_name', 'email', 'points')
+            .order_by('-points')
+        )
+
+        return Response(list(leaderboard))

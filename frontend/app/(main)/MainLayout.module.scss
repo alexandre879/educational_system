@@ -149,6 +149,11 @@
 }
 
 @media (max-width: 1024px) {
+
+  .myProfileOuterWrapper {
+    display: flex;
+    justify-content: start;
+  }
   .headerSection {
     width: 100%;
     display: flex;
@@ -167,6 +172,7 @@
   }
 
   .navBar {
+    z-index: 1500;
     position: fixed;
     top: 0;
     left: -250px;
@@ -187,6 +193,16 @@
 }
 
 @media (max-width: 768px) {
+
+  .navBar {
+    z-index: 1500;
+  }
+
+  .myProfileOuterWrapper {
+    display: flex;
+    justify-content: start;
+  }
+
   .navBar {
     width: 220px;
   }

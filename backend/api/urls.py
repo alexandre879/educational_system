@@ -14,8 +14,12 @@ from api.views import (
     PointListViewPerSubject,
     AnnouncementCreateView,
     AnnouncementListView,
-    CreateCommentView
+    CreateCommentView,
+    LeaderBoardListView,
+    MySubjectsListView,
 )
+
+from .fast_api_util import ExamCreateView
 
 
 
@@ -47,5 +51,12 @@ urlpatterns = [
     path('comments/create/', CreateCommentView.as_view(), name='comments-create'),
     
     path('comments/', ListCommentsView.as_view(), name='comments-list'), 
+    
+    path('leader-board/list/<int:subject_pk>/<int:grade_pk>/<int:category_pk>/', LeaderBoardListView.as_view(), name='leader-board-list'),
+    path('my_subjects/', MySubjectsListView.as_view(), name='leader-board-list'),
+    
+    
+    
+    path("exams/create/", ExamCreateView.as_view(), name="exam-create"),
     
 ]
