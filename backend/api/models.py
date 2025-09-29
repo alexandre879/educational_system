@@ -37,6 +37,7 @@ class Subject(models.Model):
     def __str__(self):
         return f"{self.name} ({self.grade.name}-{self.grade.category.name})"
     
+    
 
 
 
@@ -72,6 +73,19 @@ class User(AbstractUser):
         return f"{self.first_name} {self.last_name}: {'student' if self.grade_in and self.grade_in.category else 'teacher'}"
     
     
+    
+    
+    
+    
+    
+class UserSubjectPoints(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    subject = models.ForeignKey(Subject, on_delete=models.CASCADE)
+    points = models.IntegerField(default=0)
+
+    class Meta:
+        unique_together = ("user", "subject")
+
 
 
 

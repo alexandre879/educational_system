@@ -4,15 +4,14 @@ import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 
 const ExamSectionComponent = (props: ExamListData) => {
-
-
-  const router = useRouter()
-
+  const router = useRouter();
 
   const subjectEmoji = (subject: string) => {
     switch(subject.toLowerCase()) {
       case "math": return "➗";
       case "science": return "🔬";
+      case "physic": return "🪐"; 
+      case "computer science": return "💻"; 
       case "history": return "📜";
       case "english": return "🇺🇸";
       case "geography": return "🌍";
@@ -24,8 +23,8 @@ const ExamSectionComponent = (props: ExamListData) => {
   }
 
   const onExamSectionClick = (examId: number, subject: string) => {
-    router.push(`/exam/${examId}/start`)
-    Cookies.set(subject.toLowerCase(), subject)
+    router.push(`/exam/${examId}/start`);
+    Cookies.set(subject.toLowerCase(), subject);
   }
 
   return (
