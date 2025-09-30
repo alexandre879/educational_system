@@ -62,6 +62,7 @@ export interface Categories {
 
 
 export interface Comment {
+    picture: string | null
     user: string
     comment: string;
     created_at: string;

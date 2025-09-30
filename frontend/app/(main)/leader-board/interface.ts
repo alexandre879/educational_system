@@ -4,6 +4,7 @@ export interface LeaderboardEntry {
   last_name: string;
   email: string;
   points: number;
+  profile_pic: string | null
 }
 
 

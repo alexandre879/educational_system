@@ -26,6 +26,7 @@ from django.shortcuts import get_object_or_404
 from .models import Exam, UserExamSession, Option, UserAnswer
 from .serializers import (
     CommentsCreateSerializer,
+    LeaderBoardSerializer,
     QuestionSerializer, 
     UserAnswerSerializer, 
     UserSerializer, 
@@ -33,7 +34,9 @@ from .serializers import (
     PointListViewPerSubjectSerializer,
     AnnouncementSerializer,
     AnnouncementValidatorSerializer,
-    GradeSerializer
+    GradeSerializer,
+    UpdateProfileSerializer,
+    
 )
 from django.db.models import Sum, IntegerField, Count, F
 from django.db.models.functions import Cast
@@ -65,17 +68,18 @@ class RequestOtpView(APIView):
         except User.DoesNotExist:
             return Response({"error": "Email couldn't be found in the school system."}, status=status.HTTP_404_NOT_FOUND)
 
-        if not user.chat_id:
-            return Response({"error": "Your are not integrated with a school bot."}, status=status.HTTP_400_BAD_REQUEST)
+        # if not user.chat_id:
+            # return Response({"error": "Your are not integrated with a school bot."}, status=status.HTTP_400_BAD_REQUEST)
 
 
         otp = f"{random.randint(1000, 9999)}"
         cache.set(f"otp_{email}", otp, timeout=300)
         
 
-        bot = Bot(token=BOT_TOKEN)
+        print(otp)
+        # bot = Bot(token=BOT_TOKEN)
         
-        async_to_sync(bot.send_message)(chat_id=user.chat_id, text=f"{otp}")
+        # async_to_sync(bot.send_message)(chat_id=user.chat_id, text=f"{otp}")
         
 
         return Response({"message": "OTP sent via Telegram"}, status=status.HTTP_200_OK)
@@ -170,6 +174,33 @@ class UserMeView(APIView):
         serializer = UserSerializer(user)
         
         return Response(serializer.data)
+    
+    
+    
+    
+    
+
+class UpdateProfileView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def put(self, request: Request) -> Response:
+        user: User = request.user
+        serializer = UpdateProfileSerializer(
+            user,
+            data=request.data,
+            partial=True,
+            context={"request": request}
+        )
+        
+        if serializer.is_valid(raise_exception=True):
+            user = serializer.save()
+            data = serializer.data
+            
+            if user.profilePic:
+                data['profilePic'] = user.profilePic.url
+            return Response(data, status=status.HTTP_200_OK)
+        
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
     
     
@@ -615,10 +646,7 @@ class LeaderBoardListView(APIView):
     permission_classes = [AllowAny]
 
     def get(self, request: Request, subject_pk, grade_pk, category_pk) -> Response:
-        
-        print(subject_pk, grade_pk, grade_pk)
-        
-        leaderboard = (
+        queryset = (
             UserSubjectPoints.objects
             .filter(
                 subject__pk=subject_pk,
@@ -626,13 +654,7 @@ class LeaderBoardListView(APIView):
                 subject__grade__category__pk=category_pk
             )
             .select_related('user', 'subject')
-            .annotate(
-                first_name=F('user__first_name'),
-                last_name=F('user__last_name'),
-                email=F('user__email')
-            )
-            .values('first_name', 'last_name', 'email', 'points')
             .order_by('-points')
         )
-
-        return Response(list(leaderboard))
+        serializer = LeaderBoardSerializer(queryset, many=True)
+        return Response(serializer.data)

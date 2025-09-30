@@ -1,6 +1,8 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from api.managers import UserManager
+from .storage import ProfilePicStorage
+from PIL import Image
 
 
 
@@ -59,6 +61,7 @@ class User(AbstractUser):
     grade_in = models.ForeignKey(Grade, on_delete=models.SET_NULL, related_name='users', null=True, blank=True)
     points = models.IntegerField(null=True, default=None)
     subjects_taught = models.ManyToManyField(Subject, related_name='teachers', blank=True, null=True)
+    profilePic = models.ImageField(storage=ProfilePicStorage(), blank=True, null=True )
     
     
     
@@ -71,6 +74,19 @@ class User(AbstractUser):
     
     def __str__(self,):
         return f"{self.first_name} {self.last_name}: {'student' if self.grade_in and self.grade_in.category else 'teacher'}"
+    
+    
+    
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+
+        if self.profilePic:
+            img = Image.open(self.profilePic.path)
+
+            # ✅ Force square crop/resize
+            img = img.convert("RGB")  # ensure JPG compatibility
+            img = img.resize((200, 200), Image.Resampling.LANCZOS)  
+            img.save(self.profilePic.path, quality=90)
     
     
     
