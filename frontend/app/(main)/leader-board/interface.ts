@@ -10,7 +10,9 @@ export interface LeaderboardEntry {
 
 export interface Subject {
   pk: number;
-  grade__pk: number;
-  grade__category__pk: string;
   name: string;
+  grade__pk: number;
+  grade__name: string;
+  grade__category__pk: string;
+  grade__category__name: string;
 }

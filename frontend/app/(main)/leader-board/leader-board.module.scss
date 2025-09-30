@@ -10,6 +10,12 @@
   color: $text_primary;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 
+  .buttonOfAnAnt {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
   .firstAndLastNameWrapper {
     display: flex;
     align-items: center;

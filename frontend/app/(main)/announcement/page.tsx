@@ -164,10 +164,11 @@ export default function AnnouncementPage() {
                     trigger={["click"]}
                     arrow={{ pointAtCenter: true }}
                 >
-                    <Button>
+                    <Button style={{display: 'flex', alignItems: 'center', gap: '5px'}} >
                         {selectedSubjectId
                             ? subjects.find((s) => s.id === selectedSubjectId)?.name
-                            : "Subjects"}{" "}
+                            : "Choose the subject"
+                        }
                         <span>▼</span>
                     </Button>
                 </Dropdown>

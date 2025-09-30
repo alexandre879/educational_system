@@ -3,9 +3,9 @@
 import { useEffect, useState } from "react";
 import api from "@/interceptors";
 import styles from "./exam.module.scss"
-
 import ExamSectionComponent from "./ExamComponents/ExamSectionComponent/ExamSectionComponent";
 import { ExamListData } from "./interface";
+import { FiInbox } from "react-icons/fi";
 
 export default function Exam() {
   const [exams, setExams] = useState<ExamListData[]>([]);
@@ -26,15 +26,18 @@ export default function Exam() {
     };
     fetchExams();
   }, []);
-  
+
 
   if (loading) return (
     <div className={styles.loaderWrapper}>
-      <div className={styles.loader}/>
+      <div className={styles.loader} />
     </div>
-    );
+  );
 
-  if (exams.length === 0) return <p className={styles.noExams}>😢 No exams available</p>;
+  if (exams.length === 0) return <div className={styles.noExams}>
+    <span>No exams available</span>
+    <FiInbox size={48} />
+  </div>;
 
   return (
     <div className={styles.examMainContainer}>
