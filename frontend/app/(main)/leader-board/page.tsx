@@ -6,6 +6,7 @@ import styles from "./leader-board.module.scss";
 import Image from "next/image";
 import { Button, Dropdown } from "antd";
 import { LeaderboardEntry, Subject } from "./interface";
+import { FiInbox } from "react-icons/fi";
 
 export default function LeaderBoard() {
   const [dropDownData, setDropdownData] = useState<Subject[]>([]);
@@ -49,7 +50,7 @@ export default function LeaderBoard() {
 
   const menuItems = dropDownData.map((item: Subject) => ({
     key: item.pk,
-    label: item.name,
+    label: `${item.name} ${item.grade__name} (${item.grade__category__name})`,
     onClick: () => handleSubjectClick(item)
   }));
 
@@ -64,8 +65,13 @@ export default function LeaderBoard() {
           trigger={["click"]}
           arrow={{ pointAtCenter: true }}
         >
-          <Button>
-            <span>{chosenSubject || 'Choose the subject'}</span>
+          <Button style={{display: 'flex', gap: '5px', alignItems: 'center'}}>
+              <span>
+                {chosenSubject || 'Choose the subject '}
+              </span>
+              <span>
+                ▼
+              </span>
           </Button>
         </Dropdown>
       </div>

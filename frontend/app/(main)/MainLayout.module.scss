@@ -10,6 +10,7 @@
 .myProfileOuterWrapper {
   width: 100%;
   display: flex;
+  align-items: center;
   justify-content: end;
 }
 
@@ -153,6 +154,7 @@
   .myProfileOuterWrapper {
     display: flex;
     justify-content: start;
+    align-items: center;
   }
   .headerSection {
     width: 100%;
@@ -200,6 +202,8 @@
 
   .myProfileOuterWrapper {
     display: flex;
+    height: 100%;
+    align-items: center;
     justify-content: start;
   }
 

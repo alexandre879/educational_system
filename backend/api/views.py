@@ -628,7 +628,7 @@ class MySubjectsListView(APIView):
 
         subject_list = (
             user.grade_in.subjects.all()
-            .values('pk', 'name', 'grade__pk', 'grade__category__pk')
+            .values('pk', 'name', 'grade__pk', 'grade__name', 'grade__category__pk', 'grade__category__name')
             .order_by('pk')
         )
 
