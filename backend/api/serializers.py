@@ -1,7 +1,9 @@
 # api/serializers.py
 from django.forms import ValidationError
 from rest_framework import serializers
-from .models import Announcement, Exam, Grade, Question, Option, Subject, UserExamSession, UserAnswer, User, GradeCategory
+from .models import Announcement, Exam, Grade, Question, Option, Subject, UserExamSession, UserAnswer, User, GradeCategory, UserSubjectPoints
+
+
 
 
 
@@ -11,9 +13,14 @@ class RequestOtpSerializer(serializers.Serializer):
 
 
 
+
+
 class VerifyOtpSerializer(serializers.Serializer):
     email = serializers.EmailField()
     otp = serializers.CharField(max_length=6)
+
+
+
 
 
 
@@ -29,12 +36,16 @@ class OptionSerializer(serializers.ModelSerializer):
 
 
 
+
+
 class QuestionSerializer(serializers.ModelSerializer):
     options = OptionSerializer(many=True, read_only=True)
     
     class Meta:
         model = Question
         fields = ['id', 'text', 'points', 'options']
+
+
 
 
 
@@ -59,6 +70,8 @@ class ExamSerializer(serializers.ModelSerializer):
     
     
     
+    
+    
 class ExamSerializerOnStart(serializers.ModelSerializer):
     
     questions = QuestionSerializer(many=True)
@@ -66,6 +79,8 @@ class ExamSerializerOnStart(serializers.ModelSerializer):
     class Meta:
         model = Exam
         fields = ['id', 'title', 'subject', 'duration', 'questions']
+    
+    
     
     
     
@@ -85,14 +100,18 @@ class UserExamSessionSerializer(serializers.ModelSerializer):
 
 
 
+
+
 class UserSerializer(serializers.ModelSerializer):
     
     
     class Meta:
         model = User
-        fields = ['id', 'first_name', 'last_name']
+        fields = ['id', 'first_name', 'last_name', 'email', 'profilePic']
         
         
+
+
 
 
 
@@ -107,10 +126,14 @@ class ExamDetailSerializer(serializers.ModelSerializer):
 
 
 
+
+
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = GradeCategory
         fields = ('name', )
+
+
 
 
 
@@ -123,6 +146,8 @@ class GradeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Grade
         fields = ('name', 'category')
+
+
 
 
 
@@ -148,6 +173,9 @@ class AnnouncementSerializer(serializers.ModelSerializer):
     
     def get_len_comments(self, obj: Announcement):
         return len(obj.comments.all())
+
+
+
 
 
 
@@ -182,10 +210,16 @@ class AnnouncementValidatorSerializer(serializers.ModelSerializer):
 
 
 
+
+
+
+
 class UserAnswerSerializer(serializers.Serializer):
     
     question_id = serializers.IntegerField()
     option_id = serializers.IntegerField()
+    
+    
     
     
     
@@ -196,6 +230,54 @@ class PointListViewPerSubjectSerializer(serializers.Serializer):
 
 
 
+
+
+
 class CommentsCreateSerializer(serializers.Serializer):
     comment = serializers.CharField()
     announcement = serializers.IntegerField()
+    
+    
+    
+    
+
+class UpdateProfileSerializer(serializers.ModelSerializer):
+    profilePic = serializers.ImageField(required=False, allow_null=True)
+
+    class Meta:
+        model = User
+        fields = ["first_name", "last_name", "email", "profilePic"]
+        extra_kwargs = {
+            "first_name": {"required": False},
+            "last_name": {"required": False},
+            "email": {"required": False},
+        }
+
+    def validate_email(self, value):
+        user: User = self.context["request"].user
+        if User.objects.exclude(pk=user.pk).filter(email=value).exists():
+            raise serializers.ValidationError("This email is already taken.")
+    
+        return value
+    
+    
+    
+    
+
+
+
+
+class LeaderBoardSerializer(serializers.ModelSerializer):
+    first_name = serializers.CharField(source='user.first_name')
+    last_name = serializers.CharField(source='user.last_name')
+    email = serializers.EmailField(source='user.email')
+    profile_pic = serializers.SerializerMethodField()
+
+    class Meta:
+        model = UserSubjectPoints
+        fields = ['first_name', 'last_name', 'email', 'points', 'profile_pic']
+
+    def get_profile_pic(self, obj: UserSubjectPoints):
+        if obj.user.profilePic:
+            return obj.user.profilePic.url
+        return None

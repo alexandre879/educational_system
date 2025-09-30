@@ -17,6 +17,7 @@ from api.views import (
     CreateCommentView,
     LeaderBoardListView,
     MySubjectsListView,
+    UpdateProfileView,
 )
 
 from .fast_api_util import ExamCreateView
@@ -58,5 +59,8 @@ urlpatterns = [
     
     
     path("exams/create/", ExamCreateView.as_view(), name="exam-create"),
+    
+    
+    path('update/profile/', UpdateProfileView.as_view(), name='update-profile')
     
 ]

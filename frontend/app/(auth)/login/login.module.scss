@@ -61,21 +61,21 @@
 }
 
 .submitButton {
-  background: $primary_blue;
+  background: #141414;
   border: none;
   border-radius: 8px;
   padding: 12px;
   color: #fff;
+  border: 1px solid grey;
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.2s;
 
   &:hover {
-    background: $primary_blue_hover;
+    background: #262626;
   }
 
   &:active {
-    background: $primary_blue_active;
+    background: #141414;
   }
 }
 

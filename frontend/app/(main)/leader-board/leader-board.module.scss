@@ -8,10 +8,23 @@
   align-items: start;
   background-color: $dark_background;
   color: $text_primary;
-  height: 100%;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 
+  .firstAndLastNameWrapper {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
 
+  .image {
+    border-radius: 50%;
+  }
+
+  .wrapperOfDropDownAndCaption {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
 
   .positionWrapperGold {
     width: 30px;
@@ -26,11 +39,18 @@
     box-shadow: 0 0 5px 5px rgba(118,148,164,.165);
   }
 
+  .ImageFirstAndLastNameWrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
   .positionWrapperNormal {
     width: 30px;
     height: 30px;
     color: white;
     border-radius: 10px;
+    background-color: #141414;
     font-weight: bold;
     display: flex;
     justify-content: center;
@@ -79,7 +99,7 @@
   .pointWrapper {
     width: 100px;
     height: 40px;
-    background-color: #1E1F26;
+    background-color: #141414;
     border-radius: 8px;
     display: flex;
     justify-content: center;
@@ -112,7 +132,7 @@
       tr {
         td {
           padding: 12px 15px;
-          background-color: #2C2F38;
+          background-color: #1f1f1f;
           color: $text_primary;
           border-bottom: 1px solid #3c3e46;
           transition: background-color 0.2s ease;
@@ -130,15 +150,6 @@
 
   @media (max-width: 1024px) {
     padding: 30px;
-
-    .positionWrapperGold,
-    .positionWrapperSilver,
-    .positionWrapperBronze {
-      width: 20px;
-      height: 20px;
-      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
-      border-radius: 7px;
-    }
 
 
     table {
@@ -165,7 +176,7 @@
     .pointWrapper {
       width: 50px;
       height: 40px;
-      background-color: #1E1F26;
+      background-color: #141414;
       border-radius: 8px;
       display: flex;
       justify-content: center;
@@ -173,26 +184,6 @@
       gap: 5px;
     }
 
-    .positionWrapperGold {
-      width: 18px;
-      height: 18px;
-      border-radius: 6px;
-      box-shadow: 0 0 5px 5px rgba(118,148,164,.165);
-    }
-
-    .positionWrapperSilver {
-      width: 18px;
-      height: 18px;
-      border-radius: 6px;
-      box-shadow: 0 0 5px 5px rgba(118,148,164,.165);
-    }
-
-    .positionWrapperBronze {
-      width: 18px;
-      height: 18px;
-      border-radius: 6px;
-      box-shadow: 0 0 5px 5px rgba(118,148,164,.165);
-    }
 
     table {
 

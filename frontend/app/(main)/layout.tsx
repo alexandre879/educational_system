@@ -41,7 +41,7 @@ export default function MainLayout({ children }: { children: ReactNode }) {
   useEffect(() => {
     setSidebarOpen(false);
     api.get<UserMeData>('user/me/')
-      .then((res: AxiosResponse<UserMeData>) => setUserMe(res.data))
+      .then((res: AxiosResponse<UserMeData>) => {setUserMe(res.data), console.log(res.data)})
       .catch((err: AxiosError) => console.log(err.message));
   }, [pathname]);
 
@@ -134,7 +134,7 @@ export default function MainLayout({ children }: { children: ReactNode }) {
                       <DownOutlined />
                       <span>{userMe?.first_name} {userMe?.last_name}</span>
                       <div className={styles.profilePictureWrapper}>
-                        <Image src="/profile.png" width={40} height={40} alt="Profile Picture" />
+                        <Image src={userMe?.profilePic ?? ''} width={40} height={50} alt="Profile Picture" />
                       </div>
                     </div>
                   </Space>
