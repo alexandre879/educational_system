@@ -23,7 +23,6 @@ const Login = () => {
       setError(null);
       setSuccess(null);
       setEmail(username);
-
       await axios.post("http://192.168.100.213:8000/api/otp/request/", {
         email: username,
       });
