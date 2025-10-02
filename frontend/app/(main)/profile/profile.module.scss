@@ -132,7 +132,6 @@
   outline: none;
   transition: border 0.2s, background 0.2s, color 0.2s;
 
-  // darker when not editable
   &:disabled {
     color: darken($text_primary, 25%);
     background: darken($dark_background, 5%);
