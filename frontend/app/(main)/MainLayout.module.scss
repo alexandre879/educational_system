@@ -7,6 +7,17 @@
   background-color: $dark_background;
 }
 
+
+.userAndDropOutLineWrapper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background-color: #141414;
+  padding: 10px;
+  border-radius: 15px;
+  
+}
+
 .myProfileOuterWrapper {
   width: 100%;
   display: flex;

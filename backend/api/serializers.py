@@ -240,27 +240,32 @@ class CommentsCreateSerializer(serializers.Serializer):
     
     
     
-
 class UpdateProfileSerializer(serializers.ModelSerializer):
-    profilePic = serializers.ImageField(required=False, allow_null=True)
+    profilePic = serializers.ImageField(required=False, allow_null=True, write_only=True)
+    profilePicUrl = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = User
-        fields = ["first_name", "last_name", "email", "profilePic"]
+        fields = ["first_name", "last_name", "email", "profilePic", "profilePicUrl"]
         extra_kwargs = {
             "first_name": {"required": False},
             "last_name": {"required": False},
             "email": {"required": False},
         }
 
+    def get_profilePicUrl(self, obj: User):
+        if obj.profilePic:
+            try:
+                return obj.profilePic.url
+            except Exception:
+                return None
+        return None
+
     def validate_email(self, value):
         user: User = self.context["request"].user
         if User.objects.exclude(pk=user.pk).filter(email=value).exists():
             raise serializers.ValidationError("This email is already taken.")
-    
         return value
-    
-    
     
     
 

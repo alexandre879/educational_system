@@ -8,113 +8,180 @@ import { UserMeData } from "./interface";
 import { AxiosError, AxiosResponse } from "axios";
 
 export default function ProfileSettings() {
-    const [firstName, setFirstName] = useState<string | null>(null);
-    const [lastName, setLastName] = useState<string | null>(null);
-    const [email, setEmail] = useState<string | null>(null);
-    const [profilePicFile, setProfilePicFile] = useState<File | null>(null);
-    const [preview, setPreview] = useState<string | null>(null);
-    const [userMe, setUserMe] = useState<UserMeData | null>(null)
+    const [firstName, setFirstName] = useState<string>();
+    const [lastName, setLastName] = useState<string>();
+    const [email, setEmail] = useState<string>();
+    const [profilePicFile, setProfilePicFile] = useState<File>();
+    const [userMe, setUserMe] = useState<UserMeData>();
+    const [isEditing, setIsEditing] = useState(false);
+
 
 
 
     useEffect(() => {
-        api.get<UserMeData>('user/me/')
-            .then((res: AxiosResponse<UserMeData>) => { setUserMe(res.data), console.log(res.data) })
+        api.get<UserMeData>("user/me/")
+            .then((res: AxiosResponse<UserMeData>) => {
+                setUserMe(res.data);
+                setFirstName(res.data.first_name);
+                setLastName(res.data.last_name);
+                setEmail(res.data.email);
+            })
             .catch((err: AxiosError) => console.log(err.message));
     }, []);
+
+
 
 
     const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
             setProfilePicFile(file);
-            setPreview(URL.createObjectURL(file));
         }
     };
 
 
+
+
+
     const handleSave = async () => {
+        if (!userMe) return;
+
+        if (
+            (firstName === userMe.first_name || !firstName?.trim()) &&
+            (lastName === userMe.last_name || !lastName?.trim()) &&
+            (email === userMe.email || !email?.trim()) &&
+            !profilePicFile) {
+            setIsEditing(false);
+            return;
+        }
+
         try {
             const formData = new FormData();
-            formData.append("first_name", firstName ?? '');
-            formData.append("last_name", lastName ?? '');
-            formData.append("email", email ?? '');
+
+            formData.append("first_name", firstName ?? userMe.first_name);
+            formData.append("last_name", lastName ?? userMe.last_name);
+            formData.append("email", email ?? userMe.email);
 
             if (profilePicFile) {
                 formData.append("profilePic", profilePicFile);
             }
 
-            const res = await api.put('update/profile/', formData, {
-                headers: {
-                    "Content-Type": "multipart/form-data",
-                },
-            });
+            const res = await api.put("update/profile/", formData);
 
-            console.log(res.data);
-        } catch (err) {
+            setUserMe(res.data);
+            setIsEditing(false);
+            setProfilePicFile(undefined);
+        }
+        catch (err) {
             console.error(err);
         }
     };
+
+
+
+    const handleCancel = () => {
+
+        if (userMe) {
+            setFirstName(userMe.first_name);
+            setLastName(userMe.last_name);
+            setEmail(userMe.email);
+        }
+        setProfilePicFile(undefined);
+        setIsEditing(false);
+    };
+
+
+
+    
+
 
     return (
         <div className={styles.container}>
             <div className={styles.card}>
                 <h2 className={styles.title}>Profile Settings</h2>
 
-                {/* Profile Picture */}
                 <div className={styles.profilePicContainer}>
                     <div className={styles.imageWrapper}>
                         <Image
-                            src={userMe?.profilePic || "/default-avatar.png"}
+                            src={
+                                profilePicFile
+                                    ? URL.createObjectURL(profilePicFile)
+                                    : userMe?.profilePic || "/default-avatar.png"
+                            }
                             alt="Profile Picture"
                             className={styles.image}
                             width={50}
                             height={50}
                         />
                     </div>
-                    <label className={styles.uploadButton}>
-                        Change Picture
-                        <input
-                            type="file"
-                            accept="image/*"
-                            onChange={handleImageChange}
-                            className={styles.hiddenInput}
-                        />
-                    </label>
+                    {isEditing && (
+                        <label className={styles.uploadButton}>
+                            Change Picture
+                            <input
+                                type="file"
+                                accept="image/*"
+                                onChange={handleImageChange}
+                                className={styles.hiddenInput}
+                            />
+                        </label>
+                    )}
                 </div>
 
-                {/* Input Fields */}
                 <div className={styles.form}>
                     <div className={styles.field}>
                         <label>First Name</label>
                         <input
                             type="text"
-                            value={firstName ?? userMe?.first_name}
+                            value={firstName || ""}
                             onChange={(e) => setFirstName(e.target.value)}
+                            disabled={!isEditing}
                         />
                     </div>
                     <div className={styles.field}>
                         <label>Last Name</label>
                         <input
                             type="text"
-                            value={lastName ?? userMe?.last_name}
+                            value={lastName || ""}
                             onChange={(e) => setLastName(e.target.value)}
+                            disabled={!isEditing}
                         />
                     </div>
                     <div className={styles.field}>
                         <label>Email</label>
                         <input
                             type="email"
-                            value={email ?? userMe?.email}
+                            value={email || ""}
                             onChange={(e) => setEmail(e.target.value)}
+                            disabled={!isEditing}
                         />
                     </div>
                 </div>
 
-                {/* Save Button */}
-                <button onClick={handleSave} className={styles.saveButton}>
-                    Save Changes
-                </button>
+                <div className={styles.buttonGroup}>
+                    {!isEditing ? (
+                        <button
+                            onClick={() => setIsEditing(true)}
+                            className={styles.editButton}
+                        >
+                            Edit
+                        </button>
+                    ) : (
+                        <div className={styles.buttonsWrapper} >
+                            <button
+                                onClick={handleSave}
+                                className={styles.saveButton}
+                            >
+                                Save
+                            </button>
+                            <button
+                                onClick={handleCancel}
+                                className={styles.cancelButton}
+                            >
+                                Cancel
+                            </button>
+                        </div>
+                    )}
+                </div>
             </div>
         </div>
     );
