@@ -183,7 +183,7 @@ class UserMeView(APIView):
 class UpdateProfileView(APIView):
     permission_classes = [IsAuthenticated]
 
-    def put(self, request: Request) -> Response:
+    def patch(self, request: Request) -> Response:
         user: User = request.user
         serializer = UpdateProfileSerializer(
             user,
@@ -191,16 +191,10 @@ class UpdateProfileView(APIView):
             partial=True,
             context={"request": request}
         )
-        
-        if serializer.is_valid(raise_exception=True):
-            user = serializer.save()
-            data = serializer.data
-            
-            if user.profilePic:
-                data['profilePic'] = user.profilePic.url
-            return Response(data, status=status.HTTP_200_OK)
-        
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        serializer.is_valid(raise_exception=True)
+        user = serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
     
     
     
