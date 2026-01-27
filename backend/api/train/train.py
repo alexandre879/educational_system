@@ -1,5 +1,5 @@
 from django.utils.text import slugify
-from ..models import SchoolUser
+from ..models import User
 
 
 

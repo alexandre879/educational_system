@@ -38,8 +38,10 @@ from .serializers import (
     UpdateProfileSerializer,
     
 )
+from rest_framework.parsers import MultiPartParser, FormParser
 from django.db.models import Sum, IntegerField, Count, F
 from django.db.models.functions import Cast
+
 
 
 
@@ -68,8 +70,8 @@ class RequestOtpView(APIView):
         except User.DoesNotExist:
             return Response({"error": "Email couldn't be found in the school system."}, status=status.HTTP_404_NOT_FOUND)
 
-        # if not user.chat_id:
-            # return Response({"error": "Your are not integrated with a school bot."}, status=status.HTTP_400_BAD_REQUEST)
+        if not user.chat_id:
+            return Response({"error": "Your are not integrated with a school bot."}, status=status.HTTP_400_BAD_REQUEST)
 
 
         otp = f"{random.randint(1000, 9999)}"
@@ -77,9 +79,9 @@ class RequestOtpView(APIView):
         
 
         print(otp)
-        # bot = Bot(token=BOT_TOKEN)
+        bot = Bot(token=BOT_TOKEN)
         
-        # async_to_sync(bot.send_message)(chat_id=user.chat_id, text=f"{otp}")
+        async_to_sync(bot.send_message)(chat_id=user.chat_id, text=f"{otp}")
         
 
         return Response({"message": "OTP sent via Telegram"}, status=status.HTTP_200_OK)
@@ -182,6 +184,7 @@ class UserMeView(APIView):
 
 class UpdateProfileView(APIView):
     permission_classes = [IsAuthenticated]
+    parser_classes = [MultiPartParser, FormParser]
 
     def patch(self, request: Request) -> Response:
         user: User = request.user
@@ -191,9 +194,8 @@ class UpdateProfileView(APIView):
             partial=True,
             context={"request": request}
         )
-
         serializer.is_valid(raise_exception=True)
-        user = serializer.save()
+        serializer.save()
         return Response(serializer.data, status=status.HTTP_200_OK)
     
     

@@ -10,10 +10,14 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
+from dotenv import load_dotenv
 from datetime import timedelta
 from pathlib import Path
 import os
-from decouple import config
+
+
+
+load_dotenv()
 
 
 
@@ -31,7 +35,7 @@ SECRET_KEY = 'django-insecure-@luerf(9o&hwa(=i__j0g@4o3kzphea@-(f_3^u*7b-^+l4yg#
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    "192.168.100.213",
+    "192.168.1.152",
     "localhost",
 ]
 
@@ -101,9 +105,9 @@ WSGI_APPLICATION = 'configuration.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'mariota_base',
-        'USER': 'mariota888',
-        'PASSWORD': 'mariota888',
+        'NAME': 'django_db',
+        'USER': 'django_user',
+        'PASSWORD': 'djangodb999',
         'HOST': 'localhost',  
         'PORT': '5432',      
     }
@@ -175,11 +179,11 @@ CACHES = {
 
 
 
-AWS_ACCESS_KEY_ID = config("AWS_ACCESS_KEY_ID")
-AWS_SECRET_ACCESS_KEY = config("AWS_SECRET_ACCESS_KEY")
-AWS_STORAGE_BUCKET_NAME = config("AWS_STORAGE_BUCKET_NAME")
-AWS_S3_REGION_NAME = config("AWS_REGION_NAME")
-DEFAULT_FILE_STORAGE = config("DEFAULT_FILE_STORAGE")
+AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
+AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
+AWS_STORAGE_BUCKET_NAME = os.getenv("AWS_STORAGE_BUCKET_NAME")
+AWS_S3_REGION_NAME = os.getenv("AWS_REGION_NAME")
+DEFAULT_FILE_STORAGE = os.getenv("DEFAULT_FILE_STORAGE")
 AWS_QUERYSTRING_AUTH = False
 
 MEDIA_URL = f'https://{AWS_STORAGE_BUCKET_NAME}.s3.{AWS_S3_REGION_NAME}.amazonaws.com/'

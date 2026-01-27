@@ -23,7 +23,7 @@ const Login = () => {
       setError(null);
       setSuccess(null);
       setEmail(username);
-      await axios.post("http://192.168.100.213:8000/api/otp/request/", {
+      await axios.post("http://192.168.1.152:8000/api/otp/request/", {
         email: username,
       });
 
@@ -45,7 +45,7 @@ const Login = () => {
       setError(null);
       setSuccess(null);
 
-      const res = await axios.post("http://192.168.100.213:8000/api/otp/verify/", {
+      const res = await axios.post("http://192.168.1.152:8000/api/otp/verify/", {
         email: email,
         otp,
       });
@@ -54,7 +54,8 @@ const Login = () => {
       Cookies.set("access", res.data.access);
       Cookies.set("refresh", res.data.refresh);
       router.push("/home");
-    } catch (err) {
+    } 
+    catch (err) {
       setError("Invalid OTP. Try again.");
       console.error(err);
     }

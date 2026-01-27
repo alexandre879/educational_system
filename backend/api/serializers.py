@@ -1,7 +1,9 @@
 # api/serializers.py
 from django.forms import ValidationError
 from rest_framework import serializers
+
 from .models import Announcement, Exam, Grade, Question, Option, Subject, UserExamSession, UserAnswer, User, GradeCategory, UserSubjectPoints
+from .utils import normalize_image_to_square
 
 
 
@@ -246,12 +248,17 @@ class UpdateProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ["first_name", "last_name", "email", "profilePic", "profilePicUrl"]
-        extra_kwargs = {
-            "first_name": {"required": False},
-            "last_name": {"required": False},
-            "email": {"required": False},
-        }
+        fields = ("first_name", "last_name", "profile_image")
+        
+    def update(self, instance, validated_data):
+        image = validated_data.get("profile_image", None)
+
+        if image:
+            validated_data["profile_image"] = normalize_image_to_square(image, size=512)
+
+        return super().update(instance, validated_data)
+    
+    
 
     def get_profilePicUrl(self, obj: User):
         if obj.profilePic:
