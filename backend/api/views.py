@@ -41,12 +41,14 @@ from .serializers import (
 from rest_framework.parsers import MultiPartParser, FormParser
 from django.db.models import Sum, IntegerField, Count, F
 from django.db.models.functions import Cast
+from django.utils import timezone
 
 
 
 
 
 load_dotenv()
+
 
 
 BOT_TOKEN = os.getenv("BOT_TOKEN")
@@ -240,72 +242,76 @@ class AvailableExamsView(APIView):
         
         
         
-        
-
-
-
-
 
 
 class StartOrResumeOrFinishExamSessionView(APIView):
     permission_classes = [IsAuthenticated]
 
-    def post(self, request: Request, exam_id: int) -> Response:
+    def post(self, request: Request, exam_id: int):
         exam = get_object_or_404(Exam, pk=exam_id)
-        user: User = request.user
 
-        if exam.grade and exam.grade != user.grade_in:
+        session, created = UserExamSession.objects.get_or_create(
+            user=request.user,
+            exam=exam,
+            defaults={
+                "current_question_index": 0,
+                "score_so_far": 0,
+                "started": False,
+                "finished": False,
+                "is_active": True,
+            }
+        )
+
+        # already finished
+        if session.finished:
             return Response(
-                {"error": "You are not allowed to access this exam"}, 
+                {"error": "You already completed this exam."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # start if not started OR no ends_at
+        if not session.started or not session.ends_at:
+            session.start()
+
+        # if expired -> terminate
+        if session.is_expired:
+            session.terminate()
+            return Response(
+                {"error": "Time is up. Session terminated."},
                 status=status.HTTP_403_FORBIDDEN
             )
 
-        usp, created = UserSubjectPoints.objects.get_or_create(
-            user=user,
-            subject=exam.subject,
-            defaults={"points": 0}
-        )
+        questions = list(exam.questions.prefetch_related("options").order_by("id"))
 
-        session = UserExamSession.objects.filter(user=user, exam=exam).first()
+        if not questions:
+            return Response(
+                {"error": "Exam has no questions."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
-        if session:
-            if session.finished:
-                return Response(
-                    {"error": "You have already completed this exam."}, 
-                    status=status.HTTP_400_BAD_REQUEST
-                )
+        idx = session.current_question_index
+        if idx >= len(questions):
+            session.finished = True
+            session.is_active = False
+            session.submitted_at = session.submitted_at or timezone.now()
+            session.save(update_fields=["finished", "is_active", "submitted_at"])
+            return Response(
+                {"error": "Session question index out of range (session ended)."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
-            questions = list(session.exam.questions.order_by('id'))
-            current_index = session.current_question_index
-            current_question = questions[current_index]
-            question_data = QuestionSerializer(current_question).data
-
-            return Response({
-                "subject": exam.subject.name,
-                "session_id": session.pk,
-                "current_index": current_index,
-                "exam_id": session.exam.pk,
-                "current_question": question_data,
-                "len_questions": len(questions),
-            })
-
-
-        session = UserExamSession.objects.create(user=user, exam=exam, started=True)
-        questions = list(exam.questions.order_by('id'))
-        current_question = questions[0]
-        question_data = QuestionSerializer(current_question).data
+        current_question = questions[idx]
 
         return Response({
             "subject": exam.subject.name,
+            "exam_id": exam.pk,
             "session_id": session.pk,
-            "current_index": 0,
-            "exam_id": session.exam.pk,
-            "current_question": question_data,
+            "current_index": idx,
+            "current_question": QuestionSerializer(current_question).data,
             "len_questions": len(questions),
+            "score_so_far": session.score_so_far,
+            "ends_at": session.ends_at,
         })
-
-
-
 
 
 
@@ -321,42 +327,76 @@ class SubmitAnswerView(APIView):
             user=request.user
         )
 
+        # ✅ Block if session is not active
+        if not session.is_active:
+            return Response(
+                {"error": "This exam session is not active."},
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        # ✅ Timer enforcement
+        if session.is_expired:
+            session.terminate()
+            return Response(
+                {"error": "Time is up. This exam session has been terminated."},
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        # ✅ Already finished
         if session.finished:
             return Response(
-                {'error': 'This exam session has already been completed.'},
+                {"error": "This exam session has already been completed."},
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-        questions = list(session.exam.questions.prefetch_related('options').order_by('id'))
+        questions = list(session.exam.questions.prefetch_related("options").order_by("id"))
         current_index = session.current_question_index
 
         if current_index >= len(questions):
-            return Response({'error': 'Invalid question index.'}, status=400)
+            return Response(
+                {"error": "Invalid question index."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
         current_question: Question = questions[current_index]
 
         serializer = UserAnswerSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        answer_option_id = serializer.validated_data['option_id']
-        answer_option = get_object_or_404(Option, pk=answer_option_id)
+        answer_option_id = serializer.validated_data["option_id"]
+
+        # ✅ IMPORTANT: option must belong to the current question
+        answer_option = get_object_or_404(
+            Option,
+            pk=answer_option_id,
+            question=current_question
+        )
 
         is_correct = answer_option.is_correct
+
+        # ✅ Prevent double-scoring: check previous answer correctness
+        existing = UserAnswer.objects.filter(
+            session=session,
+            question=current_question
+        ).only("is_correct").first()
+
+        previously_correct = bool(existing and existing.is_correct)
 
         UserAnswer.objects.update_or_create(
             session=session,
             question=current_question,
-            defaults={'answer_option': answer_option, 'is_correct': is_correct}
+            defaults={"answer_option": answer_option, "is_correct": is_correct},
         )
 
-        if is_correct:
+        # add points only if it became correct now (was not correct before)
+        if is_correct and not previously_correct:
             session.score_so_far += current_question.points
 
         next_index = current_index + 1
-        finished = next_index >= len(questions)
+        finished_now = next_index >= len(questions)
 
-        if not finished:
+        if not finished_now:
             session.current_question_index = next_index
-            session.save()
+            session.save(update_fields=["current_question_index", "score_so_far"])
 
             next_question = questions[next_index]
 
@@ -367,30 +407,34 @@ class SubmitAnswerView(APIView):
                 "current_index": next_index,
                 "current_question": QuestionSerializer(next_question).data,
                 "len_questions": len(questions),
+                "ends_at": session.ends_at,  # ✅ frontend countdown source of truth
             })
 
-        else:
-            session.finished = True
-            session.save()
+        # ✅ Finish session
+        session.finished = True
+        session.is_active = False
+        session.submitted_at = session.submitted_at or timezone.now()
+        session.save(update_fields=["finished", "is_active", "submitted_at", "score_so_far"])
 
-            request.user.points = (request.user.points or 0) + session.score_so_far
-            request.user.save()
+        request.user.points = (request.user.points or 0) + session.score_so_far
+        request.user.save(update_fields=["points"])
 
-            usp, created = UserSubjectPoints.objects.get_or_create(
-                user=request.user,
-                subject=session.exam.subject,
-                defaults={"points": 0}
-            )
-            usp.points += session.score_so_far
-            usp.save()
+        usp, _ = UserSubjectPoints.objects.get_or_create(
+            user=request.user,
+            subject=session.exam.subject,
+            defaults={"points": 0},
+        )
+        usp.points += session.score_so_far
+        usp.save(update_fields=["points"])
 
-            return Response({
-                'message': 'Exam completed successfully!',
-                'final_score': session.score_so_far,
-                'total_questions': len(questions),
-                'subject_points': usp.points,
-                'global_points': request.user.points
-            })
+        return Response({
+            "message": "Exam completed successfully!",
+            "final_score": session.score_so_far,
+            "total_questions": len(questions),
+            "subject_points": usp.points,
+            "global_points": request.user.points,
+            "ends_at": session.ends_at
+        })
 
 
 

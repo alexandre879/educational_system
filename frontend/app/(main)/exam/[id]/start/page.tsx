@@ -1,12 +1,11 @@
-'use client'
+"use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import styles from "./styles.module.scss";
 import api from "@/interceptors";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { ExamSessionData, ExamSessionEndResponse, OptionData } from "../../interface";
 import { AxiosError, AxiosResponse } from "axios";
-import { useRouter } from "next/navigation";
 
 function isExamSessionData(data: ExamSessionData | ExamSessionEndResponse): data is ExamSessionData {
   return (data as ExamSessionData).current_question !== undefined;
@@ -16,46 +15,87 @@ function isExamSessionEndResponse(data: ExamSessionData | ExamSessionEndResponse
   return (data as ExamSessionEndResponse).final_score !== undefined;
 }
 
-
-
+function formatTime(ms: number) {
+  const total = Math.floor(ms / 1000);
+  const m = Math.floor(total / 60);
+  const s = total % 60;
+  return `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+}
 
 export default function SpecificExam() {
   const { id: ExamId } = useParams();
-  const router = useRouter()
+  const router = useRouter();
+
   const [data, setData] = useState<ExamSessionData | ExamSessionEndResponse | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState(true);
 
+  const [timeLeftMs, setTimeLeftMs] = useState(0);
+  const [locked, setLocked] = useState(false);
 
+  const intervalRef = useRef<number | null>(null);
 
+  const endsAt = useMemo(() => {
+    if (!data) return null;
+    return (data as any).ends_at as string | undefined;
+  }, [data]);
 
   useEffect(() => {
     setLoading(true);
-    api.post<ExamSessionData | ExamSessionEndResponse>(`exams/${ExamId}/start_or_resume/`)
+
+    api
+      .post<ExamSessionData | ExamSessionEndResponse>(`exams/${ExamId}/start_or_resume/`)
       .then((res: AxiosResponse<ExamSessionData | ExamSessionEndResponse>) => {
         setData(res.data);
       })
       .catch((error: AxiosError) => {
-        if (error.response?.status === 401) {
-          return router.push('/login');
-        } 
-        else if (error.response?.status === 403) {
-          return router.push('/exam');
-        } 
-        else if(error.response?.status === 404) {
-          return router.push('/exam')
-        }
-        else if (error.response?.status === 400) {
+        if (error.response?.status === 401) return router.push("/login");
+        if (error.response?.status === 403) return router.push("/exam");
+        if (error.response?.status === 404) return router.push("/exam");
+        if (error.response?.status === 400) {
           alert("You already completed this exam");
-          return router.push('/exam');
+          return router.push("/exam");
         }
       })
       .finally(() => setLoading(false));
-  }, [ExamId]);
+  }, [ExamId, router]);
 
+  useEffect(() => {
+    if (intervalRef.current) {
+      window.clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+    if (!endsAt) return;
 
+    const tick = () => {
+      const left = new Date(endsAt).getTime() - Date.now();
+      const safe = Math.max(0, left);
+      setTimeLeftMs(safe);
 
+      if (left <= 0) {
+        setLocked(true);
+        if (intervalRef.current) {
+          window.clearInterval(intervalRef.current);
+          intervalRef.current = null;
+        }
+      } else {
+        setLocked(false);
+      }
+    };
+
+    tick();
+    intervalRef.current = window.setInterval(tick, 250);
+
+    return () => {
+      if (intervalRef.current) {
+        window.clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+    };
+  }, [endsAt]);
 
   const onAnswerSubmit = async (session_id: number, question_id: number, option_id: number) => {
+    if (locked) return;
+
     try {
       setLoading(true);
       const res = await api.post<ExamSessionData | ExamSessionEndResponse>(
@@ -63,18 +103,18 @@ export default function SpecificExam() {
         { question_id, option_id }
       );
       setData(res.data);
-    }
-    catch (error) {
+    } 
+    catch (error: any) {
+      if (error?.response?.status === 403) {
+        setLocked(true);
+        alert("Time is up. Exam ended.");
+        return router.push("/exam");
+      }
       console.log(error);
-    }
-    finally {
+    } finally {
       setLoading(false);
     }
   };
-
-
-
-
 
   if (loading) {
     return (
@@ -84,16 +124,21 @@ export default function SpecificExam() {
     );
   }
 
-
-
-
-
   if (data && isExamSessionData(data)) {
     return (
       <div className={styles.examMainContainer}>
-        <h1 style={{ color: 'tan' }} >
-          <span style={{ color: 'brown' }}>Exam:</span> {data.subject}
-        </h1>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <h1 style={{ color: "tan" }}>
+            <span style={{ color: "brown" }}>Exam:</span> {data.subject}
+          </h1>
+
+          {endsAt && (
+            <div style={{ color: locked ? "crimson" : "tan", fontWeight: 700 }}>
+              ⏳ {formatTime(timeLeftMs)}
+            </div>
+          )}
+        </div>
+
         <br />
         <h2 className={styles.questionText}>{data.current_question.text}</h2>
 
@@ -102,12 +147,13 @@ export default function SpecificExam() {
             <li
               key={option.id}
               className={styles.specificQuestionWrapper}
-              onClick={() =>
-                onAnswerSubmit(data.session_id, data.current_question.id, option.id)
-              }
+              onClick={() => !locked && onAnswerSubmit(data.session_id, data.current_question.id, option.id)}
+              style={{ opacity: locked ? 0.6 : 1, pointerEvents: locked ? "none" : "auto" }}
             >
               <span>{index + 1}.</span>
-              <button className={styles.optionButton}>{option.title}</button>
+              <button className={styles.optionButton} disabled={locked}>
+                {option.title}
+              </button>
             </li>
           ))}
         </ul>
@@ -122,22 +168,13 @@ export default function SpecificExam() {
     );
   }
 
-
-
-
   if (data && isExamSessionEndResponse(data)) {
     return (
       <div className={styles.finalExamContainer}>
         <div className={styles.finalHeader}>🎉 Exam Completed!</div>
         <div className={styles.finalScore}>Score: {data.final_score}</div>
         <div className={styles.finalTotal}>Total Questions: {data.total_questions}</div>
-        <div className={styles.finalMessage}>
-          {data.final_score < 8 && data.final_score > 5 && <span>Normal result! keep going achievements are slowly getting reached from your dedication. 😏</span>}
-          {data.final_score > 8 && <span>Well done! You have completed the exam successfully. 😊</span>}
-          {data.final_score == 10 && <span>Well done! You have completed the exam successfully. 🥳 </span>}
-          {data.final_score < 5 && <span>Bad result! You should take more time for a learning. 🙁</span>}
-        </div>
-        <button className={styles.buttonStyle} onClick={() => router.push('/exam')} >
+        <button className={styles.buttonStyle} onClick={() => router.push("/exam")}>
           Redirect
         </button>
       </div>

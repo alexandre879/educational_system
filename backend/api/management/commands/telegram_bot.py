@@ -21,10 +21,10 @@ from api.models import User
 load_dotenv()
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 
-# --- Conversation states ---
+
 ASK_EMAIL = 1
 
-# --- Button labels (exact strings) ---
+
 BTN_CONNECT = "🔗 Connect email"
 BTN_HELP = "ℹ️ Help"
 BTN_CANCEL = "❌ Cancel"

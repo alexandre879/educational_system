@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, ChangeEvent, FormEvent } from "react";
-import Image from "next/image";
+import { Image } from 'antd';
 import styles from "./profile.module.scss";
 import api from "@/interceptors";
 import { UserMeData } from "./interface";
@@ -73,9 +73,8 @@ export default function ProfileSettings() {
               <Image
                 src={preview || userMe?.profilePic || "/default-avatar.png"}
                 alt="Profile Picture"
-                className={styles.image}
-                width={110}
-                height={110}
+                width={100}
+                height={100}
               />
             </div>
             {isEditing && (
