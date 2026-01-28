@@ -248,7 +248,7 @@ class UpdateProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ("first_name", "last_name", "profile_image")
+        fields = ("first_name", "last_name", 'profilePic', 'profilePicUrl')
         
     def update(self, instance, validated_data):
         image = validated_data.get("profile_image", None)

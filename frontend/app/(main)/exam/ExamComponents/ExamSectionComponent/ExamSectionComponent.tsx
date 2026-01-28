@@ -14,8 +14,9 @@ const ExamSectionComponent = (props: ExamListData) => {
       case "computer science": return "💻"; 
       case "history": return "📜";
       case "english": return "🇺🇸";
+      case "italy": return "🇮🇹";
       case "geography": return "🌍";
-      case "germany": return "🇩🇪";
+      case "german": return "🇩🇪";
       case "spanish": return "🇪🇸";
       case "france": return "🇫🇷";
       default: return "📝";
