@@ -1,4 +1,427 @@
-.homeMainContainer {
-  padding: 20px;
+
+// Backgrounds
+$dark_background: #141414; // AntD gray10
+$table_background: #1f1f1f; // AntD gray9
+$table_row_hover: #262626;  // AntD gray8
+$header_background: #1f1f1f;
+
+// Brand / Primary
+$primary_blue: #1677ff;        // AntD blue6
+$primary_blue_hover: #4096ff;  // AntD blue5
+$primary_blue_active: #0958d9; // AntD blue7
+
+// Accent
+$highlight_accent: #faad14; // AntD gold6
+
+// Text
+$text_primary: #f0f0f0;   // AntD gray4
+$text_secondary: #8c8c8c; // AntD gray7
+
+
+/* ================== PAGE ================== */
+
+
+.leaderNameSecond {
+  color: grey !important;
+  font-weight: 200;
+}
+
+.page {
+  padding: 24px;
+  max-width: 1100px;
+  margin: 0 auto;
+
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+
+  background: $dark_background;
+  color: $text_primary;
+  min-height: 100vh;
+}
+
+.center {
+  min-height: 50vh;
+  display: grid;
+  place-items: center;
+  gap: 12px;
+  color: $text_secondary;
+}
+
+.muted {
+  color: rgb(192, 192, 192);
+  font-size: 0.95rem;
+}
+
+
+/* ================== HEADER ================== */
+
+.header {
+  border-radius: 18px;
+  padding: 18px;
+  background: $header_background;
+  border: 1px solid $table_row_hover;
+
+  transition: background 0.15s ease, border-color 0.15s ease;
+
+  &:hover {
+    background: $table_row_hover;
+    border-color: $primary_blue_hover;
+  }
+}
+
+.profile {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+}
+
+.avatar {
+  width: 64px !important;
+  height: 64px !important;
+  border: 2px solid $primary_blue;
+}
+
+.profileText {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.title {
+  font-weight: 800;
+  font-size: 1.6rem;
+  color: $text_primary;
+}
+
+.subRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+.preCaptions {
+  color: rgb(122, 122, 122) !important;
+}
+
+
+
+/* ================== GRIDS ================== */
+
+.grid3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+
+.grid2 {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 14px;
+}
+
+
+/* ================== CARD BASE ================== */
+
+.card {
+  border-radius: 18px;
+  padding: 16px;
+  background: $table_background;
+  border: 1px solid $table_row_hover;
+  min-width: 0;
+
+  transition: background 0.15s ease, border-color 0.15s ease;
+
+  &:hover {
+    background: $table_row_hover;
+    border-color: $primary_blue_hover;
+  }
+}
+
+.cardLabel {
+  color: $text_secondary;
+  font-size: 0.9rem;
+}
+
+.cardValue {
+  font-size: 2rem;
+  font-weight: 900;
+  margin-top: 6px;
+  color: $primary_blue;
+}
+
+.sectionTitle {
+  margin-bottom: 12px;
+  font-weight: 800;
+  font-size: 1.1rem;
+  color: $text_primary;
+}
+
+
+/* ================== CHART ================== */
+
+.chartBox {
   width: 100%;
+  /* height comes from React */
+}
+
+
+/* ================== ACTIVE SESSIONS LIST ================== */
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.listItem {
+  padding: 12px;
+  border-radius: 14px;
+  background: $table_background;
+  border: 1px solid $table_row_hover;
+
+  transition: background 0.15s ease, border-color 0.15s ease;
+
+  &:hover {
+    background: $table_row_hover;
+    border-color: $primary_blue_hover;
+  }
+}
+
+.listTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 6px;
+  min-width: 0;
+}
+
+.listTitle {
+  font-weight: 700;
+  color: $text_primary;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  min-width: 0;
+  max-width: 420px;
+}
+
+
+/* ================== TABLE (RECENT SESSIONS) ================== */
+
+.table {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px;
+
+  padding: 12px;
+  border-radius: 14px;
+  background: $table_background;
+  border: 1px solid $table_row_hover;
+
+  transition: background 0.15s ease, border-color 0.15s ease;
+
+  &:hover {
+    background: $table_row_hover;
+    border-color: $primary_blue_hover;
+  }
+}
+
+.rowMain {
+  font-weight: 700;
+  color: $text_primary;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  min-width: 0;
+}
+
+.rowMeta {
+  grid-column: 1 / -1;
+  color: $text_secondary;
+  font-size: 0.95rem;
+}
+
+.rowTime {
+  color: $highlight_accent;
+  white-space: nowrap;
+  font-weight: 700;
+}
+
+
+/* ================== LEADERBOARD ================== */
+
+.leaderboardHeader {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 15px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+
+.myRank {
+  color: $text_secondary;
+  font-size: 0.95rem;
+
+  span {
+    color: $highlight_accent;
+    font-weight: 900;
+  }
+}
+
+.leaderboardList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.leaderboardItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+
+  padding: 12px;
+  border-radius: 14px;
+  background: #272727;
+
+
+  &:hover {
+    background: rgb(54, 54, 54);
+  }
+}
+
+.leaderboardMe {
+  border: 1px solid green;
+  border-color: green;
+}
+
+.leaderboardLeft {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.rank {
+  width: 46px;
+  color: $text_secondary;
+  font-weight: 900;
+}
+
+.leaderAvatar {
+  width: 34px !important;
+  height: 34px !important;
+  border: 2px solid $primary_blue;
+}
+
+.leaderText {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.leaderName {
+  color: $text_primary;
+  font-weight: 800;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  min-width: 0;
+  max-width: 420px;
+}
+
+.leaderGrade {
+  color: $text_secondary;
+  font-size: 0.85rem;
+  margin-top: 2px;
+}
+
+.leaderPoints {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+
+  span:first-child {
+    color: $primary_blue;
+    font-weight: 900;
+    font-size: 1.1rem;
+  }
+}
+
+.pointsLabel {
+  color: $text_secondary;
+  font-size: 0.9rem;
+}
+
+
+/* ================== RESPONSIVE ================== */
+
+@media (max-width: 900px) {
+  .grid2 {
+    grid-template-columns: 1fr;
+  }
+
+  .listTitle,
+  .leaderName {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 600px) {
+  .page {
+    padding: 14px;
+  }
+
+  .header {
+    padding: 14px;
+    border-radius: 14px;
+  }
+
+  .card {
+    padding: 12px;
+    border-radius: 14px;
+  }
+
+  .grid3 {
+    grid-template-columns: 1fr;
+  }
+
+  .avatar {
+    width: 52px !important;
+    height: 52px !important;
+  }
+
+  .title {
+    font-size: 1.2rem;
+  }
+
+  .row {
+    grid-template-columns: 1fr;
+  }
+
+  .rank {
+    width: 38px;
+  }
+
+  .leaderName {
+    max-width: 180px;
+  }
 }

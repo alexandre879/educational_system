@@ -1,3 +1,4 @@
+from openai import OpenAI
 import os
 from dotenv import load_dotenv
 import random
@@ -18,6 +19,8 @@ from .models import (
     UserSubjectPoints,
     Question,
 )
+from django.db.models import Count, IntegerField, Value
+from django.db.models.functions import Coalesce
 from api.serializers import VerifyOtpSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 from asgiref.sync import async_to_sync
@@ -27,21 +30,25 @@ from .models import Exam, UserExamSession, Option, UserAnswer
 from .serializers import (
     CommentsCreateSerializer,
     LeaderBoardSerializer,
-    QuestionSerializer, 
+    MeSerializer,
+    QuestionSerializer,
+    SessionMiniSerializer,
+    SubjectSerializer, 
     UserAnswerSerializer, 
     UserSerializer, 
     RequestOtpSerializer, 
     PointListViewPerSubjectSerializer,
     AnnouncementSerializer,
     AnnouncementValidatorSerializer,
-    GradeSerializer,
     UpdateProfileSerializer,
+    UserSubjectPointsSerializer,
     
 )
 from rest_framework.parsers import MultiPartParser, FormParser
-from django.db.models import Sum, IntegerField, Count, F
+from django.db.models import Sum, IntegerField, Count
 from django.db.models.functions import Cast
 from django.utils import timezone
+from openai import OpenAI
 
 
 
@@ -55,6 +62,16 @@ BOT_TOKEN = os.getenv("BOT_TOKEN")
 OTP_TIMEOUT = os.getenv("OTP_TIMEOUT")
 OTP_RATE_LIMIT = os.getenv("OTP_RATE_LIMIT")
 
+
+
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+
+
+SYSTEM_PROMPT = (
+    "You are a helpful support assistant for an educational platform. "
+    "Be concise, friendly, and practical. "
+    "If you need more info, ask 1 short question."
+)
 
 
 
@@ -218,8 +235,11 @@ class AvailableExamsView(APIView):
             user=request.user,
             finished=True
         ).values_list("exam_id", flat=True)
-
-
+        
+        # finished_exams_name = Exam.objects.filter(
+        #     pk__in=finished_exam_ids
+        # ).values_list("title", flat=True)
+        
 
         available_exams = (
             Exam.objects.filter(grade=user.grade_in)
@@ -663,8 +683,8 @@ class ListCommentsView(APIView):
 class MySubjectsListView(APIView):
     permission_classes = [AllowAny]
 
-    def get(self, request):
-        user = request.user
+    def get(self, request: Request):
+        user: User = request.user
 
         subject_list = (
             user.grade_in.subjects.all()
@@ -698,3 +718,233 @@ class LeaderBoardListView(APIView):
         )
         serializer = LeaderBoardSerializer(queryset, many=True)
         return Response(serializer.data)
+    
+    
+    
+    
+
+
+
+class AISupportChatView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request: Request):
+        message = str(request.data.get("message", "")).strip()
+
+        if not message:
+            return Response(
+                {"error": "Message is required."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            response = client.responses.create(
+                model="gpt-4.1-mini",
+                input=[
+                    {
+                        "role": "system",
+                        "content": [
+                            {
+                                "type": "input_text",   # ✅ FIX
+                                "text": SYSTEM_PROMPT
+                            }
+                        ]
+                    },
+                    {
+                        "role": "user",
+                        "content": [
+                            {
+                                "type": "input_text",   # ✅ FIX
+                                "text": message
+                            }
+                        ]
+                    }
+                ],
+            )
+
+            reply = ""
+            for item in response.output:
+                if item["type"] == "message":
+                    for content in item["content"]:
+                        if content["type"] == "output_text":
+                            reply += content["text"]
+
+            reply = reply.strip() or "Sorry, I couldn't generate a response."
+
+            return Response(
+                {"reply": reply},
+                status=status.HTTP_200_OK
+            )
+
+        except Exception as e:
+            return Response(
+                {
+                    "error": "AI service error",
+                    "details": str(e)
+                },
+                status=status.HTTP_502_BAD_GATEWAY
+            )
+            
+            
+            
+
+class HomeDashboardView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def build_school_leaderboard(self, request: Request, user: User, top_n: int = 20) -> dict:
+
+        my_points = user.points or 0
+
+        qs = (
+            User.objects
+            .filter(role=User.Role.STUDENT) 
+            .select_related("grade_in__category")
+            .annotate(total_points=Coalesce("points", Value(0), output_field=IntegerField()))
+            .order_by("-total_points", "id")
+        )
+
+        top_users = list(qs[:top_n])
+
+        items = []
+        for idx, u in enumerate(top_users, start=1):
+            pic = None
+            if u.profilePic:
+                try:
+                    pic = request.build_absolute_uri(u.profilePic.url)
+                except Exception:
+                    pic = u.profilePic.url
+
+            grade_label = None
+            if u.grade_in_id:
+                cat = u.grade_in.category.name if u.grade_in.category_id else None
+                grade_label = f"{u.grade_in.name}{('-' + cat) if cat else ''}"
+
+            items.append({
+                "rank": idx,
+                "id": u.id,
+                "name": f"{u.first_name} {u.last_name}".strip() or u.email,
+                "email": u.email,
+                "points": int(getattr(u, "total_points", 0) or 0),
+                "profilePic": pic,
+                "grade": grade_label,
+                "isMe": (u.id == user.id),
+            })
+
+        # global rank even if user not in top list
+        higher_count = qs.filter(total_points__gt=my_points).count()
+        me_rank = higher_count + 1
+
+        return {
+            "scope": "school",
+            "me_rank": me_rank,
+            "items": items,
+        }
+
+    def get(self, request: Request) -> Response:
+        user = (
+            User.objects
+            .select_related("grade_in__category")
+            .prefetch_related("subjects_taught")
+            .get(pk=request.user.pk)
+        )
+
+        data = {
+            "me": MeSerializer(user, context={"request": request}).data,
+        }
+
+        role = user.role
+
+        # =========================
+        # STUDENT DASHBOARD
+        # =========================
+        if role == User.Role.STUDENT:
+            if not user.grade_in_id:
+                return Response({"error": "Student has no grade assigned."}, status=400)
+
+            subjects = Subject.objects.filter(grade_id=user.grade_in_id).order_by("name")
+
+            subject_points = (
+                UserSubjectPoints.objects
+                .filter(user=user)
+                .select_related("subject")
+                .order_by("subject__name")
+            )
+
+            announcements = (
+                Announcement.objects
+                .filter(grade_id=user.grade_in_id)
+                .select_related("grade", "subject", "created_by")
+                .prefetch_related("comments__user")
+                .order_by("-created_at")[:20]
+            )
+
+            sessions = (
+                UserExamSession.objects
+                .filter(user=user)
+                .select_related("exam__subject", "exam__grade")
+                .order_by("-started_at")[:30]
+            )
+
+            data.update({
+                "subjects": SubjectSerializer(subjects, many=True).data,
+                "subjectPoints": UserSubjectPointsSerializer(subject_points, many=True).data,
+                "announcements": AnnouncementSerializer(announcements, many=True).data,
+                "sessions": SessionMiniSerializer(sessions, many=True).data,
+            })
+
+        # =========================
+        # TEACHER DASHBOARD
+        # =========================
+        elif role == User.Role.TEACHER:
+            taught = user.subjects_taught.all().order_by("name")
+
+            announcements = (
+                Announcement.objects
+                .filter(created_by=user)
+                .select_related("grade", "subject", "created_by")
+                .prefetch_related("comments__user")
+                .order_by("-created_at")[:20]
+            )
+
+            exam_counts = (
+                Exam.objects
+                .filter(subject__in=taught)
+                .values("subject_id", "subject__name")
+                .annotate(count=Count("id"))
+                .order_by("subject__name")
+            )
+
+            data.update({
+                "subjectsTaught": SubjectSerializer(taught, many=True).data,
+                "myAnnouncements": AnnouncementSerializer(announcements, many=True).data,
+                "examCounts": list(exam_counts),
+            })
+
+        # =========================
+        # ADMIN DASHBOARD
+        # =========================
+        elif role == User.Role.ADMIN:
+            data.update({
+                "stats": {
+                    "users": User.objects.count(),
+                    "grades": Grade.objects.count(),
+                    "subjects": Subject.objects.count(),
+                    "exams": Exam.objects.count(),
+                    "questions": Question.objects.count(),
+                },
+                "latestAnnouncements": AnnouncementSerializer(
+                    Announcement.objects
+                    .select_related("grade", "subject", "created_by")
+                    .prefetch_related("comments__user")
+                    .order_by("-created_at")[:20],
+                    many=True
+                ).data
+            })
+
+        else:
+            data["info"] = "Role not supported yet (parent needs relationship to student)."
+
+        # ✅ Whole-school leaderboard for everyone (students/teachers/admin)
+        data["leaderboard"] = self.build_school_leaderboard(request, user, top_n=20)
+
+        return Response(data, status=status.HTTP_200_OK)

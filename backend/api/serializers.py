@@ -1,9 +1,10 @@
-# api/serializers.py
 from django.forms import ValidationError
 from rest_framework import serializers
-
-from .models import Announcement, Exam, Grade, Question, Option, Subject, UserExamSession, UserAnswer, User, GradeCategory, UserSubjectPoints
 from .utils import normalize_image_to_square
+from .models import (Announcement, Exam, Comment,
+                     Grade, Question, Option, Subject,
+                     UserExamSession, UserAnswer, User,
+                     GradeCategory, UserSubjectPoints)
 
 
 
@@ -293,3 +294,128 @@ class LeaderBoardSerializer(serializers.ModelSerializer):
         if obj.user.profilePic:
             return obj.user.profilePic.url
         return None
+    
+    
+
+
+class GradeCategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = GradeCategory
+        fields = ["id", "name"]
+
+
+
+
+class GradeSerializer(serializers.ModelSerializer):
+    category = GradeCategorySerializer()
+
+    class Meta:
+        model = Grade
+        fields = ["id", "name", "category"]
+
+
+
+
+class SubjectSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Subject
+        fields = ["id", "name"]
+
+
+
+
+class MeSerializer(serializers.ModelSerializer):
+    grade_in = GradeSerializer()
+    profilePic = serializers.SerializerMethodField()
+
+    def get_profilePic(self, obj):
+        request = self.context.get("request")
+        if not obj.profilePic:
+            return None
+        url = obj.profilePic.url
+        return request.build_absolute_uri(url) if request else url
+
+    class Meta:
+        model = User
+        fields = ["id", "email", "first_name", "last_name", "role", "points", "grade_in", "profilePic"]
+
+class CommentSerializer(serializers.ModelSerializer):
+    user = serializers.SerializerMethodField()
+
+    def get_user(self, obj):
+        return {
+            "id": obj.user_id,
+            "email": obj.user.email,
+            "name": f"{obj.user.first_name} {obj.user.last_name}".strip(),
+        }
+
+    class Meta:
+        model = Comment
+        fields = ["id", "content", "user", "created_at"]
+        
+        
+        
+
+class AnnouncementSerializer(serializers.ModelSerializer):
+    created_by = serializers.SerializerMethodField()
+    subject = serializers.SerializerMethodField()
+    grade = serializers.SerializerMethodField()
+    comments = CommentSerializer(many=True)
+
+    def get_created_by(self, obj):
+        return {
+            "id": obj.created_by_id,
+            "email": obj.created_by.email,
+            "name": f"{obj.created_by.first_name} {obj.created_by.last_name}".strip(),
+        }
+
+    def get_subject(self, obj):
+        if not obj.subject_id:
+            return None
+        return {"id": obj.subject_id, "name": obj.subject.name}
+
+    def get_grade(self, obj):
+        return {"id": obj.grade_id, "name": obj.grade.name}
+
+    class Meta:
+        model = Announcement
+        fields = ["id", "title", "content", "grade", "subject", "created_by", "created_at", "comments"]
+        
+        
+        
+        
+
+class UserSubjectPointsSerializer(serializers.ModelSerializer):
+    subject = serializers.SerializerMethodField()
+
+    def get_subject(self, obj):
+        return {"id": obj.subject_id, "name": obj.subject.name}
+
+    class Meta:
+        model = UserSubjectPoints
+        fields = ["subject", "points"]
+        
+        
+        
+
+class SessionMiniSerializer(serializers.ModelSerializer):
+    exam = serializers.SerializerMethodField()
+    subject = serializers.SerializerMethodField()
+    grade = serializers.SerializerMethodField()
+
+    def get_exam(self, obj):
+        return {"id": obj.exam_id, "title": obj.exam.title, "duration": obj.exam.duration}
+
+    def get_subject(self, obj):
+        return {"id": obj.exam.subject_id, "name": obj.exam.subject.name}
+
+    def get_grade(self, obj):
+        return {"id": obj.exam.grade_id, "name": obj.exam.grade.name}
+
+    class Meta:
+        model = UserExamSession
+        fields = [
+            "id", "exam", "subject", "grade",
+            "score_so_far", "started", "finished",
+            "started_at", "ends_at", "submitted_at", "is_active"
+        ]

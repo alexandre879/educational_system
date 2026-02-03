@@ -16,6 +16,7 @@ const ExamSectionComponent = (props: ExamListData) => {
       case "english": return "🇺🇸";
       case "italy": return "🇮🇹";
       case "geography": return "🌍";
+      case "georgia": return "🇬🇪";
       case "german": return "🇩🇪";
       case "spanish": return "🇪🇸";
       case "france": return "🇫🇷";

@@ -1,0 +1,95 @@
+.mainContainer {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.chatContainer {
+  flex: 1;
+  padding: 16px;
+  overflow-y: auto;
+}
+
+.emptyState {
+  text-align: center;
+  color: #999;
+  margin-top: 40px;
+}
+
+.typing {
+  font-size: 13px;
+  color: #aaa;
+  margin-top: 6px;
+}
+
+.inputContainer {
+  display: flex;
+  gap: 10px;
+  padding: 12px;
+  border-top: 1px solid #eee;
+
+  input {
+    flex: 1;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    outline: none;
+  }
+
+  button {
+    padding: 0 14px;
+    border-radius: 8px;
+    border: none;
+    background: #4f46e5;
+    color: white;
+    cursor: pointer;
+
+    &:hover {
+      background: #4338ca;
+    }
+  }
+}
+
+
+
+.bubble {
+  max-width: 70%;
+  padding: 10px 14px;
+  border-radius: 12px;
+  margin-bottom: 10px;
+  font-size: 14px;
+}
+
+.user {
+  margin-left: auto;
+  background: #4f46e5;
+  color: white;
+}
+
+.ai {
+  margin-right: auto;
+  background: #f3f4f6;
+  color: #111;
+}
+
+
+.botWrapper {
+  width: min(900px, 100%);
+  height: min(80vh, 780px);
+  margin: 0 auto;
+  padding: 18px;
+  border-radius: 16px;
+  background: rgba(0,0,0,0.03);
+  border: 1px solid rgba(0,0,0,0.08);
+  position: relative;
+}
+
+.thinkingBadge {
+  position: absolute;
+  right: 18px;
+  bottom: 18px;
+  font-size: 12px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(0,0,0,0.07);
+}

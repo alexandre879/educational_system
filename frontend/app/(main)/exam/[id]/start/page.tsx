@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import styles from "./styles.module.scss";
 import api from "@/interceptors";
 import { useParams, useRouter } from "next/navigation";
@@ -31,8 +31,10 @@ export default function SpecificExam() {
 
   const [timeLeftMs, setTimeLeftMs] = useState(0);
   const [locked, setLocked] = useState(false);
+  const [endedByTimeout, setEndedByTimeout] = useState(false);
 
   const intervalRef = useRef<number | null>(null);
+  const finishingRef = useRef(false);
 
   const endsAt = useMemo(() => {
     if (!data) return null;
@@ -59,11 +61,33 @@ export default function SpecificExam() {
       .finally(() => setLoading(false));
   }, [ExamId, router]);
 
+  const finishSessionDueToTimeout = useCallback(async () => {
+    if (finishingRef.current) return;
+    finishingRef.current = true;
+
+    try {
+      setEndedByTimeout(true);
+      setLocked(true);
+      setLoading(true);
+
+      const res = await api.post<ExamSessionData | ExamSessionEndResponse>(`exams/${ExamId}/start_or_resume/`);
+      setData(res.data);
+    } catch (error: any) {
+      alert("Time is up. Exam ended.");
+      router.push("/exam");
+    } finally {
+      setLoading(false);
+    }
+  }, [ExamId, router]);
+
   useEffect(() => {
     if (intervalRef.current) {
       window.clearInterval(intervalRef.current);
       intervalRef.current = null;
     }
+
+    finishingRef.current = false;
+
     if (!endsAt) return;
 
     const tick = () => {
@@ -73,13 +97,17 @@ export default function SpecificExam() {
 
       if (left <= 0) {
         setLocked(true);
+
         if (intervalRef.current) {
           window.clearInterval(intervalRef.current);
           intervalRef.current = null;
         }
-      } else {
-        setLocked(false);
+
+        finishSessionDueToTimeout();
+        return;
       }
+
+      setLocked(false);
     };
 
     tick();
@@ -91,24 +119,25 @@ export default function SpecificExam() {
         intervalRef.current = null;
       }
     };
-  }, [endsAt]);
+  }, [endsAt, finishSessionDueToTimeout]);
 
   const onAnswerSubmit = async (session_id: number, question_id: number, option_id: number) => {
     if (locked) return;
 
     try {
       setLoading(true);
-      const res = await api.post<ExamSessionData | ExamSessionEndResponse>(
-        `sessions/${session_id}/answer/`,
-        { question_id, option_id }
-      );
+      const res = await api.post<ExamSessionData | ExamSessionEndResponse>(`sessions/${session_id}/answer/`, {
+        question_id,
+        option_id,
+      });
+
       setData(res.data);
-    } 
-    catch (error: any) {
+    } catch (error: any) {
       if (error?.response?.status === 403) {
         setLocked(true);
-        alert("Time is up. Exam ended.");
-        return router.push("/exam");
+        setEndedByTimeout(true);
+        await finishSessionDueToTimeout();
+        return;
       }
       console.log(error);
     } finally {
@@ -171,9 +200,17 @@ export default function SpecificExam() {
   if (data && isExamSessionEndResponse(data)) {
     return (
       <div className={styles.finalExamContainer}>
-        <div className={styles.finalHeader}>🎉 Exam Completed!</div>
+        <div className={styles.finalHeader}>{endedByTimeout ? "⏰ Time is up!" : "🎉 Exam Completed!"}</div>
+
         <div className={styles.finalScore}>Score: {data.final_score}</div>
         <div className={styles.finalTotal}>Total Questions: {data.total_questions}</div>
+
+        <div className={styles.finalMessage}>
+          {endedByTimeout
+            ? "Time ran out, but your answers were submitted."
+            : "Nice work — your results were saved."}
+        </div>
+
         <button className={styles.buttonStyle} onClick={() => router.push("/exam")}>
           Redirect
         </button>

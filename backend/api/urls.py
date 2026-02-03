@@ -2,6 +2,8 @@
 
 from django.urls import path
 from api.views import (
+    AISupportChatView,
+    HomeDashboardView,
     ListCommentsView,
     RefreshTokenView,
     RequestOtpView,
@@ -18,6 +20,7 @@ from api.views import (
     LeaderBoardListView,
     MySubjectsListView,
     UpdateProfileView,
+    
 )
 
 from .fast_api_util import ExamCreateView
@@ -32,6 +35,8 @@ urlpatterns = [
     
     
     path("user/me/", UserMeView.as_view(), name="user-me"),
+    
+    path("home/", HomeDashboardView.as_view(), name="home-dashboard"),
     
     
     path("user/logout/", LogoutView.as_view(), name="log-out"),
@@ -61,6 +66,10 @@ urlpatterns = [
     path("exams/create/", ExamCreateView.as_view(), name="exam-create"),
     
     
-    path('update/profile/', UpdateProfileView.as_view(), name='update-profile')
+    path('update/profile/', UpdateProfileView.as_view(), name='update-profile'),
+    
+    path("support/chat/", AISupportChatView.as_view(), name="support-chat"),
+    
+    path("aisupport/", AISupportChatView.as_view(), name="ai-support"),
     
 ]
