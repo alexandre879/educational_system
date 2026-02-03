@@ -7,6 +7,10 @@ import { useRouter } from "next/navigation";
 import Cookies from "cookies-js";
 
 const Login = () => {
+
+
+  const netIp: string = "192.168.1.190"
+
   const [step, setStep] = useState<"email" | "otp">("email");
   const [email, setEmail] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -23,7 +27,7 @@ const Login = () => {
       setError(null);
       setSuccess(null);
       setEmail(username);
-      await axios.post("http://192.168.1.152:8000/api/otp/request/", {
+      await axios.post(`http://${netIp}:8000/api/otp/request/`, {
         email: username,
       });
 
@@ -45,7 +49,7 @@ const Login = () => {
       setError(null);
       setSuccess(null);
 
-      const res = await axios.post("http://192.168.1.152:8000/api/otp/verify/", {
+      const res = await axios.post(`http://${netIp}:8000/api/otp/verify/`, {
         email: email,
         otp,
       });

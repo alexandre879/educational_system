@@ -36,15 +36,26 @@ DEBUG = True
 
 CORS_ALLOW_ALL_ORIGINS = True
 
+# net_it = os.getenv("NET_IT")
+# if net_it == "production":
+#     DEBUG = False
+#     print("Production mode")
+# else:
+#     DEBUG = True
+#     print("Development mode")
+    
+    
+netip = os.getenv("NET_IP")
+
 ALLOWED_HOSTS = [
-    "192.168.1.152",
+    netip if netip else "",
     "localhost",
 ]
 
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
-    "http://192.168.1.152:3000",
+    f"http://{netip}:3000" if netip else None,
        
 ]
 

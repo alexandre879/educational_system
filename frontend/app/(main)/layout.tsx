@@ -1,7 +1,7 @@
 'use client';
 
 import React, { ReactNode, useEffect, useState } from 'react';
-import { FaBars, FaHome, FaTrophy, FaFileAlt, FaBookOpen, FaSchool, FaBullhorn } from 'react-icons/fa';
+import { FaBars, FaHome, FaTrophy, FaFileAlt, FaBookOpen, FaSchool, FaBullhorn, FaRobot } from 'react-icons/fa';
 import { DownOutlined } from '@ant-design/icons';
 import styles from './MainLayout.module.scss';
 import Link from 'next/link';
@@ -116,6 +116,12 @@ export default function MainLayout({ children }: { children: ReactNode }) {
             <FaFileAlt className={styles.navIcon} /> Exam
           </div>
         </Link>
+            
+        <Link className={styles.redirectionCaptions} href={'/aisupport'} >
+          <div className={styles.pageRedirectionWrapper} >
+              <FaRobot className={styles.navIcon} /> AI Support
+          </div>
+        </Link>
       </nav>
 
 
@@ -132,8 +138,6 @@ export default function MainLayout({ children }: { children: ReactNode }) {
                   <Space>
                     <div className={styles.outerWrapperProfile}>
                       <div className={styles.userAndDropOutLineWrapper} >
-                        <DownOutlined />
-                        <span>{userMe?.first_name} {userMe?.last_name}</span>
                         <div className={styles.profilePictureWrapper}>
                           {userMe?.profilePic && <Image src={userMe.profilePic} width={40} height={50} alt="Profile Picture" />}
                         </div>

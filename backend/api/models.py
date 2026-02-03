@@ -139,6 +139,11 @@ class UserSubjectPoints(models.Model):
 
     class Meta:
         unique_together = ("user", "subject")
+        
+    
+    def __str__(self):
+        return f"{self.user.email} - {self.subject.name} ({self.points} points)"        
+    
 
 
 
@@ -169,7 +174,7 @@ class Question(models.Model):
     points = models.PositiveIntegerField(default=1)
 
     def __str__(self):
-        return f"Q{self.pk} - {self.exam.title}"
+        return f"{self.text} - {self.exam.title}"
 
 
 
@@ -183,24 +188,13 @@ class Option(models.Model):
     is_correct = models.BooleanField(default=False)
 
     def __str__(self):
-        return f"Option for Q{self.question.pk}: {self.title}"
-    
+        return f"{self.title}"
     
     
     
     
     
 
-# class UserExamSession(models.Model):
-#     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="exam_sessions")
-#     exam = models.ForeignKey(Exam, on_delete=models.CASCADE, related_name="sessions")
-#     current_question_index = models.PositiveIntegerField(default=0)
-#     score_so_far = models.IntegerField(default=0)
-#     started = models.BooleanField(null=True, blank=True)
-#     finished = models.BooleanField(null=True, blank=True)
-
-#     def __str__(self):
-#         return f"{self.user.email} - {self.exam.title}"
 
 
 class UserExamSession(models.Model):
@@ -238,6 +232,10 @@ class UserExamSession(models.Model):
         if not self.submitted_at:
             self.submitted_at = timezone.now()
         self.save(update_fields=["is_active", "finished", "submitted_at"])
+        
+        
+    def __str__(self):
+        return f"{self.user.email} - {self.exam.title}"
 
 
 
@@ -245,14 +243,13 @@ class UserExamSession(models.Model):
 
 
 class UserAnswer(models.Model):
-    session = models.ForeignKey(UserExamSession, on_delete=models.SET_NULL, related_name="answers", null=True)
-    question = models.ForeignKey(Question, on_delete=models.SET_NULL, related_name="user_answers", null=True)
-    answer_option = models.ForeignKey(Option, on_delete=models.SET_NULL, null=True, blank=True, related_name="user_answers")
+    session = models.ForeignKey(UserExamSession, on_delete=models.CASCADE, related_name="answers", null=True)
+    question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name="user_answers", null=True)
+    answer_option = models.ForeignKey(Option, on_delete=models.CASCADE, null=True, blank=True, related_name="user_answers")
     is_correct = models.BooleanField(default=False)
 
     def __str__(self):
-        return f"{self.session.user.email} - Q{self.question.pk} ({'Correct' if self.is_correct else 'Wrong'})"
-    
+        return f"{self.session.user.email if self.session else 'Unknown User'} - Q{self.question.pk if self.question else 'Unknown'} ({'Correct' if self.is_correct else 'Wrong'})"
 
 
 

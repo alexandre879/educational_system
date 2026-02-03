@@ -6,11 +6,15 @@ export default async function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname;
   const token = (await cookies()).get('access')
 
-  const publicRoutes = ['/login', '/register', '/login/forgotpassword'];
+  const publicRoutes = ['/', '/login', '/register', '/login/forgotpassword'];
   const pathIsPublic = publicRoutes.includes(path);
 
   if (pathIsPublic && token) {
     return NextResponse.redirect(new URL('/home', request.url));
+  }
+
+  if(path === '/' && !token) {
+    return NextResponse.redirect(new URL('/login', request.url));
   }
 
   if (!token && !pathIsPublic) {
