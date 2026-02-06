@@ -44,8 +44,7 @@ export default function SpecificExam() {
   useEffect(() => {
     setLoading(true);
 
-    api
-      .post<ExamSessionData | ExamSessionEndResponse>(`exams/${ExamId}/start_or_resume/`)
+    api.post<ExamSessionData | ExamSessionEndResponse>(`exams/${ExamId}/start_or_resume/`)
       .then((res: AxiosResponse<ExamSessionData | ExamSessionEndResponse>) => {
         setData(res.data);
       })

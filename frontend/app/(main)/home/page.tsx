@@ -17,6 +17,8 @@ import {
   Tooltip,
 } from "recharts";
 import { DashboardResponse } from "./interface";
+import { Modal } from "antd";
+import { useRouter } from "next/navigation";
 
 
 function formatTime(iso: string) {
@@ -28,8 +30,24 @@ export default function Home() {
   const isPhone = useMediaQuery("(max-width:600px)");
   const isTablet = useMediaQuery("(max-width:900px)");
 
+  const router = useRouter()
+
   const [data, setData] = useState<DashboardResponse | null>(null);
   const [loading, setLoading] = useState(true);
+
+  const [IsActiveExamModalOpen, setIsActiveExamModalOpen] = useState<boolean>(false);
+  const ShowIsActiveExamModal = () => setIsActiveExamModalOpen(true)
+  const HandleIsActiveExamCancel = () => setIsActiveExamModalOpen(false);
+
+
+
+
+  const onExamActiveClick = (examId: number) => {
+    router.push(`/exam/${examId}/start`);
+  }
+
+
+
 
   useEffect(() => {
     let mounted = true;
@@ -67,7 +85,7 @@ export default function Home() {
   }, [data]);
 
   const sessions = data?.sessions ?? [];
-  const activeSessions = sessions.filter((s) => s.is_active && !s.finished);
+  const activeSessions = sessions.filter((s) => s.is_active && s.ends_at! > new Date().toISOString());
 
   const chartData = useMemo(() => {
     const arr = data?.subjectPoints ?? [];
@@ -75,6 +93,12 @@ export default function Home() {
   }, [data]);
 
   const chartHeight = isPhone ? 200 : isTablet ? 240 : 280;
+
+
+  const onActiveExamClick = async () => {
+    if (activeSessions.length === 0) return;
+    setIsActiveExamModalOpen(true)
+  }
 
   if (loading) {
     return (
@@ -100,6 +124,8 @@ export default function Home() {
     );
   }
 
+
+
   return (
     <div className={styles.page}>
       {/* Header */}
@@ -107,7 +133,7 @@ export default function Home() {
         <div className={styles.profile}>
           <Avatar src={data.me.profilePic ?? undefined} className={styles.avatar} sx={{ width: 60, height: 60 }} />
           <div className={styles.profileText}>
-            <Typography className={styles.title}>Welcome, {fullName} 👋</Typography>
+            <Typography className={styles.title}>Welcome, <u>{fullName}</u> 👋</Typography>
 
             <div className={styles.subRow}>
               <span className={styles.preCaptions} >Role:</span>
@@ -133,7 +159,7 @@ export default function Home() {
           <Typography className={styles.cardValue}>{data.subjects?.length ?? 0}</Typography>
         </div>
 
-        <div className={styles.card}>
+        <div className={styles.card} onClick={onActiveExamClick} >
           <Typography className={styles.cardLabel}>Active Exams</Typography>
           <Typography className={styles.cardValue}>{activeSessions.length}</Typography>
         </div>
@@ -258,6 +284,7 @@ export default function Home() {
                 </div>
               ))}
             </div>
+
           )}
         </div>
       </div>
@@ -289,6 +316,30 @@ export default function Home() {
           </div>
         )}
       </div>
+      {
+        IsActiveExamModalOpen &&
+        <>
+          <Modal
+            title="Active Exams"
+            open={IsActiveExamModalOpen}
+            onCancel={HandleIsActiveExamCancel}
+            onOk={HandleIsActiveExamCancel}
+            footer={null}
+          >
+            <ul>
+              {
+                data.sessions?.map((s) => (
+                  new Date(s.ends_at!) > new Date() && (
+                    <li className={styles.activeExamsList} key={s.id} onClick={() => onExamActiveClick(s.exam.id)}>
+                      {s.exam.title.split(' ')[0]}
+                    </li>
+                  )
+                ))
+              }
+            </ul>
+          </Modal>
+        </>
+      }
     </div>
   );
 }

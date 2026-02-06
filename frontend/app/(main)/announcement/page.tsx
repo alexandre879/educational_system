@@ -10,17 +10,17 @@ import { FiInbox } from "react-icons/fi";
 import { MdComment } from "react-icons/md";
 
 
-export default function AnnouncementPage() {
 
+export default function AnnouncementPage() {
     const [announcements, setAnnouncements] = useState<Announcement[]>([]);
     const [subjects, setSubjects] = useState<Subject[]>([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isSectionModalOpen, setIsSectionModalOpen] = useState(false);
     const [selectedSubjectId, setSelectedSubjectId] = useState<number | undefined>(undefined);
-    const [grades, setGrades] = useState<Grades[] | null>(null);
+    const [, setGrades] = useState<Grades[] | null>(null);
     const [userRole, setUserRole] = useState<string | null>(null);
-    const [categories, setCategories] = useState<Categories[] | null>(null);
-    const [announcementModalCaption, setAnnouncementModalCaption] = useState<string | null>(null)
+    const [, setCategories] = useState<Categories[] | null>(null);
+    const [announcementModalCaption, setAnnouncementModalCaption] = useState<string | null>(null);
     const [announcementId, setAnnoucementId] = useState<number | null>(null);
     const [comments, setComments] = useState<Comment[]>([]);
 
@@ -28,22 +28,41 @@ export default function AnnouncementPage() {
     const [commentForm] = Form.useForm();
 
 
-    const onCommentSend = async (values: { comment: string }) => {
-        if (!values.comment) return;
 
-        try {
-            const res = await api.post<Comment>('comments/create/', { comment: values.comment, announcement: announcementId })
-            setComments(prev => [...prev, res.data])
-            setAnnouncements(prev => (
-                prev.map(item => item.id === announcementId ? { ...item, len_comments: item.len_comments + 1 } : item)
-            ))
-            commentForm.resetFields()
+    const displayName = (v: unknown): string =>  {
+        if (v == null) return "";
+        if (typeof v === "string" || typeof v === "number") return String(v);
+
+        if (typeof v === "object") {
+            const obj = v as Record<string, unknown>;
+            if (typeof obj.name === "string" || typeof obj.name === "number") return String(obj.name);
+            if (typeof obj.title === "string" || typeof obj.title === "number") return String(obj.title);
         }
-        catch (error) {
-            console.log(error)
-        }
+
+        return "";
     }
 
+    const onCommentSend = async (values: { comment: string }) => {
+        if (!values.comment || !announcementId) return;
+
+        try {
+            const res = await api.post<Comment>("comments/create/", {
+                comment: values.comment,
+                announcement: announcementId,
+            });
+
+            setComments((prev) => [...prev, res.data]);
+            setAnnouncements((prev) =>
+                prev.map((item) =>
+                    item.id === announcementId ? { ...item, len_comments: item.len_comments + 1 } : item
+                )
+            );
+
+            commentForm.resetFields();
+        } catch (error) {
+            console.log(error);
+        }
+    };
 
     const showModal = () => setIsModalOpen(true);
 
@@ -52,24 +71,21 @@ export default function AnnouncementPage() {
         setIsModalOpen(false);
     };
 
-
     const showSectionModal = async (caption: string, id: number) => {
-        try {
-            const res = await api.get<Comment[]>('comments/', {
-                params: { announcement: id }
-            });
-            setComments(res.data);
-        }
-        catch (error) {
-            console.log(error);
-        }
-
         setAnnouncementModalCaption(caption);
         setAnnoucementId(id);
         setIsSectionModalOpen(true);
+
+        try {
+            const res = await api.get<Comment[]>("comments/", {
+                params: { announcement: id },
+            });
+            setComments(res.data);
+        } catch (error) {
+            console.log(error);
+            setComments([]);
+        }
     };
-
-
 
     const handleSectionModalCancel = () => {
         setIsSectionModalOpen(false);
@@ -81,27 +97,29 @@ export default function AnnouncementPage() {
                 params: subjectId ? { subject: subjectId } : {},
             });
 
-            const { announcements: fetchedAnnouncements, subjects: fetchedSubjects, categories, grades, role } = response.data;
+            const {
+                announcements: fetchedAnnouncements,
+                subjects: fetchedSubjects,
+                categories,
+                grades,
+                role,
+            } = response.data;
 
-            setCategories(categories)
+            setCategories(categories);
             setGrades(grades);
             setUserRole(role);
             setAnnouncements(fetchedAnnouncements);
             setSubjects(fetchedSubjects);
-        }
-        catch (error) {
+        } catch (error) {
             console.error("Error fetching announcements:", error);
         }
     };
 
-
     const createAnnouncement = async (data: CreateAnnouncementData) => {
-
         try {
             const res = await api.post<Announcement>("announcements/create/", data);
-            setAnnouncements(prev => [...prev, res.data])
-        }
-        catch (error) {
+            setAnnouncements((prev) => [...prev, res.data]);
+        } catch (error) {
             console.error("Error creating announcement:", error);
         }
     };
@@ -111,22 +129,22 @@ export default function AnnouncementPage() {
             const values = await announcementForm.validateFields();
             if (!values.subject) return;
 
-            const [sName, sgID, sgcID] = values.subject.split("-")
+
+            const [sName, sgID, sgcID] = String(values.subject).split("-");
 
             const payload: CreateAnnouncementData = {
                 title: values.title,
                 content: values.content,
                 subject_name: sName,
-                grade_id: sgID,
-                category_id: sgcID,
+                grade_id: +sgID,
+                category_id: +sgcID,
             };
 
             await createAnnouncement(payload);
 
             announcementForm.resetFields();
             setIsModalOpen(false);
-        } 
-        catch (error) {
+        } catch (error) {
             console.log("Validation failed:", error);
         }
     };
@@ -134,8 +152,6 @@ export default function AnnouncementPage() {
     useEffect(() => {
         fetchAnnouncements(selectedSubjectId);
     }, [selectedSubjectId]);
-
-
 
     return (
         <div className={styles.dropDownWrapper}>
@@ -145,12 +161,9 @@ export default function AnnouncementPage() {
                         Add Announcement
                     </Button>
                 )}
+
                 <Dropdown
-                    popupRender={(menu) => (
-                        <div style={{ maxHeight: 200, overflowY: "auto" }}>
-                            {menu}
-                        </div>
-                    )}
+                    popupRender={(menu) => <div style={{ maxHeight: 200, overflowY: "auto" }}>{menu}</div>}
                     menu={{
                         items: [
                             ...subjects.map((s) => ({
@@ -164,16 +177,14 @@ export default function AnnouncementPage() {
                     trigger={["click"]}
                     arrow={{ pointAtCenter: true }}
                 >
-                    <Button style={{display: 'flex', alignItems: 'center', gap: '5px'}} >
+                    <Button style={{ display: "flex", alignItems: "center", gap: "5px" }}>
                         {selectedSubjectId
                             ? subjects.find((s) => s.id === selectedSubjectId)?.name
-                            : "Choose the subject"
-                        }
+                            : "Choose the subject"}
                         <span>▼</span>
                     </Button>
                 </Dropdown>
             </div>
-
 
             <Modal
                 title="Create Announcement"
@@ -191,7 +202,6 @@ export default function AnnouncementPage() {
                         <Input placeholder="Enter announcement title" />
                     </Form.Item>
 
-
                     <Form.Item
                         label="Subject"
                         name="subject"
@@ -199,13 +209,15 @@ export default function AnnouncementPage() {
                     >
                         <Select placeholder="Select a subject">
                             {subjects.map((s) => (
-                                <Select.Option key={s.id} value={`${s.name}-${s.grade.grade_id}-${s.grade.grade_category_id}`}>
+                                <Select.Option
+                                    key={s.id}
+                                    value={`${s.name}-${s.grade.grade_id}-${s.grade.grade_category_id}`}
+                                >
                                     {`${s.name} (${s.grade.grade_name}-${s.grade.grade_category_name})`}
                                 </Select.Option>
                             ))}
                         </Select>
                     </Form.Item>
-
 
                     <Form.Item
                         label="Content"
@@ -216,9 +228,6 @@ export default function AnnouncementPage() {
                     </Form.Item>
                 </Form>
             </Modal>
-
-
-
 
             <div className={styles.announcementList}>
                 {announcements.length > 0 ? (
@@ -237,9 +246,7 @@ export default function AnnouncementPage() {
                                             <h3 className={styles.announcementTitle}>{item.title}</h3>
                                             <div className={styles.commentsWrapper}>
                                                 <MdComment size={22} />
-                                                <span className={styles.commentsCountStyle}>
-                                                    {item.len_comments}
-                                                </span>
+                                                <span className={styles.commentsCountStyle}>{item.len_comments}</span>
                                             </div>
                                         </div>
                                         <span className={styles.announcementDate}>
@@ -249,13 +256,13 @@ export default function AnnouncementPage() {
 
                                     <div className={styles.announcementMeta}>
                                         <span className={styles.metaItem}>
-                                            <strong>Author:</strong> {item.user}
+                                            <strong>Author:</strong> {displayName(item.user)}
                                         </span>
                                         <span className={styles.metaItem}>
-                                            <strong>Subject:</strong> {item.subject}
+                                            <strong>Subject:</strong> {displayName(item.subject)}
                                         </span>
                                         <span className={styles.metaItem}>
-                                            <strong>Grade:</strong> {item.grade.name} ({item.grade?.category.name})
+                                            <strong>Grade:</strong> {displayName(item.grade)} ({displayName(item?.grade?.category)})
                                         </span>
                                     </div>
 
@@ -270,8 +277,9 @@ export default function AnnouncementPage() {
                     </div>
                 )}
             </div>
+
             <Modal
-                title={`${announcementModalCaption} - Comments`}
+                title={`${announcementModalCaption ?? ""} - Comments`}
                 open={isSectionModalOpen}
                 onCancel={handleSectionModalCancel}
                 footer={null}
@@ -279,18 +287,20 @@ export default function AnnouncementPage() {
                 <List
                     size="small"
                     bordered
-                    dataSource={comments.slice().sort(
-                        (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-                    )}
+                    dataSource={comments
+                        .slice()
+                        .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())}
                     className={styles.commentsList}
                     renderItem={(item: Comment) => (
                         <List.Item className={styles.commentItem}>
-                            <div className={styles.outerWrapper} >
-                                <div className={styles.innerCommentItemSectionWrapper} >
+                            <div className={styles.outerWrapper}>
+                                <div className={styles.innerCommentItemSectionWrapper}>
                                     <div>
-                                        <u className={styles.insideCommentsAuthorStyle}>{item.user}</u>
+                                        <u className={styles.insideCommentsAuthorStyle}>{displayName(item.user)}</u>
                                     </div>
-                                    <span className={styles.commentsDateTimeStyle} >{new Date(item.created_at).toLocaleString()}</span>
+                                    <span className={styles.commentsDateTimeStyle}>
+                                        {new Date(item.created_at).toLocaleString()}
+                                    </span>
                                 </div>
                                 <span>{item.comment}</span>
                             </div>
@@ -298,12 +308,8 @@ export default function AnnouncementPage() {
                     )}
                     locale={{ emptyText: "No comments yet" }}
                 />
-                <Form
-                    form={commentForm}
-                    layout="inline"
-                    onFinish={onCommentSend}
-                    style={{ width: "100%" }}
-                >
+
+                <Form form={commentForm} layout="inline" onFinish={onCommentSend} style={{ width: "100%" }}>
                     <Form.Item
                         name="comment"
                         style={{ flex: 1 }}
@@ -320,6 +326,5 @@ export default function AnnouncementPage() {
                 </Form>
             </Modal>
         </div>
-
     );
 }

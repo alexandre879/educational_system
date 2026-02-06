@@ -16,7 +16,13 @@ export interface DashboardResponse {
   };
 
   subjects?: { id: number; name: string }[];
-  subjectPoints?: { subject: { id: number; name: string }; points: number }[];
+  subjectPoints?: {
+    subject: {
+      id: number;
+      name: string
+    };
+    points: number | null;
+  }[];
   announcements?: any[];
 
   sessions?: {
