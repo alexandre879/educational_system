@@ -233,8 +233,10 @@ class AvailableExamsView(APIView):
 
         finished_exam_ids = UserExamSession.objects.filter(
             user=request.user,
-            finished=True
+            ends_at__lte=timezone.now()
         ).values_list("exam_id", flat=True)
+        
+        print(finished_exam_ids)
         
         # finished_exams_name = Exam.objects.filter(
         #     pk__in=finished_exam_ids

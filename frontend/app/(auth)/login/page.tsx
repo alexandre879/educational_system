@@ -9,7 +9,7 @@ import Cookies from "cookies-js";
 const Login = () => {
 
 
-  const netIp: string = "192.168.1.190"
+  const netIp: string = "192.168.1.184"
 
   const [step, setStep] = useState<"email" | "otp">("email");
   const [email, setEmail] = useState("");

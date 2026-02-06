@@ -7,11 +7,12 @@ import styles from './MainLayout.module.scss';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { Dropdown, Modal, Space } from 'antd';
+import { Avatar, Dropdown, Modal, Space } from 'antd';
 import api from '@/interceptors';
 import { UserMeData } from './profile/interface';
 import { AxiosError, AxiosResponse } from 'axios';
 import Cookies from 'js-cookie';
+import { GrUserWorker } from 'react-icons/gr';
 
 export default function MainLayout({ children }: { children: ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -139,7 +140,8 @@ export default function MainLayout({ children }: { children: ReactNode }) {
                     <div className={styles.outerWrapperProfile}>
                       <div className={styles.userAndDropOutLineWrapper} >
                         <div className={styles.profilePictureWrapper}>
-                          {userMe?.profilePic && <Image src={userMe.profilePic} width={40} height={50} alt="Profile Picture" />}
+                          {/* {userMe?.profilePic && <Image src={userMe.profilePic} width={40} height={50} alt="Profile Picture" />} */}
+                          <Avatar src={userMe?.profilePic ?? undefined} className={styles.avatar} style={{ width: 60, height: 60 }} />
                         </div>
                       </div>
                     </div>
