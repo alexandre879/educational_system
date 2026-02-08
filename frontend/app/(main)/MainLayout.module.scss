@@ -1,6 +1,88 @@
-
-
 @import "../colors.scss";
+
+/* ================== SEARCH ================== */
+
+
+.searchBarComponent {
+  margin-bottom: 17px;
+}
+
+
+.searchInput {
+  width: 320px;
+
+  :global(.ant-input) {
+    height: 50px;
+    font-size: 14px;
+    background-color: #1f1f1f;
+    color: #f0f0f0;
+    border-color: #303030;
+  }
+
+  :global(.ant-input::placeholder) {
+    color: #8c8c8c;
+  }
+
+  :global(.ant-input-search-button) {
+    height: 50px;
+    background-color: #1677ff;
+    border-color: #1677ff;
+    color: white;
+    font-weight: 500;
+  }
+
+  :global(.ant-input-search-button:hover) {
+    background-color: #4096ff;
+    border-color: #4096ff;
+  }
+
+  /* ===== Tablet ===== */
+  @media (max-width: 1024px) {
+    width: 260px;
+
+    .searchBarComponent {
+      margin-bottom: 17px;
+    }
+
+    :global(.ant-input),
+    :global(.ant-input-search-button) {
+      height: 50px;
+      font-size: 13px;
+    }
+  }
+
+  /* ===== Mobile ===== */
+  @media (max-width: 768px) {
+    width: 230px;
+
+    .searchBarComponent {
+      margin-bottom: 17px;
+    }
+
+    :global(.ant-input),
+    :global(.ant-input-search-button) {
+      height: 50px;
+      font-size: 12.5px;
+    }
+  }
+
+  /* ===== Small phones ===== */
+  @media (max-width: 480px) {
+    width: 200px;
+
+    .searchBarComponent {
+      margin-bottom: 17px;
+    }
+
+    :global(.ant-input),
+    :global(.ant-input-search-button) {
+      height: 50px;
+      font-size: 12px;
+    }
+  }
+}
+
+/* ================== LAYOUT ================== */
 
 .layoutMainContainer {
   display: flex;
@@ -42,12 +124,12 @@
   transition: left 0.3s ease;
 }
 
-.schoolIcon {
-  font-size: 40px;
-}
-
 .navBarOpen {
   left: 0;
+}
+
+.schoolIcon {
+  font-size: 40px;
 }
 
 .mainLogoContainer {
@@ -72,7 +154,6 @@
   border-radius: 8px;
   cursor: pointer;
   color: $text_primary;
-
   transition: background-color 0.15s ease;
 
   &:hover {
@@ -88,7 +169,7 @@
 }
 
 .navIcon {
-  color: #1677ff;
+  color: #4693ff;
   flex-shrink: 0;
 }
 
@@ -96,12 +177,13 @@
   font-size: 15px;
 }
 
-/* ✅ ACTIVE MENU (no pseudo elements) */
+/* ===== ACTIVE MENU ===== */
+
 .activeLink {
   .pageRedirectionWrapper {
     background: rgba(22, 119, 255, 0.14);
     border-left: 3px solid #1677ff;
-    padding-left: 13px; /* 16 - 3 */
+    padding-left: 13px;
   }
 
   .MenuCommandSection {
@@ -123,14 +205,10 @@
   width: 100%;
   height: 10dvh;
   padding: 0 20px;
-
   background-color: $table_background;
   color: $text_primary;
   font-weight: 500;
-
   border-bottom: 1px solid rgb(74, 74, 74);
-
-  /* subtle separation (not a glow) */
   box-shadow: 0 8px 18px -14px rgba(0, 0, 0, 0.7);
 }
 
@@ -142,10 +220,11 @@
 }
 
 .myProfileWrapper {
-  cursor: pointer;
   width: fit-content;
   display: flex;
-  justify-content: end;
+  align-items: center;
+  cursor: pointer;
+  gap: 30px;
 }
 
 .profilePictureWrapper {
@@ -171,10 +250,7 @@
 .overlay {
   display: none;
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100dvh;
+  inset: 0;
   background-color: rgba(0, 0, 0, 0.4);
   z-index: 1000;
 }
@@ -183,34 +259,29 @@
 
 @media (max-width: 1024px) {
   .myProfileOuterWrapper {
-    display: flex;
     justify-content: start;
-    align-items: center;
   }
 
   .headerSection {
-    width: 100%;
-    display: flex;
     flex-direction: row-reverse;
     justify-content: space-between;
   }
 
   .myProfileWrapper {
-    display: flex;
+    flex-direction: row-reverse;
     justify-content: start;
   }
 
   .outerWrapperProfile {
-    display: flex;
     flex-direction: row-reverse;
   }
 
   .navBar {
-    z-index: 1500;
     position: fixed;
     top: 0;
     left: -250px;
     height: 100dvh;
+    z-index: 1500;
   }
 
   .navBarOpen {
@@ -228,18 +299,15 @@
 
 @media (max-width: 768px) {
   .navBar {
-    z-index: 1500;
     width: 220px;
   }
 
   .myProfileOuterWrapper {
     height: 100%;
-    align-items: center;
     justify-content: start;
   }
 
   .headerSection {
-    display: flex;
     justify-content: end;
   }
 }

@@ -85,10 +85,12 @@
 /* Empty */
 .noExams {
   min-height: 60vh; /* ✅ not height:100% */
-  display: grid;
-  place-items: center;
   gap: 10px;
-  text-align: center;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
 }
 
 .noExamsTitle {

@@ -1,82 +1,353 @@
+// @import "../../../../colors.scss";
+
+// .examMainContainer {
+//   background-color: $dark_background;
+//   color: $text_primary;
+//   padding: 20px;
+//   border-radius: 12px;
+//   min-height: 80vh;
+// }
+
+// .currentQuestionWrapper,
+// .specificQuestionWrapper {
+//   display: flex;
+//   align-items: center;
+//   gap: 5px;
+//   width: 100%;
+//   flex: 1 1 auto;
+// }
+
+// .buttonStyle {
+//   height: 40px;
+//   width: 120px;
+//   border-radius: 8px;
+//   background-color: $highlight_accent; 
+//   color: black;
+//   font-weight: 600;
+//   font-size: 14px;
+//   border: none;
+//   cursor: pointer;
+//   display: flex;
+//   align-items: center;
+//   justify-content: center;
+//   transition: all 0.3s ease;
+
+//   &:hover {
+//     background-color: lighten($highlight_accent, 10%);
+//     transform: translateY(-2px);
+//     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+//   }
+
+//   &:active {
+//     transform: translateY(0);
+//     box-shadow: none;
+//   }
+
+//   &:focus {
+//     outline: none;
+//     box-shadow: 0 0 0 3px rgba($highlight_accent, 0.5);
+//   }
+// }
+
+// .questionText {
+//   font-size: 20px;
+//   font-weight: bold;
+//   margin-bottom: 15px;
+// }
+
+// .optionsList {
+//   list-style: none;
+//   padding: 0;
+//   display: flex;
+//   flex-direction: column;
+//   gap: 10px;
+// }
+
+// .optionButton {
+//   background-color: $table_background;
+//   color: rgb(173, 173, 173);
+//   border: none;
+//   padding: 12px;
+//   border-radius: 8px;
+//   cursor: pointer;
+//   flex: 1 1 auto;
+//   display: flex;
+//   font-size: 0.9rem;
+
+//   &:hover {
+//     background-color: $table_row_hover;
+//   }
+
+//   &:disabled {
+//     opacity: 0.6;
+//     cursor: not-allowed;
+//   }
+// }
+
+// .progress {
+//   display: flex;
+//   flex-direction: column;
+//   gap: 7px;
+//   margin-top: 15px;
+//   font-size: 16px;
+//   color: $text_secondary;
+// }
+
+// .loader {
+//   width: 50px;
+//   padding: 8px;
+//   aspect-ratio: 1;
+//   border-radius: 50%;
+//   background: $highlight_accent;
+//   --_m: conic-gradient(#0000 10%, #000), linear-gradient(#000 0 0) content-box;
+//   -webkit-mask: var(--_m);
+//   mask: var(--_m);
+//   -webkit-mask-composite: source-out;
+//   mask-composite: subtract;
+//   animation: l3 1s infinite linear;
+// }
+
+// .loaderWrapper {
+//   display: flex;
+//   justify-content: center;
+//   align-items: center;
+//   width: 100%;
+//   min-height: 60vh;
+// }
+
+// .finalExamContainer {
+//   margin: 20px;
+//   background-color: $table_background;
+//   color: $text_primary;
+//   padding: 40px;
+//   border-radius: 12px;
+//   text-align: center;
+//   display: flex;
+//   flex-direction: column;
+//   align-items: center;
+//   gap: 15px;
+//   min-height: 60vh;
+// }
+
+// .finalHeader {
+//   font-size: 28px;
+//   font-weight: bold;
+//   color: $header_background; 
+// }
+
+// .finalScore {
+//   font-size: 22px;
+//   font-weight: 600;
+//   color: $highlight_accent;
+// }
+
+// .finalTotal {
+//   font-size: 18px;
+//   color: $text_primary;
+// }
+
+// .finalMessage {
+//   font-size: 16px;
+//   color: $text_secondary;
+// }
+
+
 @import "../../../../colors.scss";
 
+/* ================== PAGE WRAPPER ================== */
+
 .examMainContainer {
-  background-color: $dark_background;
-  color: $text_primary;
-  padding: 20px;
-  border-radius: 12px;
-  min-height: 80vh;
-}
-
-.currentQuestionWrapper,
-.specificQuestionWrapper {
-  display: flex;
-  align-items: center;
-  gap: 5px;
   width: 100%;
-  flex: 1 1 auto;
+  min-height: 80vh;
+
+  padding: 18px;
+  background: $dark_background;
+  color: $text_primary;
+
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
 }
 
-.buttonStyle {
-  height: 40px;
-  width: 120px;
-  border-radius: 8px;
-  background-color: $highlight_accent; 
-  color: black;
-  font-weight: 600;
-  font-size: 14px;
-  border: none;
-  cursor: pointer;
+/* A nice “card” feel for content */
+.examCard {
+  width: 100%;
+  max-width: 980px;
+  margin: 0 auto;
+
+  border-radius: 18px;
+  padding: 18px;
+
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+
+  box-shadow: 0 18px 50px -34px rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(10px);
+
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* ================== HEADER ================== */
+
+.examHeader {
   display: flex;
   align-items: center;
-  justify-content: center;
-  transition: all 0.3s ease;
+  justify-content: space-between;
+  gap: 12px;
 
-  &:hover {
-    background-color: lighten($highlight_accent, 10%);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-  }
+  min-width: 0;
+}
 
-  &:active {
-    transform: translateY(0);
-    box-shadow: none;
-  }
+.examTitle {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  min-width: 0;
 
-  &:focus {
-    outline: none;
-    box-shadow: 0 0 0 3px rgba($highlight_accent, 0.5);
+  h1 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 900;
+    color: $text_primary;
+
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 }
+
+.examBadge {
+  flex-shrink: 0;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: $highlight_accent;
+
+  padding: 6px 10px;
+  border-radius: 999px;
+
+  background: rgba(250, 173, 20, 0.08);
+  border: 1px solid rgba(250, 173, 20, 0.18);
+}
+
+.timer {
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  padding: 8px 12px;
+  border-radius: 999px;
+
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+
+  font-weight: 900;
+  color: $text_primary;
+}
+
+.timerDanger {
+  color: #ff4d4f; /* crimson-ish */
+  border-color: rgba(255, 77, 79, 0.35);
+  background: rgba(255, 77, 79, 0.08);
+}
+
+/* ================== QUESTION ================== */
 
 .questionText {
-  font-size: 20px;
-  font-weight: bold;
-  margin-bottom: 15px;
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 900;
+  line-height: 1.35;
+
+  padding: 12px 12px;
+  border-radius: 14px;
+
+  background: rgba(0, 0, 0, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.06);
 }
+
+/* ================== OPTIONS ================== */
 
 .optionsList {
   list-style: none;
   padding: 0;
+  margin: 0;
+
   display: flex;
   flex-direction: column;
   gap: 10px;
 }
 
-.optionButton {
-  background-color: $table_background;
-  color: rgb(173, 173, 173);
-  border: none;
-  padding: 12px;
-  border-radius: 8px;
-  cursor: pointer;
-  flex: 1 1 auto;
+/* clickable row */
+.specificQuestionWrapper {
+  width: 100%;
+  min-width: 0;
+
   display: flex;
-  font-size: 0.9rem;
+  align-items: center;
+  gap: 10px;
+
+  padding: 10px 10px;
+  border-radius: 14px;
+
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+
+  cursor: pointer;
+  transition: transform 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
 
   &:hover {
-    background-color: $table_row_hover;
+    transform: translateY(-1px);
+    border-color: rgba(22, 119, 255, 0.45);
+    background: rgba(22, 119, 255, 0.06);
   }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+/* number bubble */
+.optionIndex {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  border-radius: 10px;
+
+  display: grid;
+  place-items: center;
+
+  font-weight: 900;
+  font-size: 0.9rem;
+
+  color: $text_primary;
+  background: rgba(0, 0, 0, 0.28);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* the button itself */
+.optionButton {
+  flex: 1;
+  min-width: 0;
+
+  background: transparent;
+  border: none;
+  color: $text_primary;
+  text-align: left;
+
+  font-size: 0.95rem;
+  font-weight: 700;
+  line-height: 1.25;
+
+  padding: 10px 10px;
+  border-radius: 12px;
+
+  cursor: pointer;
+  transition: background-color 0.15s ease;
 
   &:disabled {
     opacity: 0.6;
@@ -84,17 +355,51 @@
   }
 }
 
+/* locked state - you already control opacity inline,
+   but this keeps it nice if you switch to a class later */
+.locked {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+/* ================== PROGRESS ================== */
+
 .progress {
+  max-width: 200px;
+  width: 100%;
   display: flex;
-  flex-direction: column;
-  gap: 7px;
-  margin-top: 15px;
-  font-size: 16px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+
+  padding: 12px;
+  border-radius: 14px;
+
+  background: rgba(0, 0, 0, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+
   color: $text_secondary;
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.progress strong {
+  color: $text_primary;
+  font-weight: 900;
+}
+
+/* ================== LOADER ================== */
+
+.loaderWrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  min-height: 60vh;
 }
 
 .loader {
-  width: 50px;
+  width: 52px;
   padding: 8px;
   aspect-ratio: 1;
   border-radius: 50%;
@@ -107,46 +412,148 @@
   animation: l3 1s infinite linear;
 }
 
-.loaderWrapper {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  min-height: 60vh;
+@keyframes l3 {
+  to {
+    transform: rotate(1turn);
+  }
 }
 
+/* ================== FINAL SCREEN ================== */
+
 .finalExamContainer {
-  margin: 20px;
-  background-color: $table_background;
+  width: 100%;
+  max-width: 760px;
+  margin: 20px auto;
+
+  background: rgba(255, 255, 255, 0.02);
   color: $text_primary;
-  padding: 40px;
-  border-radius: 12px;
+
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 18px;
+
+  padding: 26px 18px;
   text-align: center;
+
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 15px;
-  min-height: 60vh;
+  gap: 12px;
+
+  box-shadow: 0 18px 50px -34px rgba(0, 0, 0, 0.75);
 }
 
 .finalHeader {
-  font-size: 28px;
-  font-weight: bold;
-  color: $header_background; 
+  font-size: 1.5rem;
+  font-weight: 1000;
+  letter-spacing: 0.2px;
+  color: $text_primary;
 }
 
 .finalScore {
-  font-size: 22px;
-  font-weight: 600;
+  font-size: 1.25rem;
+  font-weight: 900;
   color: $highlight_accent;
 }
 
 .finalTotal {
-  font-size: 18px;
+  font-size: 1rem;
   color: $text_primary;
+  opacity: 0.9;
 }
 
 .finalMessage {
-  font-size: 16px;
+  font-size: 0.95rem;
   color: $text_secondary;
+  max-width: 52ch;
+}
+
+/* ================== BUTTON ================== */
+
+.buttonStyle {
+  height: 42px;
+  width: 140px;
+  border-radius: 12px;
+
+  background-color: $highlight_accent;
+  color: black;
+
+  font-weight: 900;
+  font-size: 14px;
+
+  border: none;
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+
+  &:hover {
+    background-color: lighten($highlight_accent, 10%);
+    transform: translateY(-1px);
+    box-shadow: 0 14px 28px -20px rgba(0, 0, 0, 0.6);
+  }
+
+  &:active {
+    transform: translateY(0);
+    box-shadow: none;
+  }
+
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba($highlight_accent, 0.4);
+  }
+}
+
+/* ================== RESPONSIVE ================== */
+
+@media (max-width: 1024px) {
+  .examMainContainer {
+    padding: 16px;
+  }
+
+  .examCard {
+    padding: 16px;
+    border-radius: 16px;
+  }
+
+  .questionText {
+    font-size: 1.08rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .examMainContainer {
+    padding: 14px;
+  }
+
+  .examHeader {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .timer {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .subjectPill,
+  .examBadge {
+    max-width: 100%;
+  }
+
+  .questionText {
+    font-size: 1.02rem;
+  }
+
+  .optionIndex {
+    width: 26px;
+    height: 26px;
+    border-radius: 9px;
+  }
+
+  .buttonStyle {
+    width: 100%;
+  }
 }

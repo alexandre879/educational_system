@@ -14,7 +14,7 @@ import {
 import styles from "./MainLayout.module.scss";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Avatar, Dropdown, Modal, Space } from "antd";
+import { Avatar, Dropdown, Modal, Space, Input, AutoComplete } from "antd";
 import api from "@/interceptors";
 import { UserMeData } from "./profile/interface";
 import { AxiosError, AxiosResponse } from "axios";
@@ -23,7 +23,7 @@ import Cookies from "js-cookie";
 
 
 export default function MainLayout({ children }: { children: ReactNode }) {
-  
+
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [userMe, setUserMe] = useState<UserMeData | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -46,10 +46,10 @@ export default function MainLayout({ children }: { children: ReactNode }) {
   const handleLogout = async () => {
     try {
       await api.post("/user/logout/", { refresh: Cookies.get("refresh") });
-    } 
+    }
     catch (err) {
       console.log("Logout failed:", err);
-    } 
+    }
     finally {
       Cookies.remove("access");
       Cookies.remove("refresh");
@@ -105,6 +105,34 @@ export default function MainLayout({ children }: { children: ReactNode }) {
     },
   ];
 
+
+  const dataSource = [
+    "Math",
+    "Physics",
+    "Chemistry",
+    "Biology",
+    "History",
+    "Geography",
+  ];
+
+  const handleSearch = (value: string) => {
+    if (!value) {
+      setOptions([]);
+      return;
+    }
+
+    setOptions(
+      dataSource
+        .filter(item =>
+          item.toLowerCase().includes(value.toLowerCase())
+        )
+        .map(item => ({ value: item }))
+    );
+  };
+
+
+  const [options, setOptions] = useState<{ value: string }[]>([]);
+
   return (
     <div className={styles.layoutMainContainer}>
       <nav className={`${styles.navBar} ${sidebarOpen ? styles.navBarOpen : ""}`}>
@@ -133,6 +161,22 @@ export default function MainLayout({ children }: { children: ReactNode }) {
 
           <div className={styles.myProfileOuterWrapper}>
             <div className={styles.myProfileWrapper}>
+              {/* <Input.Search className={styles.searchInput} placeholder="input search text" onSearch={() => {}} enterButton /> */}
+              <div className={styles.searchBarComponent} >
+                <AutoComplete
+                  options={options}
+                  onSearch={handleSearch}
+                  onSelect={(value) => {
+                    console.log("Selected:", value);
+                  }}
+                  className={styles.searchInput}
+                >
+                  <Input.Search
+                    placeholder="Search subject..."
+                    enterButton
+                  />
+                </AutoComplete>
+              </div>
               <Dropdown
                 trigger={["click"]}
                 menu={{ items: dropdownItems, onClick: onDropdownClick }}

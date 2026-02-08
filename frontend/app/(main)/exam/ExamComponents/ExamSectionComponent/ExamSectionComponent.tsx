@@ -43,6 +43,8 @@ const ExamSectionComponent = (props: ExamListData) => {
     Cookies.set(subject.toLowerCase(), subject);
   };
 
+
+
   return (
     <button
       type="button"
@@ -52,7 +54,7 @@ const ExamSectionComponent = (props: ExamListData) => {
       <div className={styles.cardTop}>
         <div className={styles.title} title={props.title}>
           <span className={styles.emoji}>{subjectEmoji(props.subject)}</span>
-          <span className={styles.titleText}>{props.title}</span>
+          <span className={styles.titleText}>{props.title.split('-')[0]}</span>
         </div>
 
         <div className={styles.subjectPill}>{props.subject}</div>
