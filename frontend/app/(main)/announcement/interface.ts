@@ -10,9 +10,10 @@ export interface Announcement {
     title: string;
     content: string;
     subject: string;
-    grade: {name: string, category: {name: string}};
+    grade: {id: number, name: string, category_name: string};
     user: string;
     created_at: string;
+    created_by: {id: number, email: string, name: string};
     len_comments: number;
 }
 
@@ -24,12 +25,6 @@ export interface CreateAnnouncementData {
     grade_id: number;
     category_id: number;
 }
-
-
-// export interface GradeCategory {
-//     id: number;
-//     name: string;
-// }
 
 
 export interface Grade {
@@ -62,6 +57,7 @@ export interface Categories {
 
 
 export interface Comment {
+    id: number;
     picture: string | null
     user: string
     comment: string;

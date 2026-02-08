@@ -1,20 +1,29 @@
-'use client';
+"use client";
 
-import React, { ReactNode, useEffect, useState } from 'react';
-import { FaBars, FaHome, FaTrophy, FaFileAlt, FaBookOpen, FaSchool, FaBullhorn, FaRobot } from 'react-icons/fa';
-import { DownOutlined } from '@ant-design/icons';
-import styles from './MainLayout.module.scss';
-import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
-import Image from 'next/image';
-import { Avatar, Dropdown, Modal, Space } from 'antd';
-import api from '@/interceptors';
-import { UserMeData } from './profile/interface';
-import { AxiosError, AxiosResponse } from 'axios';
-import Cookies from 'js-cookie';
-import { GrUserWorker } from 'react-icons/gr';
+import React, { ReactNode, useEffect, useState } from "react";
+import {
+  FaBars,
+  FaHome,
+  FaTrophy,
+  FaFileAlt,
+  FaBookOpen,
+  FaSchool,
+  FaBullhorn,
+  FaRobot,
+} from "react-icons/fa";
+import styles from "./MainLayout.module.scss";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
+import { Avatar, Dropdown, Modal, Space } from "antd";
+import api from "@/interceptors";
+import { UserMeData } from "./profile/interface";
+import { AxiosError, AxiosResponse } from "axios";
+import Cookies from "js-cookie";
+
+
 
 export default function MainLayout({ children }: { children: ReactNode }) {
+  
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [userMe, setUserMe] = useState<UserMeData | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -22,43 +31,25 @@ export default function MainLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
 
-
-  const showModal = () => {
-    setIsModalOpen(true);
-  };
-
-  const handleOk = () => {
-    setIsModalOpen(false);
-    handleLogout()
-  };
-
-  const handleCancel = () => {
-    setIsModalOpen(false);
-  };
-
-
-
-
   useEffect(() => {
     setSidebarOpen(false);
-    api.get<UserMeData>('/user/me/')
-      .then((res: AxiosResponse<UserMeData>) => { setUserMe(res.data), console.log(res.data) })
+    api
+      .get<UserMeData>("/user/me/")
+      .then((res: AxiosResponse<UserMeData>) => setUserMe(res.data))
       .catch((err: AxiosError) => console.log(err.message));
   }, [pathname]);
 
-  const toggleSidebar = () => setSidebarOpen(prev => !prev);
+  const toggleSidebar = () => setSidebarOpen((prev) => !prev);
 
-
-  const onDropdownClick = ({ key }: { key: string }) => { if (key === 'logout') showModal() }
-
+  const showModal = () => setIsModalOpen(true);
 
   const handleLogout = async () => {
     try {
-      await api.post("/user/logout/", { refresh: Cookies.get('refresh') });
-    }
+      await api.post("/user/logout/", { refresh: Cookies.get("refresh") });
+    } 
     catch (err) {
       console.log("Logout failed:", err);
-    }
+    } 
     finally {
       Cookies.remove("access");
       Cookies.remove("refresh");
@@ -66,82 +57,97 @@ export default function MainLayout({ children }: { children: ReactNode }) {
     }
   };
 
+  const handleOk = () => {
+    setIsModalOpen(false);
+    handleLogout();
+  };
+
+  const handleCancel = () => setIsModalOpen(false);
+
+  const onDropdownClick = ({ key }: { key: string }) => {
+    if (key === "logout") showModal();
+    if (key === "profile") router.push("/profile");
+  };
 
   const dropdownItems = [
-    {
-      key: 'profile',
-      label: <Link href="/profile">Profile</Link>,
-    },
-    {
-      key: 'logout',
-      danger: true,
-      label: 'Logout',
-    },
+    { key: "profile", label: "Profile" },
+    { key: "logout", danger: true, label: "Logout" },
   ];
 
 
+  const isActive = (href: string) => {
+    if (href === "/home") return pathname === "/home" || pathname === "/";
+    return pathname === href || pathname.startsWith(href + "/");
+  };
+
+  const navItems = [
+    { href: "/home", label: "HOME", icon: <FaHome className={styles.navIcon} /> },
+    {
+      href: "/announcement",
+      label: "ANNOUNCEMENT",
+      icon: <FaBullhorn className={styles.navIcon} />,
+    },
+    {
+      href: "/leader-board",
+      label: "LEADER BOARD",
+      icon: <FaTrophy className={styles.navIcon} />,
+    },
+    {
+      href: "/exercise",
+      label: "EXERCISE",
+      icon: <FaBookOpen className={styles.navIcon} />,
+    },
+    { href: "/exam", label: "EXAM", icon: <FaFileAlt className={styles.navIcon} /> },
+    {
+      href: "/aisupport",
+      label: "AI SUPPORT",
+      icon: <FaRobot className={styles.navIcon} />,
+    },
+  ];
 
   return (
     <div className={styles.layoutMainContainer}>
-      <nav className={`${styles.navBar} ${sidebarOpen ? styles.navBarOpen : ''}`}>
+      <nav className={`${styles.navBar} ${sidebarOpen ? styles.navBarOpen : ""}`}>
         <div className={styles.mainLogoContainer}>
-          <FaSchool className={styles.schoolIcon} /> My School
+          <FaSchool className={styles.schoolIcon} /> <span>MY SCHOOL</span>
         </div>
 
-        <Link className={styles.redirectionCaptions} href="/home">
-          <div className={styles.pageRedirectionWrapper}>
-            <FaHome className={styles.navIcon} /> Home
-          </div>
-        </Link>
-
-        <Link className={styles.redirectionCaptions} href="/announcement">
-          <div className={styles.pageRedirectionWrapper}>
-            <FaBullhorn className={styles.navIcon} /> Announcement
-          </div>
-        </Link>
-
-        <Link className={styles.redirectionCaptions} href="/leader-board">
-          <div className={styles.pageRedirectionWrapper}>
-            <FaTrophy className={styles.navIcon} /> Leader-board
-          </div>
-        </Link>
-
-        <Link className={styles.redirectionCaptions} href="/exercise">
-          <div className={styles.pageRedirectionWrapper}>
-            <FaBookOpen className={styles.navIcon} /> Exercise
-          </div>
-        </Link>
-
-        <Link className={styles.redirectionCaptions} href="/exam">
-          <div className={styles.pageRedirectionWrapper}>
-            <FaFileAlt className={styles.navIcon} /> Exam
-          </div>
-        </Link>
-            
-        <Link className={styles.redirectionCaptions} href={'/aisupport'} >
-          <div className={styles.pageRedirectionWrapper} >
-              <FaRobot className={styles.navIcon} /> AI Support
-          </div>
-        </Link>
+        {navItems.map((item) => (
+          <Link
+            key={item.href}
+            href={item.href}
+            className={`${styles.redirectionCaptions} ${isActive(item.href) ? styles.activeLink : ""}`}
+            aria-current={isActive(item.href) ? "page" : undefined}
+          >
+            <div className={styles.pageRedirectionWrapper}>
+              {item.icon}
+              <span className={styles.MenuCommandSection}>{item.label}</span>
+            </div>
+          </Link>
+        ))}
       </nav>
-
-
-
 
       <div className={styles.headerAndMainWrapper}>
         <header className={styles.headerSection}>
           <FaBars className={styles.burgerIcon} onClick={toggleSidebar} />
 
-          <div className={styles.myProfileOuterWrapper} >
+          <div className={styles.myProfileOuterWrapper}>
             <div className={styles.myProfileWrapper}>
-              <Dropdown trigger={['click']} menu={{ items: dropdownItems, onClick: onDropdownClick }} placement="bottomRight">
+              <Dropdown
+                trigger={["click"]}
+                menu={{ items: dropdownItems, onClick: onDropdownClick }}
+                placement="bottomRight"
+              >
                 <a onClick={(e) => e.preventDefault()}>
                   <Space>
                     <div className={styles.outerWrapperProfile}>
-                      <div className={styles.userAndDropOutLineWrapper} >
+                      <div className={styles.userAndDropOutLineWrapper}>
                         <div className={styles.profilePictureWrapper}>
-                          {/* {userMe?.profilePic && <Image src={userMe.profilePic} width={40} height={50} alt="Profile Picture" />} */}
-                          <Avatar src={userMe?.profilePic ?? undefined} className={styles.avatar} style={{ width: 60, height: 60 }} />
+                          <Avatar
+                            src={userMe?.profilePic ?? undefined}
+                            className={styles.avatar}
+                            style={{ width: 40, height: 50 }}
+                          />
                         </div>
                       </div>
                     </div>
@@ -155,20 +161,16 @@ export default function MainLayout({ children }: { children: ReactNode }) {
         <main className={styles.childrenPassingContainer}>{children}</main>
       </div>
 
-
-
-
       {sidebarOpen && <div className={styles.overlay} onClick={toggleSidebar}></div>}
+
       <Modal
         title="Are you sure you wanna log out ?"
-        closable={{ 'aria-label': 'Custom Close Button' }}
+        closable={{ "aria-label": "Custom Close Button" }}
         open={isModalOpen}
         onOk={handleOk}
         onCancel={handleCancel}
         styles={{ mask: { zIndex: 1000 } }}
-      >
-      </Modal>
-
+      />
     </div>
   );
 }

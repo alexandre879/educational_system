@@ -29,7 +29,7 @@ export default function AnnouncementPage() {
 
 
 
-    const displayName = (v: unknown): string =>  {
+    const displayName = (v: unknown): string => {
         if (v == null) return "";
         if (typeof v === "string" || typeof v === "number") return String(v);
 
@@ -45,11 +45,15 @@ export default function AnnouncementPage() {
     const onCommentSend = async (values: { comment: string }) => {
         if (!values.comment || !announcementId) return;
 
+        // console.log(announcements.map(item => item.id === announcementId ? item.comments.length : '0'))
+        console.log(announcementId)
+
         try {
             const res = await api.post<Comment>("comments/create/", {
                 comment: values.comment,
                 announcement: announcementId,
             });
+
 
             setComments((prev) => [...prev, res.data]);
             setAnnouncements((prev) =>
@@ -59,7 +63,8 @@ export default function AnnouncementPage() {
             );
 
             commentForm.resetFields();
-        } catch (error) {
+        }
+        catch (error) {
             console.log(error);
         }
     };
@@ -180,7 +185,7 @@ export default function AnnouncementPage() {
                     <Button style={{ display: "flex", alignItems: "center", gap: "5px" }}>
                         {selectedSubjectId
                             ? subjects.find((s) => s.id === selectedSubjectId)?.name
-                            : "Choose the subject"}
+                            : "Choose a subject"}
                         <span>▼</span>
                     </Button>
                 </Dropdown>
@@ -235,7 +240,7 @@ export default function AnnouncementPage() {
                         {announcements
                             .slice()
                             .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
-                            .map((item) => (
+                            .map((item, i) => (
                                 <div
                                     key={item.id}
                                     className={styles.announcementCard}
@@ -256,13 +261,13 @@ export default function AnnouncementPage() {
 
                                     <div className={styles.announcementMeta}>
                                         <span className={styles.metaItem}>
-                                            <strong>Author:</strong> {displayName(item.user)}
+                                            <strong>Author:</strong> {displayName(item.created_by.email)}
                                         </span>
                                         <span className={styles.metaItem}>
                                             <strong>Subject:</strong> {displayName(item.subject)}
                                         </span>
                                         <span className={styles.metaItem}>
-                                            <strong>Grade:</strong> {displayName(item.grade)} ({displayName(item?.grade?.category)})
+                                            <strong>Grade:</strong> {displayName(item.grade.name)} ({displayName(item?.grade?.category_name)})
                                         </span>
                                     </div>
 

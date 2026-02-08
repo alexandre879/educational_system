@@ -19,7 +19,7 @@ from .models import (
     UserSubjectPoints,
     Question,
 )
-from django.db.models import Count, IntegerField, Value
+from django.db.models import Count, IntegerField, Value, Q
 from django.db.models.functions import Coalesce
 from api.serializers import VerifyOtpSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -229,23 +229,22 @@ class AvailableExamsView(APIView):
     def get(self, request: Request) -> Response:
 
         user: User = request.user
-
-
-        finished_exam_ids = UserExamSession.objects.filter(
-            user=request.user,
-            ends_at__lte=timezone.now()
-        ).values_list("exam_id", flat=True)
         
-        print(finished_exam_ids)
+
+        blocked_exam_ids = (
+            UserExamSession.objects.filter(
+                user=request.user
+            ).filter(Q(finished=True) | Q(expired=True) | Q(ends_at__lte=timezone.now())
+            ).values_list("exam_id", flat=True)
+        )
         
-        # finished_exams_name = Exam.objects.filter(
-        #     pk__in=finished_exam_ids
-        # ).values_list("title", flat=True)
+        
+        print(blocked_exam_ids)
         
 
         available_exams = (
             Exam.objects.filter(grade=user.grade_in)
-            .exclude(pk__in=finished_exam_ids)
+            .exclude(pk__in=blocked_exam_ids)
             .prefetch_related("questions")
         )
 
@@ -284,16 +283,9 @@ class StartOrResumeOrFinishExamSessionView(APIView):
             }
         )
 
-        # already finished
-        if session.finished:
-            return Response(
-                {"error": "You already completed this exam."},
-                status=status.HTTP_400_BAD_REQUEST
-            )
+        if session.finished: return Response( {"error": "You already completed this exam."}, status=status.HTTP_400_BAD_REQUEST)
 
-        # start if not started OR no ends_at
-        if not session.started or not session.ends_at:
-            session.start()
+        if not session.started or not session.ends_at: session.start()
 
         # if expired -> terminate
         if session.is_expired:
