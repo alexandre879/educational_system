@@ -210,6 +210,8 @@ class UserExamSession(models.Model):
 
     submitted_at = models.DateTimeField(null=True, blank=True)
     is_active = models.BooleanField(default=True)
+    
+    expired = models.BooleanField(default=False)
 
     def start(self):
         if not self.started_at:
@@ -228,6 +230,7 @@ class UserExamSession(models.Model):
 
     def terminate(self):
         self.is_active = False
+        self.expired = True
         self.finished = True
         if not self.submitted_at:
             self.submitted_at = timezone.now()

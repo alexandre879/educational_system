@@ -1,45 +1,75 @@
+
 import styles from "./ExamSectionComponent.module.scss";
 import { ExamListData } from "../../interface";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 
+const subjectEmoji = (subject: string) => {
+  switch (subject.toLowerCase()) {
+    case "math":
+      return "➗";
+    case "science":
+      return "🔬";
+    case "physic":
+      return "🪐";
+    case "computer science":
+      return "💻";
+    case "history":
+      return "📜";
+    case "english":
+      return "🇺🇸";
+    case "italy":
+      return "🇮🇹";
+    case "geography":
+      return "🌍";
+    case "georgia":
+      return "🇬🇪";
+    case "german":
+      return "🇩🇪";
+    case "spanish":
+      return "🇪🇸";
+    case "france":
+      return "🇫🇷";
+    default:
+      return "📝";
+  }
+};
+
 const ExamSectionComponent = (props: ExamListData) => {
   const router = useRouter();
-
-  const subjectEmoji = (subject: string) => {
-    switch(subject.toLowerCase()) {
-      case "math": return "➗";
-      case "science": return "🔬";
-      case "physic": return "🪐"; 
-      case "computer science": return "💻"; 
-      case "history": return "📜";
-      case "english": return "🇺🇸";
-      case "italy": return "🇮🇹";
-      case "geography": return "🌍";
-      case "georgia": return "🇬🇪";
-      case "german": return "🇩🇪";
-      case "spanish": return "🇪🇸";
-      case "france": return "🇫🇷";
-      default: return "📝";
-    }
-  }
 
   const onExamSectionClick = (examId: number, subject: string) => {
     router.push(`/exam/${examId}/start`);
     Cookies.set(subject.toLowerCase(), subject);
-  }
+  };
 
   return (
-    <div className={styles.ExamSectionMainContainer} onClick={() => onExamSectionClick(props.id, props.subject)} >
-      <h3 className={styles.examTitle}>
-        {subjectEmoji(props.subject)} {props.title}
-      </h3>
-      <p className={styles.examSubject}>Subject: {props.subject}</p>
-      <ul className={styles.examInfoList}>
-        <li className={styles.examDuration}>⏱ Duration: <span>{props.duration}m</span></li>
-        <li className={styles.examQuestions}>Questions: <span>{props.questions_count}</span></li>
-      </ul>
-    </div>
+    <button
+      type="button"
+      className={styles.card}
+      onClick={() => onExamSectionClick(props.id, props.subject)}
+    >
+      <div className={styles.cardTop}>
+        <div className={styles.title} title={props.title}>
+          <span className={styles.emoji}>{subjectEmoji(props.subject)}</span>
+          <span className={styles.titleText}>{props.title}</span>
+        </div>
+
+        <div className={styles.subjectPill}>{props.subject}</div>
+      </div>
+
+      <div className={styles.metaRow}>
+        <div className={styles.metaItem}>
+          <span className={styles.metaLabel}>Duration</span>
+          <span className={styles.metaValue}>⏱ {props.duration}m</span>
+        </div>
+
+        <div className={styles.metaItem}>
+          <span className={styles.metaLabel}>Questions</span>
+          <span className={styles.metaValue}>🧩 {props.questions_count}</span>
+        </div>
+      </div>
+    </button>
   );
 };
 

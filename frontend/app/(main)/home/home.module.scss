@@ -1,49 +1,22 @@
-
 // Backgrounds
 $dark_background: #141414; // AntD gray10
 $table_background: #1f1f1f; // AntD gray9
-$table_row_hover: #262626;  // AntD gray8
+$table_row_hover: #262626; // AntD gray8
 $header_background: #1f1f1f;
 
 // Brand / Primary
-$primary_blue: #1677ff;        // AntD blue6
-$primary_blue_hover: #4096ff;  // AntD blue5
+$primary_blue: #1677ff; // AntD blue6
+$primary_blue_hover: #4096ff; // AntD blue5
 $primary_blue_active: #0958d9; // AntD blue7
 
 // Accent
 $highlight_accent: #faad14; // AntD gold6
 
 // Text
-$text_primary: #f0f0f0;   // AntD gray4
+$text_primary: #f0f0f0; // AntD gray4
 $text_secondary: #8c8c8c; // AntD gray7
 
-
 /* ================== PAGE ================== */
-
-
-.activeExamsList {
-  display: flex;
-  align-items: center;
-  width: 100%;
-  height: 40px;
-  background-color: #2084ff;
-  margin-bottom: 3px;
-  font-size: 19px;
-  border-radius: 10px;
-  padding-left: 5px;
-  color: white;
-  transition: background-color 0.2s ease;
-
-  &:hover {
-    background-color: #357ed8;
-    cursor: pointer;
-  }
-}
-
-.leaderNameSecond {
-  color: grey !important;
-  font-weight: 200;
-}
 
 .page {
   padding: 24px;
@@ -70,8 +43,12 @@ $text_secondary: #8c8c8c; // AntD gray7
 .muted {
   color: rgb(192, 192, 192);
   font-size: 0.95rem;
-}
 
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 
 /* ================== HEADER ================== */
 
@@ -94,6 +71,7 @@ $text_secondary: #8c8c8c; // AntD gray7
   align-items: center;
   gap: 14px;
   min-width: 0;
+  flex-wrap: wrap; // ✅ wrap on small screens
 }
 
 .avatar {
@@ -107,6 +85,7 @@ $text_secondary: #8c8c8c; // AntD gray7
   flex-direction: column;
   gap: 8px;
   min-width: 0;
+  flex: 1;
 }
 
 .title {
@@ -120,28 +99,26 @@ $text_secondary: #8c8c8c; // AntD gray7
   flex-wrap: wrap;
   gap: 10px;
   align-items: center;
+  min-width: 0;
 }
 
 .preCaptions {
   color: rgb(122, 122, 122) !important;
 }
 
-
-
 /* ================== GRIDS ================== */
 
 .grid3 {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
   gap: 14px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
 .grid2 {
   display: grid;
-  grid-template-columns: 1.4fr 1fr;
   gap: 14px;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
 }
-
 
 /* ================== CARD BASE ================== */
 
@@ -151,7 +128,8 @@ $text_secondary: #8c8c8c; // AntD gray7
   background: $table_background;
   border: 1px solid $table_row_hover;
   min-width: 0;
-  cursor: pointer;
+
+  cursor: default;
 
   transition: background 0.15s ease, border-color 0.15s ease;
 
@@ -159,6 +137,10 @@ $text_secondary: #8c8c8c; // AntD gray7
     background: $table_row_hover;
     border-color: $primary_blue_hover;
   }
+}
+
+.cardClickable {
+  cursor: pointer;
 }
 
 .cardLabel {
@@ -180,15 +162,48 @@ $text_secondary: #8c8c8c; // AntD gray7
   color: $text_primary;
 }
 
-
-
 /* ================== CHART ================== */
 
 .chartBox {
   width: 100%;
-  /* height comes from React */
+  min-height: 180px; // ✅ charts never collapse
 }
 
+/* Center content inside gauge */
+.gaugeCenter {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 6px;
+  pointer-events: none;
+}
+
+.gaugePct {
+  font-size: 28px !important;
+  font-weight: 800 !important;
+  color: #e5e7eb !important;
+}
+
+.gaugeSub {
+  font-size: 12px !important;
+  color: #9ca3af !important;
+}
+
+.gaugeDelta {
+  font-size: 12px !important;
+  font-weight: 700 !important;
+}
+
+/* chips under gauge */
+.badgeRow {
+  display: flex;
+  gap: 10px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
 
 /* ================== ACTIVE SESSIONS LIST ================== */
 
@@ -232,7 +247,6 @@ $text_secondary: #8c8c8c; // AntD gray7
   min-width: 0;
   max-width: 420px;
 }
-
 
 /* ================== TABLE (RECENT SESSIONS) ================== */
 
@@ -283,7 +297,6 @@ $text_secondary: #8c8c8c; // AntD gray7
   font-weight: 700;
 }
 
-
 /* ================== LEADERBOARD ================== */
 
 .leaderboardHeader {
@@ -321,6 +334,7 @@ $text_secondary: #8c8c8c; // AntD gray7
   border-radius: 14px;
   background: #272727;
 
+  min-width: 0;
 
   &:hover {
     background: rgb(54, 54, 54);
@@ -329,7 +343,6 @@ $text_secondary: #8c8c8c; // AntD gray7
 
 .leaderboardMe {
   border: 1px solid green;
-  border-color: green;
 }
 
 .leaderboardLeft {
@@ -337,18 +350,14 @@ $text_secondary: #8c8c8c; // AntD gray7
   align-items: center;
   gap: 10px;
   min-width: 0;
+  flex: 1;
 }
 
 .rank {
   width: 46px;
   color: $text_secondary;
   font-weight: 900;
-}
-
-.leaderAvatar {
-  width: 34px !important;
-  height: 34px !important;
-  border: 2px solid $primary_blue;
+  flex-shrink: 0;
 }
 
 .leaderText {
@@ -369,16 +378,20 @@ $text_secondary: #8c8c8c; // AntD gray7
   max-width: 420px;
 }
 
-.leaderGrade {
-  color: $text_secondary;
-  font-size: 0.85rem;
-  margin-top: 2px;
+.leaderNameSecond {
+  color: grey !important;
+  font-weight: 200;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .leaderPoints {
   display: flex;
   align-items: baseline;
   gap: 6px;
+  flex-shrink: 0;
 
   span:first-child {
     color: $primary_blue;
@@ -392,10 +405,49 @@ $text_secondary: #8c8c8c; // AntD gray7
   font-size: 0.9rem;
 }
 
+/* ================== ACTIVE EXAMS MODAL ================== */
+
+.activeExamsUl {
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.activeExamsList {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-height: 44px;
+
+  background-color: #2084ff;
+  font-size: 15px;
+  border-radius: 12px;
+  padding: 10px 12px;
+
+  color: white;
+  transition: background-color 0.2s ease;
+  cursor: pointer;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  &:hover {
+    background-color: #357ed8;
+  }
+}
 
 /* ================== RESPONSIVE ================== */
 
+/* Tablet */
 @media (max-width: 900px) {
+  .grid3 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .grid2 {
     grid-template-columns: 1fr;
   }
@@ -404,8 +456,13 @@ $text_secondary: #8c8c8c; // AntD gray7
   .leaderName {
     max-width: 100%;
   }
+
+  .title {
+    font-size: 1.35rem;
+  }
 }
 
+/* Phone */
 @media (max-width: 600px) {
   .page {
     padding: 14px;
@@ -434,6 +491,13 @@ $text_secondary: #8c8c8c; // AntD gray7
     font-size: 1.2rem;
   }
 
+  .muted {
+    white-space: normal;
+    overflow: visible;
+    text-overflow: unset;
+    word-break: break-word;
+  }
+
   .row {
     grid-template-columns: 1fr;
   }
@@ -442,7 +506,12 @@ $text_secondary: #8c8c8c; // AntD gray7
     width: 38px;
   }
 
-  .leaderName {
-    max-width: 180px;
+  .leaderName,
+  .leaderNameSecond {
+    max-width: 160px;
+  }
+
+  .chartBox {
+    min-height: 200px;
   }
 }

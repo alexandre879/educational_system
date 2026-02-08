@@ -1,121 +1,346 @@
+// @import "../../colors.scss";
+
+// .leaderboardMainContainer {
+//   padding: 20px;
+//   display: flex;
+//   flex-direction: column;
+//   gap: 20px;
+//   align-items: start;
+//   background-color: $dark_background;
+//   color: $text_primary;
+//   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+
+//   .buttonOfAnAnt {
+//     display: flex;
+//     align-items: center;
+//     gap: 5px;
+//   }
+
+//   .firstAndLastNameWrapper {
+//     display: flex;
+//     align-items: center;
+//     gap: 5px;
+//   }
+
+//   .image {
+//     border-radius: 50%;
+//   }
+
+//   .wrapperOfDropDownAndCaption {
+//     display: flex;
+//     align-items: center;
+//     gap: 15px;
+//   }
+
+//   .positionWrapperGold {
+//     width: 30px;
+//     height: 30px;
+//     background-color: rgb(252, 182, 1);
+//     color: white;
+//     font-weight: bold;
+//     border-radius: 10px;
+//     display: flex;
+//     justify-content: center;
+//     align-items: center;
+//     box-shadow: 0 0 5px 5px rgba(118,148,164,.165);
+//   }
+
+//   .ImageFirstAndLastNameWrapper {
+//     display: flex;
+//     align-items: center;
+//     gap: 10px;
+//   }
+
+//   .positionWrapperNormal {
+//     width: 30px;
+//     height: 30px;
+//     color: white;
+//     border-radius: 10px;
+//     background-color: #141414;
+//     font-weight: bold;
+//     display: flex;
+//     justify-content: center;
+//     align-items: center;
+//     box-shadow: 0 0 5px 5px rgba(118,148,164,.165);
+//   }
+
+//   .positionWrapperBronce {
+//     width: 30px;
+//     height: 30px;
+//     background-color: #cd7f32;
+//     color: white;
+//     font-weight: bold;
+//     border-radius: 10px;
+//     display: flex;
+//     justify-content: center;
+//     align-items: center;
+//     box-shadow: 0 0 5px 5px rgba(118,148,164,.165);
+//   }
+
+//   .positionWrapperSilver {
+//     width: 30px;
+//     height: 30px;
+//     background-color: rgb(157, 157, 157);
+//     color: white;
+//     font-weight: bold;
+//     border-radius: 10px;
+//     display: flex;
+//     justify-content: center;
+//     align-items: center;
+//     box-shadow: 0 0 5px 5px rgba(118,148,164,.165);
+//   }
+
+//   .positionWrapperBronze {
+//     width: 30px;
+//     height: 30px;
+//     background-color: #cd7f32;
+//     color: #1E1F26;
+//     border-radius: 10px;
+//     display: flex;
+//     justify-content: center;
+//     align-items: center;
+//     box-shadow: 0 0 5px 5px rgba(118,148,164,.165);
+//   }
+
+//   .pointWrapper {
+//     width: 100px;
+//     height: 40px;
+//     background-color: #141414;
+//     border-radius: 8px;
+//     display: flex;
+//     justify-content: center;
+//     align-items: center;
+//     gap: 5px;
+//   }
+
+
+//   table {
+//     width: 100%;
+//     border-collapse: separate;
+//     border-spacing: 0;
+//     border-radius: 10px;
+//     overflow: hidden;
+//     border: 1px solid #3c3e46;
+
+//     thead {
+//       background-color: $dark_background;
+//       color: $text_secondary;
+//       font-weight: bold;
+
+//       th {
+//         padding: 12px 15px;
+//         text-align: left;
+//         border-bottom: 1px solid #3c3e46;
+//       }
+//     }
+
+//     tbody {
+//       tr {
+//         td {
+//           padding: 12px 15px;
+//           background-color: #1f1f1f;
+//           color: $text_primary;
+//           border-bottom: 1px solid #3c3e46;
+//           transition: background-color 0.2s ease;
+//         }
+
+//         &:hover td {
+//           background-color: #3c3e46;
+//         }
+//       }
+//     }
+//   }
+
+
+
+
+//   @media (max-width: 1024px) {
+//     padding: 30px;
+
+
+//     table {
+
+//       th,
+//       td {
+//         padding: 10px 12px;
+//       }
+
+//       font-size: 0.95rem;
+//     }
+//   }
+
+
+
+//   @media (max-width: 767px) {
+//     padding: 20px !important;
+
+//     .pointIcon {
+//       width: 15px;
+//       height: 15px;
+//     }
+
+//     .pointWrapper {
+//       width: 50px;
+//       height: 40px;
+//       background-color: #141414;
+//       border-radius: 8px;
+//       display: flex;
+//       justify-content: center;
+//       align-items: center;
+//       gap: 5px;
+//     }
+
+
+//     table {
+
+//       th,
+//       td {
+//         padding: 8px 10px;
+//         font-size: 0.78rem;
+//       }
+//     }
+//   }
+// }
+
+
 @import "../../colors.scss";
 
 .leaderboardMainContainer {
   padding: 20px;
   display: flex;
   flex-direction: column;
-  gap: 20px;
-  align-items: start;
+  gap: 18px;
+  align-items: stretch;
+
   background-color: $dark_background;
   color: $text_primary;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 
-  .buttonOfAnAnt {
+  /* ---------- controls row ---------- */
+  .controlsRow {
     display: flex;
     align-items: center;
-    gap: 5px;
-  }
-
-  .firstAndLastNameWrapper {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-  }
-
-  .image {
-    border-radius: 50%;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
   }
 
   .wrapperOfDropDownAndCaption {
     display: flex;
     align-items: center;
-    gap: 15px;
+    gap: 12px;
+    min-width: 0;
   }
 
-  .positionWrapperGold {
-    width: 30px;
-    height: 30px;
-    background-color: rgb(252, 182, 1);
-    color: white;
-    font-weight: bold;
-    border-radius: 10px;
+  .subjectBtn {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    max-width: 100%;
+  }
+
+  .subjectBtnText {
+    min-width: 0;
+    max-width: 420px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .subjectBtnArrow {
+    flex-shrink: 0;
+  }
+
+  /* ---------- common bits ---------- */
+  .image {
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .firstAndLastNameWrapper {
     display: flex;
-    justify-content: center;
     align-items: center;
-    box-shadow: 0 0 5px 5px rgba(118,148,164,.165);
+    gap: 6px;
+    min-width: 0;
+    flex-wrap: wrap;
   }
 
-  .ImageFirstAndLastNameWrapper {
-    display: flex;
-    align-items: center;
-    gap: 10px;
+  .nameText {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
+  /* ---------- position badges ---------- */
+  .positionWrapperGold,
+  .positionWrapperSilver,
+  .positionWrapperBronce,
   .positionWrapperNormal {
     width: 30px;
     height: 30px;
-    color: white;
     border-radius: 10px;
-    background-color: #141414;
-    font-weight: bold;
+
     display: flex;
     justify-content: center;
     align-items: center;
-    box-shadow: 0 0 5px 5px rgba(118,148,164,.165);
+
+    font-weight: bold;
+    box-shadow: 0 0 5px 5px rgba(118, 148, 164, 0.165);
+    flex-shrink: 0;
   }
 
-  .positionWrapperBronce {
-    width: 30px;
-    height: 30px;
-    background-color: #cd7f32;
+  .positionWrapperGold {
+    background-color: rgb(252, 182, 1);
     color: white;
-    font-weight: bold;
-    border-radius: 10px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    box-shadow: 0 0 5px 5px rgba(118,148,164,.165);
   }
 
   .positionWrapperSilver {
-    width: 30px;
-    height: 30px;
     background-color: rgb(157, 157, 157);
     color: white;
-    font-weight: bold;
-    border-radius: 10px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    box-shadow: 0 0 5px 5px rgba(118,148,164,.165);
   }
 
-  .positionWrapperBronze {
-    width: 30px;
-    height: 30px;
+  .positionWrapperBronce {
     background-color: #cd7f32;
-    color: #1E1F26;
-    border-radius: 10px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    box-shadow: 0 0 5px 5px rgba(118,148,164,.165);
+    color: white;
   }
 
+  .positionWrapperNormal {
+    background-color: #141414;
+    color: white;
+  }
+
+  /* ---------- points pill ---------- */
   .pointWrapper {
-    width: 100px;
+    width: 110px;
     height: 40px;
     background-color: #141414;
-    border-radius: 8px;
-    display: flex;
+    border-radius: 10px;
+
+    display: inline-flex;
     justify-content: center;
     align-items: center;
-    gap: 5px;
+    gap: 8px;
+
+    border: 1px solid #2a2c33;
   }
 
+  .pointsText {
+    font-weight: 700;
+  }
 
+  /* ---------- table shell (scrollable on small screens) ---------- */
+  .tableOuter {
+    width: 100%;
+    overflow-x: auto; /* ✅ key for tablets/phones */
+    -webkit-overflow-scrolling: touch;
+    border-radius: 12px;
+  }
+
+  /* keep your table styling but make it robust */
   table {
     width: 100%;
+    min-width: 760px; /* ✅ forces horizontal scroll instead of breaking */
     border-collapse: separate;
     border-spacing: 0;
     border-radius: 10px;
@@ -131,6 +356,7 @@
         padding: 12px 15px;
         text-align: left;
         border-bottom: 1px solid #3c3e46;
+        white-space: nowrap;
       }
     }
 
@@ -142,6 +368,7 @@
           color: $text_primary;
           border-bottom: 1px solid #3c3e46;
           transition: background-color 0.2s ease;
+          vertical-align: middle;
         }
 
         &:hover td {
@@ -151,53 +378,179 @@
     }
   }
 
+  .tableContainer {
+    width: 100%;
+  }
 
+  .ImageFirstAndLastNameWrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+  }
 
+  .emailCell {
+    max-width: 320px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
 
+  /* column width hints (optional but helps) */
+  .colName {
+    width: 34%;
+  }
+  .colEmail {
+    width: 34%;
+  }
+  .colPoints {
+    width: 18%;
+  }
+  .colPos {
+    width: 14%;
+  }
+
+  .emptyCell {
+    padding: 26px 10px !important;
+    text-align: center;
+    background: #1f1f1f;
+  }
+
+  /* ---------- mobile cards ---------- */
+  .mobileList {
+    display: none; /* shown on <= 600px */
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .mobileCard {
+    border: 1px solid #3c3e46;
+    background: #1f1f1f;
+    border-radius: 14px;
+    padding: 12px;
+
+    transition: background 0.15s ease, border-color 0.15s ease;
+
+    &:hover {
+      background: #262626;
+      border-color: #4b4e59;
+    }
+  }
+
+  .mobileTop {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    min-width: 0;
+  }
+
+  .mobileLeft {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+    flex: 1;
+  }
+
+  .mobileNameBlock {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .mobileName {
+    font-weight: 800;
+    color: $text_primary;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .mobileEmail {
+    color: $text_secondary;
+    font-size: 0.9rem;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .mobileBottom {
+    margin-top: 10px;
+    display: flex;
+    justify-content: flex-start;
+  }
+
+  .mobileEmpty {
+    border: 1px solid #3c3e46;
+    background: #1f1f1f;
+    border-radius: 14px;
+    padding: 16px;
+  }
+
+  /* ---------- breakpoints ---------- */
+
+  /* tablet */
   @media (max-width: 1024px) {
-    padding: 30px;
+    padding: 18px;
 
+    .subjectBtnText {
+      max-width: 320px;
+    }
 
     table {
+      font-size: 0.95rem;
 
       th,
       td {
         padding: 10px 12px;
       }
+    }
 
-      font-size: 0.95rem;
+    .emailCell {
+      max-width: 260px;
     }
   }
 
+  /* phone */
+  @media (max-width: 600px) {
+    padding: 14px;
 
+    /* hide table, show cards */
+    .tableOuter {
+      display: none;
+    }
 
-  @media (max-width: 767px) {
-    padding: 20px !important;
-
-    .pointIcon {
-      width: 15px;
-      height: 15px;
+    .mobileList {
+      display: flex;
     }
 
     .pointWrapper {
-      width: 50px;
-      height: 40px;
-      background-color: #141414;
-      border-radius: 8px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 5px;
+      width: auto;
+      height: 36px;
+      padding: 0 10px;
+      gap: 6px;
     }
 
+    .positionWrapperGold,
+    .positionWrapperSilver,
+    .positionWrapperBronce,
+    .positionWrapperNormal {
+      width: 28px;
+      height: 28px;
+      border-radius: 9px;
+    }
 
-    table {
+    .subjectBtnText {
+      max-width: 210px;
+    }
 
-      th,
-      td {
-        padding: 8px 10px;
-        font-size: 0.78rem;
-      }
+    .pointIcon {
+      width: 16px !important;
+      height: 16px !important;
     }
   }
 }

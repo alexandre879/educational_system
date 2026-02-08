@@ -342,7 +342,7 @@ class MeSerializer(serializers.ModelSerializer):
 class CommentSerializer(serializers.ModelSerializer):
     user = serializers.SerializerMethodField()
 
-    def get_user(self, obj):
+    def get_user(self, obj: Comment):
         return {
             "id": obj.user_id,
             "email": obj.user.email,
@@ -360,26 +360,33 @@ class AnnouncementSerializer(serializers.ModelSerializer):
     created_by = serializers.SerializerMethodField()
     subject = serializers.SerializerMethodField()
     grade = serializers.SerializerMethodField()
-    comments = CommentSerializer(many=True)
+    len_comments = serializers.SerializerMethodField()
+    
+    
+    def get_category(self, obj: Announcement):
+        return {"id": obj.grade.category_id, "grade_name": obj.grade.name, "category_name": obj.grade.category.name}
 
-    def get_created_by(self, obj):
+    def get_created_by(self, obj: Announcement):
         return {
             "id": obj.created_by_id,
             "email": obj.created_by.email,
             "name": f"{obj.created_by.first_name} {obj.created_by.last_name}".strip(),
         }
 
-    def get_subject(self, obj):
+    def get_subject(self, obj: Announcement):
         if not obj.subject_id:
             return None
         return {"id": obj.subject_id, "name": obj.subject.name}
 
-    def get_grade(self, obj):
-        return {"id": obj.grade_id, "name": obj.grade.name}
+    def get_grade(self, obj: Announcement):
+        return {"id": obj.grade_id, "name": obj.grade.name, "category_name": obj.grade.category.name}
+    
+    def get_len_comments(self, obj: Announcement):
+        return obj.comments.count()
 
     class Meta:
         model = Announcement
-        fields = ["id", "title", "content", "grade", "subject", "created_by", "created_at", "comments"]
+        fields = ["id", "title", "content", "grade", "subject", "created_by", "created_at", "comments", "len_comments"]
         
         
         
@@ -388,7 +395,7 @@ class AnnouncementSerializer(serializers.ModelSerializer):
 class UserSubjectPointsSerializer(serializers.ModelSerializer):
     subject = serializers.SerializerMethodField()
 
-    def get_subject(self, obj):
+    def get_subject(self, obj: UserSubjectPoints):
         return {"id": obj.subject_id, "name": obj.subject.name}
 
     class Meta:
