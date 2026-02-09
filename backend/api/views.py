@@ -660,7 +660,7 @@ class ListCommentsView(APIView):
         announcement_id = request.query_params.get("announcement")
         if not announcement_id:
             return Response({"detail": "announcement ID is required"}, status=400)
-
+        
         comments = Comment.objects.filter(announcement_id=announcement_id).select_related("user")
         data = [{"user": c.user.email, "comment": c.content, "created_at": c.created_at} for c in comments]
 
@@ -680,11 +680,19 @@ class MySubjectsListView(APIView):
     def get(self, request: Request):
         user: User = request.user
 
-        subject_list = (
-            user.grade_in.subjects.all()
-            .values('pk', 'name', 'grade__pk', 'grade__name', 'grade__category__pk', 'grade__category__name')
-            .order_by('pk')
-        )
+
+        if user.role == User.Role.STUDENT and user.grade_in:
+            subject_list = (
+                user.grade_in.subjects.all()
+                .values('pk', 'name', 'grade__pk', 'grade__name', 'grade__category__pk', 'grade__category__name')
+                .order_by('pk')
+            )
+        if user.role == User.Role.TEACHER:
+            subject_list = (
+                user.subjects_taught.all()
+                .values('pk', 'name', 'grade__pk', 'grade__name', 'grade__category__pk', 'grade__category__name')
+                .order_by('pk')
+            )
 
         return Response(list(subject_list), status=status.HTTP_200_OK)
     
@@ -842,15 +850,13 @@ class HomeDashboardView(APIView):
             .get(pk=request.user.pk)
         )
 
-        data = {
+        data: dict[str, any] = {
             "me": MeSerializer(user, context={"request": request}).data,
         }
 
-        role = user.role
+        role: str = user.role
 
-        # =========================
-        # STUDENT DASHBOARD
-        # =========================
+
         if role == User.Role.STUDENT:
             if not user.grade_in_id:
                 return Response({"error": "Student has no grade assigned."}, status=400)
@@ -886,9 +892,7 @@ class HomeDashboardView(APIView):
                 "sessions": SessionMiniSerializer(sessions, many=True).data,
             })
 
-        # =========================
-        # TEACHER DASHBOARD
-        # =========================
+
         elif role == User.Role.TEACHER:
             taught = user.subjects_taught.all().order_by("name")
 
@@ -914,9 +918,7 @@ class HomeDashboardView(APIView):
                 "examCounts": list(exam_counts),
             })
 
-        # =========================
-        # ADMIN DASHBOARD
-        # =========================
+
         elif role == User.Role.ADMIN:
             data.update({
                 "stats": {
@@ -938,7 +940,6 @@ class HomeDashboardView(APIView):
         else:
             data["info"] = "Role not supported yet (parent needs relationship to student)."
 
-        # ✅ Whole-school leaderboard for everyone (students/teachers/admin)
         data["leaderboard"] = self.build_school_leaderboard(request, user, top_n=20)
 
         return Response(data, status=status.HTTP_200_OK)
