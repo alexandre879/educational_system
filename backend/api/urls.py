@@ -1,12 +1,17 @@
 
 
+
 from django.urls import path
 from api.views import (
     AISupportChatView,
+    BulkCreateStudentsView,
+    GradeWeekdayScheduleView,
     HomeDashboardView,
     ListCommentsView,
     RefreshTokenView,
     RequestOtpView,
+    TeacherMarkAttendanceView,
+    TeacherTodayLessonsAttendanceView,
     VerifyOtpView,
     UserMeView,
     StartOrResumeOrFinishExamSessionView,
@@ -20,6 +25,7 @@ from api.views import (
     LeaderBoardListView,
     MySubjectsListView,
     UpdateProfileView,
+    SearchAnythingView,
     
 )
 
@@ -61,7 +67,10 @@ urlpatterns = [
     path('leader-board/list/<int:subject_pk>/<int:grade_pk>/<int:category_pk>/', LeaderBoardListView.as_view(), name='leader-board-list'),
     path('my_subjects/', MySubjectsListView.as_view(), name='my-subjects-list'),
     
+    path('schedule/grade-weekday/', GradeWeekdayScheduleView.as_view(), name='weekly-lessons'),
     
+    path("teacher/attendance/today-lessons/", TeacherTodayLessonsAttendanceView.as_view(), name="teacher-today-lessons"),
+    path("teacher/attendance/mark/", TeacherMarkAttendanceView.as_view(), name="teacher-attendance-mark"),
     
     path('exams/create/', ExamCreateView.as_view(), name="exam-create"),
     
@@ -71,5 +80,13 @@ urlpatterns = [
     path('support/chat/', AISupportChatView.as_view(), name="support-chat"),
     
     path("aisupport/", AISupportChatView.as_view(), name="ai-support"),
+    
+    path('search/', SearchAnythingView.as_view(), name='search-anything'),
+    
+    
+    
+    ##### for testing purposes, to be removed later. also can be considered as fast API ;)
+    path("users/bulk-create/", BulkCreateStudentsView.as_view()),
+    #####
     
 ]

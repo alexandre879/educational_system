@@ -1,6 +1,6 @@
 "use client";
 
-import React, { ReactNode, useEffect, useState } from "react";
+import React, { ReactNode, useEffect, useRef, useState } from "react";
 import {
   FaBars,
   FaHome,
@@ -10,6 +10,9 @@ import {
   FaSchool,
   FaBullhorn,
   FaRobot,
+  FaAtom,
+  FaClipboardCheck,
+  FaCalendarAlt,
 } from "react-icons/fa";
 import styles from "./MainLayout.module.scss";
 import Link from "next/link";
@@ -19,6 +22,14 @@ import api from "@/interceptors";
 import { UserMeData } from "./profile/interface";
 import { AxiosError, AxiosResponse } from "axios";
 import Cookies from "js-cookie";
+import { dropdownItems } from "./utils";
+import {
+  ReturnedAnnouncementData,
+  ReturnedExamData,
+  ReturnedSubjectData,
+  SearchKind,
+  SearchOption,
+} from "./interface";
 
 
 
@@ -27,20 +38,23 @@ export default function MainLayout({ children }: { children: ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [userMe, setUserMe] = useState<UserMeData | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [options, setOptions] = useState<SearchOption[]>([]);
+  const [searchValue, setSearchValue] = useState("");
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const lastQueryRef = useRef<string>("");
+
 
   const pathname = usePathname();
   const router = useRouter();
 
   useEffect(() => {
     setSidebarOpen(false);
-    api
-      .get<UserMeData>("/user/me/")
+    api.get<UserMeData>("/user/me/")
       .then((res: AxiosResponse<UserMeData>) => setUserMe(res.data))
       .catch((err: AxiosError) => console.log(err.message));
   }, [pathname]);
 
   const toggleSidebar = () => setSidebarOpen((prev) => !prev);
-
   const showModal = () => setIsModalOpen(true);
 
   const handleLogout = async () => {
@@ -69,19 +83,17 @@ export default function MainLayout({ children }: { children: ReactNode }) {
     if (key === "profile") router.push("/profile");
   };
 
-  const dropdownItems = [
-    { key: "profile", label: "Profile" },
-    { key: "logout", danger: true, label: "Logout" },
-  ];
-
-
   const isActive = (href: string) => {
     if (href === "/home") return pathname === "/home" || pathname === "/";
     return pathname === href || pathname.startsWith(href + "/");
   };
 
   const navItems = [
-    { href: "/home", label: "HOME", icon: <FaHome className={styles.navIcon} /> },
+    {
+      href: "/home",
+      label: "HOME",
+      icon: <FaHome className={styles.navIcon} />
+    },
     {
       href: "/announcement",
       label: "ANNOUNCEMENT",
@@ -92,12 +104,31 @@ export default function MainLayout({ children }: { children: ReactNode }) {
       label: "LEADER BOARD",
       icon: <FaTrophy className={styles.navIcon} />,
     },
+    ...(userMe?.role === "teacher" || userMe?.role === "admin"
+      ? [
+        {
+          href: "/attendance",
+          label: "ATTENDANCE",
+          icon: <FaClipboardCheck className={styles.navIcon} />,
+        },
+      ]
+      : []),
+    {
+      href: "/subjects",
+      label: "SUBJECTS",
+      icon: <FaAtom className={styles.navIcon} />,
+    },
     {
       href: "/exercise",
-      label: "EXERCISE",
+      label: "EXERCISES",
       icon: <FaBookOpen className={styles.navIcon} />,
     },
-    { href: "/exam", label: "EXAM", icon: <FaFileAlt className={styles.navIcon} /> },
+    { href: "/exam", label: "EXAMS", icon: <FaFileAlt className={styles.navIcon} /> },
+    {
+      href: "/schedule",
+      label: "SCHEDULE",
+      icon: <FaCalendarAlt className={styles.navIcon} />,
+    },
     {
       href: "/aisupport",
       label: "AI SUPPORT",
@@ -105,33 +136,78 @@ export default function MainLayout({ children }: { children: ReactNode }) {
     },
   ];
 
+  // ===== SERVER SEARCH =====
+  const fetchSearch = async (q: string) => {
+    const trimmed = q.trim();
 
-  const dataSource = [
-    "Math",
-    "Physics",
-    "Chemistry",
-    "Biology",
-    "History",
-    "Geography",
-  ];
-
-  const handleSearch = (value: string) => {
-    if (!value) {
+    if (!trimmed) {
       setOptions([]);
+      lastQueryRef.current = "";
       return;
     }
 
-    setOptions(
-      dataSource
-        .filter(item =>
-          item.toLowerCase().includes(value.toLowerCase())
-        )
-        .map(item => ({ value: item }))
-    );
+    // avoid re-fetching the same query
+    if (lastQueryRef.current === trimmed) return;
+    lastQueryRef.current = trimmed;
+
+    try {
+      const res = await api.get("/search/", { params: { q: trimmed } });
+
+      const subjects = (res.data?.subjects ?? []).map((s: ReturnedSubjectData) => ({
+        value: `subject:${s.pk}`, // ✅ unique so duplicates don't collide
+        label: `📚 Subject: ${s.name}`,
+        kind: "subject" as const,
+        id: s.pk,
+      }));
+
+      const exams = (res.data?.exams ?? []).map((e: ReturnedExamData) => ({
+        value: `exam:${e.pk}`, // ✅ unique
+        label: `📝 Exam: ${e.title}`,
+        kind: "exam" as const,
+        id: e.pk,
+      }));
+
+      const announcements = (res.data?.announcements ?? []).map((a: ReturnedAnnouncementData) => {
+        const title = String((a as any).title ?? ""); // ✅ backend usually returns content
+        const short = title.slice(0, 60) + (title.length > 60 ? "..." : "");
+        return {
+          value: `announcement:${a.pk}`, // ✅ unique
+          label: `📣 Announcement: ${short}`,
+          kind: "announcement" as const,
+          id: a.pk,
+        };
+      });
+
+      setOptions([...subjects, ...exams, ...announcements]);
+    } catch (err) {
+      setOptions([]);
+    }
   };
 
+  const handleSearch = (value: string) => {
+    setSearchValue(value);
 
-  const [options, setOptions] = useState<{ value: string }[]>([]);
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+
+    debounceRef.current = setTimeout(() => {
+      fetchSearch(value);
+    }, 250);
+  };
+
+  const handleSelect = (_value: string, option: any) => {
+    const kind = option.kind as SearchKind;
+    const id = option.id as number;
+
+    if (kind === "subject") router.push(`/subject/${id}`);
+    if (kind === "exam") router.push(`/exam/${id}/start/`);
+    if (kind === "announcement") router.push(`/announcement/${id}`);
+
+    setOptions([]);
+  };
+
+  const handleBlur = () => {
+    setTimeout(() => setOptions([]), 150);
+  };
 
   return (
     <div className={styles.layoutMainContainer}>
@@ -144,7 +220,8 @@ export default function MainLayout({ children }: { children: ReactNode }) {
           <Link
             key={item.href}
             href={item.href}
-            className={`${styles.redirectionCaptions} ${isActive(item.href) ? styles.activeLink : ""}`}
+            className={`${styles.redirectionCaptions} ${isActive(item.href) ? styles.activeLink : ""
+              }`}
             aria-current={isActive(item.href) ? "page" : undefined}
           >
             <div className={styles.pageRedirectionWrapper}>
@@ -161,22 +238,26 @@ export default function MainLayout({ children }: { children: ReactNode }) {
 
           <div className={styles.myProfileOuterWrapper}>
             <div className={styles.myProfileWrapper}>
-              {/* <Input.Search className={styles.searchInput} placeholder="input search text" onSearch={() => {}} enterButton /> */}
-              <div className={styles.searchBarComponent} >
+              <div className={styles.searchBarComponent}>
                 <AutoComplete
-                  options={options}
+                  options={options as any}
+                  value={searchValue}
                   onSearch={handleSearch}
-                  onSelect={(value) => {
-                    console.log("Selected:", value);
-                  }}
+                  onChange={setSearchValue}
+                  onSelect={handleSelect}
+                  filterOption={false}
+                  classNames={{ popup: { root: styles.searchDropdown } }}
                   className={styles.searchInput}
                 >
                   <Input.Search
                     placeholder="Search subject..."
                     enterButton
+                    onSearch={(v) => fetchSearch(v)}
+                    onBlur={handleBlur}
                   />
                 </AutoComplete>
               </div>
+
               <Dropdown
                 trigger={["click"]}
                 menu={{ items: dropdownItems, onClick: onDropdownClick }}
@@ -202,7 +283,9 @@ export default function MainLayout({ children }: { children: ReactNode }) {
           </div>
         </header>
 
-        <main className={styles.childrenPassingContainer}>{children}</main>
+        <main className={styles.childrenPassingContainer}>
+          {children}
+        </main>
       </div>
 
       {sidebarOpen && <div className={styles.overlay} onClick={toggleSidebar}></div>}

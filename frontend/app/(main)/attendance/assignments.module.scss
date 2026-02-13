@@ -1,0 +1,846 @@
+// @import "../../colors.scss";
+
+// /* ================= PAGE ================= */
+
+// .page {
+//   background: $dark_background;
+//   min-height: 100%;
+//   color: $text_primary;
+//   max-width: 1100px;
+//   margin: 0 auto;
+// }
+
+// .forbiddenTitle {
+//   color: #ff4d4f;
+//   text-align: center;
+//   margin-top: 80px;
+//   font-size: 28px;
+//   font-weight: 600;
+// }
+
+// /* ================= HEADER ================= */
+
+// .header {
+//   display: flex;
+//   align-items: flex-end;
+//   justify-content: space-between;
+//   gap: 16px;
+//   margin-bottom: 16px;
+
+//   @media (max-width: 720px) {
+//     flex-direction: column;
+//     align-items: stretch;
+//   }
+// }
+
+// .title {
+//   margin: 0;
+//   font-size: 26px;
+//   font-weight: 800;
+//   letter-spacing: 0.3px;
+//   color: $text_primary;
+// }
+
+// .subtitle {
+//   margin: 6px 0 0;
+//   color: $text_secondary;
+//   font-size: 14px;
+// }
+
+// .controlsRight {
+//   display: flex;
+//   justify-content: flex-end;
+//   gap: 10px;
+
+//   @media (max-width: 720px) {
+//     justify-content: flex-start;
+//   }
+// }
+
+// .refreshBtn {
+//   background: $table_background;
+//   color: $text_primary;
+//   border: 1px solid rgba(140, 140, 140, 0.14);
+//   border-radius: 12px;
+//   padding: 10px 12px;
+//   cursor: pointer;
+//   font-weight: 650;
+//   transition: transform 0.12s ease, border-color 0.18s ease, background 0.18s ease;
+
+//   &:hover {
+//     border-color: rgba(22, 119, 255, 0.35);
+//     background: rgba(22, 119, 255, 0.06);
+//     transform: translateY(-1px);
+//   }
+
+//   &:active {
+//     transform: scale(0.98);
+//   }
+// }
+
+// /* ================= SHELL ================= */
+
+// .shell {
+//   // background: $table_background;
+//   border-radius: 18px;
+//   padding: 14px;
+// }
+
+// .empty {
+//   padding: 18px;
+//   color: $text_secondary;
+// }
+
+// .subjectList {
+//   display: flex;
+//   flex-direction: column;
+//   gap: 12px;
+// }
+
+// /* ================= SUBJECT DROPDOWN ================= */
+
+// .subjectItem {
+//   background: #232323;
+//   border-radius: 16px;
+//   border: 1px solid rgba(140, 140, 140, 0.12);
+//   overflow: hidden;
+//   transition: background 0.25s ease, transform 0.2s ease;
+// }
+
+// .subjectItem[open] {
+//   background: #252525;
+// }
+
+// /* Remove default marker */
+// .subjectItem > summary {
+//   list-style: none;
+// }
+// .subjectItem > summary::-webkit-details-marker {
+//   display: none;
+// }
+
+// .subjectSummary {
+//   cursor: pointer;
+//   padding: 14px 14px;
+//   display: flex;
+//   justify-content: space-between;
+//   align-items: center;
+//   user-select: none;
+//   transition: background 0.2s ease;
+// }
+
+// .subjectSummary:hover {
+//   background: rgba(22, 119, 255, 0.06);
+// }
+
+// .subjectLeft {
+//   display: flex;
+//   align-items: center;
+//   gap: 10px;
+//   min-width: 0;
+// }
+
+// .subjectName {
+//   font-weight: 750;
+//   color: $text_primary;
+//   white-space: nowrap;
+//   overflow: hidden;
+//   text-overflow: ellipsis;
+// }
+
+// .badge {
+//   font-size: 12px;
+//   color: $highlight_accent;
+//   background: rgba(250, 173, 20, 0.12);
+//   border: 1px solid rgba(250, 173, 20, 0.22);
+//   padding: 4px 10px;
+//   border-radius: 999px;
+//   flex: 0 0 auto;
+// }
+
+// .subjectRight {
+//   display: flex;
+//   align-items: center;
+//   gap: 10px;
+// }
+
+// .timeChip {
+//   font-size: 12px;
+//   color: $primary_blue;
+//   background: rgba(22, 119, 255, 0.1);
+//   border: 1px solid rgba(22, 119, 255, 0.25);
+//   padding: 4px 10px;
+//   border-radius: 999px;
+// }
+
+// /* Chevron animation */
+// .chev {
+//   color: $text_secondary;
+//   transition: transform 0.25s ease;
+// }
+
+// .subjectItem[open] .chev {
+//   transform: rotate(180deg);
+// }
+
+// /* ================= LESSON BODY ================= */
+
+// .lessonBody {
+//   padding: 12px 14px 14px;
+//   animation: fadeSlide 0.22s ease forwards;
+// }
+
+// .lessonTopRow {
+//   display: flex;
+//   justify-content: space-between;
+//   align-items: center;
+//   gap: 12px;
+//   margin-bottom: 10px;
+
+//   @media (max-width: 720px) {
+//     flex-direction: column;
+//     align-items: stretch;
+//   }
+// }
+
+// .lessonMeta {
+//   display: flex;
+//   align-items: center;
+//   gap: 10px;
+//   flex-wrap: wrap;
+// }
+
+// .roomChip {
+//   font-size: 12px;
+//   color: $text_secondary;
+//   background: rgba(0, 0, 0, 0.12);
+//   border: 1px solid rgba(140, 140, 140, 0.14);
+//   padding: 4px 10px;
+//   border-radius: 999px;
+// }
+
+// .studentsCount {
+//   font-size: 12px;
+//   color: $text_secondary;
+// }
+
+// /* ================= BULK ACTIONS ================= */
+
+// .bulkActions {
+//   display: flex;
+//   gap: 8px;
+
+//   @media (max-width: 720px) {
+//     width: 100%;
+//   }
+// }
+
+// .bulkBtn,
+// .bulkBtnDanger {
+//   border-radius: 999px;
+//   padding: 8px 10px;
+//   font-weight: 650;
+//   cursor: pointer;
+//   transition: transform 0.12s ease, background 0.18s ease, border-color 0.18s ease;
+//   border: 1px solid rgba(140, 140, 140, 0.16);
+//   background: rgba(31, 31, 31, 0.45);
+//   color: $text_primary;
+
+//   &:hover {
+//     transform: translateY(-1px);
+//   }
+
+//   &:active {
+//     transform: scale(0.98);
+//   }
+
+//   @media (max-width: 720px) {
+//     flex: 1;
+//   }
+// }
+
+// .bulkBtn:hover {
+//   border-color: rgba(22, 119, 255, 0.35);
+//   background: rgba(22, 119, 255, 0.08);
+// }
+
+// .bulkBtnDanger:hover {
+//   border-color: rgba(255, 77, 79, 0.35);
+//   background: rgba(255, 77, 79, 0.12);
+// }
+
+// /* ================= STUDENTS ================= */
+
+// .studentsWrap {
+//   display: flex;
+//   flex-direction: column;
+//   gap: 8px;
+// }
+
+// .studentRow {
+//   display: grid;
+//   grid-template-columns: 1fr auto;
+//   gap: 10px;
+//   align-items: center;
+//   padding: 10px 10px;
+//   border-radius: 12px;
+//   background: rgba(0, 0, 0, 0.12);
+//   transition: background 0.2s ease, transform 0.15s ease;
+
+//   @media (max-width: 560px) {
+//     grid-template-columns: 1fr;
+//     align-items: stretch;
+//   }
+// }
+
+// .studentRow:hover {
+//   background: rgba(22, 119, 255, 0.05);
+//   transform: translateX(3px);
+// }
+
+// .studentName {
+//   font-weight: 600;
+//   color: $text_primary;
+//   word-break: break-word;
+// }
+
+// /* ================= PRESENT / ABSENT PILLS ================= */
+
+// .pills {
+//   display: flex;
+//   gap: 8px;
+
+//   @media (max-width: 560px) {
+//     width: 100%;
+//   }
+// }
+
+// .pill {
+//   border: 1px solid rgba(140, 140, 140, 0.18);
+//   background: rgba(31, 31, 31, 0.55);
+//   color: $text_primary;
+//   padding: 8px 10px;
+//   border-radius: 999px;
+//   font-weight: 650;
+//   cursor: pointer;
+//   transition: transform 0.18s ease, background 0.18s ease, border-color 0.18s ease;
+//   min-width: 92px;
+
+//   &:hover {
+//     transform: translateY(-1px);
+//     border-color: rgba(22, 119, 255, 0.35);
+//   }
+
+//   &:active {
+//     transform: scale(0.96);
+//   }
+
+//   @media (max-width: 560px) {
+//     flex: 1;
+//   }
+// }
+
+// .pillActive {
+//   background: rgba(22, 119, 255, 0.18);
+//   border-color: rgba(22, 119, 255, 0.55);
+// }
+
+// .pillDanger {
+//   background: rgba(255, 77, 79, 0.14);
+//   border-color: rgba(255, 77, 79, 0.35);
+// }
+
+// /* ================= SAVE BAR ================= */
+
+// .saveBar {
+//   margin-top: 12px;
+//   display: flex;
+//   justify-content: flex-end;
+
+//   @media (max-width: 560px) {
+//     justify-content: stretch;
+//   }
+// }
+
+// .saveBtn {
+//   background: $primary_blue;
+//   color: $text_primary;
+//   border: none;
+//   border-radius: 14px;
+//   padding: 10px 14px;
+//   cursor: pointer;
+//   font-weight: 750;
+//   transition: transform 0.12s ease, filter 0.18s ease, opacity 0.18s ease;
+
+//   &:hover {
+//     filter: brightness(1.05);
+//     transform: translateY(-1px);
+//   }
+
+//   &:active {
+//     transform: scale(0.98);
+//   }
+
+//   &:disabled {
+//     opacity: 0.6;
+//     cursor: not-allowed;
+//     transform: none;
+//   }
+
+//   @media (max-width: 560px) {
+//     width: 100%;
+//   }
+// }
+
+// /* ================= KEYFRAMES ================= */
+
+// @keyframes fadeSlide {
+//   from {
+//     opacity: 0;
+//     transform: translateY(-4px);
+//   }
+//   to {
+//     opacity: 1;
+//     transform: translateY(0);
+//   }
+// }
+
+
+
+
+@import "../../colors.scss";
+
+/* ================= PAGE ================= */
+
+.page {
+  background: $dark_background;
+  min-height: 100%;
+  color: $text_primary;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.forbiddenTitle {
+  color: #ff4d4f;
+  text-align: center;
+  margin-top: 80px;
+  font-size: 28px;
+  font-weight: 600;
+}
+
+/* ================= HEADER ================= */
+
+.header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+
+  @media (max-width: 720px) {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+.title {
+  margin: 0;
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: 0.3px;
+  color: $text_primary;
+}
+
+.subtitle {
+  margin: 6px 0 0;
+  color: $text_secondary;
+  font-size: 14px;
+}
+
+.controlsRight {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+
+  @media (max-width: 720px) {
+    justify-content: flex-start;
+  }
+}
+
+.refreshBtn {
+  background: $table_background;
+  color: $text_primary;
+  border: 1px solid rgba(140, 140, 140, 0.14);
+  border-radius: 12px;
+  padding: 10px 12px;
+  cursor: pointer;
+  font-weight: 650;
+  transition: transform 0.12s ease, border-color 0.18s ease, background 0.18s ease;
+
+  &:hover {
+    border-color: rgba(22, 119, 255, 0.35);
+    background: rgba(22, 119, 255, 0.06);
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+}
+
+/* ================= SHELL ================= */
+
+.shell {
+  border-radius: 18px;
+  padding: 14px;
+}
+
+.empty {
+  padding: 18px;
+  color: $text_secondary;
+}
+
+.subjectList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* ================= SUBJECT DROPDOWN ================= */
+
+.subjectItem {
+  background: #232323;
+  border-radius: 16px;
+  border: 1px solid rgba(140, 140, 140, 0.12);
+  overflow: hidden;
+  transition: background 0.25s ease, transform 0.2s ease;
+}
+
+.subjectItem[open] {
+  background: #252525;
+}
+
+/* Remove default marker */
+.subjectItem > summary {
+  list-style: none;
+}
+.subjectItem > summary::-webkit-details-marker {
+  display: none;
+}
+
+.subjectSummary {
+  cursor: pointer;
+  padding: 14px 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  user-select: none;
+  transition: background 0.2s ease;
+}
+
+.subjectSummary:hover {
+  background: rgba(22, 119, 255, 0.06);
+}
+
+.subjectLeft {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.subjectName {
+  font-weight: 750;
+  color: $text_primary;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.badge {
+  font-size: 12px;
+  color: $highlight_accent;
+  background: rgba(250, 173, 20, 0.12);
+  border: 1px solid rgba(250, 173, 20, 0.22);
+  padding: 4px 10px;
+  border-radius: 999px;
+  flex: 0 0 auto;
+}
+
+.subjectRight {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.timeChip {
+  font-size: 12px;
+  color: $primary_blue;
+  background: rgba(22, 119, 255, 0.1);
+  border: 1px solid rgba(22, 119, 255, 0.25);
+  padding: 4px 10px;
+  border-radius: 999px;
+}
+
+/* Chevron animation */
+.chev {
+  color: $text_secondary;
+  transition: transform 0.25s ease;
+}
+
+.subjectItem[open] .chev {
+  transform: rotate(180deg);
+}
+
+/* ================= LESSON BODY ================= */
+
+.lessonBody {
+  padding: 12px 14px 14px;
+  animation: fadeSlide 0.22s ease forwards;
+}
+
+.lessonTopRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+
+  @media (max-width: 720px) {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+.lessonMeta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.roomChip {
+  font-size: 12px;
+  color: $text_secondary;
+  background: rgba(0, 0, 0, 0.12);
+  border: 1px solid rgba(140, 140, 140, 0.14);
+  padding: 4px 10px;
+  border-radius: 999px;
+}
+
+.studentsCount {
+  font-size: 12px;
+  color: $text_secondary;
+}
+
+/* ================= BULK ACTIONS ================= */
+
+.bulkActions {
+  display: flex;
+  gap: 8px;
+
+  @media (max-width: 720px) {
+    width: 100%;
+  }
+}
+
+.bulkBtn,
+.bulkBtnDanger {
+  border-radius: 999px;
+  padding: 8px 10px;
+  font-weight: 650;
+  cursor: pointer;
+  transition: transform 0.12s ease, background 0.18s ease, border-color 0.18s ease;
+  border: 1px solid rgba(140, 140, 140, 0.16);
+  background: rgba(31, 31, 31, 0.45);
+  color: $text_primary;
+
+  &:hover {
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+
+  @media (max-width: 720px) {
+    flex: 1;
+  }
+}
+
+.bulkBtn:hover {
+  border-color: rgba(22, 119, 255, 0.35);
+  background: rgba(22, 119, 255, 0.08);
+}
+
+.bulkBtnDanger:hover {
+  border-color: rgba(255, 77, 79, 0.35);
+  background: rgba(255, 77, 79, 0.12);
+}
+
+/* ================= STUDENTS (SCROLLABLE) ================= */
+
+.studentsWrap {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  /* ✅ SCROLL */
+  max-height: 320px;        /* change to what you want */
+  overflow-y: auto;
+  padding-right: 6px;       /* space for scrollbar */
+  margin-top: 6px;
+}
+
+/* ✅ nicer scrollbar (works in Chromium + Safari) */
+.studentsWrap::-webkit-scrollbar {
+  width: 8px;
+}
+
+.studentsWrap::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 999px;
+}
+
+.studentsWrap::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.18);
+  border-radius: 999px;
+}
+
+.studentsWrap::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.26);
+}
+
+/* Firefox */
+.studentsWrap {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.22) rgba(255, 255, 255, 0.06);
+}
+
+.studentRow {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px;
+  align-items: center;
+  padding: 10px 10px;
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.12);
+  transition: background 0.2s ease, transform 0.15s ease;
+
+  @media (max-width: 560px) {
+    grid-template-columns: 1fr;
+    align-items: stretch;
+  }
+}
+
+.studentRow:hover {
+  background: rgba(22, 119, 255, 0.05);
+  transform: translateX(3px);
+}
+
+.studentName {
+  font-weight: 600;
+  color: $text_primary;
+  word-break: break-word;
+}
+
+/* ================= PRESENT / ABSENT PILLS ================= */
+
+.pills {
+  display: flex;
+  gap: 8px;
+
+  @media (max-width: 560px) {
+    width: 100%;
+  }
+}
+
+.pill {
+  border: 1px solid rgba(140, 140, 140, 0.18);
+  background: rgba(31, 31, 31, 0.55);
+  color: $text_primary;
+  padding: 8px 10px;
+  border-radius: 999px;
+  font-weight: 650;
+  cursor: pointer;
+  transition: transform 0.18s ease, background 0.18s ease, border-color 0.18s ease;
+  min-width: 92px;
+
+  &:hover {
+    transform: translateY(-1px);
+    border-color: rgba(22, 119, 255, 0.35);
+  }
+
+  &:active {
+    transform: scale(0.96);
+  }
+
+  @media (max-width: 560px) {
+    flex: 1;
+  }
+}
+
+.pillActive {
+  background: rgba(22, 119, 255, 0.18);
+  border-color: rgba(22, 119, 255, 0.55);
+}
+
+.pillDanger {
+  background: rgba(255, 77, 79, 0.14);
+  border-color: rgba(255, 77, 79, 0.35);
+}
+
+/* ================= SAVE BAR ================= */
+
+.saveBar {
+  margin-top: 12px;
+  display: flex;
+  justify-content: flex-end;
+
+  @media (max-width: 560px) {
+    justify-content: stretch;
+  }
+}
+
+.saveBtn {
+  background: $primary_blue;
+  color: $text_primary;
+  border: none;
+  border-radius: 14px;
+  padding: 10px 14px;
+  cursor: pointer;
+  font-weight: 750;
+  transition: transform 0.12s ease, filter 0.18s ease, opacity 0.18s ease;
+
+  &:hover {
+    filter: brightness(1.05);
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  @media (max-width: 560px) {
+    width: 100%;
+  }
+}
+
+/* ================= KEYFRAMES ================= */
+
+@keyframes fadeSlide {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
