@@ -1,12 +1,325 @@
+// @import "../colors.scss";
+
+// /* ================== SEARCH ================== */
+
+
+// .searchBarComponent {
+//   margin-bottom: 17px;
+// }
+
+
+// .searchInput {
+//   width: 320px;
+
+//   :global(.ant-input) {
+//     height: 50px;
+//     font-size: 14px;
+//     background-color: #1f1f1f;
+//     color: #f0f0f0;
+//     border-color: #303030;
+//   }
+
+//   :global(.ant-input::placeholder) {
+//     color: #8c8c8c;
+//   }
+
+//   :global(.ant-input-search-button) {
+//     height: 50px;
+//     background-color: #1677ff;
+//     border-color: #1677ff;
+//     color: white;
+//     font-weight: 500;
+//   }
+
+//   :global(.ant-input-search-button:hover) {
+//     background-color: #4096ff;
+//     border-color: #4096ff;
+//   }
+
+//   /* ===== Tablet ===== */
+//   @media (max-width: 1024px) {
+//     width: 260px;
+
+//     .searchBarComponent {
+//       margin-bottom: 17px;
+//     }
+
+//     :global(.ant-input),
+//     :global(.ant-input-search-button) {
+//       height: 50px;
+//       font-size: 13px;
+//     }
+//   }
+
+//   /* ===== Mobile ===== */
+//   @media (max-width: 768px) {
+//     width: 230px;
+
+//     .searchBarComponent {
+//       margin-bottom: 17px;
+//     }
+
+//     :global(.ant-input),
+//     :global(.ant-input-search-button) {
+//       height: 50px;
+//       font-size: 12.5px;
+//     }
+//   }
+
+//   /* ===== Small phones ===== */
+//   @media (max-width: 480px) {
+//     width: 200px;
+
+//     .searchBarComponent {
+//       margin-bottom: 17px;
+//     }
+
+//     :global(.ant-input),
+//     :global(.ant-input-search-button) {
+//       height: 50px;
+//       font-size: 12px;
+//     }
+//   }
+// }
+
+// /* ================== LAYOUT ================== */
+
+// .layoutMainContainer {
+//   display: flex;
+//   width: 100%;
+//   height: 100dvh;
+//   background-color: $dark_background;
+// }
+
+// .userAndDropOutLineWrapper {
+//   display: flex;
+//   align-items: center;
+//   gap: 10px;
+//   background-color: #141414;
+//   padding: 10px;
+//   border-radius: 15px;
+// }
+
+// .myProfileOuterWrapper {
+//   width: 100%;
+//   display: flex;
+//   align-items: center;
+//   justify-content: end;
+// }
+
+// /* ================== NAV ================== */
+
+// .navBar {
+//   display: flex;
+//   flex-direction: column;
+//   gap: 8px;
+//   width: 200px;
+//   background-color: $table_background;
+//   border-right: 1px solid $dark_background;
+//   padding: 15px 10px;
+//   z-index: 1000;
+//   position: relative;
+//   left: 0;
+//   height: 100dvh;
+//   transition: left 0.3s ease;
+// }
+
+// .navBarOpen {
+//   left: 0;
+// }
+
+// .schoolIcon {
+//   font-size: 40px;
+// }
+
+// .mainLogoContainer {
+//   height: 10dvh;
+//   background-color: $table_background;
+//   border-bottom: 1px solid $dark_background;
+//   display: flex;
+//   justify-content: center;
+//   align-items: end;
+//   gap: 10px;
+//   color: $text_primary;
+//   font-weight: 600;
+//   font-size: 1.2rem;
+//   padding: 0 0 30px 0;
+// }
+
+// .pageRedirectionWrapper {
+//   display: flex;
+//   align-items: center;
+//   gap: 8px;
+//   padding: 12px 16px;
+//   border-radius: 8px;
+//   cursor: pointer;
+//   color: $text_primary;
+//   transition: background-color 0.15s ease;
+
+//   &:hover {
+//     background-color: $table_row_hover;
+//   }
+// }
+
+// .redirectionCaptions {
+//   text-decoration: none;
+//   color: inherit;
+//   font-size: 16px;
+//   display: block;
+// }
+
+// .navIcon {
+//   color: #4693ff;
+//   flex-shrink: 0;
+// }
+
+// .MenuCommandSection {
+//   font-size: 15px;
+// }
+
+// /* ===== ACTIVE MENU ===== */
+
+// .activeLink {
+//   .pageRedirectionWrapper {
+//     background: rgba(22, 119, 255, 0.14);
+//     border-left: 3px solid #1677ff;
+//     padding-left: 13px;
+//   }
+
+//   .MenuCommandSection {
+//     font-weight: 800;
+//   }
+// }
+
+// /* ================== HEADER + CONTENT ================== */
+
+// .headerAndMainWrapper {
+//   flex: 1;
+//   display: flex;
+//   flex-direction: column;
+// }
+
+// .headerSection {
+//   display: flex;
+//   align-items: center;
+//   width: 100%;
+//   height: 10dvh;
+//   padding: 0 20px;
+//   background-color: $table_background;
+//   color: $text_primary;
+//   font-weight: 500;
+//   border-bottom: 1px solid rgb(74, 74, 74);
+//   box-shadow: 0 8px 18px -14px rgba(0, 0, 0, 0.7);
+// }
+
+// .burgerIcon {
+//   cursor: pointer;
+//   font-size: 24px;
+//   color: $text_primary;
+//   display: none;
+// }
+
+// .myProfileWrapper {
+//   width: fit-content;
+//   display: flex;
+//   align-items: center;
+//   cursor: pointer;
+//   gap: 30px;
+// }
+
+// .profilePictureWrapper {
+//   width: 40px;
+//   height: 40px;
+//   border-radius: 50%;
+//   overflow: hidden;
+// }
+
+// .outerWrapperProfile {
+//   display: flex;
+//   gap: 10px;
+//   align-items: center;
+// }
+
+// .childrenPassingContainer {
+//   flex: 1;
+//   background-color: $dark_background;
+//   color: $text_primary;
+//   overflow-y: auto;
+// }
+
+// .overlay {
+//   display: none;
+//   position: fixed;
+//   inset: 0;
+//   background-color: rgba(0, 0, 0, 0.4);
+//   z-index: 1000;
+// }
+
+// /* ================== RESPONSIVE ================== */
+
+// @media (max-width: 1024px) {
+//   .myProfileOuterWrapper {
+//     justify-content: start;
+//   }
+
+//   .headerSection {
+//     flex-direction: row-reverse;
+//     justify-content: space-between;
+//   }
+
+//   .myProfileWrapper {
+//     flex-direction: row-reverse;
+//     justify-content: start;
+//   }
+
+//   .outerWrapperProfile {
+//     flex-direction: row-reverse;
+//   }
+
+//   .navBar {
+//     position: fixed;
+//     top: 0;
+//     left: -250px;
+//     height: 100dvh;
+//     z-index: 1500;
+//   }
+
+//   .navBarOpen {
+//     left: 0;
+//   }
+
+//   .burgerIcon {
+//     display: block;
+//   }
+
+//   .overlay {
+//     display: block;
+//   }
+// }
+
+// @media (max-width: 768px) {
+//   .navBar {
+//     width: 220px;
+//   }
+
+//   .myProfileOuterWrapper {
+//     height: 100%;
+//     justify-content: start;
+//   }
+
+//   .headerSection {
+//     justify-content: end;
+//   }
+// }
+
+
 @import "../colors.scss";
 
 /* ================== SEARCH ================== */
 
-
 .searchBarComponent {
   margin-bottom: 17px;
 }
-
 
 .searchInput {
   width: 320px;
@@ -79,6 +392,41 @@
       height: 50px;
       font-size: 12px;
     }
+  }
+}
+
+/* ================== SEARCH DROPDOWN ================== */
+
+.searchDropdown {
+  background-color: $table_background !important;
+  border: 1px solid #2a2a2a !important;
+  border-radius: 12px !important;
+  padding: 6px !important;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.65) !important;
+  margin-top: 5px !important;
+
+  :global(.ant-select-item) {
+    background-color: transparent !important;
+    color: $text_primary !important;
+    border-radius: 8px;
+    transition: background-color 0.15s ease;
+  }
+
+  :global(.ant-select-item-option-active) {
+    background-color: $table_row_hover !important;
+  }
+
+  :global(.ant-select-item-option-selected) {
+    background-color: rgba(22, 119, 255, 0.15) !important;
+    color: $text_primary !important;
+  }
+
+  :global(.ant-select-item-option-content) {
+    color: $text_primary !important;
+  }
+
+  :global(.ant-empty-description) {
+    color: $text_secondary !important;
   }
 }
 
@@ -245,6 +593,7 @@
   background-color: $dark_background;
   color: $text_primary;
   overflow-y: auto;
+  padding: 24px;
 }
 
 .overlay {

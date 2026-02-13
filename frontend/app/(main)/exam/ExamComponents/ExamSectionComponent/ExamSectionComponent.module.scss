@@ -119,6 +119,14 @@
     gap: 14px;
   }
 
+  .cardTop {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    gap: 10px;
+  }
+
   .titleText {
     font-size: 1.05rem;
   }
@@ -148,6 +156,13 @@
   .card {
     border-radius: 14px;
     padding: 13px;
+    gap: 10px;
+  }
+
+  .cardTop {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     gap: 10px;
   }
 
@@ -185,6 +200,8 @@
   }
 
   .cardTop {
+    display: flex;
+    align-items: center;
     gap: 10px;
   }
 
@@ -223,6 +240,7 @@
 
 /* Very small phones */
 @media (max-width: 420px) {
+
   .card {
     padding: 11px;
   }

@@ -6,6 +6,7 @@ from PIL import Image
 from io import BytesIO
 from django.core.files.base import ContentFile
 from django.utils import timezone
+from django.core.exceptions import ValidationError
 
 
 
@@ -76,7 +77,13 @@ class User(AbstractUser):
     objects = UserManager()
     
     def __str__(self,):
-        return f"{self.first_name} {self.last_name}: {'student' if self.grade_in and self.grade_in.category else 'teacher'}"
+        if self.role == self.Role.STUDENT:
+            return f"{self.email} ({self.role}, {self.grade_in.name if self.grade_in else 'No Grade'})"
+        elif self.role == self.Role.TEACHER:
+            subjects = ", ".join([s.name for s in self.subjects_taught.all()])
+            return f"{self.email} ({self.role}, teaches: {subjects})"
+        else:
+            return f"{self.email} ({self.role})"
     
     
             
@@ -84,19 +91,14 @@ class User(AbstractUser):
     def save(self, *args, **kwargs):
         update_fields = kwargs.get("update_fields")
 
-        # ✅ Admin login updates last_login via update_fields=["last_login"]
-        # Skip image processing in that case.
         if update_fields is not None and "profilePic" not in update_fields:
             return super().save(*args, **kwargs)
 
-        # 1) Save normally first (so the file exists in storage)
         super().save(*args, **kwargs)
 
-        # 2) No pic? done.
         if not self.profilePic:
             return
 
-        # 3) Read image from storage (works with S3/custom storage)
         try:
             self.profilePic.open("rb")
             img = Image.open(self.profilePic)
@@ -107,25 +109,47 @@ class User(AbstractUser):
             except Exception:
                 pass
 
-        # ✅ Resize to 200x200 (your logic)
         img = img.convert("RGB")
         img = img.resize((200, 200), Image.Resampling.LANCZOS)
 
-        # 4) Write back into the same storage file (no .path)
         buffer = BytesIO()
         img.save(buffer, format="JPEG", quality=90)
         buffer.seek(0)
 
-        # keep filename but force .jpg (optional)
         base_name = self.profilePic.name.rsplit(".", 1)[0]
         new_name = base_name + ".jpg"
 
-        # Save new content to storage, without infinite recursion
         self.profilePic.save(new_name, ContentFile(buffer.read()), save=False)
 
-        # IMPORTANT: update only this field to avoid re-triggering other stuff
         super().save(update_fields=["profilePic"])
     
+    
+    
+    
+    
+    
+    
+class ParentStudent(models.Model):
+    parent = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name="children_links",
+        limit_choices_to={"role": User.Role.PARENT},
+    )
+    student = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name="parent_links",
+        limit_choices_to={"role": User.Role.STUDENT},
+    )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=["parent", "student"], name="unique_parent_student")
+        ]
+
+    def __str__(self):
+        return f"{self.parent.email} -> {self.student.email}"
     
     
     
@@ -256,6 +280,8 @@ class UserAnswer(models.Model):
 
 
 
+
+
 class Announcement(models.Model):
     
     title = models.CharField(max_length=255)
@@ -273,6 +299,8 @@ class Announcement(models.Model):
         
     
     
+    
+    
 
 
 class Comment(models.Model):
@@ -283,5 +311,98 @@ class Comment(models.Model):
     
     def __str__(self):
         return f"comment of: {self.user.email}"
+    
+    
+
+
+
+
+
+class WeeklyLesson(models.Model):
+    
+    class WeekDay(models.IntegerChoices):
+        MON = 1, "Mon"
+        TUE = 2, "Tue"
+        WED = 3, "Wed"
+        THU = 4, "Thu"
+        FRI = 5, "Fri"
+        SAT = 6, "Sat"
+        SUN = 7, "Sun"
+    
+    
+    grade = models.ForeignKey(Grade, on_delete=models.CASCADE, related_name="weekly_lessons")
+    subject = models.ForeignKey(Subject, on_delete=models.CASCADE, related_name="weekly_lessons")
+
+    teacher = models.ForeignKey(
+        User,
+        related_name="weekly_lessons",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        limit_choices_to={"role": "teacher"},
+    )
+
+    weekday = models.IntegerField(choices=WeekDay.choices)
+    start_time = models.TimeField()
+    end_time = models.TimeField()
+
+    room = models.CharField(max_length=50, null=True, blank=True)
+
+    class Meta:
+        ordering = ["weekday", "start_time"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["grade", "weekday", "start_time"],
+                name="unique_grade_weekday_start",
+            ),
+        ]
+
+    def clean(self):
+        # basic sanity
+        if self.end_time <= self.start_time:
+            raise ValidationError({"end_time": "end_time must be after start_time."})
+
+        # make sure subject belongs to that grade
+        if self.subject_id and self.grade_id and self.subject.grade_id != self.grade_id:
+            raise ValidationError({"subject": "Subject must belong to the selected grade."})
+
+        # OPTIONAL (recommended): prevent overlaps for same grade+weekday
+        qs = WeeklyLesson.objects.filter(grade=self.grade, weekday=self.weekday)
+        if self.pk:
+            qs = qs.exclude(pk=self.pk)
+
+        # overlap rule: start < other_end AND end > other_start
+        if qs.filter(start_time__lt=self.end_time, end_time__gt=self.start_time).exists():
+            raise ValidationError("This time overlaps an existing lesson for this grade/day.")
+
+    def save(self, *args, **kwargs):
+        self.full_clean()  # ensures clean() runs even from admin
+        return super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"{self.grade} {self.get_weekday_display()} {self.start_time}-{self.end_time} {self.subject.name}"
 
     
+
+
+
+
+
+
+class LessonAttendance(models.Model):
+    lesson = models.ForeignKey(WeeklyLesson, on_delete=models.CASCADE, related_name="attendance")
+    date = models.DateField()
+
+    student = models.ForeignKey(User, on_delete=models.CASCADE, related_name="lesson_attendance")
+
+    is_present = models.BooleanField(default=True)
+    marked_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name="marked_attendance")
+    marked_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=["lesson", "date", "student"], name="unique_attendance_per_lesson_day_student")
+        ]
+
+    def __str__(self):
+        return f"{self.date} {self.lesson} {self.student.email} {'P' if self.is_present else 'A'}"

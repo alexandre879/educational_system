@@ -1,13 +1,13 @@
 @import "../../colors.scss";
 
-.dropDownWrapper {
-  padding: 20px;
-}
-
 .ButtonDropdownWrapper {
   display: flex;
   align-items: center;
   gap: 10px;
+  max-width: 1100px;
+  width: 100%;
+  margin: 0 auto;
+  margin-bottom: 18px;
 }
 
 .emptyAnnouncementWrapper {
@@ -25,8 +25,11 @@
 .announcementList {
   display: flex;
   flex-direction: column;
+  gap: 18px;
+  max-width: 1100px;
+  width: 100%;
   gap: 15px;
-  margin-top: 20px;
+  margin: 0 auto;
 }
 
 .announcementCard {
@@ -49,7 +52,7 @@
 
 .titleAndCommentsWrapper {
   display: flex !important;
-  align-items: center;
+  align-items: start !important;
   gap: 10px;
   margin-right: 20px;
 }
@@ -70,7 +73,7 @@
 .announcementHeader {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: start;
   margin-bottom: 8px;
 }
 

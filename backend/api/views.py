@@ -1,3 +1,5 @@
+from ast import List
+from datetime import date
 from openai import OpenAI
 import os
 from dotenv import load_dotenv
@@ -9,15 +11,21 @@ from django.core.cache import cache
 from rest_framework.views import APIView
 from rest_framework import status
 from telegram import Bot
+from django.db import transaction
+
+from api.telegram import tg_send
 from .models import (
     Announcement,
     Grade,
     GradeCategory,
+    LessonAttendance,
+    ParentStudent,
     Subject,
     User,
     Comment,
     UserSubjectPoints,
     Question,
+    WeeklyLesson,
 )
 from django.db.models import Count, IntegerField, Value, Q
 from django.db.models.functions import Coalesce
@@ -32,6 +40,7 @@ from .serializers import (
     LeaderBoardSerializer,
     MeSerializer,
     QuestionSerializer,
+    SearchQuerySerializer,
     SessionMiniSerializer,
     SubjectSerializer, 
     UserAnswerSerializer, 
@@ -49,6 +58,8 @@ from django.db.models import Sum, IntegerField, Count
 from django.db.models.functions import Cast
 from django.utils import timezone
 from openai import OpenAI
+from rest_framework.permissions import IsAdminUser
+from .serializers import BulkStudentCreateSerializer
 
 
 
@@ -58,7 +69,7 @@ load_dotenv()
 
 
 
-BOT_TOKEN = os.getenv("BOT_TOKEN")
+BOT_TOKEN = "8239669176:AAHCmtWOAE4t9rc4OGCLZ7cTO5yOPtrcdYc"
 OTP_TIMEOUT = os.getenv("OTP_TIMEOUT")
 OTP_RATE_LIMIT = os.getenv("OTP_RATE_LIMIT")
 
@@ -77,6 +88,9 @@ SYSTEM_PROMPT = (
 
 
 class RequestOtpView(APIView):
+    
+    permission_classes = [AllowAny]
+    
     def post(self, request: Request) -> Response:
         
         serializer = RequestOtpSerializer(data=request.data)
@@ -677,7 +691,7 @@ class ListCommentsView(APIView):
 class MySubjectsListView(APIView):
     permission_classes = [AllowAny]
 
-    def get(self, request: Request):
+    def get(self, request: Request) -> Response:
         user: User = request.user
 
 
@@ -687,12 +701,14 @@ class MySubjectsListView(APIView):
                 .values('pk', 'name', 'grade__pk', 'grade__name', 'grade__category__pk', 'grade__category__name')
                 .order_by('pk')
             )
-        if user.role == User.Role.TEACHER:
+        elif user.role == User.Role.TEACHER:
             subject_list = (
                 user.subjects_taught.all()
                 .values('pk', 'name', 'grade__pk', 'grade__name', 'grade__category__pk', 'grade__category__name')
                 .order_by('pk')
             )
+        else:
+            subject_list = []
 
         return Response(list(subject_list), status=status.HTTP_200_OK)
     
@@ -724,13 +740,14 @@ class LeaderBoardListView(APIView):
     
     
     
+    
 
 
 
 class AISupportChatView(APIView):
     permission_classes = [IsAuthenticated]
 
-    def post(self, request: Request):
+    def post(self, request: Request) -> Response:
         message = str(request.data.get("message", "")).strip()
 
         if not message:
@@ -747,7 +764,7 @@ class AISupportChatView(APIView):
                         "role": "system",
                         "content": [
                             {
-                                "type": "input_text",   # ✅ FIX
+                                "type": "input_text",
                                 "text": SYSTEM_PROMPT
                             }
                         ]
@@ -756,7 +773,7 @@ class AISupportChatView(APIView):
                         "role": "user",
                         "content": [
                             {
-                                "type": "input_text",   # ✅ FIX
+                                "type": "input_text",
                                 "text": message
                             }
                         ]
@@ -788,6 +805,485 @@ class AISupportChatView(APIView):
             )
             
             
+        
+        
+        
+        
+        
+
+
+class SearchAnythingView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request: Request) -> Response:
+        serializer = SearchQuerySerializer(data=request.query_params)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        user: User = request.user
+        query = serializer.validated_data["q"].strip()
+
+        if user.grade_in and user.grade_in.category:
+            grade = user.grade_in
+            
+            subjects = (
+                Subject.objects
+                .filter(name__istartswith=query, grade=grade)
+                .select_related("grade__category")
+                .values("pk", "name", "grade__name", "grade__category__name")
+                .distinct()
+            )
+
+            exams = (
+                Exam.objects
+                .filter(title__istartswith=query, grade=grade)
+                .values("pk", "title", "grade__name", "grade__category__name")
+                .distinct()
+            )
+
+            announcements = (
+                Announcement.objects
+                .filter(title__istartswith=query, grade=grade)
+                .values("pk", "title", "content", "grade__name", "grade__category__name")
+                .distinct()
+            )
+
+            return Response(
+                {"subjects": list(subjects), "exams": list(exams), "announcements": list(announcements)},
+                status=status.HTTP_200_OK
+            )
+
+
+        taught_subjects = user.subjects_taught.select_related("grade__category")
+        
+        
+        print(taught_subjects.values_list("pk", flat=True))
+
+        subjects = (
+            Subject.objects
+            .filter(name__istartswith=query, pk__in=taught_subjects.values_list("pk", flat=True))
+            .select_related("grade__category")
+            .values("pk", "name", "grade__name", "grade__category__name")
+            .order_by("pk")
+            .distinct()
+        )
+
+        exams = (
+            Exam.objects
+            .filter(title__istartswith=query, subject__in=taught_subjects)
+            .select_related("subject__grade__category")
+            .values(
+                "pk", "title",
+                "subject__pk", "subject__name",
+                "subject__grade__name", "subject__grade__category__name"
+            )
+            .order_by("pk")
+            .distinct()
+        )
+
+        announcements = (
+            Announcement.objects
+            .filter(title__istartswith=query, subject__in=taught_subjects)
+            .select_related("subject__grade__category")
+            .values(
+                "title", "pk", "content",
+                "subject__pk", "subject__name",
+                "subject__grade__name", "subject__grade__category__name"
+            )
+            .order_by("pk")
+            .distinct()
+        )
+
+        return Response(
+            {"subjects": list(subjects), "exams": list(exams), "announcements": list(announcements)},
+            status=status.HTTP_200_OK
+        )
+            
+            
+            
+            
+            
+      
+class GradeWeekdayScheduleView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user: User = request.user
+
+        # query params
+        weekday = request.query_params.get("weekday")
+        grade_id = request.query_params.get("grade_id")
+
+        # validate weekday
+        try:
+            weekday_int = int(weekday)
+            if weekday_int < 1 or weekday_int > 7:
+                return Response({"error": "weekday must be 1..7"}, status=status.HTTP_400_BAD_REQUEST)
+        except (TypeError, ValueError):
+            return Response({"error": "weekday is required and must be an integer 1..7"}, status=status.HTTP_400_BAD_REQUEST)
+
+        # determine grade
+        if user.role == user.Role.STUDENT:
+            if not user.grade_in:
+                return Response({"error": "Student has no grade_in"}, status=status.HTTP_400_BAD_REQUEST)
+            # students can only request their own grade
+            grade = user.grade_in
+        else:
+            if not grade_id:
+                return Response({"error": "grade_id is required"}, status=status.HTTP_400_BAD_REQUEST)
+            grade = get_object_or_404(Grade, pk=grade_id)
+
+        # OPTIONAL: teachers can only see grades they teach in the schedule
+        if user.role == user.Role.TEACHER:
+            teaches_this_grade = WeeklyLesson.objects.filter(teacher=user, grade=grade).exists()
+            if not teaches_this_grade:
+                return Response({"error": "You don't have access to this grade schedule"}, status=status.HTTP_403_FORBIDDEN)
+
+        # lessons for grade + weekday
+        lessons_qs = (
+            WeeklyLesson.objects
+            .filter(grade=grade, weekday=weekday_int)
+            .select_related("subject", "teacher", "grade")
+            .order_by("start_time")
+        )
+
+        lessons = []
+        for x in lessons_qs:
+            lessons.append({
+                "id": x.pk,
+                "weekday": x.weekday,
+                "start_time": x.start_time.strftime("%H:%M"),
+                "end_time": x.end_time.strftime("%H:%M"),
+                "room": x.room,
+                "grade": {"id": x.grade_id, "name": x.grade.name},
+                "subject": {"id": x.subject_id, "name": x.subject.name},
+                "teacher": {
+                    "id": x.teacher_id,
+                    "name": (x.teacher.get_full_name() if x.teacher else None),
+                },
+            })
+
+        # students of that grade (users list)
+        students_qs = (
+            User.objects
+            .filter(role=User.Role.STUDENT, grade_in=grade)
+            .only("id", "first_name", "last_name", "email", "profilePic")
+            .order_by("first_name", "last_name")
+        )
+
+        students = [{
+            "id": s.id,
+            "first_name": s.first_name,
+            "last_name": s.last_name,
+            "email": s.email,
+            "profilePic": s.profilePic.url if s.profilePic else None,
+        } for s in students_qs]
+
+        return Response({
+            "grade": {"id": grade.id, "name": grade.name},
+            "weekday": weekday_int,
+            "lessons": lessons,
+            "students": students,
+        }, status=status.HTTP_200_OK)
+
+            
+            
+            
+            
+            
+
+
+class TeacherTodayLessonsAttendanceView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request: Request) -> Response:
+        user: User = request.user
+        if user.role not in [User.Role.TEACHER, User.Role.ADMIN]:
+            return Response({"error": "Only teachers and admins can access this."}, status=403)
+
+        today = timezone.localdate()
+        weekday = today.isoweekday()
+
+        lessons = (
+            WeeklyLesson.objects
+            .filter(teacher=user, weekday=weekday)
+            .select_related("grade", "subject")
+            .order_by("start_time")
+        )
+
+        lesson_ids = [l.id for l in lessons]
+        grade_ids = list({l.grade_id for l in lessons})
+
+        students = (
+            User.objects
+            .filter(role=User.Role.STUDENT, grade_in_id__in=grade_ids)
+            .only("id", "first_name", "last_name", "email", "grade_in_id")
+        )
+    
+        students_by_grade = {}
+        for s in students:
+            students_by_grade.setdefault(s.grade_in_id, []).append(s)
+
+        att = (
+            LessonAttendance.objects
+            .filter(lesson_id__in=lesson_ids, date=today)
+            .values("lesson_id", "student_id", "is_present")
+        )
+        att_map = {(a["lesson_id"], a["student_id"]): a["is_present"] for a in att}
+
+        payload_lessons = []
+        for l in lessons:
+            grade_students = students_by_grade.get(l.grade_id, [])
+            payload_lessons.append({
+                "lesson_id": l.id,
+                "subject_name": l.subject.name,
+                "grade_name": l.grade.name,
+                "grade_category_name": l.grade.category.name if l.grade.category else None,
+                "room": l.room,
+                "time": {
+                    "start": l.start_time.strftime("%H:%M"),
+                    "end": l.end_time.strftime("%H:%M"),
+                },
+                "students": [
+                    {
+                        "id": s.id,
+                        "name": (f"{s.first_name} {s.last_name}".strip() or s.email),
+                        "is_present": att_map.get((l.id, s.id), True),
+                    }
+                    for s in grade_students
+                ],
+            })
+
+        return Response({
+            # "role": user.role,
+            "date": str(today),
+            "weekday": weekday,
+            "lessons": payload_lessons
+        }, status=status.HTTP_200_OK)
+        
+        
+        
+
+        
+        
+        
+
+
+# class TeacherMarkAttendanceView(APIView):
+#     permission_classes = [IsAuthenticated]
+
+#     @transaction.atomic
+#     def post(self, request: Request) -> Response:
+#         user: User = request.user
+#         if user.role != User.Role.TEACHER:
+#             return Response({"error": "Only teachers can mark attendance."}, status=403)
+
+#         lesson_id = request.data.get("lesson_id")
+#         date_str = request.data.get("date")
+#         attendance = request.data.get("attendance", [])
+
+#         if not lesson_id or not date_str:
+#             return Response({"error": "lesson_id and date are required."}, status=400)
+
+#         try:
+#             day = date.fromisoformat(str(date_str))
+#         except ValueError:
+#             return Response({"error": "date must be YYYY-MM-DD."}, status=400)
+
+#         if day != timezone.localdate():
+#             return Response({"error": "You can only mark attendance for today."}, status=400)
+
+#         lesson = (
+#             WeeklyLesson.objects
+#             .select_related("grade", "subject")
+#             .filter(pk=lesson_id, teacher=user)
+#             .first()
+#         )
+#         if not lesson:
+#             return Response({"error": "Lesson not found or not yours."}, status=404)
+
+#         allowed_student_ids = set(
+#             User.objects
+#             .filter(role=User.Role.STUDENT, grade_in=lesson.grade)
+#             .values_list("id", flat=True)
+#         )
+
+#         absent_ids: list[int] = []
+
+#         for row in attendance:
+#             sid = row.get("student_id")
+#             is_present = row.get("is_present")
+
+#             if sid is None or is_present is None:
+#                 continue
+
+#             sid = int(sid)
+#             if sid not in allowed_student_ids:
+#                 continue
+
+#             present_bool = bool(is_present)
+
+#             LessonAttendance.objects.update_or_create(
+#                 lesson_id=lesson.id,
+#                 date=day,
+#                 student_id=sid,
+#                 defaults={
+#                     "is_present": present_bool,
+#                     "marked_by": user,
+#                 },
+#             )
+
+#             if present_bool is False:
+#                 absent_ids.append(sid)
+                
+                
+                
+                
+                
+                
+                
+class TeacherMarkAttendanceView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    @transaction.atomic
+    def post(self, request: Request) -> Response:
+        user: User = request.user
+        if user.role not in  [User.Role.TEACHER, User.Role.ADMIN]:
+            return Response({"error": "Only teachers and admins can mark attendance."}, status=status.HTTP_403_FORBIDDEN)
+
+        lesson_id = request.data.get("lesson_id")
+        date_str = request.data.get("date")
+        attendance = request.data.get("attendance", [])
+
+        if not lesson_id or not date_str:
+            return Response({"error": "lesson_id and date are required."}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            day = date.fromisoformat(str(date_str))
+        except ValueError:
+            return Response({"error": "date must be YYYY-MM-DD."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # optional rule: only today
+        if day != timezone.localdate():
+            return Response({"error": "You can only mark attendance for today."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Only allow marking own lesson
+        lesson = (
+            WeeklyLesson.objects
+            .select_related("grade", "subject")
+            .filter(pk=lesson_id, teacher=user)
+            .first()
+        )
+        if not lesson:
+            return Response({"error": "Lesson not found or not yours."}, status=status.HTTP_404_NOT_FOUND)
+
+        # only students of that grade
+        allowed_student_ids = set(
+            User.objects
+            .filter(role=User.Role.STUDENT, grade_in=lesson.grade)
+            .values_list("id", flat=True)
+        )
+
+        absent_ids: list[int] = []
+        present_ids: list[int] = []
+
+        # Upsert attendance rows
+        for row in attendance:
+            sid = row.get("student_id")
+            is_present = row.get("is_present")
+
+            if sid is None or is_present is None:
+                continue
+
+            try:
+                sid = int(sid)
+            except (TypeError, ValueError):
+                continue
+
+            if sid not in allowed_student_ids:
+                continue
+
+            present_bool = bool(is_present)
+
+            LessonAttendance.objects.update_or_create(
+                lesson_id=lesson.id,
+                date=day,
+                student_id=sid,
+                defaults={
+                    "is_present": present_bool,
+                    "marked_by": user,
+                },
+            )
+
+            if present_bool:
+                present_ids.append(sid)
+            else:
+                absent_ids.append(sid)
+
+        # ✅ Notify after DB commit
+        def notify_parents():
+            all_ids = set(absent_ids + present_ids)
+            if not all_ids:
+                return
+
+            students = {
+                s.id: s
+                for s in User.objects.filter(id__in=all_ids).only("id", "first_name", "last_name", "email")
+            }
+
+            links = (
+                ParentStudent.objects
+                .filter(student_id__in=all_ids)
+                .select_related("parent", "student")
+            )
+
+            for link in links:
+                parent = link.parent
+                student = students.get(link.student_id)
+
+                if not parent or not parent.chat_id or not student:
+                    continue
+
+                student_name = (f"{student.first_name} {student.last_name}".strip() or student.email)
+
+                if student.id in all_ids and student.id in absent_ids:
+                    text = (
+                        f"🚨 <b>დასწრების შეტყობინება</b>\n\n"
+                        f"👤 <b>{student_name}</b>\n"
+                        f"📚 {lesson.subject.name}\n"
+                        f"🕒 {lesson.start_time.strftime('%H:%M')}–{lesson.end_time.strftime('%H:%M')}\n"
+                        f"📅 {day}\n\n"
+                        f"<b>სტატუსი:</b> ❌ არ გამოცხადდა"
+                    )
+                else:
+                    text = (
+                        f"✅ დასწრების დადასტურება\n\n"
+                        f"👤 {student_name}\n"
+                        f"📚 {lesson.subject.name}\n"
+                        f"🕒 {lesson.start_time.strftime('%H:%M')}–{lesson.end_time.strftime('%H:%M')}\n"
+                        f"📅 {day}\n\n"
+                        f"სტატუსი: 🎉 გამოცხადდა"
+                    )
+
+                tg_send(parent.chat_id, text)
+
+        transaction.on_commit(notify_parents)
+
+        return Response(
+            {
+                "ok": True,
+                "absent_count": len(absent_ids),
+                "present_count": len(present_ids),
+            },
+            status=200
+        )
+            
+            
+            
+            
+           
+           
+           
             
 
 class HomeDashboardView(APIView):
@@ -943,3 +1439,65 @@ class HomeDashboardView(APIView):
         data["leaderboard"] = self.build_school_leaderboard(request, user, top_n=20)
 
         return Response(data, status=status.HTTP_200_OK)
+    
+    
+    
+    
+    
+    
+    
+    
+########################################################################################
+########################################################################################
+########################################################################################
+########################################################################################
+########################################################################################
+########################################################################################
+########################################################################################
+########################################################################################
+########################################################################################
+class BulkCreateStudentsView(APIView):
+    permission_classes = [IsAdminUser]  # change if needed
+
+    @transaction.atomic
+    def post(self, request: Request) -> Response:
+        # expects: [ {...}, {...}, ... ]
+        if not isinstance(request.data, list):
+            return Response(
+                {"error": "Expected a JSON array (list) of users."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        serializer = BulkStudentCreateSerializer(data=request.data, many=True)
+        serializer.is_valid(raise_exception=True)
+
+        users = serializer.save()
+
+        return Response(
+            {
+                "created_count": len(users),
+                "users": [
+                    {
+                        "id": u.id,
+                        "email": u.email,
+                        "first_name": u.first_name,
+                        "last_name": u.last_name,
+                        "role": u.role,
+                        "grade_in": u.grade_in_id,
+                        "points": u.points,
+                    }
+                    for u in users
+                ],
+            },
+            status=status.HTTP_201_CREATED
+        )
+########################################################################################
+########################################################################################
+########################################################################################
+########################################################################################
+########################################################################################
+########################################################################################
+########################################################################################
+########################################################################################
+########################################################################################
+########################################################################################

@@ -1,0 +1,226 @@
+@import "../../colors.scss";
+
+
+.page {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  color: $text_primary;
+
+  :global(.ant-tabs-nav) {
+    margin-bottom: 16px !important;
+  }
+
+  :global(.ant-tabs-tab) {
+    font-weight: 600 !important;
+    color: $text_secondary !important;
+  }
+
+  :global(.ant-tabs-tab-active .ant-tabs-tab-btn) {
+    color: $primary_blue !important;
+  }
+
+  :global(.ant-tabs-ink-bar) {
+    background: $primary_blue !important;
+  }
+}
+
+
+.header {
+  margin-bottom: 18px;
+}
+
+.titleRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.icon {
+  font-size: 22px;
+  color: $primary_blue;
+  margin-top: 4px;
+}
+
+.title {
+  margin: 0 !important;
+  color: $text_primary !important;
+  font-weight: 800 !important;
+}
+
+.subtitle {
+  display: inline-block;
+  margin-top: 4px;
+  color: $text_secondary;
+  font-size: 13px;
+}
+
+
+.loading {
+  min-height: 260px;
+  display: grid;
+  place-items: center;
+}
+
+
+.split {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: 16px;
+  align-items: start;
+
+  @media (max-width: 1000px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+.dayCard {
+  background: $table_background !important;
+  border-radius: 18px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+  padding: 16px;
+}
+
+
+.studentsCard {
+  background: $table_background !important;
+  border-radius: 18px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+  padding: 16px;
+
+  :global(.ant-list-item) {
+    padding: 10px 0 !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  :global(.ant-list-item:last-child) {
+    border-bottom: none;
+  }
+
+  :global(.ant-avatar) {
+    background: $primary_blue !important;
+    font-weight: 700;
+  }
+}
+
+
+.dayHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.dayTitle {
+  font-weight: 800;
+  font-size: 14px;
+  color: $text_primary;
+}
+
+.dayCount {
+  font-size: 12px;
+  color: $text_secondary;
+}
+
+
+.studentsTitle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  svg {
+    color: $primary_blue;
+    font-size: 16px;
+  }
+}
+
+
+.dayList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+
+.lesson {
+  border-radius: 14px;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+
+.timeBlock {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.time {
+  font-weight: 900;
+  font-size: 12px;
+  color: $highlight_accent;
+  letter-spacing: 0.3px;
+}
+
+
+.roomTag {
+  background: rgba(22, 119, 255, 0.15) !important;
+  border: 1px solid rgba(22, 119, 255, 0.35) !important;
+  color: $text_primary !important;
+  border-radius: 999px !important;
+  margin: 0 !important;
+  font-size: 11px;
+}
+
+
+.info {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.subject {
+  font-weight: 800;
+  font-size: 14px;
+  color: $text_primary;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: $text_secondary;
+  font-size: 12px;
+}
+
+.teacher {
+  color: $text_secondary;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.teacherMuted {
+  color: rgba(140, 140, 140, 0.6);
+}
+
+
+.emptyDay {
+  padding: 20px 0;
+  text-align: center;
+}
+
+.emptyText {
+  color: $text_secondary;
+  font-size: 13px;
+}

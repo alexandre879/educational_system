@@ -1,11 +1,12 @@
 @import "../../colors.scss";
 
 .leaderboardMainContainer {
-  padding: 20px;
   display: flex;
   flex-direction: column;
-  gap: 18px;
   align-items: stretch;
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
 
   background-color: $dark_background;
   color: $text_primary;
@@ -18,6 +19,7 @@
     justify-content: space-between;
     gap: 12px;
     flex-wrap: wrap;
+    margin-bottom: 18px;
   }
 
   .wrapperOfDropDownAndCaption {
