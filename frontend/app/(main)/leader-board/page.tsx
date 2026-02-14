@@ -59,7 +59,7 @@ export default function LeaderBoard() {
       <div className={styles.anotherPage} >
         <div className={styles.WrapperOfMainCaptionAndIcon} >
           <span className={styles.headerIcon}>
-            <FaTrophy />
+            <FaTrophy className={styles.navIcon} />
           </span>
           <h1 className={styles.pageMainCaptionStyle} >Leader board</h1>
         </div>

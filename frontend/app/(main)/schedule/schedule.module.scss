@@ -1,11 +1,26 @@
 @import "../../colors.scss";
 
 
+.navIcon {
+  color: #4693ff;
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+}
+
+.studentMailCaptionStyle {
+  color: #bbbbbb
+}
+
+.noLeassongsCaptionStyle {
+  color: grey;
+}
+
 .WrapperOfMainCaptionAndIcon {
   display: flex;
   align-items: center;
   gap: 10px;
-  min-width: 0; /* prevents overflow */
+  min-width: 0;
 }
 
 
@@ -144,6 +159,9 @@
 }
 
 .dayTitle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   font-weight: 800;
   font-size: 14px;
   color: $text_primary;

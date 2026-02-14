@@ -152,7 +152,7 @@ export default function TeacherTodayAttendance() {
         <div>
           <div className={styles.WrapperOfMainCaptionAndIcon} >
             <span className={styles.headerIcon}>
-              <FaClipboardCheck />
+              <FaClipboardCheck className={styles.navIcon} />
             </span>
             <h1 className={styles.pageMainCaptionStyle} >Attendance</h1>
           </div>

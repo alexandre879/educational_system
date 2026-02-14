@@ -437,27 +437,3 @@ class SearchQuerySerializer(serializers.Serializer):
     q = serializers.CharField(required=True, max_length=100)
     
     
-    
-    
-############## the following serializer is for testing purposes, to be removed later. also can be considered as fast API ;)
-class BulkStudentCreateSerializer(serializers.ModelSerializer):
-    
-    grade_in = serializers.PrimaryKeyRelatedField(queryset=Grade.objects.all())
-
-    class Meta:
-        model = User
-        fields = ("email", "first_name", "last_name", "role", "grade_in", "points")
-
-    def validate_role(self, value):
-        # allow only valid roles; your JSON uses "student"
-        if value not in [c[0] for c in User.Role.choices]:
-            raise serializers.ValidationError("Invalid role.")
-        return value
-
-    def create(self, validated_data):
-        # create user with unusable password since payload has no password
-        user = User(**validated_data)
-        user.set_unusable_password()
-        user.save()
-        return user
-######################################################################

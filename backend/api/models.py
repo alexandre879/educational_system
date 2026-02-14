@@ -124,10 +124,11 @@ class User(AbstractUser):
         super().save(update_fields=["profilePic"])
     
     
-    
-    
-    
-    
+
+
+
+
+
     
 class ParentStudent(models.Model):
     parent = models.ForeignKey(
@@ -406,3 +407,51 @@ class LessonAttendance(models.Model):
 
     def __str__(self):
         return f"{self.date} {self.lesson} {self.student.email} {'P' if self.is_present else 'A'}"
+    
+    
+    
+    
+    
+    
+    
+    
+    
+class DailyExercise(models.Model):
+    grade = models.ForeignKey(Grade, on_delete=models.CASCADE, related_name="daily_exercises")
+    subject = models.ForeignKey(Subject, on_delete=models.CASCADE, related_name="daily_exercises", null=True, blank=True)
+
+    teacher = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="assigned_exercises",
+        limit_choices_to={"role": User.Role.TEACHER},
+    )
+
+    date = models.DateField()  
+    title = models.CharField(max_length=255)
+    description = models.TextField(blank=True, null=True)
+
+    due_date = models.DateField(null=True, blank=True) 
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-date", "-created_at"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["grade", "subject", "date", "title"],
+                name="unique_grade_subject_date_title_exercise"
+            )
+        ]
+
+    def clean(self):
+        if self.subject_id and self.grade_id and self.subject.grade_id != self.grade_id:
+            raise ValidationError({"subject": "Subject must belong to the selected grade."})
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        return super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"{self.date} | {self.grade} | {self.subject.name if self.subject else 'General'} | {self.title}"

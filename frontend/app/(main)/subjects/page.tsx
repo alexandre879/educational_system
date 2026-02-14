@@ -54,7 +54,7 @@ export default function Subjects() {
         <div className={styles.titleBlock}>
           <div className={styles.titleRow}>
             <span className={styles.headerIcon}>
-              <FaAtom />
+              <FaAtom className={styles.navIcon} />
             </span>
             <h1 className={styles.title}>Subjects</h1>
           </div>

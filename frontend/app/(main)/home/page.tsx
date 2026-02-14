@@ -26,6 +26,7 @@ import {
 import { DashboardResponse } from "./interface";
 import { Modal } from "antd";
 import { useRouter } from "next/navigation";
+import { FaHome } from "react-icons/fa";
 
 function formatTime(iso: string) {
   const d = new Date(iso);
@@ -125,9 +126,9 @@ export default function Home() {
       finished === 0
         ? 0
         : Math.round(
-            finishedSessions.reduce((sum, s) => sum + (s.score_so_far ?? 0), 0) /
-              finished
-          );
+          finishedSessions.reduce((sum, s) => sum + (s.score_so_far ?? 0), 0) /
+          finished
+        );
 
     const finishedSorted = [...finishedSessions].sort((a, b) => {
       const ta = new Date(a.started_at ?? 0).getTime();
@@ -252,7 +253,12 @@ export default function Home() {
 
   return (
     <div className={styles.page}>
-      {/* Header */}
+      <div className={styles.WrapperOfMainCaptionAndIcon} >
+        <span className={styles.headerIcon}>
+          <FaHome className={styles.navIcon} />
+        </span>
+        <h1 className={styles.pageMainCaptionStyle} >Home</h1>
+      </div>
       <div className={styles.header}>
         <div className={styles.profile}>
           <Avatar
@@ -319,9 +325,8 @@ export default function Home() {
             {data.leaderboard.items.map((p) => (
               <div
                 key={p.id}
-                className={`${styles.leaderboardItem} ${
-                  p.isMe ? styles.leaderboardMe : ""
-                }`}
+                className={`${styles.leaderboardItem} ${p.isMe ? styles.leaderboardMe : ""
+                  }`}
               >
                 <div className={styles.leaderboardLeft}>
                   <Typography className={styles.rank}>#{p.rank}</Typography>

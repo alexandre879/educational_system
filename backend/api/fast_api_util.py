@@ -1,9 +1,11 @@
 from rest_framework import serializers
-from api.models import Exam, Question, Option
+from api.models import Exam, Grade, Question, Option, User
 from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.request import Request
 from rest_framework.response import Response
+from rest_framework.permissions import IsAdminUser
+from django.db import transaction
 
 
 class OptionCreateSerializer(serializers.ModelSerializer):
@@ -12,12 +14,18 @@ class OptionCreateSerializer(serializers.ModelSerializer):
         fields = ["title", "is_correct"]
 
 
+
+
+
 class QuestionCreateSerializer(serializers.ModelSerializer):
     options = OptionCreateSerializer(many=True)
 
     class Meta:
         model = Question
         fields = ["text", "points", "question_category", "options"]
+
+
+
 
 
 class ExamCreateSerializer(serializers.ModelSerializer):
@@ -43,6 +51,30 @@ class ExamCreateSerializer(serializers.ModelSerializer):
     
     
     
+    
+    
+class BulkStudentCreateSerializer(serializers.ModelSerializer):
+    
+    grade_in = serializers.PrimaryKeyRelatedField(queryset=Grade.objects.all())
+
+    class Meta:
+        model = User
+        fields = ("email", "first_name", "last_name", "role", "grade_in", "points")
+
+    def validate_role(self, value):
+        if value not in [c[0] for c in User.Role.choices]:
+            raise serializers.ValidationError("Invalid role.")
+        return value
+
+    def create(self, validated_data):
+        user = User(**validated_data)
+        user.set_unusable_password()
+        user.save()
+        return user
+    
+    
+    
+    
 
 
 class ExamCreateView(APIView):
@@ -55,3 +87,44 @@ class ExamCreateView(APIView):
                 status=status.HTTP_201_CREATED,
             )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    
+    
+    
+    
+    
+
+class BulkCreateStudentsView(APIView):
+    permission_classes = [IsAdminUser]
+
+    @transaction.atomic
+    def post(self, request: Request) -> Response:
+        if not isinstance(request.data, list):
+            return Response(
+                {"error": "Expected a JSON array (list) of users."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        serializer = BulkStudentCreateSerializer(data=request.data, many=True)
+        serializer.is_valid(raise_exception=True)
+
+        users = serializer.save()
+
+        return Response(
+            {
+                "created_count": len(users),
+                "users": [
+                    {
+                        "id": u.id,
+                        "email": u.email,
+                        "first_name": u.first_name,
+                        "last_name": u.last_name,
+                        "role": u.role,
+                        "grade_in": u.grade_in_id,
+                        "points": u.points,
+                    }
+                    for u in users
+                ],
+            },
+            status=status.HTTP_201_CREATED
+        )

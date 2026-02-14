@@ -7,6 +7,7 @@ import styles from "./exam.module.scss";
 import ExamSectionComponent from "./ExamComponents/ExamSectionComponent/ExamSectionComponent";
 import { ExamListData } from "./interface";
 import { FiInbox } from "react-icons/fi";
+import { FaFileAlt } from "react-icons/fa";
 
 export default function Exam() {
   const [exams, setExams] = useState<ExamListData[]>([]);
@@ -42,9 +43,16 @@ export default function Exam() {
   if (exams.length === 0)
     return (
       <div className={styles.noExams}>
-        <FiInbox size={48} />
-        <div className={styles.noExamsTitle}>No exams available</div>
-        <div className={styles.noExamsSub}>Check back later or ask your teacher.</div>
+        <div className={styles.WrapperOfMainCaptionAndIcon} >
+          <span className={styles.headerIcon}>
+            <FaFileAlt className={styles.navIcon} />
+          </span>
+          <h1 className={styles.pageMainCaptionStyle} >Exams</h1>
+        </div>
+        <div>
+          <div className={styles.noExamsTitle}>No exams available</div>
+          <div className={styles.noExamsSub}>Check back later or ask your teacher.</div>
+        </div>
       </div>
     );
 

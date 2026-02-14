@@ -2,6 +2,59 @@
 
 /* ================== LAYOUT WRAPPERS ================== */
 
+.paginationWrapper {
+  display: flex;
+  justify-content: center;
+  margin-top: 18px;
+}
+
+/* ✅ IMPORTANT: CSS MODULE SAFE :global usage (no "pure selector" error) */
+.paginationWrapper {
+  :global(.ant-pagination-item),
+  :global(.ant-pagination-prev),
+  :global(.ant-pagination-next) {
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+  }
+
+  :global(.ant-pagination-item a),
+  :global(.ant-pagination-prev button),
+  :global(.ant-pagination-next button) {
+    color: #f0f0f0 !important; /* your light text */
+  }
+
+  /* ❌ remove black hover background */
+  :global(.ant-pagination-item:hover),
+  :global(.ant-pagination-prev:hover),
+  :global(.ant-pagination-next:hover) {
+    background: transparent !important;
+  }
+
+  :global(.ant-pagination-item:hover a) {
+    color: #ffffff !important;
+  }
+
+  /* active page */
+  :global(.ant-pagination-item-active) {
+    background: rgba(255, 255, 255, 0.08) !important;
+    border: 0 !important;
+  }
+
+  :global(.ant-pagination-item-active a) {
+    color: #ffffff !important;
+  }
+}
+
+
+.navIcon {
+  color: #4693ff;
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+}
+
+
 .dropDownAndButtonWrapper {
   display: flex;
   align-items: center;
@@ -113,10 +166,12 @@
 .announcementTitle {
   font-size: clamp(15px, 1.5vw, 18px);
   font-weight: 600;
-  color: #7d8dff;
+  color: #4e98ff;
   margin: 0;
   word-break: break-word;
   min-width: 0;
+  max-width: 500px;
+  width: 100%;
 }
 
 .announcementDate {
