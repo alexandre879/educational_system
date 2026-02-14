@@ -1,5 +1,13 @@
 @import "../../colors.scss";
 
+.navIcon {
+  color: #4693ff;
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+}
+
+
 .anotherPage {
   display: flex;
   justify-content: space-between;

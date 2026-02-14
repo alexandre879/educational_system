@@ -18,6 +18,42 @@ $text_secondary: #8c8c8c; // AntD gray7
 
 /* ================== PAGE ================== */
 
+.navIcon {
+  color: #4693ff;
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+}
+
+
+.WrapperOfMainCaptionAndIcon {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0; /* prevents overflow */
+}
+
+.headerIcon {
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  background: rgba(22, 119, 255, 0.14);
+  border: 1px solid rgba(22, 119, 255, 0.18);
+  color: #4693ff;
+  flex-shrink: 0;
+}
+
+
+.pageMainCaptionStyle {
+  font-size: clamp(18px, 2.1vw, 22px);
+  font-weight: 900;
+  line-height: 1.15;
+  margin: 0;
+  word-break: break-word;
+}
+
 .page {
   max-width: 1100px;
   margin: 0 auto;

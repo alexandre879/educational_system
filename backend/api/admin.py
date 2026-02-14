@@ -1,6 +1,22 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-from .models import User, Grade, Subject, Exam, Question, Option, UserExamSession, UserAnswer, Announcement, GradeCategory, UserSubjectPoints, WeeklyLesson, LessonAttendance, ParentStudent
+from .models import (
+    DailyExercise,
+    User, 
+    Grade, 
+    Subject, 
+    Exam, 
+    Question, 
+    Option, 
+    UserExamSession, 
+    UserAnswer, 
+    Announcement, 
+    GradeCategory, 
+    UserSubjectPoints, 
+    WeeklyLesson, 
+    LessonAttendance, 
+    ParentStudent
+)
 from .forms import UserCreationForm, UserChangeForm
 
 
@@ -38,6 +54,8 @@ class UserAdmin(BaseUserAdmin):
     filter_horizontal = ("groups", "user_permissions", "subjects_taught") 
 
 
+
+
 admin.site.register(User, UserAdmin)
 admin.site.register(Grade)
 admin.site.register(Subject)
@@ -52,3 +70,4 @@ admin.site.register(UserSubjectPoints)
 admin.site.register(WeeklyLesson)
 admin.site.register(LessonAttendance)
 admin.site.register(ParentStudent)
+admin.site.register(DailyExercise)

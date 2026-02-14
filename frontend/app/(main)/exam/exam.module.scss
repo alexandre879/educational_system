@@ -1,5 +1,43 @@
 @import "../../colors.scss";
 
+
+.navIcon {
+  color: #4693ff;
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+}
+
+
+.WrapperOfMainCaptionAndIcon {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0; /* prevents overflow */
+}
+
+.headerIcon {
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  background: rgba(22, 119, 255, 0.14);
+  border: 1px solid rgba(22, 119, 255, 0.18);
+  color: #4693ff;
+  flex-shrink: 0;
+}
+
+
+.pageMainCaptionStyle {
+  font-size: clamp(18px, 2.1vw, 22px);
+  font-weight: 900;
+  line-height: 1.15;
+  margin: 0;
+  word-break: break-word;
+}
+
+
 .page {
   min-height: 100vh;
   background: $dark_background;
@@ -84,18 +122,21 @@
 
 /* Empty */
 .noExams {
-  min-height: 60vh; /* ✅ not height:100% */
+  max-width: 1100px;
+  width: 100%;
+  margin: 0 auto;
   gap: 10px;
   display: flex;
-  justify-content: center;
   flex-direction: column;
-  align-items: center;
+  justify-content: space-between;
+  align-content: start;
   gap: 10px;
 }
 
 .noExamsTitle {
   font-size: 1.2rem;
   font-weight: 900;
+  color: rgb(210, 99, 99);
 }
 
 .noExamsSub {

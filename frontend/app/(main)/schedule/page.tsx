@@ -7,8 +7,9 @@ import { FiCalendar, FiUsers } from "react-icons/fi";
 import api from "@/interceptors";
 import { WEEKDAYS } from "./utils";
 import { ApiResponse, Lesson, Student } from "./interface";
+import { BookOpen } from "lucide-react";
 
-const { Title, Text } = Typography;
+const { Text } = Typography;
 
 
 
@@ -51,7 +52,6 @@ export default function WeeklySchedule({ gradeId }: { gradeId?: number }) {
 
   useEffect(() => {
     fetchData(weekday);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [weekday, gradeId]);
 
   const dayLabel = useMemo(() => WEEKDAYS.find((d) => d.key === weekday)?.label ?? "", [weekday]);
@@ -62,7 +62,7 @@ export default function WeeklySchedule({ gradeId }: { gradeId?: number }) {
         <div className={styles.titleRow}>
           <div className={styles.WrapperOfMainCaptionAndIcon} >
             <span className={styles.headerIcon}>
-              <FiCalendar />
+              <FiCalendar className={styles.navIcon} />
             </span>
             <h1 className={styles.pageMainCaptionStyle} >Schedule</h1>
           </div>
@@ -85,15 +85,13 @@ export default function WeeklySchedule({ gradeId }: { gradeId?: number }) {
               <div className={styles.loading}><Spin size="large" /></div>
             ) : (
               <div className={styles.split}>
-                {/* Lessons */}
                 <Card className={styles.dayCard} bordered={false}>
                   <div className={styles.dayHeader}>
-                    <Text className={styles.dayTitle}>{d.label} lessons</Text>
+                    <Text className={styles.dayTitle}><BookOpen color="#1677ff" size={22} />{d.label} lessons</Text>
                     <Text className={styles.dayCount}>{lessons.length ? `${lessons.length} lessons` : ""}</Text>
                   </div>
-
                   {!lessons.length ? (
-                    <Empty description="No lessons" />
+                    <Empty description={<span className={styles.noLeassongsCaptionStyle}>No lessons</span>} />
                   ) : (
                     <div className={styles.dayList}>
                       {lessons.map((it) => (
@@ -117,7 +115,6 @@ export default function WeeklySchedule({ gradeId }: { gradeId?: number }) {
                   )}
                 </Card>
 
-                {/* Students */}
                 <Card className={styles.studentsCard} bordered={false}>
                   <div className={styles.dayHeader}>
                     <div className={styles.studentsTitle}>
@@ -128,7 +125,8 @@ export default function WeeklySchedule({ gradeId }: { gradeId?: number }) {
                   </div>
 
                   {!students.length ? (
-                    <Empty description="No students" />
+                    <Empty description={<span style={{ color: 'grey' }} >No students</span>} />
+
                   ) : (
                     <List
                       itemLayout="horizontal"
@@ -136,9 +134,21 @@ export default function WeeklySchedule({ gradeId }: { gradeId?: number }) {
                       renderItem={(s) => (
                         <List.Item>
                           <List.Item.Meta
-                            avatar={<Avatar src={s.profilePic ?? undefined}>{s.first_name?.[0]}</Avatar>}
-                            title={`${s.first_name} ${s.last_name}`}
-                            description={s.email}
+                            avatar={
+                              <Avatar src={s.profilePic ?? undefined}>
+                                {s.first_name?.[0]}
+                              </Avatar>
+                            }
+                            title={
+                              <span style={{ color: '#ffffff', fontWeight: 600 }} >
+                                {s.first_name} {s.last_name}
+                              </span>
+                            }
+                            description={
+                              <span className={styles.studentMailCaptionStyle}>
+                                {s.email}
+                              </span>
+                            }
                           />
                         </List.Item>
                       )}

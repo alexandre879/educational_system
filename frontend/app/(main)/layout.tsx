@@ -123,7 +123,11 @@ export default function MainLayout({ children }: { children: ReactNode }) {
       label: "EXERCISES",
       icon: <FaBookOpen className={styles.navIcon} />,
     },
-    { href: "/exam", label: "EXAMS", icon: <FaFileAlt className={styles.navIcon} /> },
+    {
+      href: "/exam",
+      label: "EXAMS",
+      icon: <FaFileAlt className={styles.navIcon} />
+    },
     {
       href: "/schedule",
       label: "SCHEDULE",

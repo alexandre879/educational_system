@@ -19,6 +19,7 @@
     "axios": "^1.12.2",
     "cookies-js": "^1.2.3",
     "js-cookie": "^3.0.5",
+    "lucide-react": "^0.564.0",
     "next": "15.5.3",
     "react": "19.1.0",
     "react-chatbotify": "^2.5.0",

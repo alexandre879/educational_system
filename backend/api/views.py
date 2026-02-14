@@ -16,6 +16,7 @@ from django.db import transaction
 from api.telegram import tg_send
 from .models import (
     Announcement,
+    DailyExercise,
     Grade,
     GradeCategory,
     LessonAttendance,
@@ -59,7 +60,6 @@ from django.db.models.functions import Cast
 from django.utils import timezone
 from openai import OpenAI
 from rest_framework.permissions import IsAdminUser
-from .serializers import BulkStudentCreateSerializer
 
 
 
@@ -283,7 +283,12 @@ class StartOrResumeOrFinishExamSessionView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request: Request, exam_id: int):
+        
         exam = get_object_or_404(Exam, pk=exam_id)
+        user: User = request.user
+        
+        if exam.grade != user.grade_in:
+            return Response({"error": "This exam is not for your grade."}, status=status.HTTP_403_FORBIDDEN)
 
         session, created = UserExamSession.objects.get_or_create(
             user=request.user,
@@ -301,7 +306,6 @@ class StartOrResumeOrFinishExamSessionView(APIView):
 
         if not session.started or not session.ends_at: session.start()
 
-        # if expired -> terminate
         if session.is_expired:
             session.terminate()
             return Response(
@@ -355,14 +359,12 @@ class SubmitAnswerView(APIView):
             user=request.user
         )
 
-        # ✅ Block if session is not active
         if not session.is_active:
             return Response(
                 {"error": "This exam session is not active."},
                 status=status.HTTP_403_FORBIDDEN
             )
 
-        # ✅ Timer enforcement
         if session.is_expired:
             session.terminate()
             return Response(
@@ -370,7 +372,6 @@ class SubmitAnswerView(APIView):
                 status=status.HTTP_403_FORBIDDEN
             )
 
-        # ✅ Already finished
         if session.finished:
             return Response(
                 {"error": "This exam session has already been completed."},
@@ -392,7 +393,6 @@ class SubmitAnswerView(APIView):
         serializer.is_valid(raise_exception=True)
         answer_option_id = serializer.validated_data["option_id"]
 
-        # ✅ IMPORTANT: option must belong to the current question
         answer_option = get_object_or_404(
             Option,
             pk=answer_option_id,
@@ -401,7 +401,6 @@ class SubmitAnswerView(APIView):
 
         is_correct = answer_option.is_correct
 
-        # ✅ Prevent double-scoring: check previous answer correctness
         existing = UserAnswer.objects.filter(
             session=session,
             question=current_question
@@ -415,7 +414,6 @@ class SubmitAnswerView(APIView):
             defaults={"answer_option": answer_option, "is_correct": is_correct},
         )
 
-        # add points only if it became correct now (was not correct before)
         if is_correct and not previously_correct:
             session.score_so_far += current_question.points
 
@@ -435,10 +433,9 @@ class SubmitAnswerView(APIView):
                 "current_index": next_index,
                 "current_question": QuestionSerializer(next_question).data,
                 "len_questions": len(questions),
-                "ends_at": session.ends_at,  # ✅ frontend countdown source of truth
+                "ends_at": session.ends_at, 
             })
 
-        # ✅ Finish session
         session.finished = True
         session.is_active = False
         session.submitted_at = session.submitted_at or timezone.now()
@@ -1055,7 +1052,6 @@ class TeacherTodayLessonsAttendanceView(APIView):
             })
 
         return Response({
-            # "role": user.role,
             "date": str(today),
             "weekday": weekday,
             "lessons": payload_lessons
@@ -1064,81 +1060,9 @@ class TeacherTodayLessonsAttendanceView(APIView):
         
         
 
-        
-        
-        
 
 
-# class TeacherMarkAttendanceView(APIView):
-#     permission_classes = [IsAuthenticated]
 
-#     @transaction.atomic
-#     def post(self, request: Request) -> Response:
-#         user: User = request.user
-#         if user.role != User.Role.TEACHER:
-#             return Response({"error": "Only teachers can mark attendance."}, status=403)
-
-#         lesson_id = request.data.get("lesson_id")
-#         date_str = request.data.get("date")
-#         attendance = request.data.get("attendance", [])
-
-#         if not lesson_id or not date_str:
-#             return Response({"error": "lesson_id and date are required."}, status=400)
-
-#         try:
-#             day = date.fromisoformat(str(date_str))
-#         except ValueError:
-#             return Response({"error": "date must be YYYY-MM-DD."}, status=400)
-
-#         if day != timezone.localdate():
-#             return Response({"error": "You can only mark attendance for today."}, status=400)
-
-#         lesson = (
-#             WeeklyLesson.objects
-#             .select_related("grade", "subject")
-#             .filter(pk=lesson_id, teacher=user)
-#             .first()
-#         )
-#         if not lesson:
-#             return Response({"error": "Lesson not found or not yours."}, status=404)
-
-#         allowed_student_ids = set(
-#             User.objects
-#             .filter(role=User.Role.STUDENT, grade_in=lesson.grade)
-#             .values_list("id", flat=True)
-#         )
-
-#         absent_ids: list[int] = []
-
-#         for row in attendance:
-#             sid = row.get("student_id")
-#             is_present = row.get("is_present")
-
-#             if sid is None or is_present is None:
-#                 continue
-
-#             sid = int(sid)
-#             if sid not in allowed_student_ids:
-#                 continue
-
-#             present_bool = bool(is_present)
-
-#             LessonAttendance.objects.update_or_create(
-#                 lesson_id=lesson.id,
-#                 date=day,
-#                 student_id=sid,
-#                 defaults={
-#                     "is_present": present_bool,
-#                     "marked_by": user,
-#                 },
-#             )
-
-#             if present_bool is False:
-#                 absent_ids.append(sid)
-                
-                
-                
-                
                 
                 
                 
@@ -1163,11 +1087,9 @@ class TeacherMarkAttendanceView(APIView):
         except ValueError:
             return Response({"error": "date must be YYYY-MM-DD."}, status=status.HTTP_400_BAD_REQUEST)
 
-        # optional rule: only today
         if day != timezone.localdate():
             return Response({"error": "You can only mark attendance for today."}, status=status.HTTP_400_BAD_REQUEST)
 
-        # Only allow marking own lesson
         lesson = (
             WeeklyLesson.objects
             .select_related("grade", "subject")
@@ -1177,7 +1099,6 @@ class TeacherMarkAttendanceView(APIView):
         if not lesson:
             return Response({"error": "Lesson not found or not yours."}, status=status.HTTP_404_NOT_FOUND)
 
-        # only students of that grade
         allowed_student_ids = set(
             User.objects
             .filter(role=User.Role.STUDENT, grade_in=lesson.grade)
@@ -1187,7 +1108,6 @@ class TeacherMarkAttendanceView(APIView):
         absent_ids: list[int] = []
         present_ids: list[int] = []
 
-        # Upsert attendance rows
         for row in attendance:
             sid = row.get("student_id")
             is_present = row.get("is_present")
@@ -1220,7 +1140,6 @@ class TeacherMarkAttendanceView(APIView):
             else:
                 absent_ids.append(sid)
 
-        # ✅ Notify after DB commit
         def notify_parents():
             all_ids = set(absent_ids + present_ids)
             if not all_ids:
@@ -1279,11 +1198,227 @@ class TeacherMarkAttendanceView(APIView):
         )
             
             
+     
+     
+     
+
+
+class StudentDailyExercisesView(APIView):
+    
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request: Request) -> Response:
+        user: User = request.user
+
+        if user.role != User.Role.STUDENT or not user.grade_in:
+            return Response({"error": "Only students with a grade can access."}, status=403)
+
+        date_str = request.query_params.get("date")
+        if date_str:
+            try:
+                day = date.fromisoformat(str(date_str))
+            except ValueError:
+                return Response({"error": "date must be YYYY-MM-DD"}, status=400)
+        else:
+            day = timezone.localdate()
+
+        qs = (
+            DailyExercise.objects
+            .filter(grade_id=user.grade_in_id, date=day)
+            .select_related("grade", "subject", "teacher")
+            .order_by("created_at")
+        )
+
+        items = []
+        for x in qs:
+            items.append({
+                "id": x.pk,
+                "date": str(x.date),
+                "due_date": str(x.due_date) if x.due_date else None,
+                "title": x.title,
+                "description": x.description,
+                "grade": {"id": x.grade_id, "name": x.grade.name},
+                "subject": {"id": x.subject_id, "name": x.subject.name} if x.subject else None,
+                "teacher": {
+                    "id": x.teacher_id,
+                    "name": (x.teacher.get_full_name() if x.teacher else None),
+                },
+                "created_at": x.created_at.isoformat() if x.created_at else None,
+            })
+
+        return Response({
+            "date": str(day),
+            "grade": {"id": user.grade_in_id, "name": user.grade_in.name},
+            "items": items
+        }, status=200)
+
+
+
+
+
+
+
+class TeacherDailyExerciseCreateView(APIView):
+    """
+    Teacher creates an exercise for a grade (and optional subject)
+    POST /exercises/daily/create/
+
+    Body:
+    {
+      "grade_id": 8,
+      "subject_id": 12,           // optional
+      "date": "2026-02-14",       // optional (default today)
+      "due_date": "2026-02-16",   // optional
+      "title": "Homework #1",
+      "description": "Solve 1-10 tasks"
+    }
+    """
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request: Request) -> Response:
+        user: User = request.user
+        if user.role != User.Role.TEACHER:
+            return Response({"error": "Only teachers can create exercises."}, status=403)
+
+        grade_id = request.data.get("grade_id")
+        subject_id = request.data.get("subject_id")  # optional
+        title = (request.data.get("title") or "").strip()
+        description = (request.data.get("description") or "").strip()
+
+        date_str = request.data.get("date")
+        due_str = request.data.get("due_date")
+
+        if not grade_id or not title:
+            return Response({"error": "grade_id and title are required."}, status=400)
+
+        try:
+            grade_id = int(grade_id)
+        except (TypeError, ValueError):
+            return Response({"error": "grade_id must be integer."}, status=400)
+
+        # day
+        if date_str:
+            try:
+                day = date.fromisoformat(str(date_str))
+            except ValueError:
+                return Response({"error": "date must be YYYY-MM-DD"}, status=400)
+        else:
+            day = timezone.localdate()
+
+        # due_date
+        due_day = None
+        if due_str:
+            try:
+                due_day = date.fromisoformat(str(due_str))
+            except ValueError:
+                return Response({"error": "due_date must be YYYY-MM-DD"}, status=400)
+
+        grade = Grade.objects.filter(pk=grade_id).first()
+        if not grade:
+            return Response({"error": "Grade not found."}, status=404)
+
+        subject = None
+        if subject_id:
+            try:
+                subject_id = int(subject_id)
+            except (TypeError, ValueError):
+                return Response({"error": "subject_id must be integer."}, status=400)
+
+            subject = Subject.objects.filter(pk=subject_id).select_related("grade").first()
+            if not subject:
+                return Response({"error": "Subject not found."}, status=404)
+
+            # IMPORTANT: subject must belong to grade
+            if subject.grade_id != grade.id:
+                return Response({"error": "Subject must belong to the selected grade."}, status=400)
+
+            # OPTIONAL safety: teacher must teach that subject
+            if not user.subjects_taught.filter(pk=subject.id).exists():
+                return Response({"error": "You can't assign exercises for a subject you don't teach."}, status=403)
+
+        ex = DailyExercise.objects.create(
+            grade=grade,
+            subject=subject,
+            teacher=user,
+            date=day,
+            due_date=due_day,
+            title=title,
+            description=description or None,
+        )
+
+        return Response({
+            "id": ex.id,
+            "date": str(ex.date),
+            "due_date": str(ex.due_date) if ex.due_date else None,
+            "title": ex.title,
+            "description": ex.description,
+            "grade": {"id": ex.grade_id, "name": ex.grade.name},
+            "subject": {"id": ex.subject_id, "name": ex.subject.name} if ex.subject else None,
+            "teacher": {"id": user.id, "name": user.get_full_name()},
+            "created_at": ex.created_at.isoformat() if ex.created_at else None,
+        }, status=status.HTTP_201_CREATED)
+       
+            
+   
+   
+   
+   
+
+
+class TeacherDailyExercisesListView(APIView):
+    """
+    Teacher sees what they assigned (filters optional)
+    GET /exercises/daily/teacher/?date=YYYY-MM-DD&grade_id=8
+    """
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request: Request) -> Response:
+        user: User = request.user
+        if user.role != User.Role.TEACHER:
+            return Response({"error": "Only teachers."}, status=403)
+
+        date_str = request.query_params.get("date")
+        grade_id = request.query_params.get("grade_id")
+
+        qs = DailyExercise.objects.filter(teacher=user).select_related("grade", "subject", "teacher")
+
+        if date_str:
+            try:
+                day = date.fromisoformat(str(date_str))
+            except ValueError:
+                return Response({"error": "date must be YYYY-MM-DD"}, status=400)
+            qs = qs.filter(date=day)
+
+        if grade_id:
+            try:
+                grade_id = int(grade_id)
+            except (TypeError, ValueError):
+                return Response({"error": "grade_id must be integer."}, status=400)
+            qs = qs.filter(grade_id=grade_id)
+
+        qs = qs.order_by("-date", "-created_at")
+
+        items = []
+        for x in qs:
+            items.append({
+                "id": x.id,
+                "date": str(x.date),
+                "due_date": str(x.due_date) if x.due_date else None,
+                "title": x.title,
+                "description": x.description,
+                "grade": {"id": x.grade_id, "name": x.grade.name},
+                "subject": {"id": x.subject_id, "name": x.subject.name} if x.subject else None,
+                "created_at": x.created_at.isoformat() if x.created_at else None,
+            })
+
+        return Response({"items": items}, status=200)   
+   
+   
+        
+           
+           
             
             
-           
-           
-           
             
 
 class HomeDashboardView(APIView):
@@ -1328,7 +1463,7 @@ class HomeDashboardView(APIView):
                 "isMe": (u.id == user.id),
             })
 
-        # global rank even if user not in top list
+
         higher_count = qs.filter(total_points__gt=my_points).count()
         me_rank = higher_count + 1
 
@@ -1444,60 +1579,3 @@ class HomeDashboardView(APIView):
     
     
     
-    
-    
-    
-########################################################################################
-########################################################################################
-########################################################################################
-########################################################################################
-########################################################################################
-########################################################################################
-########################################################################################
-########################################################################################
-########################################################################################
-class BulkCreateStudentsView(APIView):
-    permission_classes = [IsAdminUser]  # change if needed
-
-    @transaction.atomic
-    def post(self, request: Request) -> Response:
-        # expects: [ {...}, {...}, ... ]
-        if not isinstance(request.data, list):
-            return Response(
-                {"error": "Expected a JSON array (list) of users."},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-
-        serializer = BulkStudentCreateSerializer(data=request.data, many=True)
-        serializer.is_valid(raise_exception=True)
-
-        users = serializer.save()
-
-        return Response(
-            {
-                "created_count": len(users),
-                "users": [
-                    {
-                        "id": u.id,
-                        "email": u.email,
-                        "first_name": u.first_name,
-                        "last_name": u.last_name,
-                        "role": u.role,
-                        "grade_in": u.grade_in_id,
-                        "points": u.points,
-                    }
-                    for u in users
-                ],
-            },
-            status=status.HTTP_201_CREATED
-        )
-########################################################################################
-########################################################################################
-########################################################################################
-########################################################################################
-########################################################################################
-########################################################################################
-########################################################################################
-########################################################################################
-########################################################################################
-########################################################################################
