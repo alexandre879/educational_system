@@ -60,9 +60,13 @@ export default function WeeklySchedule({ gradeId }: { gradeId?: number }) {
     <div className={styles.page}>
       <div className={styles.header}>
         <div className={styles.titleRow}>
-          <FiCalendar className={styles.icon} />
+          <div className={styles.WrapperOfMainCaptionAndIcon} >
+            <span className={styles.headerIcon}>
+              <FiCalendar />
+            </span>
+            <h1 className={styles.pageMainCaptionStyle} >Schedule</h1>
+          </div>
           <div>
-            <Title level={3} className={styles.title}>Schedule</Title>
             <Text className={styles.subtitle}>
               {gradeLabel ? `Grade: ${gradeLabel} • ${dayLabel}` : `Weekday: ${dayLabel}`}
             </Text>

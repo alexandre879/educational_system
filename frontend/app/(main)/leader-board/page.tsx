@@ -7,6 +7,7 @@ import Image from "next/image";
 import { Button, Dropdown, Empty } from "antd";
 import type { MenuProps } from "antd";
 import { LeaderboardEntry, Subject } from "./interface";
+import { FaBullhorn, FaTrophy } from "react-icons/fa";
 
 export default function LeaderBoard() {
   const [dropDownData, setDropdownData] = useState<Subject[]>([]);
@@ -55,22 +56,29 @@ export default function LeaderBoard() {
 
   return (
     <div className={styles.leaderboardMainContainer}>
-      {/* Controls */}
-      <div className={styles.controlsRow}>
-        <div className={styles.wrapperOfDropDownAndCaption}>
-          <Dropdown
-            menu={{ items: menuItems }}
-            placement="bottomLeft"
-            trigger={["click"]}
-            arrow={{ pointAtCenter: true }}
-          >
-            <Button className={styles.subjectBtn}>
-              <span className={styles.subjectBtnText}>
-                {chosenSubject || "Choose the subject"}
-              </span>
-              <span className={styles.subjectBtnArrow}>▼</span>
-            </Button>
-          </Dropdown>
+      <div className={styles.anotherPage} >
+        <div className={styles.WrapperOfMainCaptionAndIcon} >
+          <span className={styles.headerIcon}>
+            <FaTrophy />
+          </span>
+          <h1 className={styles.pageMainCaptionStyle} >Leader board</h1>
+        </div>
+        <div className={styles.controlsRow}>
+          <div className={styles.wrapperOfDropDownAndCaption}>
+            <Dropdown
+              menu={{ items: menuItems }}
+              placement="bottomLeft"
+              trigger={["click"]}
+              arrow={{ pointAtCenter: true }}
+            >
+              <Button className={styles.subjectBtn}>
+                <span className={styles.subjectBtnText}>
+                  {chosenSubject || "Choose the subject"}
+                </span>
+                <span className={styles.subjectBtnArrow}>▼</span>
+              </Button>
+            </Dropdown>
+          </div>
         </div>
       </div>
 

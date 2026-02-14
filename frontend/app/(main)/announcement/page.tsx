@@ -7,7 +7,8 @@ import { Button, Dropdown, Form, Input, List, Modal, Select } from "antd";
 import TextArea from "antd/es/input/TextArea";
 import { Announcement, Subject, CreateAnnouncementData, Grades, Categories, Comment } from "./interface";
 import { FiInbox } from "react-icons/fi";
-import { MdComment } from "react-icons/md";
+import { CommentOutlined } from "@ant-design/icons";
+import { FaBullhorn } from "react-icons/fa";
 
 
 
@@ -161,34 +162,42 @@ export default function AnnouncementPage() {
     return (
         <div className={styles.dropDownWrapper}>
             <div className={styles.ButtonDropdownWrapper}>
-                {userRole === "teacher" && (
-                    <Button type="primary" onClick={showModal}>
-                        Add Announcement
-                    </Button>
-                )}
+                <div className={styles.WrapperOfMainCaptionAndIcon} >
+                    <span className={styles.headerIcon}>
+                        <FaBullhorn />
+                    </span>
+                    <h1 className={styles.pageMainCaptionStyle} >Announcement</h1>
+                </div>
+                <div className={styles.dropDownAndButtonWrapper} >
+                    {userRole === "teacher" && (
+                        <Button type="primary" onClick={showModal}>
+                            Add Announcement
+                        </Button>
+                    )}
 
-                <Dropdown
-                    popupRender={(menu) => <div style={{ maxHeight: 200, overflowY: "auto" }}>{menu}</div>}
-                    menu={{
-                        items: [
-                            ...subjects.map((s) => ({
-                                key: s.id,
-                                label: `${s.name} (${s.grade.grade_name}-${s.grade.grade_category_name})`,
-                                onClick: () => setSelectedSubjectId(s.id),
-                            })),
-                        ],
-                    }}
-                    placement="bottomLeft"
-                    trigger={["click"]}
-                    arrow={{ pointAtCenter: true }}
-                >
-                    <Button style={{ display: "flex", alignItems: "center", gap: "5px" }}>
-                        {selectedSubjectId
-                            ? subjects.find((s) => s.id === selectedSubjectId)?.name
-                            : "Choose a subject"}
-                        <span>▼</span>
-                    </Button>
-                </Dropdown>
+                    <Dropdown
+                        popupRender={(menu) => <div style={{ maxHeight: 200, overflowY: "auto" }}>{menu}</div>}
+                        menu={{
+                            items: [
+                                ...subjects.map((s) => ({
+                                    key: s.id,
+                                    label: `${s.name} (${s.grade.grade_name}-${s.grade.grade_category_name})`,
+                                    onClick: () => setSelectedSubjectId(s.id),
+                                })),
+                            ],
+                        }}
+                        placement="bottomLeft"
+                        trigger={["click"]}
+                        arrow={{ pointAtCenter: true }}
+                    >
+                        <Button style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+                            {selectedSubjectId
+                                ? subjects.find((s) => s.id === selectedSubjectId)?.name
+                                : "Choose a subject"}
+                            <span>▼</span>
+                        </Button>
+                    </Dropdown>
+                </div>
             </div>
 
             <Modal
@@ -249,13 +258,14 @@ export default function AnnouncementPage() {
                                     <div className={styles.announcementHeader}>
                                         <div className={styles.titleAndCommentsWrapper}>
                                             <h3 className={styles.announcementTitle}>{item.title}</h3>
-                                            <div className={styles.commentsWrapper}>
-                                                <MdComment size={22} />
-                                                <span className={styles.commentsCountStyle}>{item.len_comments}</span>
-                                            </div>
+                                           {/*  */}
                                         </div>
                                         <span className={styles.announcementDate}>
-                                            {new Date(item.created_at).toLocaleString()}
+                                            <u>{new Date(item.created_at).toLocaleString()}</u>
+                                             <div className={styles.commentsWrapper}>
+                                                <CommentOutlined />
+                                                <span className={styles.commentsCountStyle}>{item.len_comments}</span>
+                                            </div>
                                         </span>
                                     </div>
 

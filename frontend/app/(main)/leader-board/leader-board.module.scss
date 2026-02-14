@@ -1,5 +1,56 @@
 @import "../../colors.scss";
 
+.anotherPage {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+  min-width: 0;
+}
+
+.pageMainCaptionStyle {
+  font-size: clamp(18px, 2.1vw, 22px);
+  font-weight: 900;
+  line-height: 1.15;
+  margin: 0;
+  word-break: break-word;
+}
+
+.dropDownAndMainCaptionWrapper {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.headerIcon {
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  background: rgba(22, 119, 255, 0.14);
+  border: 1px solid rgba(22, 119, 255, 0.18);
+  color: #4693ff;
+  flex-shrink: 0;
+}
+
+.dropDownAndButtonWrapper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  /* important for small screens */
+}
+
+.WrapperOfMainCaptionAndIcon {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  /* prevents overflow */
+}
+
 .leaderboardMainContainer {
   display: flex;
   flex-direction: column;
@@ -19,7 +70,6 @@
     justify-content: space-between;
     gap: 12px;
     flex-wrap: wrap;
-    margin-bottom: 18px;
   }
 
   .wrapperOfDropDownAndCaption {
@@ -53,7 +103,7 @@
     border-radius: 50%;
     flex-shrink: 0;
   }
-  
+
   .blankCaptionStyle {
     color: grey;
   }
@@ -133,7 +183,8 @@
   /* ---------- table shell (scrollable on small screens) ---------- */
   .tableOuter {
     width: 100%;
-    overflow-x: auto; /* ✅ key for tablets/phones */
+    overflow-x: auto;
+    /* ✅ key for tablets/phones */
     -webkit-overflow-scrolling: touch;
     border-radius: 12px;
   }
@@ -141,7 +192,8 @@
   /* keep your table styling but make it robust */
   table {
     width: 100%;
-    min-width: 760px; /* ✅ forces horizontal scroll instead of breaking */
+    min-width: 760px;
+    /* ✅ forces horizontal scroll instead of breaking */
     border-collapse: separate;
     border-spacing: 0;
     border-radius: 10px;
@@ -201,12 +253,15 @@
   .colName {
     width: 34%;
   }
+
   .colEmail {
     width: 34%;
   }
+
   .colPoints {
     width: 18%;
   }
+
   .colPos {
     width: 14%;
   }
@@ -219,7 +274,8 @@
 
   /* ---------- mobile cards ---------- */
   .mobileList {
-    display: none; /* shown on <= 600px */
+    display: none;
+    /* shown on <= 600px */
     flex-direction: column;
     gap: 12px;
   }
@@ -296,7 +352,11 @@
 
   /* tablet */
   @media (max-width: 1024px) {
-    padding: 18px;
+
+    .anotherPage {
+      display: flex;
+      gap: 8px;
+    }
 
     .subjectBtnText {
       max-width: 320px;
@@ -318,7 +378,7 @@
 
   /* phone */
   @media (max-width: 600px) {
-    padding: 14px;
+    // padding: 14px;
 
     /* hide table, show cards */
     .tableOuter {
