@@ -1,36 +1,89 @@
 @import "../../colors.scss";
 
-.ButtonDropdownWrapper {
+/* ================== LAYOUT WRAPPERS ================== */
+
+.dropDownAndButtonWrapper {
   display: flex;
   align-items: center;
   gap: 10px;
+  flex-wrap: wrap; /* important for small screens */
+}
+
+.WrapperOfMainCaptionAndIcon {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0; /* prevents overflow */
+}
+
+.ButtonDropdownWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+
   max-width: 1100px;
   width: 100%;
-  margin: 0 auto;
-  margin-bottom: 18px;
+  margin: 0 auto 18px;
+
+  // padding: 0 14px; /* makes it fit nicely on all resolutions */
+  flex-wrap: wrap; /* allow stacking on smaller screens */
 }
+
+/* ================== HEADER ICON + TITLE ================== */
+
+.headerIcon {
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  background: rgba(22, 119, 255, 0.14);
+  border: 1px solid rgba(22, 119, 255, 0.18);
+  color: #4693ff;
+  flex-shrink: 0;
+}
+
+.pageMainCaptionStyle {
+  font-size: clamp(18px, 2.1vw, 22px);
+  font-weight: 900;
+  line-height: 1.15;
+  margin: 0;
+  word-break: break-word;
+}
+
+/* ================== EMPTY STATE ================== */
 
 .emptyAnnouncementWrapper {
   width: 100%;
-  height: 300px;
+  min-height: 240px;
+  height: auto;
+  padding: 16px;
   display: flex;
   flex-direction: column;
   gap: 10px;
   justify-content: center;
   align-items: center;
-  border: 1px solid grey;
-  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 12px;
+  text-align: center;
 }
+
+/* ================== LIST ================== */
 
 .announcementList {
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 15px;
+
   max-width: 1100px;
   width: 100%;
-  gap: 15px;
   margin: 0 auto;
+
+  // padding: 0 14px;
 }
+
+/* ================== CARD ================== */
 
 .announcementCard {
   background: #1f1f1f;
@@ -46,54 +99,42 @@
   }
 }
 
-.insideCommentsAuthorStyle {
-  color: #1469d0;
-}
-
-.titleAndCommentsWrapper {
-  display: flex !important;
-  align-items: start !important;
-  gap: 10px;
-  margin-right: 20px;
-}
-
-.commentsWrapper {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  background-color: #6b6b6b;
-  padding: 4px;
-  border-radius: 5px;
-}
-
-.commentsCountStyle {
-  font-size: 18px !important;
-}
+/* ================== HEADER / TITLE / DATE ================== */
 
 .announcementHeader {
   display: flex;
   justify-content: space-between;
-  align-items: start;
+  align-items: flex-start;
+  gap: 12px;
   margin-bottom: 8px;
+  flex-wrap: wrap; /* allows date to drop below on small widths */
 }
 
 .announcementTitle {
-  font-size: 18px;
+  font-size: clamp(15px, 1.5vw, 18px);
   font-weight: 600;
   color: #7d8dff;
   margin: 0;
+  word-break: break-word;
+  min-width: 0;
 }
 
 .announcementDate {
   font-size: 12px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
   color: #aaa;
+  white-space: nowrap;
 }
+
+/* ================== META ================== */
 
 .announcementMeta {
   display: flex;
   flex-wrap: wrap;
-  gap: 15px;
-  font-size: 13px;
+  gap: 12px;
+  font-size: clamp(12px, 1.15vw, 13px);
   color: rgb(196, 196, 196);
   margin-bottom: 10px;
 }
@@ -113,23 +154,60 @@
   color: #ddd;
 }
 
+/* ================== CONTENT ================== */
+
 .announcementContent {
-  font-size: 14px;
+  font-size: clamp(13px, 1.2vw, 14px);
   line-height: 1.5;
   color: #ddd;
+  word-break: break-word;
 }
+
+/* ================== COMMENTS COUNTER / TITLE AREA ================== */
+
+.titleAndCommentsWrapper {
+  display: flex !important;
+  align-items: flex-start !important;
+  gap: 10px;
+  margin-right: 20px;
+  min-width: 0;
+  flex-wrap: wrap;
+}
+
+.commentsWrapper {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background-color: #6b6b6b;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+
+.commentsCountStyle {
+  font-size: 18px !important;
+  line-height: 1;
+}
+
+.insideCommentsAuthorStyle {
+  color: #1469d0;
+}
+
+/* ================== COMMENTS LIST ================== */
 
 .commentsList {
   max-height: 250px;
   overflow-y: auto;
   margin-bottom: 16px;
+  padding-right: 6px; /* room for scrollbar */
 }
 
 .commentItem {
   width: 100% !important;
   display: flex !important;
   flex-direction: column !important;
-  justify-content: start !important;
+  justify-content: flex-start !important;
   gap: 2px !important;
 
   .innerCommentItemSectionWrapper {
@@ -137,6 +215,8 @@
     align-items: center !important;
     display: flex !important;
     justify-content: space-between !important;
+    gap: 10px;
+    flex-wrap: wrap;
   }
 
   .outerWrapper {
@@ -144,7 +224,7 @@
     display: flex !important;
     gap: 5px;
     flex-direction: column !important;
-    justify-content: start !important;
+    justify-content: flex-start !important;
   }
 
   span {
@@ -154,5 +234,72 @@
 
   .commentsDateTimeStyle {
     color: #b0b0b0;
+    white-space: nowrap;
+  }
+}
+
+/* ================== RESPONSIVE BREAKPOINTS ================== */
+
+/* <= 1100px */
+@media (max-width: 1100px) {
+  .announcementCard {
+    padding: 16px;
+  }
+}
+
+/* <= 900px */
+@media (max-width: 900px) {
+  .ButtonDropdownWrapper {
+    justify-content: flex-start;
+  }
+
+  .announcementHeader {
+    align-items: flex-start;
+  }
+}
+
+/* <= 720px */
+@media (max-width: 720px) {
+  .headerIcon {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+  }
+
+  .announcementCard {
+    padding: 14px;
+    border-radius: 12px;
+  }
+
+  .announcementMeta {
+    gap: 10px;
+  }
+
+  .commentsCountStyle {
+    font-size: 16px !important;
+  }
+
+  .commentsList {
+    max-height: 220px;
+  }
+}
+
+/* <= 480px */
+@media (max-width: 480px) {
+  .ButtonDropdownWrapper,
+  .announcementList {
+    padding: 0 10px;
+  }
+
+  .announcementDate {
+    white-space: normal; /* allow wrap if needed */
+  }
+
+  .commentsWrapper {
+    padding: 4px 7px;
+  }
+
+  .commentsList {
+    max-height: 200px;
   }
 }
