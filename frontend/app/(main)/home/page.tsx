@@ -7,26 +7,37 @@ import styles from "./home.module.scss";
 import { Avatar, Chip, CircularProgress, Typography } from "@mui/material";
 import useMediaQuery from "@mui/material/useMediaQuery";
 
-import {
-  ResponsiveContainer,
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  LineChart,
-  Line,
-  AreaChart,
-  Area,
-  RadialBarChart,
-  RadialBar,
-} from "recharts";
-
-import { DashboardResponse } from "./interface";
 import { Modal } from "antd";
 import { useRouter } from "next/navigation";
 import { FaHome } from "react-icons/fa";
+
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  BarElement,
+  ArcElement,
+  Tooltip,
+  Legend,
+  Filler,
+} from "chart.js";
+import { Bar, Line, Doughnut } from "react-chartjs-2";
+
+import { DashboardResponse } from "./interface";
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  BarElement,
+  ArcElement,
+  Tooltip,
+  Legend,
+  Filler
+);
 
 function formatTime(iso: string) {
   const d = new Date(iso);
@@ -36,7 +47,7 @@ function formatTime(iso: string) {
 function formatDayShort(iso?: string | null) {
   if (!iso) return "";
   const d = new Date(iso);
-  return d.toLocaleDateString([], { weekday: "short" }); // Mon, Tue...
+  return d.toLocaleDateString([], { weekday: "short" });
 }
 
 function clamp(n: number, min: number, max: number) {
@@ -51,8 +62,7 @@ export default function Home() {
   const [data, setData] = useState<DashboardResponse | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const [IsActiveExamModalOpen, setIsActiveExamModalOpen] =
-    useState<boolean>(false);
+  const [IsActiveExamModalOpen, setIsActiveExamModalOpen] = useState<boolean>(false);
   const HandleIsActiveExamCancel = () => setIsActiveExamModalOpen(false);
 
   const onExamActiveClick = (examId: number) => {
@@ -94,7 +104,6 @@ export default function Home() {
 
   const sessions = data?.sessions ?? [];
 
-  // Active sessions based on ends_at
   const activeSessions = useMemo(() => {
     const now = new Date();
     return sessions.filter((s) => {
@@ -103,18 +112,15 @@ export default function Home() {
     });
   }, [sessions]);
 
-  // points by subject
   const chartData = useMemo(() => {
     const arr = data?.subjectPoints ?? [];
     return arr.map((x) => ({ name: x.subject.name, points: x.points }));
   }, [data]);
 
-  // Optional trend
   const pointsTrendData = useMemo(() => {
     return (data as any)?.pointsTrend ?? [];
   }, [data]);
 
-  // Progress metrics
   const progressMetrics = useMemo(() => {
     const total = sessions.length;
     const finishedSessions = sessions.filter((s) => s.finished);
@@ -125,10 +131,7 @@ export default function Home() {
     const avgScore =
       finished === 0
         ? 0
-        : Math.round(
-          finishedSessions.reduce((sum, s) => sum + (s.score_so_far ?? 0), 0) /
-          finished
-        );
+        : Math.round(finishedSessions.reduce((sum, s) => sum + (s.score_so_far ?? 0), 0) / finished);
 
     const finishedSorted = [...finishedSessions].sort((a, b) => {
       const ta = new Date(a.started_at ?? 0).getTime();
@@ -136,40 +139,21 @@ export default function Home() {
       return tb - ta;
     });
 
+
     const last7 = finishedSorted.slice(0, 7);
     const prev7 = finishedSorted.slice(7, 14);
 
     const lastAvg =
-      last7.length === 0
-        ? 0
-        : last7.reduce((sum, s) => sum + (s.score_so_far ?? 0), 0) / last7.length;
+      last7.length === 0 ? 0 : last7.reduce((sum, s) => sum + (s.score_so_far ?? 0), 0) / last7.length;
 
     const prevAvg =
-      prev7.length === 0
-        ? 0
-        : prev7.reduce((sum, s) => sum + (s.score_so_far ?? 0), 0) / prev7.length;
+      prev7.length === 0 ? 0 : prev7.reduce((sum, s) => sum + (s.score_so_far ?? 0), 0) / prev7.length;
 
-    const delta =
-      last7.length === 0 || prev7.length === 0 ? 0 : Math.round(lastAvg - prevAvg);
+    const delta = last7.length === 0 || prev7.length === 0 ? 0 : Math.round(lastAvg - prevAvg);
 
-    return {
-      total,
-      finished,
-      completionPct,
-      avgScore,
-      delta,
-    };
+    return { total, finished, completionPct, avgScore, delta };
   }, [sessions]);
 
-  const progressGaugeData = useMemo(() => {
-    const done = clamp(progressMetrics.completionPct, 0, 100);
-    return [
-      { name: "Done", value: done, fill: "#22c55e" },
-      { name: "Remaining", value: 100 - done, fill: "rgba(148,163,184,0.25)" },
-    ];
-  }, [progressMetrics]);
-
-  // weekly activity
   const weeklyActivityData = useMemo(() => {
     const order = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
     const map = new Map<string, number>(order.map((k) => [k, 0]));
@@ -182,7 +166,6 @@ export default function Home() {
     return order.map((day) => ({ day, sessions: map.get(day) ?? 0 }));
   }, [sessions]);
 
-  // avg score by subject
   const avgScoreBySubjectData = useMemo(() => {
     const map = new Map<string, { total: number; count: number }>();
 
@@ -205,7 +188,6 @@ export default function Home() {
       .slice(0, 6);
   }, [sessions]);
 
-  // top exams
   const topExamsData = useMemo(() => {
     const map = new Map<string, number>();
     for (const s of sessions) {
@@ -219,7 +201,6 @@ export default function Home() {
       .slice(0, 6);
   }, [sessions]);
 
-  // Responsive chart height
   const chartHeight = isPhone ? 220 : isTablet ? 260 : 300;
 
   const onActiveExamClick = async () => {
@@ -227,6 +208,171 @@ export default function Home() {
     setIsActiveExamModalOpen(true);
   };
 
+  // ---------- Chart.js shared options ----------
+  const baseOptions = useMemo(
+    () => ({
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          enabled: true,
+          backgroundColor: "rgba(17,24,39,0.95)",
+          titleColor: "#e5e7eb",
+          bodyColor: "#e5e7eb",
+          borderColor: "rgba(255,255,255,0.10)",
+          borderWidth: 1,
+        },
+      },
+      scales: {
+        x: {
+          ticks: { color: "rgba(229,231,235,0.70)", maxRotation: 0, autoSkip: true },
+          grid: { color: "rgba(255,255,255,0.06)" },
+        },
+        y: {
+          ticks: { color: "rgba(229,231,235,0.70)" },
+          grid: { color: "rgba(255,255,255,0.06)" },
+        },
+      },
+    }),
+    []
+  );
+
+  const barOptions = useMemo(
+    () => ({
+      ...baseOptions,
+      plugins: { ...baseOptions.plugins, legend: { display: false } },
+    }),
+    [baseOptions]
+  );
+
+  const lineOptions = useMemo(
+    () => ({
+      ...baseOptions,
+      plugins: { ...baseOptions.plugins, legend: { display: false } },
+      elements: { line: { tension: 0.35 } },
+    }),
+    [baseOptions]
+  );
+
+  // ---------- Chart data ----------
+  const pointsBySubjectBar = useMemo(() => {
+    return {
+      labels: chartData.map((d) => d.name),
+      datasets: [
+        {
+          label: "Points",
+          data: chartData.map((d) => d.points),
+          backgroundColor: "rgba(59,130,246,0.70)",
+          borderColor: "rgba(59,130,246,0.95)",
+          borderWidth: 1,
+          borderRadius: 10,
+        },
+      ],
+    };
+  }, [chartData]);
+
+  const pointsTrendLine = useMemo(() => {
+    return {
+      labels: pointsTrendData.map((d: any) => d.day),
+      datasets: [
+        {
+          label: "Points",
+          data: pointsTrendData.map((d: any) => d.points),
+          borderColor: "rgba(59,130,246,0.95)",
+          backgroundColor: "rgba(59,130,246,0.20)",
+          fill: true,
+          pointRadius: 0,
+          borderWidth: 3,
+        },
+      ],
+    };
+  }, [pointsTrendData]);
+
+  const weeklyActivityBar = useMemo(() => {
+    return {
+      labels: weeklyActivityData.map((d) => d.day),
+      datasets: [
+        {
+          label: "Sessions",
+          data: weeklyActivityData.map((d) => d.sessions),
+          backgroundColor: "rgba(96,165,250,0.55)",
+          borderColor: "rgba(96,165,250,0.85)",
+          borderWidth: 1,
+          borderRadius: 10,
+        },
+      ],
+    };
+  }, [weeklyActivityData]);
+
+  const avgScoreBySubjectBar = useMemo(() => {
+    return {
+      labels: avgScoreBySubjectData.map((d) => d.name),
+      datasets: [
+        {
+          label: "Avg Score",
+          data: avgScoreBySubjectData.map((d) => d.avgScore),
+          backgroundColor: "rgba(250,173,20,0.65)",
+          borderColor: "rgba(250,173,20,0.95)",
+          borderWidth: 1,
+          borderRadius: 10,
+        },
+      ],
+    };
+  }, [avgScoreBySubjectData]);
+
+  const topExamsBar = useMemo(() => {
+    return {
+      labels: topExamsData.map((d) => d.name),
+      datasets: [
+        {
+          label: "Attempts",
+          data: topExamsData.map((d) => d.attempts),
+          backgroundColor: "rgba(250,173,20,0.55)",
+          borderColor: "rgba(250,173,20,0.9)",
+          borderWidth: 1,
+          borderRadius: 10,
+        },
+      ],
+    };
+  }, [topExamsData]);
+
+  const completionDoughnut = useMemo(() => {
+    const done = clamp(progressMetrics.completionPct, 0, 100);
+    return {
+      labels: ["Done", "Remaining"],
+      datasets: [
+        {
+          data: [done, 100 - done],
+          backgroundColor: ["rgba(34,197,94,0.80)", "rgba(148,163,184,0.20)"],
+          borderColor: ["rgba(34,197,94,0.95)", "rgba(255,255,255,0.08)"],
+          borderWidth: 1,
+          cutout: "72%",
+        },
+      ],
+    };
+  }, [progressMetrics]);
+
+  const doughnutOptions = useMemo(
+    () => ({
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          enabled: true,
+          backgroundColor: "rgba(17,24,39,0.95)",
+          titleColor: "#e5e7eb",
+          bodyColor: "#e5e7eb",
+          borderColor: "rgba(255,255,255,0.10)",
+          borderWidth: 1,
+        },
+      },
+    }),
+    []
+  );
+
+  // ---------- Render ----------
   if (loading) {
     return (
       <div className={styles.page}>
@@ -243,9 +389,7 @@ export default function Home() {
       <div className={styles.page}>
         <div className={styles.center}>
           <Typography variant="h6">Failed to load dashboard</Typography>
-          <Typography className={styles.muted}>
-            Check token / API URL / console.
-          </Typography>
+          <Typography className={styles.muted}>Check token / API URL / console.</Typography>
         </div>
       </div>
     );
@@ -253,19 +397,16 @@ export default function Home() {
 
   return (
     <div className={styles.page}>
-      <div className={styles.WrapperOfMainCaptionAndIcon} >
+      <div className={styles.WrapperOfMainCaptionAndIcon}>
         <span className={styles.headerIcon}>
           <FaHome className={styles.navIcon} />
         </span>
-        <h1 className={styles.pageMainCaptionStyle} >Home</h1>
+        <h1 className={styles.pageMainCaptionStyle}>Home</h1>
       </div>
+
       <div className={styles.header}>
         <div className={styles.profile}>
-          <Avatar
-            src={data.me.profilePic ?? undefined}
-            className={styles.avatar}
-            sx={{ width: 60, height: 60 }}
-          />
+          <Avatar src={data.me.profilePic ?? undefined} className={styles.avatar} sx={{ width: 60, height: 60 }} />
           <div className={styles.profileText}>
             <Typography className={styles.title}>
               Welcome, <u>{fullName}</u> 👋
@@ -273,18 +414,9 @@ export default function Home() {
 
             <div className={styles.subRow}>
               <span className={styles.preCaptions}>Role:</span>
-              <Chip
-                size="small"
-                label={data.me.role ?? "role"}
-                sx={{ backgroundColor: "#2d5899", color: "#fff" }}
-              />
+              <Chip size="small" label={data.me.role ?? "role"} sx={{ backgroundColor: "#2d5899", color: "#fff" }} />
               <span className={styles.preCaptions}>Grade:</span>
-              <Chip
-                size="small"
-                variant="outlined"
-                label={gradeText}
-                sx={{ borderColor: "#af3a75", color: "#fff" }}
-              />
+              <Chip size="small" variant="outlined" label={gradeText} sx={{ borderColor: "#af3a75", color: "#fff" }} />
               <span className={styles.preCaptions}>Email:</span>
               <Typography className={styles.muted}>{data.me.email}</Typography>
             </div>
@@ -292,7 +424,6 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Stats */}
       <div className={styles.grid3}>
         <div className={styles.card}>
           <Typography className={styles.cardLabel}>Total Points</Typography>
@@ -310,12 +441,10 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Whole-school Leaderboard */}
       {data.leaderboard && (
         <div className={styles.card}>
           <div className={styles.leaderboardHeader}>
             <Typography className={styles.sectionTitle}>School Leaderboard</Typography>
-
             <Typography className={styles.myRank}>
               Your rank: <span>#{data.leaderboard.me_rank}</span>
             </Typography>
@@ -323,14 +452,9 @@ export default function Home() {
 
           <div className={styles.leaderboardList}>
             {data.leaderboard.items.map((p) => (
-              <div
-                key={p.id}
-                className={`${styles.leaderboardItem} ${p.isMe ? styles.leaderboardMe : ""
-                  }`}
-              >
+              <div key={p.id} className={`${styles.leaderboardItem} ${p.isMe ? styles.leaderboardMe : ""}`}>
                 <div className={styles.leaderboardLeft}>
                   <Typography className={styles.rank}>#{p.rank}</Typography>
-
                   <div className={styles.leaderText}>
                     <Typography className={styles.leaderName} title={p.name}>
                       {p.name}
@@ -351,39 +475,18 @@ export default function Home() {
         </div>
       )}
 
-      {/* Row: Points by Subject + Active Sessions */}
       <div className={styles.grid2}>
-        {/* Points by Subject */}
         <div className={styles.card}>
           <Typography className={styles.sectionTitle}>Points by Subject</Typography>
-
           <div className={styles.chartBox} style={{ height: chartHeight }}>
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={chartData} margin={{ top: 10, right: 10, left: 0, bottom: 10 }}>
-                <CartesianGrid stroke="rgba(255,255,255,0.08)" strokeDasharray="3 3" />
-                <XAxis
-                  dataKey="name"
-                  interval={isPhone ? 1 : 0}
-                  tick={{ fontSize: isPhone ? 10 : 12, fill: "#9ca3af" }}
-                  tickMargin={8}
-                  axisLine={{ stroke: "#374151" }}
-                  tickLine={{ stroke: "#374151" }}
-                />
-                <YAxis allowDecimals={false} tick={{ fill: "#9ca3af" }} axisLine={{ stroke: "#374151" }} tickLine={{ stroke: "#374151" }} />
-                <Tooltip
-                  cursor={{ fill: "rgba(59,130,246,0.08)" }}
-                  contentStyle={{ backgroundColor: "#111827", border: "1px solid #1f2937", borderRadius: 10, color: "#e5e7eb" }}
-                  labelStyle={{ color: "#e5e7eb" }}
-                />
-                <Bar dataKey="points" fill="#3b82f6" radius={[10, 10, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
+            {chartData.length === 0 ? (
+              <Typography className={styles.muted}>No points yet.</Typography>
+            ) : (
+              <Bar data={pointsBySubjectBar} options={barOptions} />
+            )}
           </div>
-
-          {chartData.length === 0 && <Typography className={styles.muted}>No points yet.</Typography>}
         </div>
 
-        {/* Active Exam Sessions */}
         <div className={styles.card}>
           <Typography className={styles.sectionTitle}>Active Exam Sessions</Typography>
 
@@ -409,11 +512,8 @@ export default function Home() {
                   </div>
 
                   <Typography className={styles.muted}>
-                    Ends:{" "}
-                    <span style={{ color: "orange" }}>
-                      {s.ends_at ? formatTime(s.ends_at) : "—"}
-                    </span>{" "}
-                    • Score: <span style={{ color: "green" }}>{s.score_so_far}</span>
+                    Ends: <span style={{ color: "orange" }}>{s.ends_at ? formatTime(s.ends_at) : "—"}</span> • Score:{" "}
+                    <span style={{ color: "green" }}>{s.score_so_far}</span>
                   </Typography>
                 </div>
               ))}
@@ -422,41 +522,17 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Charts row */}
       <div className={styles.grid3}>
-        {/* Progress Overview */}
         <div className={styles.card}>
           <Typography className={styles.sectionTitle}>Progress Overview</Typography>
 
           <div className={styles.chartBox} style={{ height: chartHeight, position: "relative" }}>
-            <ResponsiveContainer width="100%" height="100%">
-              <RadialBarChart
-                innerRadius="70%"
-                outerRadius="92%"
-                data={progressGaugeData}
-                startAngle={90}
-                endAngle={-270}
-              >
-                <RadialBar dataKey="value" cornerRadius={999} />
-              </RadialBarChart>
-            </ResponsiveContainer>
-
+            <Doughnut data={completionDoughnut} options={doughnutOptions} />
             <div className={styles.gaugeCenter}>
-              <Typography className={styles.gaugePct}>
-                {progressMetrics.completionPct}%
-              </Typography>
-
-              <Typography className={styles.gaugeSub}>
-                Completion • Avg score {progressMetrics.avgScore}
-              </Typography>
-
-              <Typography
-                className={styles.gaugeDelta}
-                style={{ color: progressMetrics.delta >= 0 ? "#22c55e" : "#ef4444" }}
-              >
-                {progressMetrics.delta >= 0
-                  ? `▲ +${progressMetrics.delta} vs previous`
-                  : `▼ ${progressMetrics.delta} vs previous`}
+              <Typography className={styles.gaugePct}>{progressMetrics.completionPct}%</Typography>
+              <Typography className={styles.gaugeSub}>Completion • Avg score {progressMetrics.avgScore}</Typography>
+              <Typography className={styles.gaugeDelta} style={{ color: progressMetrics.delta >= 0 ? "#22c55e" : "#ef4444" }}>
+                {progressMetrics.delta >= 0 ? `▲ +${progressMetrics.delta} vs previous` : `▼ ${progressMetrics.delta} vs previous`}
               </Typography>
             </div>
           </div>
@@ -467,98 +543,49 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Weekly Activity */}
         <div className={styles.card}>
           <Typography className={styles.sectionTitle}>Weekly Activity</Typography>
-
           <div className={styles.chartBox} style={{ height: chartHeight }}>
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={weeklyActivityData} margin={{ top: 10, right: 10, left: 0, bottom: 10 }}>
-                <CartesianGrid stroke="rgba(255,255,255,0.08)" strokeDasharray="3 3" />
-                <XAxis dataKey="day" tick={{ fill: "#9ca3af" }} />
-                <YAxis allowDecimals={false} tick={{ fill: "#9ca3af" }} />
-                <Tooltip />
-                <Area type="monotone" dataKey="sessions" stroke="#60a5fa" fill="rgba(96,165,250,0.25)" />
-              </AreaChart>
-            </ResponsiveContainer>
+            <Bar data={weeklyActivityBar} options={barOptions} />
           </div>
         </div>
 
-        {/* Avg Score by Subject */}
         <div className={styles.card}>
           <Typography className={styles.sectionTitle}>Average Score by Subject</Typography>
-
-          {avgScoreBySubjectData.length === 0 ? (
-            <Typography className={styles.muted}>No finished sessions yet.</Typography>
-          ) : (
-            <div className={styles.chartBox} style={{ height: chartHeight }}>
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={avgScoreBySubjectData} margin={{ top: 10, right: 10, left: 0, bottom: 10 }}>
-                  <CartesianGrid stroke="rgba(255,255,255,0.08)" strokeDasharray="3 3" />
-                  <XAxis dataKey="name" tick={{ fill: "#9ca3af" }} interval={0} />
-                  <YAxis allowDecimals={false} tick={{ fill: "#9ca3af" }} />
-                  <Tooltip />
-                  <Bar dataKey="avgScore" fill="#faad14" radius={[10, 10, 0, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          )}
+          <div className={styles.chartBox} style={{ height: chartHeight }}>
+            {avgScoreBySubjectData.length === 0 ? (
+              <Typography className={styles.muted}>No finished sessions yet.</Typography>
+            ) : (
+              <Bar data={avgScoreBySubjectBar} options={barOptions} />
+            )}
+          </div>
         </div>
       </div>
 
-      {/* Extra row */}
       <div className={styles.grid2}>
-        {/* Points Trend */}
         <div className={styles.card}>
           <Typography className={styles.sectionTitle}>Points Trend</Typography>
-
-          {pointsTrendData.length === 0 ? (
-            <Typography className={styles.muted}>No trend data yet.</Typography>
-          ) : (
-            <div className={styles.chartBox} style={{ height: chartHeight }}>
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={pointsTrendData} margin={{ top: 10, right: 10, left: 0, bottom: 10 }}>
-                  <CartesianGrid stroke="rgba(255,255,255,0.08)" strokeDasharray="3 3" />
-                  <XAxis dataKey="day" tick={{ fill: "#9ca3af" }} />
-                  <YAxis allowDecimals={false} tick={{ fill: "#9ca3af" }} />
-                  <Tooltip contentStyle={{ backgroundColor: "#111827", border: "1px solid #1f2937", borderRadius: 10, color: "#e5e7eb" }} />
-                  <Line type="monotone" dataKey="points" stroke="#3b82f6" strokeWidth={3} dot={false} />
-                </LineChart>
-              </ResponsiveContainer>
-            </div>
-          )}
+          <div className={styles.chartBox} style={{ height: chartHeight }}>
+            {pointsTrendData.length === 0 ? (
+              <Typography className={styles.muted}>No trend data yet.</Typography>
+            ) : (
+              <Line data={pointsTrendLine} options={lineOptions} />
+            )}
+          </div>
         </div>
 
-        {/* Top Exams */}
         <div className={styles.card}>
           <Typography className={styles.sectionTitle}>Top Exams (Attempts)</Typography>
-
-          {topExamsData.length === 0 ? (
-            <Typography className={styles.muted}>No attempts yet.</Typography>
-          ) : (
-            <div className={styles.chartBox} style={{ height: chartHeight }}>
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={topExamsData} margin={{ top: 10, right: 10, left: 0, bottom: 10 }}>
-                  <CartesianGrid stroke="rgba(255,255,255,0.08)" strokeDasharray="3 3" />
-                  <XAxis
-                    dataKey="name"
-                    tick={{ fontSize: isPhone ? 10 : 12, fill: "#9ca3af" }}
-                    tickMargin={8}
-                    axisLine={{ stroke: "#374151" }}
-                    tickLine={{ stroke: "#374151" }}
-                    interval={0}
-                  />
-                  <YAxis allowDecimals={false} tick={{ fill: "#9ca3af" }} />
-                  <Tooltip />
-                  <Bar dataKey="attempts" fill="#faad14" radius={[10, 10, 0, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          )}
+          <div className={styles.chartBox} style={{ height: chartHeight }}>
+            {topExamsData.length === 0 ? (
+              <Typography className={styles.muted}>No attempts yet.</Typography>
+            ) : (
+              <Bar data={topExamsBar} options={barOptions} />
+            )}
+          </div>
         </div>
       </div>
 
-      {/* Recent sessions */}
       <div className={styles.card}>
         <Typography className={styles.sectionTitle}>Recent Exam Sessions</Typography>
 
@@ -573,34 +600,21 @@ export default function Home() {
                 </Typography>
 
                 <Typography className={styles.rowMeta}>
-                  {s.subject.name} • {s.finished ? "Finished" : "In progress"} • Score:{" "}
-                  {s.score_so_far}
+                  {s.subject.name} • {s.finished ? "Finished" : "In progress"} • Score: {s.score_so_far}
                 </Typography>
 
-                <Typography className={styles.rowTime}>
-                  {s.started_at ? formatTime(s.started_at) : "—"}
-                </Typography>
+                <Typography className={styles.rowTime}>{s.started_at ? formatTime(s.started_at) : "—"}</Typography>
               </div>
             ))}
           </div>
         )}
       </div>
 
-      {/* Active Exams Modal */}
       {IsActiveExamModalOpen && (
-        <Modal
-          title="Active Exams"
-          open={IsActiveExamModalOpen}
-          onCancel={HandleIsActiveExamCancel}
-          footer={null}
-        >
+        <Modal title="Active Exams" open={IsActiveExamModalOpen} onCancel={HandleIsActiveExamCancel} footer={null}>
           <ul className={styles.activeExamsUl}>
             {activeSessions.map((s) => (
-              <li
-                className={styles.activeExamsList}
-                key={s.id}
-                onClick={() => onExamActiveClick(s.exam.id)}
-              >
+              <li className={styles.activeExamsList} key={s.id} onClick={() => onExamActiveClick(s.exam.id)}>
                 {s.exam.title}
               </li>
             ))}

@@ -3,11 +3,12 @@
 import React, { useEffect, useMemo, useState } from "react";
 import styles from "./schedule.module.scss";
 import { Card, Tabs, Typography, Tag, Spin, Empty, message, List, Avatar } from "antd";
-import { FiCalendar, FiUsers } from "react-icons/fi";
+import { FiUsers } from "react-icons/fi";
 import api from "@/interceptors";
 import { WEEKDAYS } from "./utils";
 import { ApiResponse, Lesson, Student } from "./interface";
 import { BookOpen } from "lucide-react";
+import { FaCalendarAlt } from "react-icons/fa";
 
 const { Text } = Typography;
 
@@ -20,7 +21,11 @@ function sortByTime(a: Lesson, b: Lesson) {
 
 export default function WeeklySchedule({ gradeId }: { gradeId?: number }) {
   const [loading, setLoading] = useState(true);
-  const [weekday, setWeekday] = useState<number>(1);
+  // const [weekday, setWeekday] = useState<number>(1);
+  const [weekday, setWeekday] = useState<number>(() => {
+    const jsDay = new Date().getDay();
+    return jsDay === 0 ? 7 : jsDay;
+  });
 
   const [lessons, setLessons] = useState<Lesson[]>([]);
   const [students, setStudents] = useState<Student[]>([]);
@@ -62,7 +67,7 @@ export default function WeeklySchedule({ gradeId }: { gradeId?: number }) {
         <div className={styles.titleRow}>
           <div className={styles.WrapperOfMainCaptionAndIcon} >
             <span className={styles.headerIcon}>
-              <FiCalendar className={styles.navIcon} />
+              <FaCalendarAlt className={styles.navIcon} />
             </span>
             <h1 className={styles.pageMainCaptionStyle} >Schedule</h1>
           </div>

@@ -1,5 +1,153 @@
-@import "../../colors.scss";
+// @import "../../colors.scss";
 
+
+// .navIcon {
+//   color: #4693ff;
+//   flex-shrink: 0;
+//   width: 22px;
+//   height: 22px;
+// }
+
+
+// .WrapperOfMainCaptionAndIcon {
+//   display: flex;
+//   align-items: center;
+//   gap: 10px;
+//   min-width: 0; /* prevents overflow */
+// }
+
+// .headerIcon {
+//   width: 44px;
+//   height: 44px;
+//   border-radius: 14px;
+//   display: grid;
+//   place-items: center;
+//   background: rgba(22, 119, 255, 0.14);
+//   border: 1px solid rgba(22, 119, 255, 0.18);
+//   color: #4693ff;
+//   flex-shrink: 0;
+// }
+
+
+// .pageMainCaptionStyle {
+//   font-size: clamp(18px, 2.1vw, 22px);
+//   font-weight: 900;
+//   line-height: 1.15;
+//   margin: 0;
+//   word-break: break-word;
+// }
+
+
+// .page {
+//   min-height: 100vh;
+//   background: $dark_background;
+//   color: $text_primary;
+
+//   max-width: 1100px;
+//   margin: 0 auto;
+//   width: 100%;
+//   min-width: 0;
+// }
+
+// .topBar {
+//   display: flex;
+//   align-items: flex-end;
+//   justify-content: space-between;
+//   gap: 12px;
+//   margin-bottom: 14px;
+// }
+
+// .pageTitle {
+//   font-size: 1.4rem;
+//   font-weight: 900;
+// }
+
+// .pageSub {
+//   margin-top: 4px;
+//   color: $text_secondary;
+//   font-size: 0.95rem;
+// }
+
+// /* ✅ This is the real fix */
+// .examGrid {
+//   display: grid;
+//   gap: 14px;
+
+//   /* auto-fit prevents squishing */
+//   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+//   align-items: stretch;
+// }
+
+// /* Tablet */
+// @media (max-width: 900px) {
+//   .page {
+//     padding: 16px;
+//   }
+
+//   /* slightly smaller cards are ok on tablet */
+//   .examGrid {
+//     grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+//   }
+// }
+
+// /* Phone */
+// @media (max-width: 600px) {
+//   .page {
+//     padding: 14px;
+//   }
+
+//   .pageTitle {
+//     font-size: 1.2rem;
+//   }
+
+//   /* force single column on phones */
+//   .examGrid {
+//     grid-template-columns: 1fr;
+//   }
+// }
+
+// /* Loader */
+// .loaderWrapper {
+//   min-height: 60vh; /* ✅ not height:100% */
+//   display: grid;
+//   place-items: center;
+//   gap: 12px;
+// }
+
+// .loaderText {
+//   color: $text_secondary;
+//   font-size: 0.95rem;
+// }
+
+// /* Empty */
+// .noExams {
+//   max-width: 1100px;
+//   width: 100%;
+//   margin: 0 auto;
+//   gap: 10px;
+//   display: flex;
+//   flex-direction: column;
+//   justify-content: space-between;
+//   align-content: start;
+//   gap: 10px;
+// }
+
+// .noExamsTitle {
+//   font-size: 1.2rem;
+//   font-weight: 900;
+//   color: rgb(210, 99, 99);
+// }
+
+// .noExamsSub {
+//   color: $text_secondary;
+//   font-size: 0.95rem;
+//   max-width: 340px;
+// }
+
+
+
+
+@import "../../colors.scss";
 
 .navIcon {
   color: #4693ff;
@@ -8,12 +156,11 @@
   height: 22px;
 }
 
-
 .WrapperOfMainCaptionAndIcon {
   display: flex;
   align-items: center;
   gap: 10px;
-  min-width: 0; /* prevents overflow */
+  min-width: 0;
 }
 
 .headerIcon {
@@ -28,7 +175,6 @@
   flex-shrink: 0;
 }
 
-
 .pageMainCaptionStyle {
   font-size: clamp(18px, 2.1vw, 22px);
   font-weight: 900;
@@ -37,17 +183,18 @@
   word-break: break-word;
 }
 
-
+/* ✅ IMPORTANT: page should NOT set background/max-width.
+   Layout gradient stays visible everywhere. */
 .page {
-  min-height: 100vh;
-  background: $dark_background;
-  color: $text_primary;
-
-  padding: 20px;
-  max-width: 1100px;
-  margin: 0 auto;
+  max-width: 1200px;
   width: 100%;
   min-width: 0;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+
+  color: $text_primary;
 }
 
 .topBar {
@@ -69,23 +216,16 @@
   font-size: 0.95rem;
 }
 
-/* ✅ This is the real fix */
+/* ✅ grid stays same */
 .examGrid {
   display: grid;
   gap: 14px;
-
-  /* auto-fit prevents squishing */
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   align-items: stretch;
 }
 
 /* Tablet */
 @media (max-width: 900px) {
-  .page {
-    padding: 16px;
-  }
-
-  /* slightly smaller cards are ok on tablet */
   .examGrid {
     grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   }
@@ -93,15 +233,10 @@
 
 /* Phone */
 @media (max-width: 600px) {
-  .page {
-    padding: 14px;
-  }
-
   .pageTitle {
     font-size: 1.2rem;
   }
 
-  /* force single column on phones */
   .examGrid {
     grid-template-columns: 1fr;
   }
@@ -109,7 +244,7 @@
 
 /* Loader */
 .loaderWrapper {
-  min-height: 60vh; /* ✅ not height:100% */
+  min-height: 60vh;
   display: grid;
   place-items: center;
   gap: 12px;
@@ -122,10 +257,7 @@
 
 /* Empty */
 .noExams {
-  max-width: 1100px;
   width: 100%;
-  margin: 0 auto;
-  gap: 10px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
