@@ -1,5 +1,484 @@
 
+// @import "../../colors.scss";
+
+// .navIcon {
+//   color: #4693ff;
+//   flex-shrink: 0;
+//   width: 22px;
+//   height: 22px;
+// }
+
+
+// .pageMainCaptionStyle {
+//   font-size: clamp(18px, 2.1vw, 22px);
+//   font-weight: 900;
+//   line-height: 1.15;
+//   margin: 0; 
+//   word-break: break-word;
+// }
+
+// .headerIcon {
+//   width: 44px;
+//   height: 44px;
+//   border-radius: 14px;
+//   display: grid;
+//   place-items: center;
+//   background: rgba(22, 119, 255, 0.14);
+//   border: 1px solid rgba(22, 119, 255, 0.18);
+//   color: #4693ff;
+//   flex-shrink: 0;
+// }
+
+// .WrapperOfMainCaptionAndIcon {
+//   display: flex;
+//   align-items: center;
+//   gap: 10px;
+// }
+
+// .pageMainCaptionStyle {
+//   font-size: 22px;
+//   font-weight: 900;
+// }
+
+
+// /* ================= PAGE ================= */
+
+// .page {
+//   background: $dark_background;
+//   min-height: 100%;
+//   color: $text_primary;
+//   max-width: 1100px;
+//   margin: 0 auto;
+// }
+
+// .forbiddenTitle {
+//   color: #ff4d4f;
+//   text-align: center;
+//   margin-top: 80px;
+//   font-size: 28px;
+//   font-weight: 600;
+// }
+
+// /* ================= HEADER ================= */
+
+// .header {
+//   display: flex;
+//   align-items: center;
+//   justify-content: space-between;
+//   gap: 16px;
+//   margin-bottom: 16px;
+
+//   @media (max-width: 720px) {
+//     flex-direction: column;
+//     align-items: stretch;
+//   }
+// }
+
+// .title {
+//   margin: 0;
+//   font-size: 26px;
+//   font-weight: 800;
+//   letter-spacing: 0.3px;
+//   color: $text_primary;
+// }
+
+// .subtitle {
+//   margin: 6px 0 0;
+//   color: $text_secondary;
+//   font-size: 14px;
+// }
+
+// .controlsRight {
+//   display: flex;
+//   justify-content: flex-end;
+//   gap: 10px;
+
+//   @media (max-width: 720px) {
+//     justify-content: flex-start;
+//   }
+// }
+
+// .refreshBtn {
+//   background: $table_background;
+//   color: $text_primary;
+//   border: 1px solid rgba(140, 140, 140, 0.14);
+//   border-radius: 12px;
+//   padding: 10px 12px;
+//   cursor: pointer;
+//   font-weight: 650;
+//   transition: transform 0.12s ease, border-color 0.18s ease, background 0.18s ease;
+
+//   &:hover {
+//     border-color: rgba(22, 119, 255, 0.35);
+//     background: rgba(22, 119, 255, 0.06);
+//     transform: translateY(-1px);
+//   }
+
+//   &:active {
+//     transform: scale(0.98);
+//   }
+// }
+
+// /* ================= SHELL ================= */
+
+// .shell {
+//   border-radius: 18px;
+// }
+
+// .empty {
+//   color: $text_secondary;
+//   font-weight: bold;
+//   color: rgb(210, 99, 99);
+// }
+
+// .subjectList {
+//   display: flex;
+//   flex-direction: column;
+//   gap: 12px;
+// }
+
+// /* ================= SUBJECT DROPDOWN ================= */
+
+// .subjectItem {
+//   background: #232323;
+//   border-radius: 16px;
+//   border: 1px solid rgba(140, 140, 140, 0.12);
+//   overflow: hidden;
+//   transition: background 0.25s ease, transform 0.2s ease;
+// }
+
+// .subjectItem[open] {
+//   background: #252525;
+// }
+
+// /* Remove default marker */
+// .subjectItem > summary {
+//   list-style: none;
+// }
+// .subjectItem > summary::-webkit-details-marker {
+//   display: none;
+// }
+
+// .subjectSummary {
+//   cursor: pointer;
+//   padding: 14px 14px;
+//   display: flex;
+//   justify-content: space-between;
+//   align-items: center;
+//   user-select: none;
+//   transition: background 0.2s ease;
+// }
+
+// .subjectSummary:hover {
+//   background: rgba(22, 119, 255, 0.06);
+// }
+
+// .subjectLeft {
+//   display: flex;
+//   align-items: center;
+//   gap: 10px;
+//   min-width: 0;
+// }
+
+// .subjectName {
+//   font-weight: 750;
+//   color: $text_primary;
+//   white-space: nowrap;
+//   overflow: hidden;
+//   text-overflow: ellipsis;
+// }
+
+// .badge {
+//   font-size: 12px;
+//   color: $highlight_accent;
+//   background: rgba(250, 173, 20, 0.12);
+//   border: 1px solid rgba(250, 173, 20, 0.22);
+//   padding: 4px 10px;
+//   border-radius: 999px;
+//   flex: 0 0 auto;
+// }
+
+// .subjectRight {
+//   display: flex;
+//   align-items: center;
+//   gap: 10px;
+// }
+
+// .timeChip {
+//   font-size: 12px;
+//   color: $primary_blue;
+//   background: rgba(22, 119, 255, 0.1);
+//   border: 1px solid rgba(22, 119, 255, 0.25);
+//   padding: 4px 10px;
+//   border-radius: 999px;
+// }
+
+// /* Chevron animation */
+// .chev {
+//   color: $text_secondary;
+//   transition: transform 0.25s ease;
+// }
+
+// .subjectItem[open] .chev {
+//   transform: rotate(180deg);
+// }
+
+// /* ================= LESSON BODY ================= */
+
+// .lessonBody {
+//   padding: 12px 14px 14px;
+//   animation: fadeSlide 0.22s ease forwards;
+// }
+
+// .lessonTopRow {
+//   display: flex;
+//   justify-content: space-between;
+//   align-items: center;
+//   gap: 12px;
+//   margin-bottom: 10px;
+
+//   @media (max-width: 720px) {
+//     flex-direction: column;
+//     align-items: stretch;
+//   }
+// }
+
+// .lessonMeta {
+//   display: flex;
+//   align-items: center;
+//   gap: 10px;
+//   flex-wrap: wrap;
+// }
+
+// .roomChip {
+//   font-size: 12px;
+//   color: $text_secondary;
+//   background: rgba(0, 0, 0, 0.12);
+//   border: 1px solid rgba(140, 140, 140, 0.14);
+//   padding: 4px 10px;
+//   border-radius: 999px;
+// }
+
+// .studentsCount {
+//   font-size: 12px;
+//   color: $text_secondary;
+// }
+
+// /* ================= BULK ACTIONS ================= */
+
+// .bulkActions {
+//   display: flex;
+//   gap: 8px;
+
+//   @media (max-width: 720px) {
+//     width: 100%;
+//   }
+// }
+
+// .bulkBtn,
+// .bulkBtnDanger {
+//   border-radius: 999px;
+//   padding: 8px 10px;
+//   font-weight: 650;
+//   cursor: pointer;
+//   transition: transform 0.12s ease, background 0.18s ease, border-color 0.18s ease;
+//   border: 1px solid rgba(140, 140, 140, 0.16);
+//   background: rgba(31, 31, 31, 0.45);
+//   color: $text_primary;
+
+//   &:hover {
+//     transform: translateY(-1px);
+//   }
+
+//   &:active {
+//     transform: scale(0.98);
+//   }
+
+//   @media (max-width: 720px) {
+//     flex: 1;
+//   }
+// }
+
+// .bulkBtn:hover {
+//   border-color: rgba(22, 119, 255, 0.35);
+//   background: rgba(22, 119, 255, 0.08);
+// }
+
+// .bulkBtnDanger:hover {
+//   border-color: rgba(255, 77, 79, 0.35);
+//   background: rgba(255, 77, 79, 0.12);
+// }
+
+// /* ================= STUDENTS (SCROLLABLE) ================= */
+
+// .studentsWrap {
+//   display: flex;
+//   flex-direction: column;
+//   gap: 8px;
+
+//   /* ✅ SCROLL */
+//   max-height: 320px;        /* change to what you want */
+//   overflow-y: auto;
+//   padding-right: 6px;       /* space for scrollbar */
+//   margin-top: 6px;
+// }
+
+// /* ✅ nicer scrollbar (works in Chromium + Safari) */
+// .studentsWrap::-webkit-scrollbar {
+//   width: 8px;
+// }
+
+// .studentsWrap::-webkit-scrollbar-track {
+//   background: rgba(255, 255, 255, 0.06);
+//   border-radius: 999px;
+// }
+
+// .studentsWrap::-webkit-scrollbar-thumb {
+//   background: rgba(255, 255, 255, 0.18);
+//   border-radius: 999px;
+// }
+
+// .studentsWrap::-webkit-scrollbar-thumb:hover {
+//   background: rgba(255, 255, 255, 0.26);
+// }
+
+// /* Firefox */
+// .studentsWrap {
+//   scrollbar-width: thin;
+//   scrollbar-color: rgba(255, 255, 255, 0.22) rgba(255, 255, 255, 0.06);
+// }
+
+// .studentRow {
+//   display: grid;
+//   grid-template-columns: 1fr auto;
+//   gap: 10px;
+//   align-items: center;
+//   padding: 10px 10px;
+//   border-radius: 12px;
+//   background: rgba(0, 0, 0, 0.12);
+//   transition: background 0.2s ease, transform 0.15s ease;
+
+//   @media (max-width: 560px) {
+//     grid-template-columns: 1fr;
+//     align-items: stretch;
+//   }
+// }
+
+// .studentRow:hover {
+//   background: rgba(22, 119, 255, 0.05);
+//   transform: translateX(3px);
+// }
+
+// .studentName {
+//   font-weight: 600;
+//   color: $text_primary;
+//   word-break: break-word;
+// }
+
+// /* ================= PRESENT / ABSENT PILLS ================= */
+
+// .pills {
+//   display: flex;
+//   gap: 8px;
+
+//   @media (max-width: 560px) {
+//     width: 100%;
+//   }
+// }
+
+// .pill {
+//   border: 1px solid rgba(140, 140, 140, 0.18);
+//   background: rgba(31, 31, 31, 0.55);
+//   color: $text_primary;
+//   padding: 8px 10px;
+//   border-radius: 999px;
+//   font-weight: 650;
+//   cursor: pointer;
+//   transition: transform 0.18s ease, background 0.18s ease, border-color 0.18s ease;
+//   min-width: 92px;
+
+//   &:hover {
+//     transform: translateY(-1px);
+//     border-color: rgba(22, 119, 255, 0.35);
+//   }
+
+//   &:active {
+//     transform: scale(0.96);
+//   }
+
+//   @media (max-width: 560px) {
+//     flex: 1;
+//   }
+// }
+
+// .pillActive {
+//   background: rgba(22, 119, 255, 0.18);
+//   border-color: rgba(22, 119, 255, 0.55);
+// }
+
+// .pillDanger {
+//   background: rgba(255, 77, 79, 0.14);
+//   border-color: rgba(255, 77, 79, 0.35);
+// }
+
+// /* ================= SAVE BAR ================= */
+
+// .saveBar {
+//   margin-top: 12px;
+//   display: flex;
+//   justify-content: flex-end;
+
+//   @media (max-width: 560px) {
+//     justify-content: stretch;
+//   }
+// }
+
+// .saveBtn {
+//   background: $primary_blue;
+//   color: $text_primary;
+//   border: none;
+//   border-radius: 14px;
+//   padding: 10px 14px;
+//   cursor: pointer;
+//   font-weight: 750;
+//   transition: transform 0.12s ease, filter 0.18s ease, opacity 0.18s ease;
+
+//   &:hover {
+//     filter: brightness(1.05);
+//     transform: translateY(-1px);
+//   }
+
+//   &:active {
+//     transform: scale(0.98);
+//   }
+
+//   &:disabled {
+//     opacity: 0.6;
+//     cursor: not-allowed;
+//     transform: none;
+//   }
+
+//   @media (max-width: 560px) {
+//     width: 100%;
+//   }
+// }
+
+// /* ================= KEYFRAMES ================= */
+
+// @keyframes fadeSlide {
+//   from {
+//     opacity: 0;
+//     transform: translateY(-4px);
+//   }
+//   to {
+//     opacity: 1;
+//     transform: translateY(0);
+//   }
+// }
+
 @import "../../colors.scss";
+
+/* ================== HEADER ICON + TITLE (your standard) ================== */
 
 .navIcon {
   color: #4693ff;
@@ -8,13 +487,11 @@
   height: 22px;
 }
 
-
-.pageMainCaptionStyle {
-  font-size: clamp(18px, 2.1vw, 22px);
-  font-weight: 900;
-  line-height: 1.15;
-  margin: 0; 
-  word-break: break-word;
+.WrapperOfMainCaptionAndIcon {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
 }
 
 .headerIcon {
@@ -23,63 +500,53 @@
   border-radius: 14px;
   display: grid;
   place-items: center;
+
   background: rgba(22, 119, 255, 0.14);
   border: 1px solid rgba(22, 119, 255, 0.18);
-  color: #4693ff;
+
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.25);
   flex-shrink: 0;
 }
 
-.WrapperOfMainCaptionAndIcon {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
 .pageMainCaptionStyle {
-  font-size: 22px;
+  font-size: clamp(18px, 2.1vw, 22px);
   font-weight: 900;
+  line-height: 1.15;
+  margin: 0;
+  word-break: break-word;
+  letter-spacing: 0.25px;
 }
 
-
-/* ================= PAGE ================= */
+/* ================== PAGE (IMPORTANT: transparent background) ================== */
 
 .page {
-  background: $dark_background;
-  min-height: 100%;
-  color: $text_primary;
-  max-width: 1100px;
+  width: 100%;
+  max-width: 1200px;
   margin: 0 auto;
-}
 
-.forbiddenTitle {
-  color: #ff4d4f;
-  text-align: center;
-  margin-top: 80px;
-  font-size: 28px;
-  font-weight: 600;
-}
+  /* ✅ allow global layout gradient to show */
+  background: transparent;
 
-/* ================= HEADER ================= */
-
-.header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  margin-bottom: 16px;
-
-  @media (max-width: 720px) {
-    flex-direction: column;
-    align-items: stretch;
-  }
-}
-
-.title {
-  margin: 0;
-  font-size: 26px;
-  font-weight: 800;
-  letter-spacing: 0.3px;
   color: $text_primary;
+  min-height: 60vh;
+}
+
+/* ================== TOP BAR ================== */
+
+.topBar {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.titleBlock {
+  min-width: 0;
 }
 
 .subtitle {
@@ -92,25 +559,29 @@
   display: flex;
   justify-content: flex-end;
   gap: 10px;
-
-  @media (max-width: 720px) {
-    justify-content: flex-start;
-  }
 }
 
+/* ================== BUTTONS ================== */
+
 .refreshBtn {
-  background: $table_background;
+  background: rgba(20, 20, 20, 0.55);
   color: $text_primary;
-  border: 1px solid rgba(140, 140, 140, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 12px;
+
   padding: 10px 12px;
   cursor: pointer;
-  font-weight: 650;
+  font-weight: 750;
+
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+
+  box-shadow: 0 12px 34px rgba(0, 0, 0, 0.25);
   transition: transform 0.12s ease, border-color 0.18s ease, background 0.18s ease;
 
   &:hover {
     border-color: rgba(22, 119, 255, 0.35);
-    background: rgba(22, 119, 255, 0.06);
+    background: rgba(22, 119, 255, 0.08);
     transform: translateY(-1px);
   }
 
@@ -119,17 +590,77 @@
   }
 }
 
-/* ================= SHELL ================= */
+/* ================== SHELL ================== */
 
 .shell {
   border-radius: 18px;
 }
 
-.empty {
-  color: $text_secondary;
-  font-weight: bold;
-  color: rgb(210, 99, 99);
+/* ================== LOADING / EMPTY / FORBIDDEN ================== */
+
+.loadingWrap {
+  min-height: 220px;
+  display: grid;
+  place-items: center;
+  gap: 10px;
+
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(31, 31, 31, 0.74);
+
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+
+  box-shadow: 0 18px 60px rgba(0, 0, 0, 0.35);
 }
+
+.loadingText {
+  color: $text_secondary;
+  font-size: 0.95rem;
+}
+
+.emptyCard,
+.forbiddenCard {
+  width: 100%;
+  min-height: 220px;
+  padding: 18px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 8px;
+
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(31, 31, 31, 0.74);
+
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+
+  box-shadow: 0 18px 60px rgba(0, 0, 0, 0.35);
+}
+
+.emptyTitle {
+  font-weight: 900;
+  color: rgba(240, 240, 240, 0.92);
+}
+
+.emptySub {
+  color: $text_secondary;
+  max-width: 64ch;
+}
+
+.forbiddenTitle {
+  font-size: 1.2rem;
+  font-weight: 1000;
+  color: #ff4d4f;
+}
+
+.forbiddenSub {
+  color: $text_secondary;
+}
+
+/* ================== LIST ================== */
 
 .subjectList {
   display: flex;
@@ -137,21 +668,29 @@
   gap: 12px;
 }
 
-/* ================= SUBJECT DROPDOWN ================= */
+/* ================== SUBJECT DROPDOWN CARD ================== */
 
 .subjectItem {
-  background: #232323;
-  border-radius: 16px;
-  border: 1px solid rgba(140, 140, 140, 0.12);
+  border-radius: 18px;
   overflow: hidden;
-  transition: background 0.25s ease, transform 0.2s ease;
+
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(31, 31, 31, 0.74);
+
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+
+  box-shadow:
+    0 18px 60px rgba(0, 0, 0, 0.45),
+    0 0 0 1px rgba(255, 255, 255, 0.03) inset;
+
+  transition: transform 160ms ease, border-color 160ms ease, background 160ms ease;
 }
 
 .subjectItem[open] {
-  background: #252525;
+  background: rgba(38, 38, 38, 0.78);
 }
 
-/* Remove default marker */
 .subjectItem > summary {
   list-style: none;
 }
@@ -162,9 +701,12 @@
 .subjectSummary {
   cursor: pointer;
   padding: 14px 14px;
+
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 12px;
+
   user-select: none;
   transition: background 0.2s ease;
 }
@@ -181,18 +723,23 @@
 }
 
 .subjectName {
-  font-weight: 750;
+  font-weight: 900;
   color: $text_primary;
-  white-space: nowrap;
+
+  min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .badge {
   font-size: 12px;
-  color: $highlight_accent;
-  background: rgba(250, 173, 20, 0.12);
-  border: 1px solid rgba(250, 173, 20, 0.22);
+
+  /* ✅ reduce gold, more neutral/blue feel */
+  color: rgba(240, 240, 240, 0.88);
+  background: rgba(22, 119, 255, 0.10);
+  border: 1px solid rgba(22, 119, 255, 0.22);
+
   padding: 4px 10px;
   border-radius: 999px;
   flex: 0 0 auto;
@@ -202,18 +749,18 @@
   display: flex;
   align-items: center;
   gap: 10px;
+  flex-shrink: 0;
 }
 
 .timeChip {
   font-size: 12px;
   color: $primary_blue;
-  background: rgba(22, 119, 255, 0.1);
+  background: rgba(22, 119, 255, 0.10);
   border: 1px solid rgba(22, 119, 255, 0.25);
   padding: 4px 10px;
   border-radius: 999px;
 }
 
-/* Chevron animation */
 .chev {
   color: $text_secondary;
   transition: transform 0.25s ease;
@@ -223,7 +770,7 @@
   transform: rotate(180deg);
 }
 
-/* ================= LESSON BODY ================= */
+/* ================== BODY ================== */
 
 .lessonBody {
   padding: 12px 14px 14px;
@@ -236,11 +783,7 @@
   align-items: center;
   gap: 12px;
   margin-bottom: 10px;
-
-  @media (max-width: 720px) {
-    flex-direction: column;
-    align-items: stretch;
-  }
+  flex-wrap: wrap;
 }
 
 .lessonMeta {
@@ -253,8 +796,8 @@
 .roomChip {
   font-size: 12px;
   color: $text_secondary;
-  background: rgba(0, 0, 0, 0.12);
-  border: 1px solid rgba(140, 140, 140, 0.14);
+  background: rgba(0, 0, 0, 0.20);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   padding: 4px 10px;
   border-radius: 999px;
 }
@@ -264,27 +807,28 @@
   color: $text_secondary;
 }
 
-/* ================= BULK ACTIONS ================= */
+/* ================== BULK BUTTONS ================== */
 
 .bulkActions {
   display: flex;
   gap: 8px;
-
-  @media (max-width: 720px) {
-    width: 100%;
-  }
 }
 
 .bulkBtn,
 .bulkBtnDanger {
   border-radius: 999px;
   padding: 8px 10px;
-  font-weight: 650;
+  font-weight: 800;
   cursor: pointer;
-  transition: transform 0.12s ease, background 0.18s ease, border-color 0.18s ease;
-  border: 1px solid rgba(140, 140, 140, 0.16);
-  background: rgba(31, 31, 31, 0.45);
+
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  background: rgba(20, 20, 20, 0.45);
   color: $text_primary;
+
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+
+  transition: transform 0.12s ease, background 0.18s ease, border-color 0.18s ease;
 
   &:hover {
     transform: translateY(-1px);
@@ -292,10 +836,6 @@
 
   &:active {
     transform: scale(0.98);
-  }
-
-  @media (max-width: 720px) {
-    flex: 1;
   }
 }
 
@@ -309,43 +849,40 @@
   background: rgba(255, 77, 79, 0.12);
 }
 
-/* ================= STUDENTS (SCROLLABLE) ================= */
+/* ================== STUDENTS LIST (SCROLL) ================== */
 
 .studentsWrap {
   display: flex;
   flex-direction: column;
   gap: 8px;
 
-  /* ✅ SCROLL */
-  max-height: 320px;        /* change to what you want */
+  max-height: 320px;
   overflow-y: auto;
-  padding-right: 6px;       /* space for scrollbar */
+
+  padding-right: 6px;
   margin-top: 6px;
 }
 
-/* ✅ nicer scrollbar (works in Chromium + Safari) */
+/* Chromium + Safari */
 .studentsWrap::-webkit-scrollbar {
   width: 8px;
 }
-
 .studentsWrap::-webkit-scrollbar-track {
   background: rgba(255, 255, 255, 0.06);
   border-radius: 999px;
 }
-
 .studentsWrap::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.18);
+  background: rgba(70, 147, 255, 0.28);
   border-radius: 999px;
 }
-
 .studentsWrap::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.26);
+  background: rgba(70, 147, 255, 0.40);
 }
 
 /* Firefox */
 .studentsWrap {
   scrollbar-width: thin;
-  scrollbar-color: rgba(255, 255, 255, 0.22) rgba(255, 255, 255, 0.06);
+  scrollbar-color: rgba(70, 147, 255, 0.35) rgba(255, 255, 255, 0.06);
 }
 
 .studentRow {
@@ -353,47 +890,45 @@
   grid-template-columns: 1fr auto;
   gap: 10px;
   align-items: center;
-  padding: 10px 10px;
-  border-radius: 12px;
-  background: rgba(0, 0, 0, 0.12);
-  transition: background 0.2s ease, transform 0.15s ease;
 
-  @media (max-width: 560px) {
-    grid-template-columns: 1fr;
-    align-items: stretch;
-  }
+  padding: 10px 10px;
+  border-radius: 14px;
+
+  background: rgba(0, 0, 0, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+
+  transition: background 0.2s ease, transform 0.15s ease, border-color 0.18s ease;
 }
 
 .studentRow:hover {
-  background: rgba(22, 119, 255, 0.05);
-  transform: translateX(3px);
+  background: rgba(22, 119, 255, 0.06);
+  border-color: rgba(22, 119, 255, 0.18);
+  transform: translateX(2px);
 }
 
 .studentName {
-  font-weight: 600;
+  font-weight: 700;
   color: $text_primary;
   word-break: break-word;
 }
 
-/* ================= PRESENT / ABSENT PILLS ================= */
+/* ================== PILLS ================== */
 
 .pills {
   display: flex;
   gap: 8px;
-
-  @media (max-width: 560px) {
-    width: 100%;
-  }
 }
 
 .pill {
-  border: 1px solid rgba(140, 140, 140, 0.18);
-  background: rgba(31, 31, 31, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  background: rgba(20, 20, 20, 0.55);
   color: $text_primary;
+
   padding: 8px 10px;
   border-radius: 999px;
-  font-weight: 650;
+  font-weight: 900;
   cursor: pointer;
+
   transition: transform 0.18s ease, background 0.18s ease, border-color 0.18s ease;
   min-width: 92px;
 
@@ -404,10 +939,6 @@
 
   &:active {
     transform: scale(0.96);
-  }
-
-  @media (max-width: 560px) {
-    flex: 1;
   }
 }
 
@@ -421,30 +952,32 @@
   border-color: rgba(255, 77, 79, 0.35);
 }
 
-/* ================= SAVE BAR ================= */
+/* ================== SAVE BAR ================== */
 
 .saveBar {
   margin-top: 12px;
   display: flex;
   justify-content: flex-end;
-
-  @media (max-width: 560px) {
-    justify-content: stretch;
-  }
 }
 
 .saveBtn {
-  background: $primary_blue;
-  color: $text_primary;
-  border: none;
-  border-radius: 14px;
+  background: linear-gradient(135deg, $primary_blue, $primary_blue_hover);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.10);
+
   padding: 10px 14px;
+  border-radius: 14px;
   cursor: pointer;
-  font-weight: 750;
+  font-weight: 900;
+
+  box-shadow:
+    0 12px 30px rgba(22, 119, 255, 0.20),
+    0 2px 0 rgba(255, 255, 255, 0.06) inset;
+
   transition: transform 0.12s ease, filter 0.18s ease, opacity 0.18s ease;
 
   &:hover {
-    filter: brightness(1.05);
+    filter: brightness(1.04);
     transform: translateY(-1px);
   }
 
@@ -456,14 +989,57 @@
     opacity: 0.6;
     cursor: not-allowed;
     transform: none;
+    box-shadow: none;
+  }
+}
+
+/* ================== RESPONSIVE ================== */
+
+@media (max-width: 720px) {
+  .controlsRight {
+    justify-content: flex-start;
   }
 
-  @media (max-width: 560px) {
+  .lessonTopRow {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .bulkActions {
+    width: 100%;
+  }
+
+  .bulkBtn,
+  .bulkBtnDanger {
+    flex: 1;
+  }
+}
+
+@media (max-width: 560px) {
+  .studentRow {
+    grid-template-columns: 1fr;
+    align-items: stretch;
+  }
+
+  .pills {
+    width: 100%;
+  }
+
+  .pill {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .saveBar {
+    justify-content: stretch;
+  }
+
+  .saveBtn {
     width: 100%;
   }
 }
 
-/* ================= KEYFRAMES ================= */
+/* ================== KEYFRAMES ================== */
 
 @keyframes fadeSlide {
   from {

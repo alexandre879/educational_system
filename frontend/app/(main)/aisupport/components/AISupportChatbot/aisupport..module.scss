@@ -1,95 +1,143 @@
-.mainContainer {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
+@import "../../../../colors.scss";
+
+/* page container: keep same width standard as other pages */
+.page {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+
+  /* important: let your global layout gradient show */
+  background: transparent;
+  color: $text_primary;
 }
 
-.chatContainer {
-  flex: 1;
-  padding: 16px;
-  overflow-y: auto;
-}
-
-.emptyState {
-  text-align: center;
-  color: #999;
-  margin-top: 40px;
-}
-
-.typing {
-  font-size: 13px;
-  color: #aaa;
-  margin-top: 6px;
-}
-
-.inputContainer {
-  display: flex;
-  gap: 10px;
-  padding: 12px;
-  border-top: 1px solid #eee;
-
-  input {
-    flex: 1;
-    padding: 10px 12px;
-    border-radius: 8px;
-    border: 1px solid #ccc;
-    outline: none;
-  }
-
-  button {
-    padding: 0 14px;
-    border-radius: 8px;
-    border: none;
-    background: #4f46e5;
-    color: white;
-    cursor: pointer;
-
-    &:hover {
-      background: #4338ca;
-    }
-  }
-}
-
-
-
-.bubble {
-  max-width: 70%;
-  padding: 10px 14px;
-  border-radius: 12px;
-  margin-bottom: 10px;
-  font-size: 14px;
-}
-
-.user {
-  margin-left: auto;
-  background: #4f46e5;
-  color: white;
-}
-
-.ai {
-  margin-right: auto;
-  background: #f3f4f6;
-  color: #111;
-}
-
-
+/* main chatbot wrapper */
 .botWrapper {
-  width: min(900px, 100%);
-  height: min(80vh, 780px);
+  width: 100%;
+  min-height: min(80vh, 780px);
+
   margin: 0 auto;
   padding: 18px;
-  border-radius: 16px;
-  background: rgba(0,0,0,0.03);
-  border: 1px solid rgba(0,0,0,0.08);
+
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+
+  background: rgba(31, 31, 31, 0.74);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+
+  box-shadow:
+    0 18px 60px rgba(0, 0, 0, 0.45),
+    0 0 0 1px rgba(255, 255, 255, 0.03) inset;
+
   position: relative;
+
+  /* Make embedded chatbot take full height */
+  :global(.rcb-chatbot-container) {
+    height: 100%;
+  }
+
+  /* header/footer glass */
+  :global(.rcb-chatbot-header),
+  :global(.rcb-chatbot-footer) {
+    background: rgba(20, 20, 20, 0.55) !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+
+  /* header title area */
+  :global(.rcb-chatbot-header-title) {
+    font-weight: 900 !important;
+    color: rgba(240, 240, 240, 0.92) !important;
+  }
+
+  /* message area background */
+  :global(.rcb-chatbot-body) {
+    background: transparent !important;
+  }
+
+  /* bubbles */
+  :global(.rcb-bot-message) {
+    background: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid rgba(255, 255, 255, 0.07) !important;
+    color: rgba(240, 240, 240, 0.88) !important;
+  }
+
+  :global(.rcb-user-message) {
+    background: rgba(22, 119, 255, 0.16) !important;
+    border: 1px solid rgba(22, 119, 255, 0.28) !important;
+    color: rgba(240, 240, 240, 0.95) !important;
+  }
+
+  /* input */
+  :global(.rcb-chatbot-input) {
+    background: rgba(20, 20, 20, 0.55) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    color: $text_primary !important;
+
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+
+  :global(.rcb-chatbot-input::placeholder) {
+    color: rgba(240, 240, 240, 0.38) !important;
+  }
+
+  /* send button */
+  :global(.rcb-chatbot-send-button) {
+    background: linear-gradient(135deg, $primary_blue, $primary_blue_hover) !important;
+    border: 1px solid rgba(255, 255, 255, 0.10) !important;
+    color: #fff !important;
+
+    box-shadow:
+      0 12px 30px rgba(22, 119, 255, 0.20),
+      0 2px 0 rgba(255, 255, 255, 0.06) inset;
+  }
 }
 
+/* "Thinking..." badge */
 .thinkingBadge {
   position: absolute;
   right: 18px;
   bottom: 18px;
+
   font-size: 12px;
+  font-weight: 900;
+
   padding: 6px 10px;
   border-radius: 999px;
-  background: rgba(0,0,0,0.07);
+
+  background: rgba(22, 119, 255, 0.14);
+  border: 1px solid rgba(22, 119, 255, 0.22);
+  color: rgba(240, 240, 240, 0.92);
+
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.25);
+}
+
+/* 🔧 compatibility: if you ever do gradient text, include standard property too */
+.gradientText {
+  background: linear-gradient(135deg, $primary_blue, $primary_blue_hover);
+  background-clip: text;              /* ✅ standard */
+  -webkit-background-clip: text;      /* ✅ webkit */
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+}
+
+/* responsive */
+@media (max-width: 720px) {
+  .botWrapper {
+    padding: 14px;
+    border-radius: 16px;
+    min-height: 75vh;
+  }
+
+  .thinkingBadge {
+    right: 14px;
+    bottom: 14px;
+  }
 }

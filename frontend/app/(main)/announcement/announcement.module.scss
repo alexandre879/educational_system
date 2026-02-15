@@ -1,15 +1,286 @@
 @import "../../colors.scss";
 
-/* ================== LAYOUT WRAPPERS ================== */
+/* ================== PAGE WRAPPER ================== */
+
+.dropDownWrapper {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  background: transparent;
+  color: $text_primary;
+}
+
+/* ================== TOP BAR ================== */
+
+.ButtonDropdownWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+
+  width: 100%;
+  margin: 0 auto 8px;
+  flex-wrap: wrap;
+}
+
+.dropDownAndButtonWrapper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.filterButton {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+
+  border-radius: 12px !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+
+  background: rgba(20, 20, 20, 0.55) !important;
+  color: $text_primary !important;
+
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+
+  box-shadow: 0 12px 34px rgba(0, 0, 0, 0.25) !important;
+
+  transition: transform 160ms ease, border-color 160ms ease, background 160ms ease;
+
+  &:hover {
+    transform: translateY(-1px);
+    border-color: rgba(22, 119, 255, 0.22) !important;
+    background: rgba(20, 20, 20, 0.62) !important;
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+.filterChevron {
+  opacity: 0.8;
+  font-size: 12px;
+}
+
+/* ================== HEADER ICON + TITLE ================== */
+
+.navIcon {
+  color: #4693ff;
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+}
+
+.WrapperOfMainCaptionAndIcon {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.headerIcon {
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+
+  background: rgba(22, 119, 255, 0.14);
+  border: 1px solid rgba(22, 119, 255, 0.18);
+
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.25);
+  flex-shrink: 0;
+}
+
+.pageMainCaptionStyle {
+  font-size: clamp(18px, 2.1vw, 22px);
+  font-weight: 900;
+  line-height: 1.15;
+  margin: 0;
+  word-break: break-word;
+  letter-spacing: 0.25px;
+}
+
+/* ================== EMPTY ================== */
+
+.emptyAnnouncementWrapper {
+  width: 100%;
+  min-height: 240px;
+  padding: 16px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  justify-content: center;
+  align-items: center;
+
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+
+  background: rgba(31, 31, 31, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+
+  box-shadow: 0 18px 60px rgba(0, 0, 0, 0.35);
+  color: rgba(240, 240, 240, 0.65);
+}
+
+/* ================== LIST ================== */
+
+.announcementList {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+
+  width: 100%;
+  margin: 0 auto;
+}
+
+/* ================== CARD (GLASS) ================== */
+
+.announcementCard {
+  padding: 18px;
+  border-radius: 18px;
+
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(31, 31, 31, 0.74);
+
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+
+  box-shadow:
+    0 18px 60px rgba(0, 0, 0, 0.45),
+    0 0 0 1px rgba(255, 255, 255, 0.03) inset;
+
+  transition: transform 160ms ease, border-color 160ms ease, background 160ms ease;
+
+  &:hover {
+    cursor: pointer;
+    transform: translateY(-1px);
+    border-color: rgba(22, 119, 255, 0.22);
+    background: rgba(38, 38, 38, 0.78);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+/* ================== HEADER / TITLE / DATE ================== */
+
+.announcementHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+
+.titleAndCommentsWrapper {
+  display: flex !important;
+  align-items: flex-start !important;
+  gap: 10px;
+  margin-right: 20px;
+  min-width: 0;
+  flex-wrap: wrap;
+}
+
+.announcementTitle {
+  font-size: clamp(15px, 1.5vw, 18px);
+  font-weight: 900;
+
+  margin: 0;
+  min-width: 0;
+  width: 100%;
+
+  background: linear-gradient(135deg, $primary_blue, $primary_blue_hover);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+
+  word-break: break-word;
+  max-width: 560px;
+}
+
+.announcementDate {
+  font-size: 12px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+
+  color: rgba(240, 240, 240, 0.55);
+  white-space: nowrap;
+}
+
+/* ================== META ================== */
+
+.announcementMeta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  font-size: clamp(12px, 1.15vw, 13px);
+  color: rgba(240, 240, 240, 0.62);
+  margin-bottom: 10px;
+}
+
+.metaItem strong {
+  color: rgba(240, 240, 240, 0.92);
+  font-weight: 700;
+}
+
+/* ================== CONTENT ================== */
+
+.announcementContent {
+  font-size: clamp(13px, 1.2vw, 14px);
+  line-height: 1.55;
+  color: rgba(240, 240, 240, 0.78);
+  word-break: break-word;
+  margin: 0;
+}
+
+/* ================== COMMENTS COUNTER ================== */
+
+.commentsWrapper {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+
+  background: rgba(20, 20, 20, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+
+  color: rgba(240, 240, 240, 0.92);
+  padding: 4px 8px;
+  border-radius: 10px;
+  flex-shrink: 0;
+}
+
+.commentsCountStyle {
+  font-size: 15px !important;
+  line-height: 1;
+  font-weight: 900;
+}
+
+/* ================== PAGINATION ================== */
 
 .paginationWrapper {
   display: flex;
   justify-content: center;
   margin-top: 18px;
-}
 
-/* ✅ IMPORTANT: CSS MODULE SAFE :global usage (no "pure selector" error) */
-.paginationWrapper {
   :global(.ant-pagination-item),
   :global(.ant-pagination-prev),
   :global(.ant-pagination-next) {
@@ -21,10 +292,9 @@
   :global(.ant-pagination-item a),
   :global(.ant-pagination-prev button),
   :global(.ant-pagination-next button) {
-    color: #f0f0f0 !important; /* your light text */
+    color: rgba(240, 240, 240, 0.9) !important;
   }
 
-  /* ❌ remove black hover background */
   :global(.ant-pagination-item:hover),
   :global(.ant-pagination-prev:hover),
   :global(.ant-pagination-next:hover) {
@@ -35,10 +305,10 @@
     color: #ffffff !important;
   }
 
-  /* active page */
   :global(.ant-pagination-item-active) {
     background: rgba(255, 255, 255, 0.08) !important;
     border: 0 !important;
+    border-radius: 10px;
   }
 
   :global(.ant-pagination-item-active a) {
@@ -46,216 +316,17 @@
   }
 }
 
-
-.navIcon {
-  color: #4693ff;
-  flex-shrink: 0;
-  width: 22px;
-  height: 22px;
-}
-
-
-.dropDownAndButtonWrapper {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex-wrap: wrap; /* important for small screens */
-}
-
-.WrapperOfMainCaptionAndIcon {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  min-width: 0; /* prevents overflow */
-}
-
-.ButtonDropdownWrapper {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-
-  max-width: 1100px;
-  width: 100%;
-  margin: 0 auto 18px;
-
-  // padding: 0 14px; /* makes it fit nicely on all resolutions */
-  flex-wrap: wrap; /* allow stacking on smaller screens */
-}
-
-/* ================== HEADER ICON + TITLE ================== */
-
-.headerIcon {
-  width: 44px;
-  height: 44px;
-  border-radius: 14px;
-  display: grid;
-  place-items: center;
-  background: rgba(22, 119, 255, 0.14);
-  border: 1px solid rgba(22, 119, 255, 0.18);
-  color: #4693ff;
-  flex-shrink: 0;
-}
-
-.pageMainCaptionStyle {
-  font-size: clamp(18px, 2.1vw, 22px);
-  font-weight: 900;
-  line-height: 1.15;
-  margin: 0;
-  word-break: break-word;
-}
-
-/* ================== EMPTY STATE ================== */
-
-.emptyAnnouncementWrapper {
-  width: 100%;
-  min-height: 240px;
-  height: auto;
-  padding: 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  justify-content: center;
-  align-items: center;
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  border-radius: 12px;
-  text-align: center;
-}
-
-/* ================== LIST ================== */
-
-.announcementList {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-
-  max-width: 1100px;
-  width: 100%;
-  margin: 0 auto;
-
-  // padding: 0 14px;
-}
-
-/* ================== CARD ================== */
-
-.announcementCard {
-  background: #1f1f1f;
-  border-radius: 12px;
-  padding: 18px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
-  transition: transform 0.2s ease, background 0.2s ease;
-
-  &:hover {
-    cursor: pointer;
-    background: #262626;
-    transform: translateY(-2px);
-  }
-}
-
-/* ================== HEADER / TITLE / DATE ================== */
-
-.announcementHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 12px;
-  margin-bottom: 8px;
-  flex-wrap: wrap; /* allows date to drop below on small widths */
-}
-
-.announcementTitle {
-  font-size: clamp(15px, 1.5vw, 18px);
-  font-weight: 600;
-  color: #4e98ff;
-  margin: 0;
-  word-break: break-word;
-  min-width: 0;
-  max-width: 500px;
-  width: 100%;
-}
-
-.announcementDate {
-  font-size: 12px;
-  display: flex;
-  gap: 10px;
-  align-items: center;
-  color: #aaa;
-  white-space: nowrap;
-}
-
-/* ================== META ================== */
-
-.announcementMeta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  font-size: clamp(12px, 1.15vw, 13px);
-  color: rgb(196, 196, 196);
-  margin-bottom: 10px;
-}
-
-.metaItem strong {
-  color: #fff;
-  font-weight: 500;
-}
-
-.badge {
-  display: inline-block;
-  background: #2c2f38;
-  padding: 2px 8px;
-  border-radius: 6px;
-  font-size: 12px;
-  font-weight: 500;
-  color: #ddd;
-}
-
-/* ================== CONTENT ================== */
-
-.announcementContent {
-  font-size: clamp(13px, 1.2vw, 14px);
-  line-height: 1.5;
-  color: #ddd;
-  word-break: break-word;
-}
-
-/* ================== COMMENTS COUNTER / TITLE AREA ================== */
-
-.titleAndCommentsWrapper {
-  display: flex !important;
-  align-items: flex-start !important;
-  gap: 10px;
-  margin-right: 20px;
-  min-width: 0;
-  flex-wrap: wrap;
-}
-
-.commentsWrapper {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  background-color: #6b6b6b;
-  color: white;
-  padding: 4px 8px;
-  border-radius: 6px;
-  flex-shrink: 0;
-}
-
-.commentsCountStyle {
-  font-size: 18px !important;
-  line-height: 1;
-}
-
-.insideCommentsAuthorStyle {
-  color: #1469d0;
-}
-
 /* ================== COMMENTS LIST ================== */
 
 .commentsList {
-  max-height: 250px;
+  max-height: 260px;
   overflow-y: auto;
   margin-bottom: 16px;
-  padding-right: 6px; /* room for scrollbar */
+  padding-right: 6px;
+
+  :global(.ant-list-item) {
+    border-color: rgba(255, 255, 255, 0.06) !important;
+  }
 }
 
 .commentItem {
@@ -263,57 +334,97 @@
   display: flex !important;
   flex-direction: column !important;
   justify-content: flex-start !important;
-  gap: 2px !important;
+  gap: 6px !important;
+}
 
-  .innerCommentItemSectionWrapper {
-    width: 100% !important;
-    align-items: center !important;
-    display: flex !important;
-    justify-content: space-between !important;
-    gap: 10px;
-    flex-wrap: wrap;
-  }
-
-  .outerWrapper {
-    width: 100% !important;
-    display: flex !important;
-    gap: 5px;
-    flex-direction: column !important;
-    justify-content: flex-start !important;
-  }
+.outerWrapper {
+  width: 100% !important;
+  display: flex !important;
+  gap: 6px;
+  flex-direction: column !important;
+  justify-content: flex-start !important;
 
   span {
-    color: #676767;
-    font-size: 12px;
-  }
-
-  .commentsDateTimeStyle {
-    color: #b0b0b0;
-    white-space: nowrap;
+    color: rgba(240, 240, 240, 0.72);
+    font-size: 13px;
+    word-break: break-word;
   }
 }
 
-/* ================== RESPONSIVE BREAKPOINTS ================== */
+.innerCommentItemSectionWrapper {
+  width: 100% !important;
+  align-items: center !important;
+  display: flex !important;
+  justify-content: space-between !important;
+  gap: 10px;
+  flex-wrap: wrap;
+}
 
-/* <= 1100px */
-@media (max-width: 1100px) {
-  .announcementCard {
-    padding: 16px;
+.insideCommentsAuthorStyle {
+  color: rgba(70, 147, 255, 0.95);
+  font-weight: 800;
+}
+
+.commentsDateTimeStyle {
+  color: rgba(240, 240, 240, 0.55);
+  white-space: nowrap;
+  font-size: 12px;
+}
+
+/* ================== GLASS MODAL (AntD) ================== */
+
+.glassModal {
+  :global(.ant-modal-content) {
+    background: rgba(31, 31, 31, 0.82) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-radius: 18px !important;
+
+    backdrop-filter: blur(14px) !important;
+    -webkit-backdrop-filter: blur(14px) !important;
+
+    box-shadow: 0 22px 80px rgba(0, 0, 0, 0.65) !important;
+    color: $text_primary !important;
+  }
+
+  :global(.ant-modal-header) {
+    background: transparent !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
+  }
+
+  :global(.ant-modal-title) {
+    color: rgba(240, 240, 240, 0.92) !important;
+    font-weight: 900 !important;
+  }
+
+  :global(.ant-modal-close-x) {
+    color: rgba(240, 240, 240, 0.75) !important;
+  }
+
+  :global(.ant-modal-footer) {
+    border-top: 1px solid rgba(255, 255, 255, 0.06) !important;
+  }
+
+  :global(.ant-input),
+  :global(.ant-select-selector),
+  :global(textarea.ant-input) {
+    background: rgba(20, 20, 20, 0.55) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    color: $text_primary !important;
+  }
+
+  :global(.ant-input::placeholder) {
+    color: rgba(240, 240, 240, 0.38) !important;
   }
 }
 
-/* <= 900px */
+/* ================== RESPONSIVE ================== */
+
 @media (max-width: 900px) {
   .ButtonDropdownWrapper {
     justify-content: flex-start;
   }
-
-  .announcementHeader {
-    align-items: flex-start;
-  }
 }
 
-/* <= 720px */
 @media (max-width: 720px) {
   .headerIcon {
     width: 40px;
@@ -323,15 +434,7 @@
 
   .announcementCard {
     padding: 14px;
-    border-radius: 12px;
-  }
-
-  .announcementMeta {
-    gap: 10px;
-  }
-
-  .commentsCountStyle {
-    font-size: 16px !important;
+    border-radius: 16px;
   }
 
   .commentsList {
@@ -339,19 +442,9 @@
   }
 }
 
-/* <= 480px */
 @media (max-width: 480px) {
-  .ButtonDropdownWrapper,
-  .announcementList {
-    padding: 0 10px;
-  }
-
   .announcementDate {
-    white-space: normal; /* allow wrap if needed */
-  }
-
-  .commentsWrapper {
-    padding: 4px 7px;
+    white-space: normal;
   }
 
   .commentsList {

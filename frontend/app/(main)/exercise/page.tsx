@@ -67,12 +67,12 @@ export default function ExercisePage() {
   return (
     <div className={styles.exerciseMainContainer}>
       <div className={styles.header}>
-        <div className={styles.WrapperOfMainCaptionAndIcon} >
-            <span className={styles.headerIcon}>
-              <FaBookOpen className={styles.navIcon} />
-            </span>
-            <h1 className={styles.pageMainCaptionStyle} >Exercises</h1>
-          </div>
+        <div className={styles.WrapperOfMainCaptionAndIcon}>
+          <span className={styles.headerIcon}>
+            <FaBookOpen className={styles.navIcon} />
+          </span>
+          <h1 className={styles.pageMainCaptionStyle}>Exercises</h1>
+        </div>
 
         {userRole === "teacher" && (
           <button
@@ -115,9 +115,7 @@ export default function ExercisePage() {
               <div className={styles.cardHeader}>
                 <span className={styles.cardTitle}>{ex.title}</span>
                 {ex.subject && (
-                  <span className={styles.subjectBadge}>
-                    {ex.subject.name}
-                  </span>
+                  <span className={styles.subjectBadge}>{ex.subject.name}</span>
                 )}
               </div>
 

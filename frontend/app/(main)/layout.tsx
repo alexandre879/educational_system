@@ -31,10 +31,7 @@ import {
   SearchOption,
 } from "./interface";
 
-
-
 export default function MainLayout({ children }: { children: ReactNode }) {
-
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [userMe, setUserMe] = useState<UserMeData | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -43,13 +40,13 @@ export default function MainLayout({ children }: { children: ReactNode }) {
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lastQueryRef = useRef<string>("");
 
-
   const pathname = usePathname();
   const router = useRouter();
 
   useEffect(() => {
     setSidebarOpen(false);
-    api.get<UserMeData>("/user/me/")
+    api
+      .get<UserMeData>("/user/me/")
       .then((res: AxiosResponse<UserMeData>) => setUserMe(res.data))
       .catch((err: AxiosError) => console.log(err.message));
   }, [pathname]);
@@ -60,11 +57,9 @@ export default function MainLayout({ children }: { children: ReactNode }) {
   const handleLogout = async () => {
     try {
       await api.post("/user/logout/", { refresh: Cookies.get("refresh") });
-    }
-    catch (err) {
+    } catch (err) {
       console.log("Logout failed:", err);
-    }
-    finally {
+    } finally {
       Cookies.remove("access");
       Cookies.remove("refresh");
       router.push("/login");
@@ -89,55 +84,17 @@ export default function MainLayout({ children }: { children: ReactNode }) {
   };
 
   const navItems = [
-    {
-      href: "/home",
-      label: "HOME",
-      icon: <FaHome className={styles.navIcon} />
-    },
-    {
-      href: "/announcement",
-      label: "ANNOUNCEMENT",
-      icon: <FaBullhorn className={styles.navIcon} />,
-    },
-    {
-      href: "/leader-board",
-      label: "LEADER BOARD",
-      icon: <FaTrophy className={styles.navIcon} />,
-    },
+    { href: "/home", label: "HOME", icon: <FaHome className={styles.navIcon} /> },
+    { href: "/announcement", label: "ANNOUNCEMENT", icon: <FaBullhorn className={styles.navIcon} /> },
+    { href: "/leader-board", label: "LEADER BOARD", icon: <FaTrophy className={styles.navIcon} /> },
     ...(userMe?.role === "teacher" || userMe?.role === "admin"
-      ? [
-        {
-          href: "/attendance",
-          label: "ATTENDANCE",
-          icon: <FaClipboardCheck className={styles.navIcon} />,
-        },
-      ]
+      ? [{ href: "/attendance", label: "ATTENDANCE", icon: <FaClipboardCheck className={styles.navIcon} /> }]
       : []),
-    {
-      href: "/subjects",
-      label: "SUBJECTS",
-      icon: <FaAtom className={styles.navIcon} />,
-    },
-    {
-      href: "/exercise",
-      label: "EXERCISES",
-      icon: <FaBookOpen className={styles.navIcon} />,
-    },
-    {
-      href: "/exam",
-      label: "EXAMS",
-      icon: <FaFileAlt className={styles.navIcon} />
-    },
-    {
-      href: "/schedule",
-      label: "SCHEDULE",
-      icon: <FaCalendarAlt className={styles.navIcon} />,
-    },
-    {
-      href: "/aisupport",
-      label: "AI SUPPORT",
-      icon: <FaRobot className={styles.navIcon} />,
-    },
+    { href: "/subjects", label: "SUBJECTS", icon: <FaAtom className={styles.navIcon} /> },
+    { href: "/exercise", label: "EXERCISES", icon: <FaBookOpen className={styles.navIcon} /> },
+    { href: "/exam", label: "EXAMS", icon: <FaFileAlt className={styles.navIcon} /> },
+    { href: "/schedule", label: "SCHEDULE", icon: <FaCalendarAlt className={styles.navIcon} /> },
+    { href: "/aisupport", label: "AI SUPPORT", icon: <FaRobot className={styles.navIcon} /> },
   ];
 
   // ===== SERVER SEARCH =====
@@ -150,7 +107,6 @@ export default function MainLayout({ children }: { children: ReactNode }) {
       return;
     }
 
-    // avoid re-fetching the same query
     if (lastQueryRef.current === trimmed) return;
     lastQueryRef.current = trimmed;
 
@@ -158,24 +114,24 @@ export default function MainLayout({ children }: { children: ReactNode }) {
       const res = await api.get("/search/", { params: { q: trimmed } });
 
       const subjects = (res.data?.subjects ?? []).map((s: ReturnedSubjectData) => ({
-        value: `subject:${s.pk}`, // ✅ unique so duplicates don't collide
+        value: `subject:${s.pk}`,
         label: `📚 Subject: ${s.name}`,
         kind: "subject" as const,
         id: s.pk,
       }));
 
       const exams = (res.data?.exams ?? []).map((e: ReturnedExamData) => ({
-        value: `exam:${e.pk}`, // ✅ unique
+        value: `exam:${e.pk}`,
         label: `📝 Exam: ${e.title}`,
         kind: "exam" as const,
         id: e.pk,
       }));
 
       const announcements = (res.data?.announcements ?? []).map((a: ReturnedAnnouncementData) => {
-        const title = String((a as any).title ?? ""); // ✅ backend usually returns content
+        const title = String((a as any).title ?? "");
         const short = title.slice(0, 60) + (title.length > 60 ? "..." : "");
         return {
-          value: `announcement:${a.pk}`, // ✅ unique
+          value: `announcement:${a.pk}`,
           label: `📣 Announcement: ${short}`,
           kind: "announcement" as const,
           id: a.pk,
@@ -183,7 +139,7 @@ export default function MainLayout({ children }: { children: ReactNode }) {
       });
 
       setOptions([...subjects, ...exams, ...announcements]);
-    } catch (err) {
+    } catch {
       setOptions([]);
     }
   };
@@ -224,8 +180,7 @@ export default function MainLayout({ children }: { children: ReactNode }) {
           <Link
             key={item.href}
             href={item.href}
-            className={`${styles.redirectionCaptions} ${isActive(item.href) ? styles.activeLink : ""
-              }`}
+            className={`${styles.redirectionCaptions} ${isActive(item.href) ? styles.activeLink : ""}`}
             aria-current={isActive(item.href) ? "page" : undefined}
           >
             <div className={styles.pageRedirectionWrapper}>
@@ -287,9 +242,7 @@ export default function MainLayout({ children }: { children: ReactNode }) {
           </div>
         </header>
 
-        <main className={styles.childrenPassingContainer}>
-          {children}
-        </main>
+        <main className={styles.childrenPassingContainer}>{children}</main>
       </div>
 
       {sidebarOpen && <div className={styles.overlay} onClick={toggleSidebar}></div>}

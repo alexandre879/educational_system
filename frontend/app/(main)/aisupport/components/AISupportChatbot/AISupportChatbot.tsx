@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { useMemo, useState } from "react";
 import ChatBot from "react-chatbotify";
@@ -55,9 +55,11 @@ export default function AISupportChatbot() {
   );
 
   return (
-    <div className={styles.botWrapper}>
-      <ChatBot settings={settings} flow={flow} />
-      {isThinking && <div className={styles.thinkingBadge}>Thinking…</div>}
+    <div className={styles.page}>
+      <div className={styles.botWrapper}>
+        <ChatBot settings={settings} flow={flow} />
+        {isThinking && <div className={styles.thinkingBadge}>Thinking…</div>}
+      </div>
     </div>
   );
 }

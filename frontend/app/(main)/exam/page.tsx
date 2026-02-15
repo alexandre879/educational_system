@@ -6,7 +6,6 @@ import api from "@/interceptors";
 import styles from "./exam.module.scss";
 import ExamSectionComponent from "./ExamComponents/ExamSectionComponent/ExamSectionComponent";
 import { ExamListData } from "./interface";
-import { FiInbox } from "react-icons/fi";
 import { FaFileAlt } from "react-icons/fa";
 
 export default function Exam() {
@@ -18,9 +17,11 @@ export default function Exam() {
       try {
         const res = await api.get<ExamListData[]>("/exams/");
         setExams(res.data);
-      } catch (err) {
+      } 
+      catch (err) {
         console.error(err);
-      } finally {
+      } 
+      finally {
         setLoading(false);
       }
     };
@@ -32,6 +33,8 @@ export default function Exam() {
     return n === 1 ? "1 exam" : `${n} exams`;
   }, [exams.length]);
 
+
+
   if (loading)
     return (
       <div className={styles.loaderWrapper}>
@@ -39,6 +42,7 @@ export default function Exam() {
         <div className={styles.loaderText}>Loading exams…</div>
       </div>
     );
+
 
   if (exams.length === 0)
     return (
@@ -60,7 +64,12 @@ export default function Exam() {
     <div className={styles.page}>
       <div className={styles.topBar}>
         <div>
-          <div className={styles.pageTitle}>Exams</div>
+          <div className={styles.WrapperOfMainCaptionAndIcon} >
+          <span className={styles.headerIcon}>
+            <FaFileAlt className={styles.navIcon} />
+          </span>
+          <h1 className={styles.pageMainCaptionStyle} >Exams</h1>
+        </div>
           <div className={styles.pageSub}>{countText}</div>
         </div>
       </div>
