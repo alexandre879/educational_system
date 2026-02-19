@@ -1,1 +1,13 @@
-./env*
+# env files anywhere
+.env
+.env.*
+**/.env
+**/.env.*
+
+
+# python
+__pycache__/
+*.pyc
+myenv/
+.venv/
+venv/
