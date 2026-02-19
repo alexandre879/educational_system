@@ -156,6 +156,8 @@
 
 
 
+
+
 "use client";
 
 import React, { useEffect, useMemo, useState, ChangeEvent } from "react";
@@ -163,7 +165,7 @@ import { Image, message } from "antd";
 import styles from "./profile.module.scss";
 import api from "@/interceptors";
 import { UserMeData } from "./interface";
-import { AxiosError, AxiosResponse } from "axios";
+import { AxiosError } from "axios";
 import { FaUserCircle } from "react-icons/fa";
 
 type FormState = {
@@ -171,6 +173,21 @@ type FormState = {
   last_name: string;
   email: string;
 };
+
+function getAxiosDetail(err: unknown): string | null {
+  // Safely read err.response.data.detail without using any
+  if (!err || typeof err !== "object") return null;
+
+  const maybeAxios = err as Partial<AxiosError<unknown>>;
+  const resp = maybeAxios.response;
+  if (!resp || typeof resp !== "object") return null;
+
+  const data = resp.data;
+  if (!data || typeof data !== "object") return null;
+
+  const detail = (data as Record<string, unknown>).detail;
+  return typeof detail === "string" ? detail : null;
+}
 
 export default function ProfileSettings() {
   const [userMe, setUserMe] = useState<UserMeData | null>(null);
@@ -200,7 +217,7 @@ export default function ProfileSettings() {
         last_name: res.data.last_name ?? "",
         email: res.data.email ?? "",
       });
-    } catch (err) {
+    } catch (err: unknown) {
       console.error(err);
       message.error("Failed to load profile");
     }
@@ -260,7 +277,7 @@ export default function ProfileSettings() {
 
       if (selectedFile) fd.append("profilePic", selectedFile);
 
-      const res = await api.patch("update/profile/", fd, {
+      const res = await api.patch<UserMeData>("update/profile/", fd, {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
@@ -270,10 +287,9 @@ export default function ProfileSettings() {
       setPreview(null);
 
       message.success("Profile updated");
-    } catch (error: unknown) {
-      const err = error as AxiosError<any>;
+    } catch (err: unknown) {
       console.error(err);
-      message.error(err.response?.data?.detail ?? "Failed to update profile");
+      message.error(getAxiosDetail(err) ?? "Failed to update profile");
     } finally {
       setSaving(false);
     }
@@ -311,12 +327,7 @@ export default function ProfileSettings() {
               </button>
             ) : (
               <div className={styles.headerActions}>
-                <button
-                  className={styles.saveBtn}
-                  type="button"
-                  onClick={onSave}
-                  disabled={saving}
-                >
+                <button className={styles.saveBtn} type="button" onClick={onSave} disabled={saving}>
                   {saving ? "Saving..." : "Save"}
                 </button>
                 <button className={styles.ghostBtn} type="button" onClick={onCancel} disabled={saving}>
@@ -345,12 +356,7 @@ export default function ProfileSettings() {
               {isEditing && (
                 <label className={styles.uploadBtn}>
                   Change photo
-                  <input
-                    className={styles.hiddenInput}
-                    type="file"
-                    accept="image/*"
-                    onChange={onChangeFile}
-                  />
+                  <input className={styles.hiddenInput} type="file" accept="image/*" onChange={onChangeFile} />
                 </label>
               )}
             </div>
@@ -392,9 +398,7 @@ export default function ProfileSettings() {
                 </div>
               </div>
 
-              <div className={styles.hint}>
-                Tip: Your email is used for login and notifications.
-              </div>
+              <div className={styles.hint}>Tip: Your email is used for login and notifications.</div>
             </div>
           </div>
         </div>
