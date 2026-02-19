@@ -1,5 +1,5 @@
 export const dropdownItems = [
-    { key: "profile", label: "Profile" },
-    { key: "logout", danger: true, label: "Logout" },
+  { key: "profile", label: "PROFILE" },
+  { key: "logout", danger: true, label: "LOG OUT" },
   ];
 

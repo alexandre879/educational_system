@@ -35,6 +35,15 @@ from .fast_api_util import (
     ExamCreateView,
     BulkCreateStudentsView
 )
+from pathlib import Path
+from dotenv import load_dotenv
+import os
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+load_dotenv(BASE_DIR / ".env", override=True)
+
+
+STUDENTS_CREATE_URL = os.getenv("FOR_STUDENTS_API")
 
 
 
@@ -107,7 +116,7 @@ urlpatterns = [
     
     
     ##### for testing purposes, to be removed later. also can be considered as fast API ;)
-    path("users/bulk-create/", BulkCreateStudentsView.as_view()),
+    path(f"{STUDENTS_CREATE_URL}", BulkCreateStudentsView.as_view()),
     #####
     
 ]

@@ -45,8 +45,7 @@ export default function MainLayout({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     setSidebarOpen(false);
-    api
-      .get<UserMeData>("/user/me/")
+    api.get<UserMeData>("/user/me/")
       .then((res: AxiosResponse<UserMeData>) => setUserMe(res.data))
       .catch((err: AxiosError) => console.log(err.message));
   }, [pathname]);
@@ -57,9 +56,11 @@ export default function MainLayout({ children }: { children: ReactNode }) {
   const handleLogout = async () => {
     try {
       await api.post("/user/logout/", { refresh: Cookies.get("refresh") });
-    } catch (err) {
+    }
+    catch (err) {
       console.log("Logout failed:", err);
-    } finally {
+    }
+    finally {
       Cookies.remove("access");
       Cookies.remove("refresh");
       router.push("/login");
@@ -87,17 +88,23 @@ export default function MainLayout({ children }: { children: ReactNode }) {
     { href: "/home", label: "HOME", icon: <FaHome className={styles.navIcon} /> },
     { href: "/announcement", label: "ANNOUNCEMENT", icon: <FaBullhorn className={styles.navIcon} /> },
     { href: "/leader-board", label: "LEADER BOARD", icon: <FaTrophy className={styles.navIcon} /> },
+
     ...(userMe?.role === "teacher" || userMe?.role === "admin"
       ? [{ href: "/attendance", label: "ATTENDANCE", icon: <FaClipboardCheck className={styles.navIcon} /> }]
       : []),
+
     { href: "/subjects", label: "SUBJECTS", icon: <FaAtom className={styles.navIcon} /> },
     { href: "/exercise", label: "EXERCISES", icon: <FaBookOpen className={styles.navIcon} /> },
     { href: "/exam", label: "EXAMS", icon: <FaFileAlt className={styles.navIcon} /> },
-    { href: "/schedule", label: "SCHEDULE", icon: <FaCalendarAlt className={styles.navIcon} /> },
+
+    ...(userMe?.role !== "teacher" && userMe?.role !== "admin"
+      ? [{ href: "/schedule", label: "SCHEDULE", icon: <FaFileAlt className={styles.navIcon} /> }]
+      : []),
+
     { href: "/aisupport", label: "AI SUPPORT", icon: <FaRobot className={styles.navIcon} /> },
   ];
 
-  // ===== SERVER SEARCH =====
+
   const fetchSearch = async (q: string) => {
     const trimmed = q.trim();
 

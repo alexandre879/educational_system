@@ -107,14 +107,7 @@ export default function Subjects() {
                     <div className={styles.metaItem}>
                       <span className={styles.metaLabel}>Grade</span>
                       <span className={styles.metaValue}>
-                        {s.grade__name}
-                      </span>
-                    </div>
-
-                    <div className={styles.metaItem}>
-                      <span className={styles.metaLabel}>Category</span>
-                      <span className={styles.metaValueLine}>
-                        {s.grade__category__name}
+                        {s.grade__name}{s.grade__category__name}
                       </span>
                     </div>
                   </div>

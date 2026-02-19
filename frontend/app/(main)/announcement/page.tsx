@@ -26,13 +26,10 @@ export default function AnnouncementPage() {
   const [announcementForm] = Form.useForm();
   const [commentForm] = Form.useForm();
 
-  // ✅ Pagination (static 10/page, no size changer)
   const PAGE_SIZE = 10;
   const [page, setPage] = useState(1);
 
-  // ✅ NO <div ref /> NEEDED (doesn't add a flex child)
   const scrollToTop = () => {
-    // Layout scroll container (your layout SCSS uses overflow-y: auto here)
     const scroller = document.querySelector(".childrenPassingContainer") as HTMLElement | null;
 
     if (scroller) {
@@ -40,7 +37,6 @@ export default function AnnouncementPage() {
       return;
     }
 
-    // fallback
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
@@ -69,7 +65,6 @@ export default function AnnouncementPage() {
 
       setComments((prev) => [...prev, res.data]);
 
-      // ✅ keep your existing counter update
       setAnnouncements((prev) =>
         prev.map((item) => (item.id === announcementId ? { ...item, len_comments: item.len_comments + 1 } : item))
       );
@@ -121,7 +116,6 @@ export default function AnnouncementPage() {
       setAnnouncements(fetchedAnnouncements);
       setSubjects(fetchedSubjects);
 
-      // ✅ reset page so pagination never disappears after filtering
       setPage(1);
       scrollToTop();
     } catch (error) {
@@ -135,10 +129,10 @@ export default function AnnouncementPage() {
 
       setAnnouncements((prev) => [...prev, res.data]);
 
-      // ✅ bring user to first page so they see their new post
       setPage(1);
       scrollToTop();
-    } catch (error) {
+    } 
+    catch (error) {
       console.error("Error creating announcement:", error);
     }
   };
@@ -169,21 +163,17 @@ export default function AnnouncementPage() {
 
   useEffect(() => {
     fetchAnnouncements(selectedSubjectId);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedSubjectId]);
 
-  // ✅ Keep your sort (newest first)
   const sortedAnnouncements = useMemo(() => {
     return announcements.slice().sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
   }, [announcements]);
 
-  // ✅ keep page valid
   useEffect(() => {
     const maxPage = Math.max(1, Math.ceil(sortedAnnouncements.length / PAGE_SIZE));
     if (page > maxPage) setPage(1);
   }, [sortedAnnouncements.length, page]);
 
-  // ✅ Paged items
   const pagedAnnouncements = useMemo(() => {
     const start = (page - 1) * PAGE_SIZE;
     return sortedAnnouncements.slice(start, start + PAGE_SIZE);
@@ -245,7 +235,6 @@ export default function AnnouncementPage() {
         onOk={handleOk}
         onCancel={handleCancel}
         okText="Submit"
-        className={styles.glassModal}
       >
         <Form form={announcementForm} layout="vertical">
           <Form.Item label="Title" name="title" rules={[{ required: true, message: "Please enter a title!" }]}>
@@ -330,11 +319,10 @@ export default function AnnouncementPage() {
       </div>
 
       <Modal
-        title={`${announcementModalCaption ?? ""} - Comments`}
+        title={`${announcementModalCaption ?? ""}`}
         open={isSectionModalOpen}
         onCancel={handleSectionModalCancel}
         footer={null}
-        className={styles.glassModal}
       >
         <List
           size="small"
@@ -350,11 +338,11 @@ export default function AnnouncementPage() {
                   </div>
                   <span className={styles.commentsDateTimeStyle}>{new Date(item.created_at).toLocaleString()}</span>
                 </div>
-                <span>{(item as any).comment ?? (item as any).content ?? ""}</span>
+                <span className={styles.commentStyle}>{(item as any).comment ?? (item as any).content ?? ""}</span>
               </div>
             </List.Item>
           )}
-          locale={{ emptyText: <span style={{ color: "rgba(240,240,240,0.65)", fontWeight: 700 }}>No comments yet</span> }}
+          locale={{ emptyText: <span style={{ color: "rgb(77, 77, 77)", fontWeight: 700 }}>No comments yet</span> }}
         />
 
         <Form form={commentForm} layout="inline" onFinish={onCommentSend} style={{ width: "100%" }}>
