@@ -107,7 +107,7 @@ export default function ExercisePage() {
       {loading ? (
         <div className={styles.empty}>Loading exercises...</div>
       ) : !items.length ? (
-        <div className={styles.empty}>No exercises for today 🎉</div>
+        <div className={styles.empty}>No exercises for today</div>
       ) : (
         <div className={styles.list}>
           {items.map((ex) => (

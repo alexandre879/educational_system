@@ -17,45 +17,38 @@ import os
 
 
 
-load_dotenv()
 
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+load_dotenv(BASE_DIR / ".env", override=True)
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-@luerf(9o&hwa(=i__j0g@4o3kzphea@-(f_3^u*7b-^+l4yg#'
+SECRET_KEY = "Iikobichoo1998"
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
 CORS_ALLOW_ALL_ORIGINS = True
 
-# net_it = os.getenv("NET_IT")
-# if net_it == "production":
-#     DEBUG = False
-#     print("Production mode")
-# else:
-#     DEBUG = True
-#     print("Development mode")
-    
-    
-netip = os.getenv("NET_IP")
+
+NET_IP = os.getenv("NET_IP")
+
 
 ALLOWED_HOSTS = [
-    netip if netip else "",
+    NET_IP if NET_IP else "",
     "localhost",
 ]
 
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
-    f"http://{netip}:3000" if netip else None,
+    f"http://{NET_IP}:3000" if NET_IP else None,
        
 ]
 
@@ -198,4 +191,3 @@ DEFAULT_FILE_STORAGE = os.getenv("DEFAULT_FILE_STORAGE")
 AWS_QUERYSTRING_AUTH = False
 
 MEDIA_URL = f'https://{AWS_STORAGE_BUCKET_NAME}.s3.{AWS_S3_REGION_NAME}.amazonaws.com/'
-

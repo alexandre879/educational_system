@@ -9,10 +9,9 @@ import { WEEKDAYS } from "./utils";
 import { ApiResponse, Lesson, Student } from "./interface";
 import { BookOpen } from "lucide-react";
 import { FaCalendarAlt } from "react-icons/fa";
+import { AxiosError } from "axios";
 
 const { Text } = Typography;
-
-
 
 function sortByTime(a: Lesson, b: Lesson) {
   if (a.start_time !== b.start_time) return a.start_time.localeCompare(b.start_time);
@@ -21,7 +20,8 @@ function sortByTime(a: Lesson, b: Lesson) {
 
 export default function WeeklySchedule({ gradeId }: { gradeId?: number }) {
   const [loading, setLoading] = useState(true);
-  // const [weekday, setWeekday] = useState<number>(1);
+  const [isForbidden, setIsForbidden] = useState(false);
+
   const [weekday, setWeekday] = useState<number>(() => {
     const jsDay = new Date().getDay();
     return jsDay === 0 ? 7 : jsDay;
@@ -34,6 +34,7 @@ export default function WeeklySchedule({ gradeId }: { gradeId?: number }) {
   const fetchData = async (w: number) => {
     try {
       setLoading(true);
+      setIsForbidden(false);
 
       const params: Record<string, any> = { weekday: w };
       if (gradeId) params.grade_id = gradeId;
@@ -44,11 +45,19 @@ export default function WeeklySchedule({ gradeId }: { gradeId?: number }) {
       setLessons((res.data?.lessons ?? []).slice().sort(sortByTime));
       setStudents(res.data?.students ?? []);
     }
-    catch (e) {
+    catch (error) {
+      const err = error as AxiosError;
+
+      if (err.response?.status === 403) {
+        setIsForbidden(true);
+        message.warning("This page is accessible only for students.");
+      } else {
+        message.error("Failed to load schedule/users");
+      }
+
       setLessons([]);
       setStudents([]);
       setGradeLabel(null);
-      message.error("Failed to load schedule/users");
     }
     finally {
       setLoading(false);
@@ -59,17 +68,34 @@ export default function WeeklySchedule({ gradeId }: { gradeId?: number }) {
     fetchData(weekday);
   }, [weekday, gradeId]);
 
-  const dayLabel = useMemo(() => WEEKDAYS.find((d) => d.key === weekday)?.label ?? "", [weekday]);
+  const dayLabel = useMemo(
+    () => WEEKDAYS.find((d) => d.key === weekday)?.label ?? "",
+    [weekday]
+  );
+
+  if (isForbidden) {
+    return (
+      <div className={styles.page}>
+        <Empty
+          description={
+            <span style={{ color: "rgb(210, 99, 99)", fontWeight: 900, fontSize: 19 }}>
+              Access denied. Only students can view this page.
+            </span>
+          }
+        />
+      </div>
+    );
+  }
 
   return (
     <div className={styles.page}>
       <div className={styles.header}>
         <div className={styles.titleRow}>
-          <div className={styles.WrapperOfMainCaptionAndIcon} >
+          <div className={styles.WrapperOfMainCaptionAndIcon}>
             <span className={styles.headerIcon}>
               <FaCalendarAlt className={styles.navIcon} />
             </span>
-            <h1 className={styles.pageMainCaptionStyle} >Schedule</h1>
+            <h1 className={styles.pageMainCaptionStyle}>Schedule</h1>
           </div>
           <div>
             <Text className={styles.subtitle}>
@@ -85,83 +111,92 @@ export default function WeeklySchedule({ gradeId }: { gradeId?: number }) {
         items={WEEKDAYS.map((d) => ({
           key: String(d.key),
           label: d.label,
-          children: (
-            loading ? (
-              <div className={styles.loading}><Spin size="large" /></div>
-            ) : (
-              <div className={styles.split}>
-                <Card className={styles.dayCard} bordered={false}>
-                  <div className={styles.dayHeader}>
-                    <Text className={styles.dayTitle}><BookOpen color="#1677ff" size={22} />{d.label} lessons</Text>
-                    <Text className={styles.dayCount}>{lessons.length ? `${lessons.length} lessons` : ""}</Text>
-                  </div>
-                  {!lessons.length ? (
-                    <Empty description={<span className={styles.noLeassongsCaptionStyle}>No lessons</span>} />
-                  ) : (
-                    <div className={styles.dayList}>
-                      {lessons.map((it) => (
-                        <div className={styles.lesson} key={it.id}>
-                          <div className={styles.timeBlock}>
-                            <div className={styles.time}>{it.start_time}–{it.end_time}</div>
-                            {it.room ? <Tag className={styles.roomTag}>{it.room}</Tag> : null}
-                          </div>
+          children: loading ? (
+            <div className={styles.loading}>
+              <Spin size="large" />
+            </div>
+          ) : (
+            <div className={styles.split}>
+              <Card className={styles.dayCard} bordered={false}>
+                <div className={styles.dayHeader}>
+                  <Text className={styles.dayTitle}>
+                    <BookOpen color="#1677ff" size={22} />
+                    {d.label} lessons
+                  </Text>
+                  <Text className={styles.dayCount}>
+                    {lessons.length ? `${lessons.length} lessons` : ""}
+                  </Text>
+                </div>
 
-                          <div className={styles.info}>
-                            <div className={styles.subject}>{it.subject.name}</div>
-                            <div className={styles.meta}>
-                              <Text className={styles.teacher}>
-                                {it.teacher?.name ?? "Teacher not set"}
-                              </Text>
-                            </div>
+                {!lessons.length ? (
+                  <Empty description={<span className={styles.noLeassongsCaptionStyle}>No lessons</span>} />
+                ) : (
+                  <div className={styles.dayList}>
+                    {lessons.map((it) => (
+                      <div className={styles.lesson} key={it.id}>
+                        <div className={styles.timeBlock}>
+                          <div className={styles.time}>
+                            {it.start_time}–{it.end_time}
+                          </div>
+                          {it.room ? <Tag className={styles.roomTag}>{it.room}</Tag> : null}
+                        </div>
+
+                        <div className={styles.info}>
+                          <div className={styles.subject}>{it.subject.name}</div>
+                          <div className={styles.meta}>
+                            <Text className={styles.teacher}>
+                              {it.teacher?.name ?? "Teacher not set"}
+                            </Text>
                           </div>
                         </div>
-                      ))}
-                    </div>
-                  )}
-                </Card>
-
-                <Card className={styles.studentsCard} bordered={false}>
-                  <div className={styles.dayHeader}>
-                    <div className={styles.studentsTitle}>
-                      <FiUsers />
-                      <Text className={styles.dayTitle}>Students</Text>
-                    </div>
-                    <Text className={styles.dayCount}>{students.length ? `${students.length}` : ""}</Text>
+                      </div>
+                    ))}
                   </div>
+                )}
+              </Card>
 
-                  {!students.length ? (
-                    <Empty description={<span style={{ color: 'grey' }} >No students</span>} />
+              <Card className={styles.studentsCard} bordered={false}>
+                <div className={styles.dayHeader}>
+                  <div className={styles.studentsTitle}>
+                    <FiUsers />
+                    <Text className={styles.dayTitle}>Students</Text>
+                  </div>
+                  <Text className={styles.dayCount}>
+                    {students.length ? `${students.length}` : ""}
+                  </Text>
+                </div>
 
-                  ) : (
-                    <List
-                      itemLayout="horizontal"
-                      dataSource={students}
-                      renderItem={(s) => (
-                        <List.Item>
-                          <List.Item.Meta
-                            avatar={
-                              <Avatar src={s.profilePic ?? undefined}>
-                                {s.first_name?.[0]}
-                              </Avatar>
-                            }
-                            title={
-                              <span style={{ color: '#ffffff', fontWeight: 600 }} >
-                                {s.first_name} {s.last_name}
-                              </span>
-                            }
-                            description={
-                              <span className={styles.studentMailCaptionStyle}>
-                                {s.email}
-                              </span>
-                            }
-                          />
-                        </List.Item>
-                      )}
-                    />
-                  )}
-                </Card>
-              </div>
-            )
+                {!students.length ? (
+                  <Empty description={<span style={{ color: "grey" }}>No students</span>} />
+                ) : (
+                  <List
+                    itemLayout="horizontal"
+                    dataSource={students}
+                    renderItem={(s) => (
+                      <List.Item>
+                        <List.Item.Meta
+                          avatar={
+                            <Avatar src={s.profilePic ?? undefined}>
+                              {s.first_name?.[0]}
+                            </Avatar>
+                          }
+                          title={
+                            <span style={{ color: "#ffffff", fontWeight: 600 }}>
+                              {s.first_name} {s.last_name}
+                            </span>
+                          }
+                          description={
+                            <span className={styles.studentMailCaptionStyle}>
+                              {s.email}
+                            </span>
+                          }
+                        />
+                      </List.Item>
+                    )}
+                  />
+                )}
+              </Card>
+            </div>
           ),
         }))}
       />

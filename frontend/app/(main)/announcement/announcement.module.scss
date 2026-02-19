@@ -15,6 +15,10 @@
   color: $text_primary;
 }
 
+.commentStyle {
+  color: black !important;
+}
+
 /* ================== TOP BAR ================== */
 
 .ButtonDropdownWrapper {
@@ -366,7 +370,7 @@
 }
 
 .commentsDateTimeStyle {
-  color: rgba(240, 240, 240, 0.55);
+  color: grey !important;
   white-space: nowrap;
   font-size: 12px;
 }

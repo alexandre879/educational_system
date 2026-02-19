@@ -27,7 +27,8 @@
     "react-chatbotify": "^2.5.0",
     "react-dom": "19.1.0",
     "react-icons": "^5.5.0",
-    "recharts": "^3.2.1"
+    "recharts": "^3.2.1",
+    "sass": "^1.97.3"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

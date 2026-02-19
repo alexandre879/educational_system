@@ -53,7 +53,7 @@ export default function Exam() {
           </span>
           <h1 className={styles.pageMainCaptionStyle} >Exams</h1>
         </div>
-        <div>
+        <div className={styles.wrapperForNonAvailableExams} >
           <div className={styles.noExamsTitle}>No exams available</div>
           <div className={styles.noExamsSub}>Check back later or ask your teacher.</div>
         </div>

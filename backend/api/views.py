@@ -1,4 +1,3 @@
-from ast import List
 from datetime import date
 from openai import OpenAI
 import os
@@ -60,16 +59,17 @@ from django.db.models.functions import Cast
 from django.utils import timezone
 from openai import OpenAI
 from rest_framework.permissions import IsAdminUser
+from pathlib import Path
 
 
 
 
+BASE_DIR = Path(__file__).resolve().parent.parent
+load_dotenv(BASE_DIR / ".env", override=True)
 
-load_dotenv()
 
 
-
-BOT_TOKEN = "8239669176:AAHCmtWOAE4t9rc4OGCLZ7cTO5yOPtrcdYc"
+BOT_TOKEN = os.getenv("BOT_TOKEN")
 OTP_TIMEOUT = os.getenv("OTP_TIMEOUT")
 OTP_RATE_LIMIT = os.getenv("OTP_RATE_LIMIT")
 
@@ -93,6 +93,8 @@ class RequestOtpView(APIView):
     
     def post(self, request: Request) -> Response:
         
+        # print(BASE_DIR)
+        
         serializer = RequestOtpSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         
@@ -112,9 +114,9 @@ class RequestOtpView(APIView):
         
 
         print(otp)
-        bot = Bot(token=BOT_TOKEN)
+        # bot = Bot(token=BOT_TOKEN)
         
-        async_to_sync(bot.send_message)(chat_id=user.chat_id, text=f"{otp}")
+        # async_to_sync(bot.send_message)(chat_id=user.chat_id, text=f"{otp}")
         
 
         return Response({"message": "OTP sent via Telegram"}, status=status.HTTP_200_OK)
@@ -906,6 +908,9 @@ class GradeWeekdayScheduleView(APIView):
 
     def get(self, request):
         user: User = request.user
+        
+        if user.role in ["teacher", "admin"]:
+            return Response('Api is accessable only for a students', status=status.HTTP_403_FORBIDDEN)
 
         # query params
         weekday = request.query_params.get("weekday")
