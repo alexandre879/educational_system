@@ -187,7 +187,7 @@ import Cookies from "cookies-js";
 const REMEMBER_EMAIL_KEY = "rememberedEmail";
 
 const Login = () => {
-  const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL!;
+  const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "/back/api";
 
   const [step, setStep] = useState<"email" | "otp">("email");
   const [email, setEmail] = useState("");
@@ -198,7 +198,6 @@ const Login = () => {
 
   const router = useRouter();
 
-  // Load remembered email (if any)
   useEffect(() => {
     try {
       const savedEmail = window.localStorage.getItem(REMEMBER_EMAIL_KEY);
@@ -207,7 +206,7 @@ const Login = () => {
         setRememberMe(true);
       }
     } catch {
-      // ignore (storage may be blocked)
+      // 
     }
   }, []);
 
@@ -218,7 +217,6 @@ const Login = () => {
       setError(null);
       setSuccess(null);
 
-      // Persist or clear remembered email (UI-only feature, no logic change)
       try {
         if (rememberMe) {
           window.localStorage.setItem(REMEMBER_EMAIL_KEY, email.trim());
@@ -226,7 +224,7 @@ const Login = () => {
           window.localStorage.removeItem(REMEMBER_EMAIL_KEY);
         }
       } catch {
-        // ignore
+        // 
       }
 
       await axios.post(`${API_BASE_URL}/otp/request/`, {
