@@ -9,12 +9,12 @@ celery==5.6.2
 certifi==2025.8.3
 charset-normalizer==3.4.4
 click==8.3.1
-gunicorn==22.0.0
 click-didyoumean==0.3.1
 click-plugins==1.1.1.2
 click-repl==0.3.0
 decouple==0.0.7
 distro==1.9.0
+dj-database-url==3.1.2
 Django==5.2.6
 django-cors-headers==4.9.0
 django-storages==1.14.6

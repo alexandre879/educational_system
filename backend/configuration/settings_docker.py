@@ -1,4 +1,5 @@
-from .settings import *  # noqa: F403,F401
+import dj_database_url
+from .settings import * 
 import os
 
 # ----------------------------------------
@@ -65,15 +66,11 @@ DB_HOST = os.getenv("DB_HOST", "db")  # local docker default
 DB_PORT = os.getenv("DB_PORT", "5432")
 
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": DB_NAME,
-        "USER": DB_USER,
-        "PASSWORD": DB_PASSWORD,
-        "HOST": DB_HOST,
-        "PORT": DB_PORT,
-        "CONN_MAX_AGE": int(os.getenv("DB_CONN_MAX_AGE", "60")),
-    }
+    "default": dj_database_url.config(
+        default=os.getenv("DATABASE_URL"),
+        conn_max_age=600,
+        ssl_require=True,
+    )
 }
 
 # DigitalOcean managed DB usually requires SSL.
