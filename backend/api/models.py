@@ -64,7 +64,7 @@ class User(AbstractUser):
     role = models.CharField(max_length=255, choices=Role.choices, null=True, blank=True)
     grade_in = models.ForeignKey(Grade, on_delete=models.SET_NULL, related_name='users', null=True, blank=True)
     points = models.IntegerField(null=True, default=None)
-    subjects_taught = models.ManyToManyField(Subject, related_name='teachers', blank=True, null=True)
+    subjects_taught = models.ManyToManyField(Subject, related_name='teachers', blank=True)
     profilePic = models.ImageField(storage=ProfilePicStorage(), blank=True, null=True )
     
     
