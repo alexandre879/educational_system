@@ -17,6 +17,7 @@ decouple==0.0.7
 distro==1.9.0
 dj-database-url==3.1.2
 Django==5.2.6
+whitenoise
 django-cors-headers==4.9.0
 django-storages==1.14.6
 djangorestframework==3.16.1
