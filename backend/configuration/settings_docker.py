@@ -17,6 +17,7 @@ DEBUG = env_bool("DJANGO_DEBUG", "0")
 
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", SECRET_KEY)
 
+FORCE_SCRIPT_NAME = "/back"
 
 
 ALLOWED_HOSTS = env_list("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1")
