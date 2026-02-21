@@ -26,12 +26,14 @@ SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", SECRET_KEY)
 # ----------------------------------------
 # HOSTS
 # ----------------------------------------
-allowed_hosts = env_list("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1")
+ALLOWED_HOSTS = env_list("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1")
 
-if "*" in allowed_hosts:
+CSRF_TRUSTED_ORIGINS= env_list("DJANGO_CSRF_TRUSTED_ORIGINS", "localhost,127.0.0.1")
+
+if "*" in ALLOWED_HOSTS:
     ALLOWED_HOSTS = ["*"]
 else:
-    ALLOWED_HOSTS = allowed_hosts
+    ALLOWED_HOSTS = ALLOWED_HOSTS
 
 
 # ----------------------------------------
