@@ -26,6 +26,8 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   reactStrictMode: false,
 
+  basePath: "/front",
+
   images: {
     remotePatterns: [
       {
