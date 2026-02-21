@@ -117,7 +117,7 @@ SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 USE_X_FORWARDED_HOST = True
 
 # Static (admin css/js)
-STATIC_URL = "/static/"
+STATIC_URL = "/back/static/"
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
 # Whitenoise (DO NOT overwrite middleware; insert it)
