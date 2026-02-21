@@ -93,7 +93,6 @@ class RequestOtpView(APIView):
     
     def post(self, request: Request) -> Response:
         
-        # print(BASE_DIR)
         
         serializer = RequestOtpSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -111,12 +110,11 @@ class RequestOtpView(APIView):
 
         otp = f"{random.randint(1000, 9999)}"
         cache.set(f"otp_{email}", otp, timeout=300)
-        
 
         print(otp)
-        # bot = Bot(token=BOT_TOKEN)
+        bot = Bot(token=BOT_TOKEN)
         
-        # async_to_sync(bot.send_message)(chat_id=user.chat_id, text=f"{otp}")
+        async_to_sync(bot.send_message)(chat_id=user.chat_id, text=f"{otp}")
         
 
         return Response({"message": "OTP sent via Telegram"}, status=status.HTTP_200_OK)
