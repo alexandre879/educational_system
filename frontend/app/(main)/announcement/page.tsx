@@ -411,6 +411,8 @@ export default function AnnouncementPage() {
   const PAGE_SIZE = 10;
   const [page, setPage] = useState(1);
 
+  console.log("BASE API: ",process.env.NEXT_PUBLIC_API_BASE_URL)
+
   const scrollToTop = () => {
     const scroller = document.querySelector(".childrenPassingContainer") as HTMLElement | null;
 
