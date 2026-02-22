@@ -4,6 +4,7 @@ import os
 from dotenv import load_dotenv
 import random
 from tokenize import TokenError
+import requests
 from rest_framework.response import Response
 from rest_framework.request import Request
 from django.core.cache import cache
@@ -36,6 +37,7 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.shortcuts import get_object_or_404
 from .models import Exam, UserExamSession, Option, UserAnswer
 from .serializers import (
+    AISupportSerializer,
     CommentsCreateSerializer,
     LeaderBoardSerializer,
     MeSerializer,
@@ -739,70 +741,6 @@ class LeaderBoardListView(APIView):
     
     
 
-
-
-class AISupportChatView(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def post(self, request: Request) -> Response:
-        message = str(request.data.get("message", "")).strip()
-
-        if not message:
-            return Response(
-                {"error": "Message is required."},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-
-        try:
-            response = client.responses.create(
-                model="gpt-4.1-mini",
-                input=[
-                    {
-                        "role": "system",
-                        "content": [
-                            {
-                                "type": "input_text",
-                                "text": SYSTEM_PROMPT
-                            }
-                        ]
-                    },
-                    {
-                        "role": "user",
-                        "content": [
-                            {
-                                "type": "input_text",
-                                "text": message
-                            }
-                        ]
-                    }
-                ],
-            )
-
-            reply = ""
-            for item in response.output:
-                if item["type"] == "message":
-                    for content in item["content"]:
-                        if content["type"] == "output_text":
-                            reply += content["text"]
-
-            reply = reply.strip() or "Sorry, I couldn't generate a response."
-
-            return Response(
-                {"reply": reply},
-                status=status.HTTP_200_OK
-            )
-
-        except Exception as e:
-            return Response(
-                {
-                    "error": "AI service error",
-                    "details": str(e)
-                },
-                status=status.HTTP_502_BAD_GATEWAY
-            )
-            
-            
-        
         
         
         
@@ -1577,6 +1515,80 @@ class HomeDashboardView(APIView):
         data["leaderboard"] = self.build_school_leaderboard(request, user, top_n=20)
 
         return Response(data, status=status.HTTP_200_OK)
+    
+    
+    
+    
+    
+    
+    
+    
+
+class AISupportView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request: Request) -> Response:
+        serializer = AISupportSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        user_text = serializer.validated_data["message"]
+
+        key = "sk-fc8cf129413248c0bf6283a8e95a5981"
+        if not key:
+            return Response(
+                {"error": "Server misconfigured: missing DEEPSEEK_API_KEY"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+
+        model = os.getenv("DEEPSEEK_MODEL", "deepseek-chat")
+
+        try:
+            r = requests.post(
+                "https://api.deepseek.com/chat/completions",
+                headers={
+                    "Content-Type": "application/json",
+                    "Authorization": f"Bearer {key}",
+                },
+                json={
+                    "model": model,
+                    "messages": [
+                        {
+                            "role": "system",
+                            "content": (
+                                "You are an AI support agent inside an educational platform. "
+                                "Be concise, helpful, and practical. Ask one clarifying question if needed."
+                            ),
+                        },
+                        {"role": "user", "content": user_text},
+                    ],
+                    "temperature": 0.5,
+                },
+                timeout=30,
+            )
+
+            if r.status_code >= 400:
+                return Response(
+                    {"error": "deepseek_failed", "details": r.text},
+                    status=status.HTTP_502_BAD_GATEWAY,
+                )
+
+            data = r.json()
+            reply = (
+                data.get("choices", [{}])[0]
+                .get("message", {})
+                .get("content", "")
+                .strip()
+            ) or "..."
+
+            return Response({"reply": reply}, status=status.HTTP_200_OK)
+
+        except requests.Timeout:
+            return Response({"error": "deepseek_timeout"}, status=status.HTTP_504_GATEWAY_TIMEOUT)
+        except Exception as e:
+            return Response(
+                {"error": "server_error", "details": str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
     
     
     

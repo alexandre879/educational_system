@@ -3,7 +3,7 @@
 
 from django.urls import path
 from api.views import (
-    AISupportChatView,
+    AISupportView,
     GradeWeekdayScheduleView,
     HomeDashboardView,
     ListCommentsView,
@@ -92,9 +92,7 @@ urlpatterns = [
     
     path('update/profile/', UpdateProfileView.as_view(), name='update-profile'),
     
-    path('support/chat/', AISupportChatView.as_view(), name="support-chat"),
-    
-    path("aisupport/", AISupportChatView.as_view(), name="ai-support"),
+    path("aisupport/", AISupportView.as_view(), name="ai-support"),
     
     path('search/', SearchAnythingView.as_view(), name='search-anything'),
     
@@ -103,6 +101,7 @@ urlpatterns = [
     path("exercises/daily/create/", TeacherDailyExerciseCreateView.as_view(), name="teacher-daily-exercise-create"),
 
     path("exercises/daily/teacher/", TeacherDailyExercisesListView.as_view(), name="teacher-daily-exercises-list"),
+    
     
     
     
