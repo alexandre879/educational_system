@@ -1,73 +1,192 @@
+# from django.contrib import admin
+# from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
+# from .models import (
+#     DailyExercise,
+#     User, 
+#     Grade, 
+#     Subject, 
+#     Exam, 
+#     Question, 
+#     Option, 
+#     UserExamSession, 
+#     UserAnswer, 
+#     Announcement, 
+#     GradeCategory, 
+#     UserSubjectPoints, 
+#     WeeklyLesson, 
+#     LessonAttendance, 
+#     ParentStudent
+# )
+# from .forms import UserCreationForm, UserChangeForm
+
+
+# class UserAdmin(BaseUserAdmin):
+#     form = UserChangeForm
+#     add_form = UserCreationForm
+
+#     list_display = ("email", "first_name", "last_name", "role", "grade_in", "points", "is_staff", "is_active")
+#     list_filter = ("is_staff", "is_active", "role", "grade_in")
+    
+#     fieldsets = (
+#         (None, {"fields": ("email", "password")}),
+#         ("Personal info", {
+#             "fields": (
+#                 "first_name", "last_name", "role", "grade_in", "points", "subjects_taught"
+#             )
+#         }),
+#         ("Permissions", {
+#             "fields": ("is_staff", "is_active", "is_superuser", "groups", "user_permissions")
+#         }),
+#     )
+    
+#     add_fieldsets = (
+#         (None, {
+#             "classes": ("wide",),
+#             "fields": (
+#                 "email", "first_name", "last_name", "role", "grade_in", "points",
+#                 "subjects_taught", "password1", "password2", "is_staff", "is_active"
+#             ),
+#         }),
+#     )
+    
+#     search_fields = ("email", "first_name", "last_name")
+#     ordering = ("email",)
+#     filter_horizontal = ("groups", "user_permissions", "subjects_taught") 
+
+
+
+
+# admin.site.register(User, UserAdmin)
+# admin.site.register(Grade)
+# admin.site.register(Subject)
+# admin.site.register(Exam)
+# admin.site.register(Question)
+# admin.site.register(Option)
+# admin.site.register(UserExamSession)
+# admin.site.register(UserAnswer)
+# admin.site.register(Announcement)
+# admin.site.register(GradeCategory)
+# admin.site.register(UserSubjectPoints)
+# admin.site.register(WeeklyLesson)
+# admin.site.register(LessonAttendance)
+# admin.site.register(ParentStudent)
+# admin.site.register(DailyExercise)
+
+
+
+
+
+
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from .models import (
     DailyExercise,
-    User, 
-    Grade, 
-    Subject, 
-    Exam, 
-    Question, 
-    Option, 
-    UserExamSession, 
-    UserAnswer, 
-    Announcement, 
-    GradeCategory, 
-    UserSubjectPoints, 
-    WeeklyLesson, 
-    LessonAttendance, 
-    ParentStudent
+    User,
+    Grade,
+    Subject,
+    Exam,
+    Question,
+    Option,
+    UserExamSession,
+    UserAnswer,
+    Announcement,
+    GradeCategory,
+    UserSubjectPoints,
+    WeeklyLesson,
+    LessonAttendance,
+    ParentStudent,
 )
 from .forms import UserCreationForm, UserChangeForm
 
 
+# ✅ Base admin that automatically includes ID
+class WithIDAdmin(admin.ModelAdmin):
+    def get_list_display(self, request):
+        return ("id",) + tuple(super().get_list_display(request))
+
+
+# ---------------- USER ----------------
 class UserAdmin(BaseUserAdmin):
     form = UserChangeForm
     add_form = UserCreationForm
 
-    list_display = ("email", "first_name", "last_name", "role", "grade_in", "points", "is_staff", "is_active")
+    list_display = (
+        "email",
+        "first_name",
+        "last_name",
+        "role",
+        "grade_in",
+        "points",
+        "is_staff",
+        "is_active",
+    )
+
     list_filter = ("is_staff", "is_active", "role", "grade_in")
-    
+
     fieldsets = (
         (None, {"fields": ("email", "password")}),
         ("Personal info", {
             "fields": (
-                "first_name", "last_name", "role", "grade_in", "points", "subjects_taught"
+                "first_name",
+                "last_name",
+                "role",
+                "grade_in",
+                "points",
+                "subjects_taught",
             )
         }),
         ("Permissions", {
-            "fields": ("is_staff", "is_active", "is_superuser", "groups", "user_permissions")
+            "fields": (
+                "is_staff",
+                "is_active",
+                "is_superuser",
+                "groups",
+                "user_permissions",
+            )
         }),
     )
-    
+
     add_fieldsets = (
         (None, {
             "classes": ("wide",),
             "fields": (
-                "email", "first_name", "last_name", "role", "grade_in", "points",
-                "subjects_taught", "password1", "password2", "is_staff", "is_active"
+                "email",
+                "first_name",
+                "last_name",
+                "role",
+                "grade_in",
+                "points",
+                "subjects_taught",
+                "password1",
+                "password2",
+                "is_staff",
+                "is_active",
             ),
         }),
     )
-    
+
     search_fields = ("email", "first_name", "last_name")
     ordering = ("email",)
-    filter_horizontal = ("groups", "user_permissions", "subjects_taught") 
+    filter_horizontal = ("groups", "user_permissions", "subjects_taught")
+
+    # ✅ Add ID dynamically
+    def get_list_display(self, request):
+        return ("id",) + self.list_display
 
 
-
-
+# ---------------- REGISTER EVERYTHING ----------------
 admin.site.register(User, UserAdmin)
-admin.site.register(Grade)
-admin.site.register(Subject)
-admin.site.register(Exam)
-admin.site.register(Question)
-admin.site.register(Option)
-admin.site.register(UserExamSession)
-admin.site.register(UserAnswer)
-admin.site.register(Announcement)
-admin.site.register(GradeCategory)
-admin.site.register(UserSubjectPoints)
-admin.site.register(WeeklyLesson)
-admin.site.register(LessonAttendance)
-admin.site.register(ParentStudent)
-admin.site.register(DailyExercise)
+admin.site.register(Grade, WithIDAdmin)
+admin.site.register(Subject, WithIDAdmin)
+admin.site.register(Exam, WithIDAdmin)
+admin.site.register(Question, WithIDAdmin)
+admin.site.register(Option, WithIDAdmin)
+admin.site.register(UserExamSession, WithIDAdmin)
+admin.site.register(UserAnswer, WithIDAdmin)
+admin.site.register(Announcement, WithIDAdmin)
+admin.site.register(GradeCategory, WithIDAdmin)
+admin.site.register(UserSubjectPoints, WithIDAdmin)
+admin.site.register(WeeklyLesson, WithIDAdmin)
+admin.site.register(LessonAttendance, WithIDAdmin)
+admin.site.register(ParentStudent, WithIDAdmin)
+admin.site.register(DailyExercise, WithIDAdmin)

@@ -437,3 +437,7 @@ class SearchQuerySerializer(serializers.Serializer):
     q = serializers.CharField(required=True, max_length=100)
     
     
+
+
+class AISupportSerializer(serializers.Serializer):
+    message = serializers.CharField(max_length=4000, allow_blank=False, trim_whitespace=True)
