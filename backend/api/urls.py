@@ -1,6 +1,4 @@
-
-
-
+import os
 from django.urls import path
 from api.views import (
     AISupportView,
@@ -35,15 +33,9 @@ from .fast_api_util import (
     ExamCreateView,
     BulkCreateStudentsView
 )
-from pathlib import Path
-from dotenv import load_dotenv
-import os
-
-BASE_DIR = Path(__file__).resolve().parent.parent
-load_dotenv(BASE_DIR / ".env", override=True)
 
 
-STUDENTS_CREATE_URL = os.getenv("FOR_STUDENTS_API")
+STUDENTS_CREATE_URL = os.environ.get("FOR_STUDENTS_API")
 
 
 
@@ -115,7 +107,7 @@ urlpatterns = [
     
     
     ##### for testing purposes, to be removed later. also can be considered as fast API ;)
-    path(f"{STUDENTS_CREATE_URL}", BulkCreateStudentsView.as_view()),
+    path(f"{STUDENTS_CREATE_URL}", BulkCreateStudentsView.as_view(), name="bulk-create-students"),
     #####
     
 ]
