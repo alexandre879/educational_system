@@ -16,17 +16,20 @@ from .models import (
     WeeklyLesson,
     LessonAttendance,
     ParentStudent,
+    SubjectBook
 )
 from .forms import UserCreationForm, UserChangeForm
 
 
-# ✅ Base admin that automatically includes ID
+
+
 class WithIDAdmin(admin.ModelAdmin):
     def get_list_display(self, request):
         return ("id",) + tuple(super().get_list_display(request))
 
 
-# ---------------- USER ----------------
+
+
 class UserAdmin(BaseUserAdmin):
     form = UserChangeForm
     add_form = UserCreationForm
@@ -90,12 +93,13 @@ class UserAdmin(BaseUserAdmin):
     ordering = ("email",)
     filter_horizontal = ("groups", "user_permissions", "subjects_taught")
 
-    # ✅ Add ID dynamically
+
     def get_list_display(self, request):
         return ("id",) + self.list_display
 
 
-# ---------------- REGISTER EVERYTHING ----------------
+
+
 admin.site.register(User, UserAdmin)
 admin.site.register(Grade, WithIDAdmin)
 admin.site.register(Subject, WithIDAdmin)
@@ -111,3 +115,4 @@ admin.site.register(WeeklyLesson, WithIDAdmin)
 admin.site.register(LessonAttendance, WithIDAdmin)
 admin.site.register(ParentStudent, WithIDAdmin)
 admin.site.register(DailyExercise, WithIDAdmin)
+admin.site.register(SubjectBook, WithIDAdmin)

@@ -2,6 +2,7 @@ import os
 from django.urls import path
 from api.views import (
     AISupportView,
+    GetSubjectBookView,
     GradeWeekdayScheduleView,
     HomeDashboardView,
     ListCommentsView,
@@ -25,7 +26,7 @@ from api.views import (
     SearchAnythingView,
     StudentDailyExercisesView,
     TeacherDailyExerciseCreateView,
-    TeacherDailyExercisesListView,  
+    TeacherDailyExercisesListView, 
     
 )
 
@@ -93,6 +94,8 @@ urlpatterns = [
     path("exercises/daily/create/", TeacherDailyExerciseCreateView.as_view(), name="teacher-daily-exercise-create"),
 
     path("exercises/daily/teacher/", TeacherDailyExercisesListView.as_view(), name="teacher-daily-exercises-list"),
+    
+    path("subjects/books/", GetSubjectBookView.as_view(), name="list-specific-subjects-book"),
     
     
     

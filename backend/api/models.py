@@ -1,7 +1,7 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from api.managers import UserManager
-from .storage import ProfilePicStorage
+from .storage import BookStorage, ProfilePicStorage
 from PIL import Image
 from io import BytesIO
 from django.core.files.base import ContentFile
@@ -454,3 +454,17 @@ class DailyExercise(models.Model):
 
     def __str__(self):
         return f"{self.date} | {self.grade} | {self.subject.name if self.subject else 'General'} | {self.title}"
+    
+    
+    
+    
+    
+    
+    
+class SubjectBook(models.Model):
+    subject = models.ForeignKey(Subject, on_delete=models.CASCADE, related_name="subject_books", null=True, blank=True)
+    pdf_file = models.FileField(storage=BookStorage(), upload_to="", blank=True, null=True)
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return f"{self.subject.grade.name} - {self.subject.name if self.subject else 'No Subject'}"
