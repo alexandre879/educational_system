@@ -22,6 +22,7 @@ from .models import (
     LessonAttendance,
     ParentStudent,
     Subject,
+    SubjectBook,
     User,
     Comment,
     UserSubjectPoints,
@@ -1594,3 +1595,37 @@ class AISupportView(APIView):
     
     
     
+    
+    
+class GetSubjectBookView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request: Request) -> Response:
+        grade_id = request.query_params.get("grade_id")
+        subject_id = request.query_params.get("subject_id")
+
+        if not grade_id or not subject_id:
+            return Response({"error": "grade_id and subject_id are required."}, status=400)
+
+        try:
+            grade_id = int(grade_id)
+            subject_id = int(subject_id)
+        except (TypeError, ValueError):
+            return Response({"error": "grade_id and subject_id must be integers."}, status=400)
+
+        book = get_object_or_404(
+            SubjectBook.objects.select_related("subject", "subject__grade"),
+            subject_id=subject_id,
+            subject__grade_id=grade_id,
+        )
+
+        return Response(
+            {
+                "id": book.pk,
+                "grade": {"id": book.subject.grade_id, "name": book.subject.grade.name},
+                "subject": {"id": book.subject_id, "name": book.subject.name},
+                "pdf_url": book.pdf_file.url if book.pdf_file else None,
+                "uploaded_at": book.uploaded_at.isoformat() if book.uploaded_at else None,
+            },
+            status=200,
+        )

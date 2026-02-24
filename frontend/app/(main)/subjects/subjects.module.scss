@@ -1,6 +1,99 @@
 @import "../../colors.scss";
 
 
+/* Modal container */
+.bookModal {
+  :global(.ant-modal-content) {
+    background: rgba(18, 18, 18, 0.92);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 18px;
+    overflow: hidden;
+  }
+
+  :global(.ant-modal-header) {
+    background: transparent;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  :global(.ant-modal-title) {
+    color: rgba(240, 240, 240, 0.92);
+    font-weight: 900;
+  }
+
+  :global(.ant-modal-close) {
+    color: rgba(240, 240, 240, 0.7);
+  }
+}
+
+/* Body wrapper MUST have height */
+.bookModalBody {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  /* key: give the modal body a big height */
+  height: min(78vh, 820px);
+}
+
+/* Top bar */
+.bookTopBar {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+
+.bookAction {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+
+  padding: 10px 12px;
+  border-radius: 12px;
+
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: rgba(240, 240, 240, 0.9);
+  text-decoration: none;
+
+  transition: transform 160ms ease, background 160ms ease, border-color 160ms ease;
+
+  &:hover {
+    transform: translateY(-1px);
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(22, 119, 255, 0.25);
+  }
+}
+
+.pdfFrameWrap {
+  flex: 1;
+  min-height: 0;
+  border-radius: 14px;
+  overflow: hidden;
+
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(0, 0, 0, 0.35);
+}
+
+.pdfFrame {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  display: block;
+}
+
+.bookLoading {
+  height: min(78vh, 820px);
+  display: grid;
+  place-items: center;
+  gap: 10px;
+}
+
+.bookLoadingText {
+  color: rgba(240, 240, 240, 0.7);
+  font-weight: 700;
+}
+
 
 .navIcon {
   color: #4693ff;
