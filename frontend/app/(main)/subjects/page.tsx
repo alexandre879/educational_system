@@ -166,7 +166,6 @@
 // }
 
 
-
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -175,7 +174,7 @@ import { Modal, Select, message, Spin } from "antd";
 import api from "@/interceptors";
 import { FaAtom, FaExternalLinkAlt } from "react-icons/fa";
 import { BackendSubject } from "./interface";
-import type { AxiosError } from "axios";
+import axios, { AxiosError } from "axios";
 
 type SubjectBookResponse = {
   id?: number;
@@ -185,8 +184,8 @@ type SubjectBookResponse = {
   subject?: { id: number; name: string } | null;
 };
 
-function isNonEmptyString(v: unknown): v is string {
-  return typeof v === "string" && v.trim().length > 0;
+function isNonEmptyString(value: unknown): value is string {
+  return typeof value === "string" && value.trim().length > 0;
 }
 
 export default function Subjects() {
@@ -195,22 +194,18 @@ export default function Subjects() {
   const [category, setCategory] = useState<string>("All");
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-
   const [bookLoading, setBookLoading] = useState(false);
   const [bookError, setBookError] = useState<string | null>(null);
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const [activeTitle, setActiveTitle] = useState("Book • PDF");
 
-  // ✅ prevents setState after unmount
   const mountedRef = useRef(true);
-
-  // ✅ prevents race conditions (double clicks)
   const requestIdRef = useRef(0);
 
+  // 🔹 Your existing subjects fetch (untouched)
   useEffect(() => {
     mountedRef.current = true;
 
-    // 🔹 your old fetch (untouched)
     const fetchSubjects = async () => {
       try {
         const res = await api.get<BackendSubject[]>("/my_subjects/");
@@ -232,7 +227,13 @@ export default function Subjects() {
   }, []);
 
   const categoryOptions = useMemo(() => {
-    const unique = Array.from(new Set(subjects.map((s) => s.grade__category__name).filter(Boolean)));
+    const unique = Array.from(
+      new Set(
+        subjects
+          .map((s) => s.grade__category__name)
+          .filter((v): v is string => Boolean(v))
+      )
+    );
     return ["All", ...unique];
   }, [subjects]);
 
@@ -242,38 +243,40 @@ export default function Subjects() {
   }, [subjects, category]);
 
   const handleCancel = () => {
-    // ✅ if user closes while request is ongoing, invalidate request
     requestIdRef.current += 1;
-
     setIsModalOpen(false);
     setBookLoading(false);
     setBookError(null);
     setPdfUrl(null);
   };
 
-  // ✅ ONLY this request
   const specificBookFetch = async (subjectID: number, gradeID: number) => {
-    // new request id
-    const myReqId = (requestIdRef.current += 1);
+    const myRequestId = ++requestIdRef.current;
 
-    // open modal immediately for loading UI
     setIsModalOpen(true);
     setBookLoading(true);
     setBookError(null);
     setPdfUrl(null);
 
-    const subjectTitle = subjects.find((x) => x.pk === subjectID)?.name ?? "Book";
+    const subjectTitle =
+      subjects.find((x) => x.pk === subjectID)?.name ?? "Book";
+
     setActiveTitle(`${subjectTitle} • PDF`);
 
     try {
-      const res = await api.get<SubjectBookResponse>("/subjects/books/", {
-        params: { subject_id: subjectID, grade_id: gradeID },
-      });
+      const res = await api.get<SubjectBookResponse>(
+        "/subjects/books/",
+        {
+          params: {
+            subject_id: subjectID,
+            grade_id: gradeID,
+          },
+        }
+      );
 
-      // ✅ ignore if modal closed or another request started
-      if (!mountedRef.current || requestIdRef.current !== myReqId) return;
+      if (!mountedRef.current || requestIdRef.current !== myRequestId) return;
 
-      const data = res?.data ?? {};
+      const data = res?.data;
       const url = data?.pdf_url;
 
       if (!isNonEmptyString(url)) {
@@ -282,22 +285,23 @@ export default function Subjects() {
       }
 
       setPdfUrl(url);
-    } catch (e: unknown) {
-      if (!mountedRef.current || requestIdRef.current !== myReqId) return;
+    } catch (error: unknown) {
+      if (!mountedRef.current || requestIdRef.current !== myRequestId) return;
 
-      const err = e as AxiosError<any>;
-      const status = err?.response?.status;
+      if (axios.isAxiosError(error)) {
+        const status = error.response?.status;
 
-      if (status === 404) {
-        setBookError("No PDF book found for this subject/grade.");
-        return;
+        if (status === 404) {
+          setBookError("No PDF book found for this subject/grade.");
+          return;
+        }
       }
 
-      console.error(e);
+      console.error(error);
       setBookError("Failed to load PDF. Please try again.");
       message.error("Failed to load book PDF");
     } finally {
-      if (!mountedRef.current || requestIdRef.current !== myReqId) return;
+      if (!mountedRef.current || requestIdRef.current !== myRequestId) return;
       setBookLoading(false);
     }
   };
@@ -312,7 +316,9 @@ export default function Subjects() {
             </span>
             <h1 className={styles.title}>Subjects</h1>
           </div>
-          <p className={styles.subtitle}>Browse your assigned subjects.</p>
+          <p className={styles.subtitle}>
+            Browse your assigned subjects.
+          </p>
         </div>
 
         <div className={styles.controls}>
@@ -320,14 +326,19 @@ export default function Subjects() {
             value={category}
             onChange={(v) => setCategory(v)}
             className={styles.categorySelect}
-            options={categoryOptions.map((c) => ({ value: c, label: c }))}
+            options={categoryOptions.map((c) => ({
+              value: c,
+              label: c,
+            }))}
           />
         </div>
       </div>
 
       {loading ? (
         <div className={styles.emptyState}>
-          <div className={styles.emptyTitle}>Loading subjects...</div>
+          <div className={styles.emptyTitle}>
+            Loading subjects...
+          </div>
         </div>
       ) : (
         <>
@@ -337,24 +348,33 @@ export default function Subjects() {
                 key={s.pk}
                 type="button"
                 className={styles.card}
-                onClick={() => specificBookFetch(s.pk, s.grade__pk)}
+                onClick={() =>
+                  specificBookFetch(s.pk, s.grade__pk)
+                }
               >
                 <div className={styles.cardTop}>
                   <div className={styles.cardTitle}>
                     <span className={styles.subjectIcon}>
                       <FaAtom />
                     </span>
-                    <span className={styles.subjectName} title={s.name}>
+                    <span
+                      className={styles.subjectName}
+                      title={s.name}
+                    >
                       {s.name}
                     </span>
                   </div>
 
-                  <span className={styles.categoryPill}>{s.grade__category__name}</span>
+                  <span className={styles.categoryPill}>
+                    {s.grade__category__name}
+                  </span>
                 </div>
 
                 <div className={styles.cardMeta}>
                   <div className={styles.metaItem}>
-                    <span className={styles.metaLabel}>Grade</span>
+                    <span className={styles.metaLabel}>
+                      Grade
+                    </span>
                     <span className={styles.metaValue}>
                       {s.grade__name}
                       {s.grade__category__name}
@@ -367,8 +387,12 @@ export default function Subjects() {
 
           {filtered.length === 0 && (
             <div className={styles.emptyState}>
-              <div className={styles.emptyTitle}>No results</div>
-              <div className={styles.emptyText}>Try changing the category.</div>
+              <div className={styles.emptyTitle}>
+                No results
+              </div>
+              <div className={styles.emptyText}>
+                Try changing the category.
+              </div>
             </div>
           )}
 
@@ -386,17 +410,28 @@ export default function Subjects() {
               {bookLoading ? (
                 <div className={styles.bookLoading}>
                   <Spin size="large" />
-                  <div className={styles.bookLoadingText}>Loading PDF…</div>
+                  <div className={styles.bookLoadingText}>
+                    Loading PDF…
+                  </div>
                 </div>
               ) : bookError ? (
                 <div className={styles.bookError}>
-                  <div className={styles.bookErrorTitle}>Couldn’t open the book</div>
-                  <div className={styles.bookErrorText}>{bookError}</div>
+                  <div className={styles.bookErrorTitle}>
+                    Couldn’t open the book
+                  </div>
+                  <div className={styles.bookErrorText}>
+                    {bookError}
+                  </div>
                 </div>
               ) : isNonEmptyString(pdfUrl) ? (
                 <>
                   <div className={styles.bookTopBar}>
-                    <a className={styles.bookAction} href={pdfUrl} target="_blank" rel="noopener noreferrer">
+                    <a
+                      className={styles.bookAction}
+                      href={pdfUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
                       <FaExternalLinkAlt />
                       Open in new tab
                     </a>
