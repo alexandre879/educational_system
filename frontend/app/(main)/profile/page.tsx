@@ -1,18 +1,16 @@
 "use client";
 
-import React, { useEffect, useMemo, useState, ChangeEvent } from "react";
-import { Image, message } from "antd";
+import React, { useCallback, useEffect, useMemo, useState, ChangeEvent } from "react";
+import { message } from "antd";
 import styles from "./profile.module.scss";
 import api from "@/interceptors";
-import { UserMeData } from "./interface";
+import { FormState, UserMeData } from "./interface";
 import { AxiosError } from "axios";
 import { FaUserCircle } from "react-icons/fa";
+import { Avatar } from "@mui/material";
+import { letterToHsl } from "./utils";
 
-type FormState = {
-  first_name: string;
-  last_name: string;
-  email: string;
-};
+
 
 function getAxiosDetail(err: unknown): string | null {
   if (!err || typeof err !== "object") return null;
@@ -43,14 +41,33 @@ export default function ProfileSettings() {
   const [preview, setPreview] = useState<string | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
+  const [avatarBust, setAvatarBust] = useState<number>(() => Date.now());
+
+  const revokePreview = useCallback((url: string | null) => {
+    if (!url) return;
+    try {
+      URL.revokeObjectURL(url);
+    }
+    catch {
+      console.log('error has been caught');
+    }
+  }, []);
+
+
   const avatarSrc = useMemo(() => {
-    return preview || userMe?.profilePic || "/default-avatar.png";
-  }, [preview, userMe?.profilePic]);
+    if (preview) return preview;
+    if (userMe?.profilePic) {
+      const join = userMe.profilePic.includes("?") ? "&" : "?";
+      return `${userMe.profilePic}${join}v=${avatarBust}`;
+    }
+    return undefined;
+  }, [preview, userMe?.profilePic, avatarBust]);
 
   const load = async () => {
     try {
       const res = await api.get<UserMeData>("user/me/");
       setUserMe(res.data);
+      setAvatarBust(Date.now());
       setForm({
         first_name: res.data.first_name ?? "",
         last_name: res.data.last_name ?? "",
@@ -74,6 +91,7 @@ export default function ProfileSettings() {
       last_name: userMe.last_name ?? "",
       email: userMe.email ?? "",
     });
+    revokePreview(preview);
     setPreview(null);
     setSelectedFile(null);
   };
@@ -87,6 +105,7 @@ export default function ProfileSettings() {
       last_name: userMe.last_name ?? "",
       email: userMe.email ?? "",
     });
+    revokePreview(preview);
     setPreview(null);
     setSelectedFile(null);
   };
@@ -95,6 +114,7 @@ export default function ProfileSettings() {
     const file = e.target.files?.[0];
     if (!file) return;
 
+    revokePreview(preview);
     setSelectedFile(file);
     setPreview(URL.createObjectURL(file));
   };
@@ -121,18 +141,31 @@ export default function ProfileSettings() {
       });
 
       setUserMe(res.data);
+      setAvatarBust(Date.now());
       setIsEditing(false);
       setSelectedFile(null);
-      setPreview(null);
+
+      if (!selectedFile) {
+        revokePreview(preview);
+        setPreview(null);
+      }
 
       message.success("Profile updated");
-    } catch (err: unknown) {
+    } 
+    catch (err: unknown) {
       console.error(err);
       message.error(getAxiosDetail(err) ?? "Failed to update profile");
-    } finally {
+    } 
+    finally {
       setSaving(false);
     }
   };
+
+  useEffect(() => {
+    return () => {
+      revokePreview(preview);
+    };
+  }, [preview, revokePreview]);
 
   if (!userMe) {
     return (
@@ -147,7 +180,6 @@ export default function ProfileSettings() {
   return (
     <div className={styles.page}>
       <div className={styles.panel}>
-        {/* Header */}
         <div className={styles.panelHeader}>
           <div className={styles.headerLeft}>
             <span className={styles.iconBadge}>
@@ -177,12 +209,28 @@ export default function ProfileSettings() {
           </div>
         </div>
 
-        {/* Content */}
         <div className={styles.content}>
           <div className={styles.leftCol}>
             <div className={styles.avatarCard}>
               <div className={styles.avatarRing}>
-                <Image src={avatarSrc} alt="Profile" width={110} height={110} preview={false} />
+                {(() => {
+                  const av = letterToHsl(userMe.first_name);
+                  return (
+                    <Avatar
+                      src={avatarSrc}
+                      className={styles.avatar}
+                      sx={{
+                        width: 110,
+                        height: 110,
+                        bgcolor: avatarSrc ? undefined : av.bg,
+                        color: avatarSrc ? undefined : av.fg,
+                        fontWeight: 900,
+                      }}
+                    >
+                      {!avatarSrc ? av.letter : null}
+                    </Avatar>
+                  );
+                })()}
               </div>
 
               <div className={styles.avatarMeta}>

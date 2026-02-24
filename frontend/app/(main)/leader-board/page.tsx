@@ -9,6 +9,7 @@ import type { MenuProps } from "antd";
 import { LeaderboardEntry, Subject } from "./interface";
 import { FaTrophy } from "react-icons/fa";
 
+
 export default function LeaderBoard() {
   const [dropDownData, setDropdownData] = useState<Subject[]>([]);
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
@@ -133,13 +134,6 @@ export default function LeaderBoard() {
 
                   <td>
                     <div className={styles.pointWrapper}>
-                      <Image
-                        className={styles.pointIcon}
-                        src="/point.svg"
-                        width={25}
-                        height={25}
-                        alt="Point-icon"
-                      />
                       <span className={styles.pointsText}>{user.points}</span>
                     </div>
                   </td>

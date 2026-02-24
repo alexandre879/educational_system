@@ -1,5 +1,5 @@
-@import "../../colors.scss";
 
+@import "../../colors.scss";
 
 .page {
   width: 100%;
@@ -32,7 +32,6 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-
 
 .navIcon {
   color: #4693ff;
@@ -75,7 +74,6 @@
   letter-spacing: 0.25px;
 }
 
-
 .header,
 .card,
 .listItem,
@@ -115,7 +113,6 @@
 .cardClickable {
   cursor: pointer;
 }
-
 
 .profile {
   display: flex;
@@ -159,7 +156,6 @@
   color: rgba(240, 240, 240, 0.45) !important;
 }
 
-
 .grid3 {
   display: grid;
   gap: 14px;
@@ -171,7 +167,6 @@
   gap: 14px;
   grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
 }
-
 
 .cardLabel {
   color: rgba(240, 240, 240, 0.55);
@@ -195,12 +190,16 @@
   color: $text_primary;
 }
 
+.leaderboardListScroll {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
 
 .chartBox {
   width: 100%;
   min-height: 180px;
 }
-
 
 .gaugeCenter {
   position: absolute;
@@ -236,7 +235,6 @@
   flex-wrap: wrap;
 }
 
-
 .list {
   display: flex;
   flex-direction: column;
@@ -267,7 +265,6 @@
   min-width: 0;
   max-width: 420px;
 }
-
 
 .table {
   display: flex;
@@ -306,7 +303,6 @@
   font-weight: 900;
 }
 
-
 .leaderboardHeader {
   display: flex;
   align-items: baseline;
@@ -330,6 +326,36 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
+
+  max-height: 320px;
+
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  padding-right: 6px;
+
+  scrollbar-gutter: stable;
+  scroll-behavior: smooth;
+
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.18) transparent;
+
+  &::-webkit-scrollbar {
+    width: 10px;
+  }
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.14);
+    border-radius: 999px;
+    border: 2px solid rgba(0, 0, 0, 0);
+    background-clip: padding-box;
+  }
+  &::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.22);
+    background-clip: padding-box;
+  }
 }
 
 .leaderboardItem {
@@ -420,7 +446,6 @@
   font-size: 0.9rem;
 }
 
-
 .activeExamsUl {
   list-style: none;
   padding-left: 0;
@@ -460,7 +485,6 @@
   }
 }
 
-
 @media (max-width: 900px) {
   .grid3 {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -477,6 +501,10 @@
 
   .title {
     font-size: 1.35rem;
+  }
+
+  .leaderboardList {
+    max-height: 360px;
   }
 }
 
@@ -530,5 +558,9 @@
 
   .chartBox {
     min-height: 200px;
+  }
+
+  .leaderboardList {
+    max-height: 300px;
   }
 }

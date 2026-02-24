@@ -1,7 +1,5 @@
 @import "../colors.scss";
 
-/* ================== SEARCH ================== */
-
 .searchBarComponent {
   margin-bottom: 17px;
 }
@@ -13,7 +11,6 @@
     height: 50px;
     font-size: 14px;
 
-    /* glass input */
     background: rgba(20, 20, 20, 0.65);
     color: $text_primary;
     border: 1px solid rgba(255, 255, 255, 0.08);
@@ -61,7 +58,6 @@
     transform: translateY(0px);
   }
 
-  /* ===== Tablet ===== */
   @media (max-width: 1024px) {
     width: 260px;
 
@@ -72,7 +68,6 @@
     }
   }
 
-  /* ===== Mobile ===== */
   @media (max-width: 768px) {
     width: 230px;
 
@@ -83,7 +78,6 @@
     }
   }
 
-  /* ===== Small phones ===== */
   @media (max-width: 480px) {
     width: 200px;
 
@@ -94,8 +88,6 @@
     }
   }
 }
-
-/* ================== SEARCH DROPDOWN ================== */
 
 .searchDropdown {
   background: rgba(31, 31, 31, 0.82) !important;
@@ -134,20 +126,25 @@
   }
 }
 
-/* ================== LAYOUT ================== */
 
 .layoutMainContainer {
   display: flex;
   width: 100%;
+  max-width: 100%;
+
+  height: 100vh;
   height: 100dvh;
+
+  overflow: hidden;
 
   background:
     radial-gradient(1200px 600px at 20% 10%, rgba(22, 119, 255, 0.14), transparent 60%),
     radial-gradient(900px 500px at 80% 20%, rgba(250, 173, 20, 0.08), transparent 55%),
     $dark_background;
-}
 
-/* ================== NAV ================== */
+  background-repeat: no-repeat;
+  background-size: cover;
+}
 
 .navBar {
   display: flex;
@@ -155,7 +152,6 @@
   gap: 8px;
   width: 210px;
 
-  /* glass sidebar */
   background: rgba(31, 31, 31, 0.78);
   border-right: 1px solid rgba(255, 255, 255, 0.06);
 
@@ -163,7 +159,11 @@
   z-index: 1000;
   position: relative;
   left: 0;
-  height: 100dvh;
+
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+
   transition: left 0.3s ease;
 
   backdrop-filter: blur(12px);
@@ -181,7 +181,6 @@
   color: rgba(240, 240, 240, 0.92);
 }
 
-/* logo */
 .mainLogoContainer {
   height: 10dvh;
   display: flex;
@@ -199,7 +198,6 @@
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
 
-/* menu item */
 .pageRedirectionWrapper {
   display: flex;
   align-items: center;
@@ -244,7 +242,6 @@
   letter-spacing: 0.25px;
 }
 
-/* ===== ACTIVE MENU ===== */
 .activeLink {
   .pageRedirectionWrapper {
     background: rgba(22, 119, 255, 0.14);
@@ -256,15 +253,14 @@
   }
 }
 
-/* ================== HEADER + CONTENT ================== */
-
 .headerAndMainWrapper {
   flex: 1;
   display: flex;
   flex-direction: column;
+  min-width: 0;
+  min-height: 0;
 }
 
-/* glass header */
 .headerSection {
   display: flex;
   align-items: center;
@@ -312,7 +308,6 @@
   gap: 18px;
 }
 
-/* profile pill */
 .userAndDropOutLineWrapper {
   display: flex;
   align-items: center;
@@ -348,8 +343,6 @@
 }
 
 .profilePictureWrapper {
-  width: 40px;
-  height: 40px;
   border-radius: 50%;
   overflow: hidden;
 
@@ -357,11 +350,14 @@
   box-shadow: 0 10px 26px rgba(0, 0, 0, 0.35);
 }
 
-/* content */
 .childrenPassingContainer {
   flex: 1;
+  min-height: 0;
+  min-width: 0;
+
   color: $text_primary;
   overflow-y: auto;
+  overflow-x: hidden;
   padding: 24px;
 
   background:
@@ -369,7 +365,6 @@
     $dark_background;
 }
 
-/* overlay on mobile */
 .overlay {
   display: none;
   position: fixed;
@@ -379,8 +374,6 @@
   backdrop-filter: blur(2px);
   -webkit-backdrop-filter: blur(2px);
 }
-
-/* ================== RESPONSIVE ================== */
 
 @media (max-width: 1024px) {
   .myProfileOuterWrapper {
@@ -434,143 +427,5 @@
 
   .headerSection {
     justify-content: end;
-  }
-}
-
-
-
-@import "../colors.scss";
-
-/* ================== GLOBAL FULL BACKGROUND ================== */
-
-.layoutMainContainer {
-  display: flex;
-  width: 100%;
-  min-height: 100vh;
-  position: relative;
-
-  /* 🔥 FULL PAGE GRADIENT */
-  background:
-    radial-gradient(1400px 700px at 20% 0%, rgba(22, 119, 255, 0.14), transparent 60%),
-    radial-gradient(1100px 600px at 80% 10%, rgba(250, 173, 20, 0.08), transparent 60%),
-    radial-gradient(1000px 700px at 50% 100%, rgba(22, 119, 255, 0.08), transparent 65%),
-    $dark_background;
-
-  background-repeat: no-repeat;
-  background-attachment: fixed;
-}
-
-/* ================== NAV ================== */
-
-.navBar {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  width: 210px;
-
-  background: rgba(31, 31, 31, 0.78);
-  border-right: 1px solid rgba(255, 255, 255, 0.06);
-
-  padding: 16px 10px;
-  z-index: 1000;
-  position: relative;
-  height: 100dvh;
-
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-
-  box-shadow: 10px 0 40px rgba(0, 0, 0, 0.35);
-}
-
-.navBarOpen {
-  left: 0;
-}
-
-/* ================== HEADER ================== */
-
-.headerAndMainWrapper {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-}
-
-.headerSection {
-  display: flex;
-  align-items: center;
-  width: 100%;
-  height: 10dvh;
-  padding: 0 20px;
-
-  background: rgba(31, 31, 31, 0.72);
-  color: $text_primary;
-
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
-}
-
-/* ================== CONTENT ================== */
-
-.childrenPassingContainer {
-  flex: 1;
-  overflow-y: auto;
-  padding: 24px;
-  color: $text_primary;
-
-  /* 🔥 IMPORTANT — DO NOT BLOCK GRADIENT */
-  background: transparent;
-}
-
-/* ================== PROFILE PILL ================== */
-
-.userAndDropOutLineWrapper {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-
-  background: rgba(20, 20, 20, 0.55);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-
-  padding: 8px 10px;
-  border-radius: 16px;
-
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-
-  box-shadow: 0 12px 34px rgba(0, 0, 0, 0.25);
-}
-
-/* ================== OVERLAY ================== */
-
-.overlay {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background-color: rgba(0, 0, 0, 0.45);
-  z-index: 1000;
-  backdrop-filter: blur(2px);
-  -webkit-backdrop-filter: blur(2px);
-}
-
-/* ================== RESPONSIVE ================== */
-
-@media (max-width: 1024px) {
-  .navBar {
-    position: fixed;
-    top: 0;
-    left: -250px;
-    height: 100dvh;
-    z-index: 1500;
-  }
-
-  .navBarOpen {
-    left: 0;
-  }
-
-  .overlay {
-    display: block;
   }
 }

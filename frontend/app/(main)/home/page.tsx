@@ -98,9 +98,7 @@ export default function Home() {
     return `${g.name}${cat}`;
   }, [data]);
 
-  const sessions = useMemo(() => {
-    return data?.sessions ?? [];
-  }, [data]);
+  const sessions = useMemo(() => data?.sessions ?? [], [data]);
 
   const activeSessions = useMemo(() => {
     const now = new Date();
@@ -142,7 +140,6 @@ export default function Home() {
     const prev7 = finishedSorted.slice(7, 14);
 
     const lastAvg = last7.length === 0 ? 0 : last7.reduce((sum, s) => sum + (s.score_so_far ?? 0), 0) / last7.length;
-
     const prevAvg = prev7.length === 0 ? 0 : prev7.reduce((sum, s) => sum + (s.score_so_far ?? 0), 0) / prev7.length;
 
     const delta = last7.length === 0 || prev7.length === 0 ? 0 : Math.round(lastAvg - prevAvg);
@@ -288,8 +285,8 @@ export default function Home() {
         {
           label: "Avg Score",
           data: avgScoreBySubjectData.map((d) => d.avgScore),
-          backgroundColor: "rgba(250,173,20,0.65)",
-          borderColor: "rgba(250,173,20,0.95)",
+          backgroundColor: "rgba(243, 0, 194, 0.41)",
+          borderColor: "rgba(243, 0, 194, 0.72)",
           borderWidth: 1,
           borderRadius: 10,
         },
@@ -406,16 +403,126 @@ export default function Home() {
         </div>
       </div>
 
+      <div className={styles.grid2}>
+        <div className={styles.card}>
+          <Typography className={styles.sectionTitle}>Points by Subject</Typography>
+          <div className={styles.chartBox} style={{ height: chartHeight }}>
+            {chartData.length === 0 ? (
+              <Typography className={styles.muted}>No points yet.</Typography>
+            ) : (
+              <Bar data={pointsBySubjectBar} options={barOptions} />
+            )}
+          </div>
+        </div>
+        <div className={styles.card}>
+          <Typography className={styles.sectionTitle}>Progress Overview</Typography>
+
+          <div className={styles.chartBox} style={{ height: chartHeight, position: "relative" }}>
+            <Doughnut data={completionDoughnut} options={doughnutOptions} />
+            <div className={styles.gaugeCenter}>
+              <Typography className={styles.gaugePct}>{progressMetrics.completionPct}%</Typography>
+              <Typography className={styles.gaugeSub}>Completion • Avg score {progressMetrics.avgScore}</Typography>
+              <Typography className={styles.gaugeDelta} style={{ color: progressMetrics.delta >= 0 ? "#22c55e" : "#ef4444" }}>
+                {progressMetrics.delta >= 0 ? `▲ +${progressMetrics.delta} vs previous` : `▼ ${progressMetrics.delta} vs previous`}
+              </Typography>
+            </div>
+          </div>
+
+          <div className={styles.badgeRow}>
+            <Chip size="small" style={{ color: "white" }} label={`Finished: ${progressMetrics.finished}/${progressMetrics.total}`} />
+            <Chip size="small" style={{ color: "white" }} label={`Active: ${activeSessions.length}`} />
+          </div>
+        </div>
+
+      </div>
+
+      <div className={styles.grid3}>
+
+        <div className={styles.card}>
+          <Typography className={styles.sectionTitle}>Top Exams (Attempts)</Typography>
+          <div className={styles.chartBox} style={{ height: chartHeight }}>
+            {topExamsData.length === 0 ? (
+              <Typography className={styles.muted}>No attempts yet.</Typography>
+            ) : (
+              <Bar data={topExamsBar} options={barOptions} />
+            )}
+          </div>
+        </div>
+
+        <div className={styles.card}>
+          <Typography className={styles.sectionTitle}>Weekly Activity</Typography>
+          <div className={styles.chartBox} style={{ height: chartHeight }}>
+            <Bar data={weeklyActivityBar} options={barOptions} />
+          </div>
+        </div>
+
+        <div className={styles.card}>
+          <Typography className={styles.sectionTitle}>Average Score by Subject</Typography>
+          <div className={styles.chartBox} style={{ height: chartHeight }}>
+            {avgScoreBySubjectData.length === 0 ? (
+              <Typography className={styles.muted}>No finished sessions yet.</Typography>
+            ) : (
+              <Bar data={avgScoreBySubjectBar} options={barOptions} />
+            )}
+          </div>
+        </div>
+      </div>
+
+      <div className={styles.grid2}>
+        <div className={styles.card}>
+          <Typography className={styles.sectionTitle}>Points Trend</Typography>
+          <div className={styles.chartBox} style={{ height: chartHeight }}>
+            {pointsTrendData.length === 0 ? (
+              <Typography className={styles.muted}>No trend data yet.</Typography>
+            ) : (
+              <Line data={pointsTrendLine} options={lineOptions} />
+            )}
+          </div>
+        </div>
+
+        <div className={styles.card}>
+          <Typography className={styles.sectionTitle}>Active Exam Sessions</Typography>
+
+          {activeSessions.length === 0 ? (
+            <Typography className={styles.muted}>No active exams right now.</Typography>
+          ) : (
+            <div className={styles.list}>
+              {activeSessions.map((s) => (
+                <div key={s.id} className={styles.listItem}>
+                  <div className={styles.listTop}>
+                    <Typography className={styles.listTitle} title={s.exam.title} sx={{ color: "#e5e7eb" }}>
+                      {s.exam.title}
+                    </Typography>
+                    <Chip
+                      size="small"
+                      label={s.subject.name}
+                      sx={{ backgroundColor: "#0B1220", color: "#faad14", border: "1px solid #1E293B" }}
+                    />
+                  </div>
+
+                  <Typography className={styles.muted}>
+                    Ends: <span style={{ color: "orange" }}>{s.ends_at ? formatTime(s.ends_at) : "—"}</span> • Score:{" "}
+                    <span style={{ color: "#22c55e" }}>{s.score_so_far}</span>
+                  </Typography>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+
+
       {data.leaderboard && (
         <div className={styles.card}>
-          <div className={styles.leaderboardHeader}>
+          {/* ✅ Sticky header + scrollable list */}
+          <div className={styles.leaderboardHeaderSticky}>
             <Typography className={styles.sectionTitle}>School Leaderboard</Typography>
             <Typography className={styles.myRank}>
               Your rank: <span>#{data.leaderboard.me_rank}</span>
             </Typography>
           </div>
 
-          <div className={styles.leaderboardList}>
+          <div className={styles.leaderboardListScroll}>
             {data.leaderboard.items.map((p) => (
               <div key={p.id} className={`${styles.leaderboardItem} ${p.isMe ? styles.leaderboardMe : ""}`}>
                 <div className={styles.leaderboardLeft}>
@@ -439,93 +546,6 @@ export default function Home() {
           </div>
         </div>
       )}
-
-      <div className={styles.grid2}>
-        <div className={styles.card}>
-          <Typography className={styles.sectionTitle}>Points by Subject</Typography>
-          <div className={styles.chartBox} style={{ height: chartHeight }}>
-            {chartData.length === 0 ? <Typography className={styles.muted}>No points yet.</Typography> : <Bar data={pointsBySubjectBar} options={barOptions} />}
-          </div>
-        </div>
-
-        <div className={styles.card}>
-          <Typography className={styles.sectionTitle}>Active Exam Sessions</Typography>
-
-          {activeSessions.length === 0 ? (
-            <Typography className={styles.muted}>No active exams right now.</Typography>
-          ) : (
-            <div className={styles.list}>
-              {activeSessions.map((s) => (
-                <div key={s.id} className={styles.listItem}>
-                  <div className={styles.listTop}>
-                    <Typography className={styles.listTitle} title={s.exam.title} sx={{ color: "#616161" }}>
-                      {s.exam.title}
-                    </Typography>
-                    <Chip size="small" label={s.subject.name} sx={{ backgroundColor: "#0B1220", color: "#faad14", border: "1px solid #1E293B" }} />
-                  </div>
-
-                  <Typography className={styles.muted}>
-                    Ends: <span style={{ color: "orange" }}>{s.ends_at ? formatTime(s.ends_at) : "—"}</span> • Score:{" "}
-                    <span style={{ color: "green" }}>{s.score_so_far}</span>
-                  </Typography>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      </div>
-
-      <div className={styles.grid3}>
-        <div className={styles.card}>
-          <Typography className={styles.sectionTitle}>Progress Overview</Typography>
-
-          <div className={styles.chartBox} style={{ height: chartHeight, position: "relative" }}>
-            <Doughnut data={completionDoughnut} options={doughnutOptions} />
-            <div className={styles.gaugeCenter}>
-              <Typography className={styles.gaugePct}>{progressMetrics.completionPct}%</Typography>
-              <Typography className={styles.gaugeSub}>Completion • Avg score {progressMetrics.avgScore}</Typography>
-              <Typography className={styles.gaugeDelta} style={{ color: progressMetrics.delta >= 0 ? "#22c55e" : "#ef4444" }}>
-                {progressMetrics.delta >= 0 ? `▲ +${progressMetrics.delta} vs previous` : `▼ ${progressMetrics.delta} vs previous`}
-              </Typography>
-            </div>
-          </div>
-
-          <div className={styles.badgeRow}>
-            <Chip size="small" label={`Finished: ${progressMetrics.finished}/${progressMetrics.total}`} />
-            <Chip size="small" label={`Active: ${activeSessions.length}`} />
-          </div>
-        </div>
-
-        <div className={styles.card}>
-          <Typography className={styles.sectionTitle}>Weekly Activity</Typography>
-          <div className={styles.chartBox} style={{ height: chartHeight }}>
-            <Bar data={weeklyActivityBar} options={barOptions} />
-          </div>
-        </div>
-
-        <div className={styles.card}>
-          <Typography className={styles.sectionTitle}>Average Score by Subject</Typography>
-          <div className={styles.chartBox} style={{ height: chartHeight }}>
-            {avgScoreBySubjectData.length === 0 ? <Typography className={styles.muted}>No finished sessions yet.</Typography> : <Bar data={avgScoreBySubjectBar} options={barOptions} />}
-          </div>
-        </div>
-      </div>
-
-      <div className={styles.grid2}>
-        <div className={styles.card}>
-          <Typography className={styles.sectionTitle}>Points Trend</Typography>
-          <div className={styles.chartBox} style={{ height: chartHeight }}>
-            {pointsTrendData.length === 0 ? <Typography className={styles.muted}>No trend data yet.</Typography> : <Line data={pointsTrendLine} options={lineOptions} />}
-          </div>
-        </div>
-
-        <div className={styles.card}>
-          <Typography className={styles.sectionTitle}>Top Exams (Attempts)</Typography>
-          <div className={styles.chartBox} style={{ height: chartHeight }}>
-            {topExamsData.length === 0 ? <Typography className={styles.muted}>No attempts yet.</Typography> : <Bar data={topExamsBar} options={barOptions} />}
-          </div>
-        </div>
-      </div>
 
       <div className={styles.card}>
         <Typography className={styles.sectionTitle}>Recent Exam Sessions</Typography>
