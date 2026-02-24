@@ -62,7 +62,6 @@
   min-width: 0;
 }
 
-/* ================== MAIN CONTAINER ================== */
 
 .leaderboardMainContainer {
   display: flex;
@@ -72,11 +71,10 @@
   max-width: 1200px;
   margin: 0 auto;
 
-  background: transparent; /* ✅ layout handles bg */
+  background: transparent;
   color: $text_primary;
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 
-  /* ---------- controls row ---------- */
   .controlsRow {
     display: flex;
     align-items: center;
@@ -92,7 +90,6 @@
     min-width: 0;
   }
 
-  /* ---------- dropdown button (glass) ---------- */
   .subjectBtn {
     display: inline-flex !important;
     align-items: center !important;
@@ -137,7 +134,6 @@
     font-size: 12px;
   }
 
-  /* ---------- common bits ---------- */
   .image {
     border-radius: 50%;
     flex-shrink: 0;
@@ -163,7 +159,6 @@
     white-space: nowrap;
   }
 
-  /* ---------- position badges (slightly nicer) ---------- */
   .positionWrapperGold,
   .positionWrapperSilver,
   .positionWrapperBronce,
@@ -210,7 +205,6 @@
     -webkit-backdrop-filter: blur(10px);
   }
 
-  /* ---------- points pill (glass) ---------- */
   .pointWrapper {
     width: 110px;
     height: 40px;
@@ -236,7 +230,6 @@
     color: rgba(240, 240, 240, 0.92);
   }
 
-  /* ---------- table shell ---------- */
   .tableOuter {
     width: 100%;
     overflow-x: auto;
@@ -284,7 +277,7 @@
           transition: background-color 0.16s ease;
           vertical-align: middle;
 
-          background: transparent; /* ✅ glass row */
+          background: transparent;
         }
 
         &:hover td {
@@ -339,7 +332,6 @@
     background: transparent;
   }
 
-  /* ---------- mobile cards ---------- */
   .mobileList {
     display: none;
     flex-direction: column;
@@ -428,7 +420,6 @@
     box-shadow: 0 18px 60px rgba(0, 0, 0, 0.35);
   }
 
-  /* ---------- antd dropdown glass ---------- */
   .glassDropdown {
     :global(.ant-dropdown-menu) {
       background: rgba(31, 31, 31, 0.86) !important;
@@ -458,7 +449,6 @@
     }
   }
 
-  /* ---------- breakpoints ---------- */
 
   @media (max-width: 1024px) {
     .anotherPage {

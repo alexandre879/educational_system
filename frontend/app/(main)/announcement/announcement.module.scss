@@ -1,6 +1,5 @@
 @import "../../colors.scss";
 
-/* ================== PAGE WRAPPER ================== */
 
 .dropDownWrapper {
   width: 100%;
@@ -19,7 +18,6 @@
   color: black !important;
 }
 
-/* ================== TOP BAR ================== */
 
 .ButtonDropdownWrapper {
   display: flex;
@@ -73,7 +71,6 @@
   font-size: 12px;
 }
 
-/* ================== HEADER ICON + TITLE ================== */
 
 .navIcon {
   color: #4693ff;
@@ -115,8 +112,6 @@
   letter-spacing: 0.25px;
 }
 
-/* ================== EMPTY ================== */
-
 .emptyAnnouncementWrapper {
   width: 100%;
   min-height: 240px;
@@ -139,7 +134,6 @@
   color: rgba(240, 240, 240, 0.65);
 }
 
-/* ================== LIST ================== */
 
 .announcementList {
   display: flex;
@@ -150,7 +144,6 @@
   margin: 0 auto;
 }
 
-/* ================== CARD (GLASS) ================== */
 
 .announcementCard {
   padding: 18px;
@@ -180,7 +173,6 @@
   }
 }
 
-/* ================== HEADER / TITLE / DATE ================== */
 
 .announcementHeader {
   display: flex;
@@ -227,7 +219,6 @@
   white-space: nowrap;
 }
 
-/* ================== META ================== */
 
 .announcementMeta {
   display: flex;
@@ -243,7 +234,6 @@
   font-weight: 700;
 }
 
-/* ================== CONTENT ================== */
 
 .announcementContent {
   font-size: clamp(13px, 1.2vw, 14px);
@@ -253,7 +243,6 @@
   margin: 0;
 }
 
-/* ================== COMMENTS COUNTER ================== */
 
 .commentsWrapper {
   display: inline-flex;
@@ -277,8 +266,6 @@
   line-height: 1;
   font-weight: 900;
 }
-
-/* ================== PAGINATION ================== */
 
 .paginationWrapper {
   display: flex;
@@ -320,7 +307,6 @@
   }
 }
 
-/* ================== COMMENTS LIST ================== */
 
 .commentsList {
   max-height: 260px;
@@ -375,7 +361,6 @@
   font-size: 12px;
 }
 
-/* ================== GLASS MODAL (AntD) ================== */
 
 .glassModal {
   :global(.ant-modal-content) {
@@ -421,7 +406,6 @@
   }
 }
 
-/* ================== RESPONSIVE ================== */
 
 @media (max-width: 900px) {
   .ButtonDropdownWrapper {

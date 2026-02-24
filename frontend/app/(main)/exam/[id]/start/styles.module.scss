@@ -1,8 +1,5 @@
 @import "../../../../colors.scss";
 
-/* ================== PAGE WRAPPER ================== */
-
-/* ✅ Must be FULL width and transparent to show layout gradient */
 .examMainContainer {
   width: 100%;
   min-height: 80vh;
@@ -15,7 +12,6 @@
   gap: 14px;
 }
 
-/* A nice “card” feel for content */
 .examCard {
   width: 100%;
   max-width: 1200px;
@@ -35,7 +31,6 @@
   gap: 14px;
 }
 
-/* ================== HEADER ================== */
 
 .examHeader {
   display: flex;
@@ -64,7 +59,6 @@
   }
 }
 
-/* ✅ blue badge (less gold) */
 .examBadge {
   flex-shrink: 0;
   font-size: 0.78rem;
@@ -101,7 +95,6 @@
   background: rgba(255, 77, 79, 0.08);
 }
 
-/* ================== QUESTION ================== */
 
 .questionText {
   margin: 0;
@@ -116,7 +109,6 @@
   border: 1px solid rgba(255, 255, 255, 0.06);
 }
 
-/* ================== OPTIONS ================== */
 
 .optionsList {
   list-style: none;
@@ -202,7 +194,6 @@
   pointer-events: none;
 }
 
-/* ================== PROGRESS ================== */
 
 .progress {
   max-width: 200px;
@@ -228,7 +219,6 @@
   font-weight: 900;
 }
 
-/* ================== LOADER ================== */
 
 .loaderWrapper {
   display: flex;
@@ -238,7 +228,6 @@
   min-height: 60vh;
 }
 
-/* ✅ loader now blue */
 .loader {
   width: 52px;
   padding: 8px;
@@ -261,7 +250,6 @@
   }
 }
 
-/* ================== FINAL SCREEN ================== */
 
 .finalExamContainer {
   width: 100%;
@@ -292,7 +280,6 @@
   color: $text_primary;
 }
 
-/* ✅ score now blue */
 .finalScore {
   font-size: 1.25rem;
   font-weight: 900;
@@ -311,9 +298,7 @@
   max-width: 52ch;
 }
 
-/* ================== BUTTON ================== */
 
-/* ✅ blue gradient button */
 .buttonStyle {
   height: 42px;
   width: 140px;
@@ -351,7 +336,6 @@
   }
 }
 
-/* ================== RESPONSIVE ================== */
 
 @media (max-width: 1024px) {
   .examMainContainer {

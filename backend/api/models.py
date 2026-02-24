@@ -21,7 +21,6 @@ class GradeCategory(models.Model):
 
 
 
-
 class Grade(models.Model):
     name = models.CharField(max_length=50)
     category = models.ForeignKey(GradeCategory, on_delete=models.CASCADE, blank=True, null=True)

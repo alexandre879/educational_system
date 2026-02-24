@@ -9,7 +9,6 @@
   color: $text_primary;
 }
 
-/* Glass shell */
 .shell {
   width: 100%;
   min-height: min(86dvh, 860px);
@@ -31,7 +30,6 @@
   overflow: hidden;
 }
 
-/* Header */
 .header {
   display: flex;
   align-items: center;
@@ -106,7 +104,6 @@
   cursor: not-allowed;
 }
 
-/* Chat area */
 .chatArea {
   flex: 1;
   overflow: auto;
@@ -116,7 +113,6 @@
   scrollbar-gutter: stable;
 }
 
-/* Rows align like chat apps */
 .row {
   display: flex;
   margin-bottom: 12px;
@@ -159,11 +155,10 @@
   font-size: 14px;
   line-height: 1.45;
   color: rgba(240, 240, 240, 0.92);
-  white-space: pre-wrap; /* keep newlines */
+  white-space: pre-wrap;
   word-break: break-word;
 }
 
-/* Typing dots */
 .typing {
   display: inline-flex;
   gap: 6px;
@@ -198,7 +193,6 @@
   }
 }
 
-/* Footer / composer */
 .footer {
   padding: 12px 14px;
   background: rgba(20, 20, 20, 0.55);
@@ -238,7 +232,6 @@
 
   resize: none;
 
-  /* ✅ prevents iOS input zoom and keeps stable on Android */
   font-size: 16px;
   line-height: 1.35;
   outline: none;
@@ -289,7 +282,6 @@
   color: rgba(240, 240, 240, 0.45);
 }
 
-/* Responsive */
 @media (max-width: 720px) {
   .page {
     padding: 14px;

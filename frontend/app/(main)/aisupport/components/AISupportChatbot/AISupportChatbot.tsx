@@ -40,12 +40,11 @@ export default function AISupportChatbot() {
 
   const hasMessages = messages.length > 0;
 
-  // persist
   useEffect(() => {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(messages));
     } catch {
-      // ignore
+      console.log('error has been caught')
     }
   }, [messages]);
 
