@@ -115,4 +115,16 @@ admin.site.register(WeeklyLesson, WithIDAdmin)
 admin.site.register(LessonAttendance, WithIDAdmin)
 admin.site.register(ParentStudent, WithIDAdmin)
 admin.site.register(DailyExercise, WithIDAdmin)
-admin.site.register(SubjectBook, WithIDAdmin)
+
+
+
+@admin.register(SubjectBook)
+class SubjectBookAdmin(WithIDAdmin):
+    list_display = ("grade_name", "subject", "pdf_file", "uploaded_at")
+    list_select_related = ("subject", "subject__grade")
+    search_fields = ("subject__name", "subject__grade__name")
+    list_filter = ("subject__grade",)
+
+    @admin.display(description="Grade")
+    def grade_name(self, obj):
+        return obj.subject.grade.name if obj.subject and obj.subject.grade else "-"
