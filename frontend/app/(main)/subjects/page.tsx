@@ -20,9 +20,11 @@ export default function Subjects() {
       try {
         const res = await api.get<BackendSubject[]>("/my_subjects/");
         setSubjects(res.data);
-      } catch (error) {;
+      }
+      catch (error) {
         console.error("Failed to fetch subjects:", error);
-      } finally {
+      }
+      finally {
         setLoading(false);
       }
     };
@@ -31,7 +33,6 @@ export default function Subjects() {
   }, []);
 
 
-  // 🔥 UNIQUE CATEGORIES FROM BACKEND
   const categoryOptions = useMemo(() => {
     const unique = Array.from(
       new Set(subjects.map((s) => s.grade__category__name))
@@ -40,7 +41,6 @@ export default function Subjects() {
     return ["All", ...unique];
   }, [subjects]);
 
-  // 🔥 FILTER BY CATEGORY
   const filtered = useMemo(() => {
     if (category === "All") return subjects;
     return subjects.filter(

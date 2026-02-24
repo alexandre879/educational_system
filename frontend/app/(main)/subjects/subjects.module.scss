@@ -1,6 +1,5 @@
 @import "../../colors.scss";
 
-/* ================== PAGE ================== */
 
 
 .navIcon {
@@ -59,7 +58,6 @@
   font-size: 13px;
 }
 
-/* ================== CONTROLS ================== */
 
 .controls {
   display: flex;
@@ -105,7 +103,6 @@
   }
 }
 
-/* ================== GRID ================== */
 
 .grid {
   display: grid;
@@ -113,7 +110,6 @@
   gap: 14px;
 }
 
-/* ================== CARD ================== */
 
 .card {
   width: 100%;
@@ -180,7 +176,6 @@
   white-space: nowrap;
 }
 
-/* ================== PILLS ================== */
 
 .categoryPill {
   flex-shrink: 0;
@@ -200,7 +195,6 @@
   white-space: nowrap;
 }
 
-/* subtle category tint */
 .categoryPill[data-cat="STEM"] {
   border-color: rgba(22, 119, 255, 0.22);
   background: rgba(22, 119, 255, 0.08);
@@ -225,7 +219,6 @@
   color: $text_primary;
 }
 
-/* ================== META ================== */
 
 .cardMeta {
   display: grid;
@@ -261,11 +254,9 @@
 
   overflow: hidden;
   display: -webkit-box;
-  // -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
 }
 
-/* ================== EMPTY STATE ================== */
 
 .emptyState {
   margin-top: 18px;
@@ -285,7 +276,6 @@
   font-size: 13px;
 }
 
-/* ================== RESPONSIVE ================== */
 
 @media (min-width: 1400px) {
   .grid {
@@ -294,6 +284,13 @@
 }
 
 @media (max-width: 1024px) {
+
+  .mainContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
   .pageHeader {
     flex-direction: column;
     align-items: stretch;

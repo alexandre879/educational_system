@@ -46,8 +46,6 @@
   word-break: break-word;
 }
 
-/* ✅ IMPORTANT: page should NOT set background/max-width.
-   Layout gradient stays visible everywhere. */
 .page {
   max-width: 1200px;
   width: 100%;
@@ -79,7 +77,6 @@
   font-size: 0.95rem;
 }
 
-/* ✅ grid stays same */
 .examGrid {
   display: grid;
   gap: 14px;
@@ -87,14 +84,12 @@
   align-items: stretch;
 }
 
-/* Tablet */
 @media (max-width: 900px) {
   .examGrid {
     grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   }
 }
 
-/* Phone */
 @media (max-width: 600px) {
   .pageTitle {
     font-size: 1.2rem;
@@ -105,7 +100,6 @@
   }
 }
 
-/* Loader */
 .loaderWrapper {
   min-height: 60vh;
   display: grid;
@@ -118,7 +112,6 @@
   font-size: 0.95rem;
 }
 
-/* Empty */
 .noExams {
   max-width: 1200px;
   width: 100%;

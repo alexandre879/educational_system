@@ -15,7 +15,6 @@ export interface Lesson {
 };
 
 export interface TodayAttendanceResponse {
-  // role: "teacher" | "student" | "admin";
   date: string;
   weekday: number;
   lessons: Lesson[];

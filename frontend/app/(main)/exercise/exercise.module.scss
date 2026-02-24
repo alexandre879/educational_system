@@ -1,6 +1,5 @@
 @import "../../colors.scss";
 
-/* ================== HEADER ICON + TITLE (same as your other pages) ================== */
 
 .navIcon {
   color: #4693ff;
@@ -36,9 +35,6 @@
   word-break: break-word;
 }
 
-/* ================== PAGE ROOT ================== */
-/* ✅ IMPORTANT: no max-width here (MainLayout handles that) */
-
 .exerciseMainContainer {
   max-width: 1200px;
   width: 100%;
@@ -48,7 +44,6 @@
   margin: 0 auto;
 }
 
-/* ================== HEADER ROW ================== */
 
 .header {
   display: flex;
@@ -58,7 +53,6 @@
   flex-wrap: wrap;
 }
 
-/* ================== BUTTONS ================== */
 
 .createBtn {
   background: linear-gradient(135deg, $primary_blue, $primary_blue_hover);
@@ -88,7 +82,6 @@
   }
 }
 
-/* ================== CREATE CARD (glass) ================== */
 
 .createCard {
   background: rgba(31, 31, 31, 0.72);
@@ -157,7 +150,6 @@
   }
 }
 
-/* ================== LIST + CARD (glass) ================== */
 
 .list {
   display: flex;
@@ -228,7 +220,6 @@
   color: rgba(240, 240, 240, 0.55);
 }
 
-/* ================== EMPTY ================== */
 
 .empty {
   background: rgba(31, 31, 31, 0.55);
@@ -243,7 +234,6 @@
   color: rgba(240, 240, 240, 0.55);
 }
 
-/* ================== RESPONSIVE ================== */
 
 @media (max-width: 720px) {
   .headerIcon {
