@@ -9,20 +9,21 @@ import {
   FaBookOpen,
   FaSchool,
   FaBullhorn,
-  FaRobot,
+  // FaRobot,
   FaAtom,
   FaClipboardCheck,
 } from "react-icons/fa";
 import styles from "./MainLayout.module.scss";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Avatar, Dropdown, Modal, Space, Input, AutoComplete } from "antd";
+import { Dropdown, Modal, Space, Input, AutoComplete } from "antd";
 import type { DefaultOptionType } from "antd/es/select";
 import api from "@/interceptors";
 import { UserMeData } from "./profile/interface";
 import { AxiosError, AxiosResponse } from "axios";
 import Cookies from "js-cookie";
 import { dropdownItems } from "./utils";
+import { Avatar } from "@mui/material";
 import {
   ReturnedAnnouncementData,
   ReturnedExamData,
@@ -36,7 +37,7 @@ type SearchAutoOption = DefaultOptionType & {
 };
 
 function getTitleFromAnnouncement(a: ReturnedAnnouncementData): string {
-  
+
   const maybe = a as unknown as { title?: unknown; content?: unknown };
 
   if (typeof maybe.title === "string") return maybe.title;
@@ -246,11 +247,7 @@ export default function MainLayout({ children }: { children: ReactNode }) {
                     <div className={styles.outerWrapperProfile}>
                       <div className={styles.userAndDropOutLineWrapper}>
                         <div className={styles.profilePictureWrapper}>
-                          <Avatar
-                            src={userMe?.profilePic ?? undefined}
-                            className={styles.avatar}
-                            style={{ width: 40, height: 50 }}
-                          />
+                          <Avatar src={userMe?.profilePic ?? undefined} className={styles.avatar} sx={{ width: 40, height: 40 }} />
                         </div>
                       </div>
                     </div>
