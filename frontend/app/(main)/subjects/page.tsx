@@ -1,171 +1,3 @@
-// "use client";
-
-// import { useEffect, useMemo, useState } from "react";
-// import styles from "./subjects.module.scss";
-// import { Modal, Select } from "antd";
-// import api from "@/interceptors";
-// import { FaAtom, } from "react-icons/fa";
-// import { BackendSubject } from "./interface";
-// import { Flex, Spin } from 'antd';
-
-
-
-// export default function Subjects() {
-//   const [subjects, setSubjects] = useState<BackendSubject[]>([]);
-//   const [loading, setLoading] = useState(true);
-//   const [category, setCategory] = useState<string>("All");
-//   const [bookId, setBookId] = useState<number | null>(null);
-//   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-
-
-//   useEffect(() => {
-//     const fetchSubjects = async () => {
-//       try {
-//         const res = await api.get<BackendSubject[]>("/my_subjects/");
-//         setSubjects(res.data);
-//       }
-//       catch (error) {
-//         console.error("Failed to fetch subjects:", error);
-//       }
-//       finally {
-//         setLoading(false);
-//       }
-//     };
-
-//     fetchSubjects();
-//   }, []);
-
-
-//   const categoryOptions = useMemo(() => {
-//     const unique = Array.from(
-//       new Set(subjects.map((s) => s.grade__category__name))
-//     );
-
-//     return ["All", ...unique];
-//   }, [subjects]);
-
-//   const filtered = useMemo(() => {
-//     if (category === "All") return subjects;
-//     return subjects.filter(
-//       (s) => s.grade__category__name === category
-//     );
-//   }, [subjects, category]);
-
-
-//   const handleCancel = () => {
-//     setIsModalOpen(false);
-//   };
-
-//   const specificBookFetch = async (subjectID: number, gradeID: number) => {
-//     try {
-//       setIsModalOpen(true);
-//       console.log(subjectID)
-//       console.log(gradeID)
-//     }
-//     catch {
-
-//     }
-//     finally {
-
-//     }
-
-//   }
-
-//   return (
-//     <div className={styles.mainContainer}>
-//       <div className={styles.pageHeader}>
-//         <div className={styles.titleBlock}>
-//           <div className={styles.titleRow}>
-//             <span className={styles.headerIcon}>
-//               <FaAtom className={styles.navIcon} />
-//             </span>
-//             <h1 className={styles.title}>Subjects</h1>
-//           </div>
-//           <p className={styles.subtitle}>
-//             Browse your assigned subjects.
-//           </p>
-//         </div>
-
-//         <div className={styles.controls}>
-//           <Select
-//             value={category}
-//             onChange={(v) => setCategory(v)}
-//             className={styles.categorySelect}
-//             options={categoryOptions.map((c) => ({
-//               value: c,
-//               label: c,
-//             }))}
-//           />
-//         </div>
-//       </div>
-
-//       {loading ? (
-//         <div className={styles.emptyState}>
-//           <div className={styles.emptyTitle}>Loading subjects...</div>
-//         </div>
-//       ) : (
-//         <>
-//           <div className={styles.grid}>
-//             {filtered.map((s) => {
-//               const Icon = s.name;
-
-//               return (
-//                 <button key={s.pk} type="button" className={styles.card} onClick={() => specificBookFetch(s.pk, s.grade__pk)} >
-//                   <div className={styles.cardTop}>
-//                     <div className={styles.cardTitle}>
-//                       <span className={styles.subjectIcon}>
-//                         <Icon />
-//                       </span>
-//                       <span className={styles.subjectName} title={s.name}>
-//                         {s.name}
-//                       </span>
-//                     </div>
-
-//                     <span className={styles.categoryPill}>
-//                       {s.grade__category__name}
-//                     </span>
-//                   </div>
-
-//                   <div className={styles.cardMeta}>
-//                     <div className={styles.metaItem}>
-//                       <span className={styles.metaLabel}>Grade</span>
-//                       <span className={styles.metaValue}>
-//                         {s.grade__name}{s.grade__category__name}
-//                       </span>
-//                     </div>
-//                   </div>
-//                 </button>
-//               );
-//             })}
-//           </div>
-
-//           {filtered.length === 0 && (
-//             <div className={styles.emptyState}>
-//               <div className={styles.emptyTitle}>No results</div>
-//               <div className={styles.emptyText}>
-//                 Try changing the category.
-//               </div>
-//             </div>
-//           )}
-//           <>
-//             <Modal
-//               title="Basic Modal"
-//               closable={{ 'aria-label': 'Custom Close Button' }}
-//               open={isModalOpen}
-//               onCancel={handleCancel}
-//             >
-//               <p>Some contents...</p>
-//               <p>Some contents...</p>
-//               <p>Some contents...</p>
-//             </Modal>
-//           </>
-//         </>
-//       )}
-//     </div>
-//   );
-// }
-
-
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -173,16 +5,9 @@ import styles from "./subjects.module.scss";
 import { Modal, Select, message, Spin } from "antd";
 import api from "@/interceptors";
 import { FaAtom, FaExternalLinkAlt } from "react-icons/fa";
-import { BackendSubject } from "./interface";
-import axios, { AxiosError } from "axios";
-
-type SubjectBookResponse = {
-  id?: number;
-  pdf_url?: string | null;
-  uploaded_at?: string | null;
-  grade?: { id: number; name: string } | null;
-  subject?: { id: number; name: string } | null;
-};
+import { BackendSubject, SubjectBookResponse } from "./interface";
+import axios from "axios";
+import { Empty } from "antd";
 
 function isNonEmptyString(value: unknown): value is string {
   return typeof value === "string" && value.trim().length > 0;
@@ -202,7 +27,7 @@ export default function Subjects() {
   const mountedRef = useRef(true);
   const requestIdRef = useRef(0);
 
-  // 🔹 Your existing subjects fetch (untouched)
+
   useEffect(() => {
     mountedRef.current = true;
 
@@ -211,9 +36,11 @@ export default function Subjects() {
         const res = await api.get<BackendSubject[]>("/my_subjects/");
         if (!mountedRef.current) return;
         setSubjects(Array.isArray(res.data) ? res.data : []);
-      } catch (error) {
+      }
+      catch (error) {
         console.error("Failed to fetch subjects:", error);
-      } finally {
+      }
+      finally {
         if (!mountedRef.current) return;
         setLoading(false);
       }
@@ -323,6 +150,7 @@ export default function Subjects() {
 
         <div className={styles.controls}>
           <Select
+            style={{display: 'flex', alignItems: 'center'}}
             value={category}
             onChange={(v) => setCategory(v)}
             className={styles.categorySelect}
@@ -354,9 +182,9 @@ export default function Subjects() {
               >
                 <div className={styles.cardTop}>
                   <div className={styles.cardTitle}>
-                    <span className={styles.subjectIcon}>
-                      <FaAtom />
-                    </span>
+                    {/* <span className={styles.subjectIcon}> */}
+                      {/* <FaAtom /> */}
+                    {/* </span> */}
                     <span
                       className={styles.subjectName}
                       title={s.name}
@@ -416,12 +244,9 @@ export default function Subjects() {
                 </div>
               ) : bookError ? (
                 <div className={styles.bookError}>
-                  <div className={styles.bookErrorTitle}>
-                    Couldn’t open the book
-                  </div>
-                  <div className={styles.bookErrorText}>
-                    {bookError}
-                  </div>
+                  <Empty description={<span style={{ color: 'grey', fontSize: '20px' }}>
+                    Empty
+                  </span>} />
                 </div>
               ) : isNonEmptyString(pdfUrl) ? (
                 <>

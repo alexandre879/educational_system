@@ -137,9 +137,9 @@
 .emptyCard,
 .forbiddenCard {
   width: 100%;
-  min-height: 220px;
+  border: 1px solid grey;
+  border-style: dashed !important;
   padding: 18px;
-
   display: flex;
   flex-direction: column;
   justify-content: center;

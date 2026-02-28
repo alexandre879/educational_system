@@ -1,14 +1,13 @@
 "use client";
 
-import React, { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
+
 import api from "@/interceptors";
 import styles from "./home.module.scss";
 
-import { Avatar, Chip, CircularProgress, Typography } from "@mui/material";
-import useMediaQuery from "@mui/material/useMediaQuery";
-
+import { Avatar, Chip, CircularProgress, Typography, useMediaQuery } from "@mui/material";
 import { Modal } from "antd";
-import { useRouter } from "next/navigation";
 import { FaHome } from "react-icons/fa";
 
 import {
@@ -26,14 +25,20 @@ import {
 } from "chart.js";
 import { Bar, Line, Doughnut } from "react-chartjs-2";
 
-import { DashboardResponse } from "./interface";
+import { DashboardResponse, PointsTrendItem } from "./interface";
 
-ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, ArcElement, Tooltip, Legend, Filler);
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  BarElement,
+  ArcElement,
+  Tooltip,
+  Legend,
+  Filler
+);
 
-type PointsTrendItem = {
-  day: string;
-  points: number;
-};
 
 function formatTime(iso: string) {
   const d = new Date(iso);
@@ -58,12 +63,7 @@ export default function Home() {
   const [data, setData] = useState<DashboardResponse | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const [IsActiveExamModalOpen, setIsActiveExamModalOpen] = useState<boolean>(false);
-  const HandleIsActiveExamCancel = () => setIsActiveExamModalOpen(false);
-
-  const onExamActiveClick = (examId: number) => {
-    router.push(`/exam/${examId}/start`);
-  };
+  const [isActiveExamModalOpen, setIsActiveExamModalOpen] = useState(false);
 
   useEffect(() => {
     let mounted = true;
@@ -72,7 +72,7 @@ export default function Home() {
       try {
         const res = await api.get<DashboardResponse | null>("/home/");
         if (mounted) setData(res.data);
-      } catch (err: unknown) {
+      } catch (err) {
         console.error("Dashboard error:", err);
         if (mounted) setData(null);
       } finally {
@@ -102,10 +102,7 @@ export default function Home() {
 
   const activeSessions = useMemo(() => {
     const now = new Date();
-    return sessions.filter((s) => {
-      if (!s.is_active || !s.ends_at) return false;
-      return new Date(s.ends_at) > now;
-    });
+    return sessions.filter((s) => s.is_active && s.ends_at && new Date(s.ends_at) > now);
   }, [sessions]);
 
   const chartData = useMemo(() => {
@@ -114,7 +111,7 @@ export default function Home() {
   }, [data]);
 
   const pointsTrendData = useMemo<PointsTrendItem[]>(() => {
-    const maybe = (data as unknown as { pointsTrend?: PointsTrendItem[] | null })?.pointsTrend;
+    const maybe = (data as any)?.pointsTrend;
     return Array.isArray(maybe) ? maybe : [];
   }, [data]);
 
@@ -128,7 +125,9 @@ export default function Home() {
     const avgScore =
       finished === 0
         ? 0
-        : Math.round(finishedSessions.reduce((sum, s) => sum + (s.score_so_far ?? 0), 0) / finished);
+        : Math.round(
+          finishedSessions.reduce((sum, s) => sum + (s.score_so_far ?? 0), 0) / finished
+        );
 
     const finishedSorted = [...finishedSessions].sort((a, b) => {
       const ta = new Date(a.started_at ?? 0).getTime();
@@ -139,10 +138,18 @@ export default function Home() {
     const last7 = finishedSorted.slice(0, 7);
     const prev7 = finishedSorted.slice(7, 14);
 
-    const lastAvg = last7.length === 0 ? 0 : last7.reduce((sum, s) => sum + (s.score_so_far ?? 0), 0) / last7.length;
-    const prevAvg = prev7.length === 0 ? 0 : prev7.reduce((sum, s) => sum + (s.score_so_far ?? 0), 0) / prev7.length;
+    const lastAvg =
+      last7.length === 0
+        ? 0
+        : last7.reduce((sum, s) => sum + (s.score_so_far ?? 0), 0) / last7.length;
 
-    const delta = last7.length === 0 || prev7.length === 0 ? 0 : Math.round(lastAvg - prevAvg);
+    const prevAvg =
+      prev7.length === 0
+        ? 0
+        : prev7.reduce((sum, s) => sum + (s.score_so_far ?? 0), 0) / prev7.length;
+
+    const delta =
+      last7.length === 0 || prev7.length === 0 ? 0 : Math.round(lastAvg - prevAvg);
 
     return { total, finished, completionPct, avgScore, delta };
   }, [sessions]);
@@ -197,18 +204,14 @@ export default function Home() {
   const chartHeight = isPhone ? 220 : isTablet ? 260 : 300;
 
   const onActiveExamClick = () => {
-    if (activeSessions.length === 0) return;
-    setIsActiveExamModalOpen(true);
+    if (activeSessions.length) setIsActiveExamModalOpen(true);
   };
 
-  const baseOptions = useMemo<ChartOptions<"bar">>(
+  const barOptions = useMemo<ChartOptions<"bar">>(
     () => ({
       responsive: true,
       maintainAspectRatio: false,
-      plugins: {
-        legend: { display: false },
-        tooltip: { enabled: true },
-      },
+      plugins: { legend: { display: false }, tooltip: { enabled: true } },
       scales: {
         x: { ticks: { maxRotation: 0, autoSkip: true } },
         y: {},
@@ -216,8 +219,6 @@ export default function Home() {
     }),
     []
   );
-
-  const barOptions = useMemo<ChartOptions<"bar">>(() => ({ ...baseOptions }), [baseOptions]);
 
   const lineOptions = useMemo<ChartOptions<"line">>(
     () => ({
@@ -229,8 +230,8 @@ export default function Home() {
     []
   );
 
-  const pointsBySubjectBar = useMemo(() => {
-    return {
+  const pointsBySubjectBar = useMemo(
+    () => ({
       labels: chartData.map((d) => d.name),
       datasets: [
         {
@@ -242,11 +243,12 @@ export default function Home() {
           borderRadius: 10,
         },
       ],
-    };
-  }, [chartData]);
+    }),
+    [chartData]
+  );
 
-  const pointsTrendLine = useMemo(() => {
-    return {
+  const pointsTrendLine = useMemo(
+    () => ({
       labels: pointsTrendData.map((d) => d.day),
       datasets: [
         {
@@ -259,11 +261,12 @@ export default function Home() {
           borderWidth: 3,
         },
       ],
-    };
-  }, [pointsTrendData]);
+    }),
+    [pointsTrendData]
+  );
 
-  const weeklyActivityBar = useMemo(() => {
-    return {
+  const weeklyActivityBar = useMemo(
+    () => ({
       labels: weeklyActivityData.map((d) => d.day),
       datasets: [
         {
@@ -275,11 +278,12 @@ export default function Home() {
           borderRadius: 10,
         },
       ],
-    };
-  }, [weeklyActivityData]);
+    }),
+    [weeklyActivityData]
+  );
 
-  const avgScoreBySubjectBar = useMemo(() => {
-    return {
+  const avgScoreBySubjectBar = useMemo(
+    () => ({
       labels: avgScoreBySubjectData.map((d) => d.name),
       datasets: [
         {
@@ -291,11 +295,12 @@ export default function Home() {
           borderRadius: 10,
         },
       ],
-    };
-  }, [avgScoreBySubjectData]);
+    }),
+    [avgScoreBySubjectData]
+  );
 
-  const topExamsBar = useMemo(() => {
-    return {
+  const topExamsBar = useMemo(
+    () => ({
       labels: topExamsData.map((d) => d.name),
       datasets: [
         {
@@ -307,8 +312,9 @@ export default function Home() {
           borderRadius: 10,
         },
       ],
-    };
-  }, [topExamsData]);
+    }),
+    [topExamsData]
+  );
 
   const completionDoughnut = useMemo(() => {
     const done = clamp(progressMetrics.completionPct, 0, 100);
@@ -324,7 +330,7 @@ export default function Home() {
         },
       ],
     };
-  }, [progressMetrics]);
+  }, [progressMetrics.completionPct]);
 
   const doughnutOptions = useMemo(
     () => ({
@@ -334,6 +340,10 @@ export default function Home() {
     }),
     []
   );
+
+  const onExamActiveClick = (examId: number) => {
+    router.push(`/exam/${examId}/start`);
+  };
 
   if (loading) {
     return (
@@ -368,7 +378,11 @@ export default function Home() {
 
       <div className={styles.header}>
         <div className={styles.profile}>
-          <Avatar src={data.me.profilePic ?? undefined} className={styles.avatar} sx={{ width: 60, height: 60 }} />
+          <Avatar
+            src={data.me.profilePic ?? undefined}
+            className={styles.avatar}
+            sx={{ width: 60, height: 60 }}
+          />
           <div className={styles.profileText}>
             <Typography className={styles.title}>
               Welcome, <u>{fullName}</u> 👋
@@ -403,7 +417,7 @@ export default function Home() {
         </div>
       </div>
 
-      <div className={styles.grid2}>
+      <div className={styles.grid2} >
         <div className={styles.card}>
           <Typography className={styles.sectionTitle}>Points by Subject</Typography>
           <div className={styles.chartBox} style={{ height: chartHeight }}>
@@ -414,6 +428,7 @@ export default function Home() {
             )}
           </div>
         </div>
+
         <div className={styles.card}>
           <Typography className={styles.sectionTitle}>Progress Overview</Typography>
 
@@ -421,9 +436,16 @@ export default function Home() {
             <Doughnut data={completionDoughnut} options={doughnutOptions} />
             <div className={styles.gaugeCenter}>
               <Typography className={styles.gaugePct}>{progressMetrics.completionPct}%</Typography>
-              <Typography className={styles.gaugeSub}>Completion • Avg score {progressMetrics.avgScore}</Typography>
-              <Typography className={styles.gaugeDelta} style={{ color: progressMetrics.delta >= 0 ? "#22c55e" : "#ef4444" }}>
-                {progressMetrics.delta >= 0 ? `▲ +${progressMetrics.delta} vs previous` : `▼ ${progressMetrics.delta} vs previous`}
+              <Typography className={styles.gaugeSub}>
+                Completion • Avg score {progressMetrics.avgScore}
+              </Typography>
+              <Typography
+                className={styles.gaugeDelta}
+                style={{ color: progressMetrics.delta >= 0 ? "#22c55e" : "#ef4444" }}
+              >
+                {progressMetrics.delta >= 0
+                  ? `▲ +${progressMetrics.delta} vs previous`
+                  : `▼ ${progressMetrics.delta} vs previous`}
               </Typography>
             </div>
           </div>
@@ -433,11 +455,9 @@ export default function Home() {
             <Chip size="small" style={{ color: "white" }} label={`Active: ${activeSessions.length}`} />
           </div>
         </div>
-
       </div>
 
       <div className={styles.grid3}>
-
         <div className={styles.card}>
           <Typography className={styles.sectionTitle}>Top Exams (Attempts)</Typography>
           <div className={styles.chartBox} style={{ height: chartHeight }}>
@@ -468,86 +488,39 @@ export default function Home() {
         </div>
       </div>
 
-      <div className={styles.grid2}>
-        <div className={styles.card}>
-          <Typography className={styles.sectionTitle}>Points Trend</Typography>
-          <div className={styles.chartBox} style={{ height: chartHeight }}>
-            {pointsTrendData.length === 0 ? (
-              <Typography className={styles.muted}>No trend data yet.</Typography>
-            ) : (
-              <Line data={pointsTrendLine} options={lineOptions} />
-            )}
-          </div>
-        </div>
-
-        <div className={styles.card}>
+      <div className={styles.grid2} style={{display: 'flex', flexDirection: 'column'}} >
+        <div className={styles.card} style={{display: 'flex', flexDirection: 'column', gap: '10px'}} >
           <Typography className={styles.sectionTitle}>Active Exam Sessions</Typography>
 
-          {activeSessions.length === 0 ? (
-            <Typography className={styles.muted}>No active exams right now.</Typography>
-          ) : (
-            <div className={styles.list}>
-              {activeSessions.map((s) => (
-                <div key={s.id} className={styles.listItem}>
-                  <div className={styles.listTop}>
-                    <Typography className={styles.listTitle} title={s.exam.title} sx={{ color: "#e5e7eb" }}>
-                      {s.exam.title}
-                    </Typography>
-                    <Chip
-                      size="small"
-                      label={s.subject.name}
-                      sx={{ backgroundColor: "#0B1220", color: "#faad14", border: "1px solid #1E293B" }}
-                    />
-                  </div>
+          {activeSessions.length === 0 ? (<Typography className={styles.muted}>No active exams right now.</Typography>)
+            :
+            (
+              <div className={styles.list}>
+                {activeSessions.map((s) => (
+                  <div key={s.id} className={styles.listItem} style={{ boxShadow: 'none' }} >
+                    <div className={styles.listTop}>
+                      <Typography className={styles.listTitle} title={s.exam.title} sx={{ color: "#e5e7eb" }}>
+                        {s.exam.title}
+                      </Typography>
+                      <Chip
+                        size="small"
+                        label={s.subject.name}
+                        sx={{ backgroundColor: "#0B1220", color: "#faad14", border: "1px solid #1E293B" }}
+                      />
+                    </div>
 
-                  <Typography className={styles.muted}>
-                    Ends: <span style={{ color: "orange" }}>{s.ends_at ? formatTime(s.ends_at) : "—"}</span> • Score:{" "}
-                    <span style={{ color: "#22c55e" }}>{s.score_so_far}</span>
-                  </Typography>
-                </div>
-              ))}
-            </div>
-          )}
+                    <Typography className={styles.muted}>
+                      Ends: <span style={{ color: "orange" }}>{s.ends_at ? formatTime(s.ends_at) : "—"}</span> • Score:{" "}
+                      <span style={{ color: "#22c55e" }}>{s.score_so_far}</span>
+                    </Typography>
+                  </div>
+                ))}
+              </div>
+            )}
         </div>
       </div>
 
-
-      {data.leaderboard && (
-        <div className={styles.card}>
-          {/* ✅ Sticky header + scrollable list */}
-          <div className={styles.leaderboardHeaderSticky}>
-            <Typography className={styles.sectionTitle}>School Leaderboard</Typography>
-            <Typography className={styles.myRank}>
-              Your rank: <span>#{data.leaderboard.me_rank}</span>
-            </Typography>
-          </div>
-
-          <div className={styles.leaderboardListScroll}>
-            {data.leaderboard.items.map((p) => (
-              <div key={p.id} className={`${styles.leaderboardItem} ${p.isMe ? styles.leaderboardMe : ""}`}>
-                <div className={styles.leaderboardLeft}>
-                  <Typography className={styles.rank}>#{p.rank}</Typography>
-                  <div className={styles.leaderText}>
-                    <Typography className={styles.leaderName} title={p.name}>
-                      {p.name}
-                    </Typography>
-                    <Typography className={styles.leaderNameSecond} title={p.email}>
-                      ({p.email})
-                    </Typography>
-                  </div>
-                </div>
-
-                <div className={styles.leaderPoints}>
-                  <span>{p.points}</span>
-                  <span className={styles.pointsLabel}>pts</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      <div className={styles.card}>
+      <div className={styles.card} style={{ display: 'flex', flexDirection: 'column', gap: '10px' }} >
         <Typography className={styles.sectionTitle}>Recent Exam Sessions</Typography>
 
         {sessions.length === 0 ? (
@@ -571,17 +544,24 @@ export default function Home() {
         )}
       </div>
 
-      {IsActiveExamModalOpen && (
-        <Modal title="Active Exams" open={IsActiveExamModalOpen} onCancel={HandleIsActiveExamCancel} footer={null}>
-          <ul className={styles.activeExamsUl}>
-            {activeSessions.map((s) => (
-              <li className={styles.activeExamsList} key={s.id} onClick={() => onExamActiveClick(s.exam.id)}>
-                {s.exam.title}
-              </li>
-            ))}
-          </ul>
-        </Modal>
-      )}
+      <Modal
+        title="Active Exams"
+        open={isActiveExamModalOpen}
+        onCancel={() => setIsActiveExamModalOpen(false)}
+        footer={null}
+      >
+        <ul className={styles.activeExamsUl}>
+          {activeSessions.map((s) => (
+            <li
+              className={styles.activeExamsList}
+              key={s.id}
+              onClick={() => onExamActiveClick(s.exam.id)}
+            >
+              {s.exam.title}
+            </li>
+          ))}
+        </ul>
+      </Modal>
     </div>
   );
 }

@@ -13,6 +13,7 @@ import {
   FaAtom,
   FaClipboardCheck,
 } from "react-icons/fa";
+import { FaCalendarAlt } from "react-icons/fa";
 import styles from "./MainLayout.module.scss";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -114,7 +115,7 @@ export default function MainLayout({ children }: { children: ReactNode }) {
     { href: "/exam", label: "EXAMS", icon: <FaFileAlt className={styles.navIcon} /> },
 
     ...(userMe?.role !== "teacher" && userMe?.role !== "admin"
-      ? [{ href: "/schedule", label: "SCHEDULE", icon: <FaFileAlt className={styles.navIcon} /> }]
+      ? [{ href: "/schedule", label: "SCHEDULE", icon: <FaCalendarAlt className={styles.navIcon} /> }]
       : []),
 
     // { href: "/aisupport", label: "AI SUPPORT", icon: <FaRobot className={styles.navIcon} /> },

@@ -1364,56 +1364,8 @@ class TeacherDailyExercisesListView(APIView):
             
 
 class HomeDashboardView(APIView):
+    
     permission_classes = [IsAuthenticated]
-
-    def build_school_leaderboard(self, request: Request, user: User, top_n: int = 20) -> dict:
-
-        my_points = user.points or 0
-
-        qs = (
-            User.objects
-            .filter(role=User.Role.STUDENT) 
-            .select_related("grade_in__category")
-            .annotate(total_points=Coalesce("points", Value(0), output_field=IntegerField()))
-            .order_by("-total_points", "id")
-        )
-
-        top_users = list(qs[:top_n])
-
-        items = []
-        for idx, u in enumerate(top_users, start=1):
-            pic = None
-            if u.profilePic:
-                try:
-                    pic = request.build_absolute_uri(u.profilePic.url)
-                except Exception:
-                    pic = u.profilePic.url
-
-            grade_label = None
-            if u.grade_in_id:
-                cat = u.grade_in.category.name if u.grade_in.category_id else None
-                grade_label = f"{u.grade_in.name}{('-' + cat) if cat else ''}"
-
-            items.append({
-                "rank": idx,
-                "id": u.id,
-                "name": f"{u.first_name} {u.last_name}".strip() or u.email,
-                "email": u.email,
-                "points": int(getattr(u, "total_points", 0) or 0),
-                "profilePic": pic,
-                "grade": grade_label,
-                "isMe": (u.id == user.id),
-            })
-
-
-        higher_count = qs.filter(total_points__gt=my_points).count()
-        me_rank = higher_count + 1
-
-        return {
-            "scope": "school",
-            "me_rank": me_rank,
-            "items": items,
-        }
 
     def get(self, request: Request) -> Response:
         user = (
@@ -1512,8 +1464,6 @@ class HomeDashboardView(APIView):
 
         else:
             data["info"] = "Role not supported yet (parent needs relationship to student)."
-
-        data["leaderboard"] = self.build_school_leaderboard(request, user, top_n=20)
 
         return Response(data, status=status.HTTP_200_OK)
     
