@@ -23,7 +23,7 @@ import {
   Filler,
   type ChartOptions,
 } from "chart.js";
-import { Bar, Line, Doughnut } from "react-chartjs-2";
+import { Bar, Doughnut } from "react-chartjs-2";
 
 import { DashboardResponse, PointsTrendItem } from "./interface";
 
@@ -108,11 +108,6 @@ export default function Home() {
   const chartData = useMemo(() => {
     const arr = data?.subjectPoints ?? [];
     return arr.map((x) => ({ name: x.subject.name, points: x.points ?? 0 }));
-  }, [data]);
-
-  const pointsTrendData = useMemo<PointsTrendItem[]>(() => {
-    const maybe = (data as any)?.pointsTrend;
-    return Array.isArray(maybe) ? maybe : [];
   }, [data]);
 
   const progressMetrics = useMemo(() => {
@@ -220,16 +215,6 @@ export default function Home() {
     []
   );
 
-  const lineOptions = useMemo<ChartOptions<"line">>(
-    () => ({
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: { legend: { display: false }, tooltip: { enabled: true } },
-      elements: { line: { tension: 0.35 } },
-    }),
-    []
-  );
-
   const pointsBySubjectBar = useMemo(
     () => ({
       labels: chartData.map((d) => d.name),
@@ -247,23 +232,6 @@ export default function Home() {
     [chartData]
   );
 
-  const pointsTrendLine = useMemo(
-    () => ({
-      labels: pointsTrendData.map((d) => d.day),
-      datasets: [
-        {
-          label: "Points",
-          data: pointsTrendData.map((d) => d.points),
-          borderColor: "rgba(59,130,246,0.95)",
-          backgroundColor: "rgba(59,130,246,0.20)",
-          fill: true,
-          pointRadius: 0,
-          borderWidth: 3,
-        },
-      ],
-    }),
-    [pointsTrendData]
-  );
 
   const weeklyActivityBar = useMemo(
     () => ({
