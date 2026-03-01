@@ -41,7 +41,6 @@ export default function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname;
   const token = request.cookies.get("access")?.value;
 
-  // Force root to /login
   if (path === "/") {
     return NextResponse.redirect(new URL("/login", request.url));
   }
@@ -61,5 +60,7 @@ export default function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!_next|api|favicon.ico).*)"],
+  matcher: [
+    "/((?!_next|api|favicon.ico|robots.txt|sitemap.xml|.*\\.(?:png|jpg|jpeg|gif|svg|webp|ico|css|js|map|txt|xml|woff|woff2|ttf|eot)$).*)",
+  ],
 };
