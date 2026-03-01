@@ -16,15 +16,11 @@ const geistMono = Geist_Mono({
 
 
 export const metadata: Metadata = {
-  title: {
-    default: "Blueapp",
-    template: "%s | Roadbuck",
-  },
-  description: "My app description",
-
+  title: "Blueapp",
+  description: "Never leave the web",
   icons: {
     icon: "/favicon.ico",
-  }
+  },
 };
 
 
