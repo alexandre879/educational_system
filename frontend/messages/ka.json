@@ -1,0 +1,329 @@
+{
+  "Layout": {
+    "school": "ჩემი სკოლა",
+    "nav": {
+      "home": "მთავარი",
+      "announcement": "განცხადებები",
+      "leaderboard": "ლიდერბორდი",
+      "attendance": "დასწრება",
+      "subjects": "საგნები",
+      "exercises": "სავარჯიშოები",
+      "exams": "გამოცდები",
+      "schedule": "ცხრილი"
+    },
+    "search": {
+      "placeholder": "ძიება...",
+      "subject": "საგანი",
+      "exam": "გამოცდა",
+      "announcement": "განცხადება",
+      "untitled": "უსათაურო"
+    },
+    "menu": {
+      "profile": "პროფილი",
+      "logout": "გამოსვლა"
+    },
+    "logout": {
+      "title": "დარწმუნებული ხარ რომ გინდა გამოსვლა?",
+      "ok": "დადასტურება",
+      "cancel": "გაუქმება"
+    }
+  },
+
+  "Common": {
+    "language": "ენა"
+  },
+
+  "Nav": {
+    "home": "მთავარი",
+    "login": "შესვლა"
+  },
+
+  "Login": {
+    "title": "კეთილი იყოს შენი დაბრუნება",
+    "subtitle": "გააგრძელე სწავლა ავტორიზირებით",
+    "emailLabel": "ელ-ფოსტა",
+    "emailPlaceholder": "შეიყვანე ელ-ფოსტა",
+    "rememberMe": "დამიმახსოვრე",
+    "sendOtp": "OTP გაგზავნა",
+    "otpLabel": "OTP კოდი",
+    "otpPlaceholder": "შეიყვანე OTP",
+    "verifyOtp": "OTP შემოწმება",
+    "backToEmail": "ელ-ფოსტაზე დაბრუნება",
+    "otpSent": "OTP გაიგზავნა შენს სკოლის ბოტზე!",
+    "loginSuccess": "შესვლა წარმატებულია!",
+    "sendOtpFailed": "OTP ვერ გაიგზავნა. სცადე თავიდან.",
+    "invalidOtp": "არასწორი OTP. სცადე თავიდან."
+  },
+
+  "Home": {
+    "pageTitle": "მთავარი",
+    "welcome": "მოგესალმები",
+    "fallbackUser": "მომხმარებელი",
+    "role": "როლი",
+    "roleFallback": "როლი",
+    "grade": "კლასი",
+    "email": "ელ-ფოსტა",
+
+    "totalPoints": "სულ ქულები",
+    "subjects": "საგნები",
+    "activeExams": "აქტიური გამოცდები",
+
+    "pointsBySubject": "ქულები საგნების მიხედვით",
+    "progressOverview": "პროგრესის მიმოხილვა",
+    "topExamsAttempts": "ტოპ გამოცდები (ცდები)",
+    "weeklyActivity": "კვირის აქტივობა",
+    "avgScoreBySubject": "საშუალო ქულა საგნების მიხედვით",
+
+    "activeExamSessions": "აქტიური გამოცდების სესიები",
+    "recentExamSessions": "ბოლო გამოცდების სესიები",
+
+    "loading": "დეშბორდი იტვირთება…",
+    "failedTitle": "დეშბორდის ჩატვირთვა ვერ მოხერხდა",
+    "failedHint": "შეამოწმე token / API URL / კონსოლი.",
+
+    "noGrade": "კლასი არ არის",
+    "unknown": "უცნობი",
+
+    "noPointsYet": "ჯერ ქულები არ გაქვს.",
+    "noAttemptsYet": "ჯერ ცდები არ გაქვს.",
+    "noFinishedYet": "დასრულებული სესიები ჯერ არ გაქვს.",
+    "noActiveExams": "ახლა აქტიური გამოცდები არ არის.",
+    "noSessionsYet": "ჯერ სესიები არ გაქვს.",
+
+    "ends": "მთავრდება",
+    "score": "ქულა",
+    "finished": "დასრულდა",
+    "inProgress": "მიმდინარეობს",
+
+    "pointsLabel": "ქულები",
+    "sessionsLabel": "სესიები",
+    "avgScoreLabel": "საშ. ქულა",
+    "attemptsLabel": "ცდები",
+
+    "done": "დასრულებული",
+    "remaining": "დარჩენილი",
+
+    "completion": "დასრულება",
+    "avgScoreText": "საშ. ქულა {avg}",
+    "deltaUp": "▲ +{delta} წინა პერიოდთან",
+    "deltaDown": "▼ {delta} წინა პერიოდთან",
+
+    "finishedBadge": "დასრულებული: {finished}/{total}",
+    "activeBadge": "აქტიური: {active}",
+
+    "modalActiveExamsTitle": "აქტიური გამოცდები"
+  },
+
+  "Announcement": {
+    "pageTitle": "განცხადებები",
+    "addAnnouncement": "განცხადების დამატება",
+    "allSubjects": "ყველა საგანი",
+    "chooseSubject": "აირჩიე საგანი",
+
+    "createAnnouncementTitle": "განცხადების შექმნა",
+    "submit": "დადასტურება",
+
+    "formTitleLabel": "სათაური",
+    "formSubjectLabel": "საგანი",
+    "formContentLabel": "შინაარსი",
+
+    "titlePlaceholder": "შეიყვანე განცხადების სათაური",
+    "subjectPlaceholder": "აირჩიე საგანი",
+    "contentPlaceholder": "დაწერე განცხადება...",
+
+    "validationEnterTitle": "გთხოვ შეიყვანე სათაური!",
+    "validationSelectSubject": "გთხოვ აირჩიე საგანი!",
+    "validationEnterContent": "გთხოვ შეიყვანე აღწერა!",
+
+    "author": "ავტორი",
+    "subject": "საგანი",
+    "grade": "კლასი",
+
+    "empty": "ცარიელია",
+    "noCommentsYet": "კომენტარი ჯერ არ არის",
+
+    "commentPlaceholder": "დაწერე კომენტარი...",
+    "validationTypeSomething": "გთხოვ რაღაც დაწერე!",
+    "send": "გაგზავნა"
+  },
+
+  "LeaderBoard": {
+    "pageTitle": "ლიდერბორდი",
+    "chooseSubject": "აირჩიე საგანი",
+    "chooseSubjectFirst": "ჯერ აირჩიე საგანი.",
+    "noDataYet": "ლიდერბორდის მონაცემები ჯერ არ არის.",
+
+    "name": "სახელი",
+    "email": "ელ-ფოსტა",
+    "points": "ქულები",
+    "position": "პოზიცია",
+
+    "profilePictureAlt": "პროფილის სურათი",
+    "profileAlt": "პროფილი",
+    "pointIconAlt": "ქულის აიკონი"
+  },
+
+  "Subjects": {
+    "pageTitle": "საგნები",
+    "subtitle": "დაათვალიერე შენთვის მინიჭებული საგნები.",
+    "all": "ყველა",
+    "grade": "კლასი",
+
+    "loadingSubjects": "საგნები იტვირთება...",
+    "noResults": "შედეგი ვერ მოიძებნა",
+    "tryChangingCategory": "სცადე კატეგორიის შეცვლა.",
+
+    "bookFallback": "წიგნი",
+    "loadingPdf": "PDF იტვირთება…",
+    "openInNewTab": "ახალ ტაბში გახსნა",
+    "bookPdfTitle": "წიგნი PDF",
+
+    "noPdfFound": "ამ საგნის/კლასისთვის PDF წიგნი ვერ მოიძებნა.",
+    "failedToLoadPdf": "PDF ვერ ჩაიტვირთა. სცადე თავიდან.",
+    "failedToLoadBookPdfToast": "წიგნის PDF ვერ ჩაიტვირთა",
+
+    "empty": "ცარიელია"
+  },
+
+  "Exam": {
+    "pageTitle": "გამოცდები",
+    "loadingExams": "გამოცდები იტვირთება…",
+
+    "examCountSingle": "1 გამოცდა",
+    "examCountMultiple": "{count} გამოცდა",
+
+    "noExamsTitle": "გამოცდები ხელმისაწვდომი არ არის",
+    "noExamsSub": "სცადე მოგვიანებით ან ჰკითხე მასწავლებელს.",
+
+    "duration": "ხანგრძლივობა",
+    "questions": "კითხვები"
+  },
+
+  "SpecificExam": {
+    "alreadyCompleted": "ეს გამოცდა უკვე დასრულებული გაქვს",
+    "timeUpEnded": "დრო ამოიწურა. გამოცდა დასრულდა.",
+
+    "badgeExam": "გამოცდა",
+    "questionLabel": "კითხვა",
+
+    "finalTimeUpTitle": "⏰ დრო ამოიწურა!",
+    "finalCompletedTitle": "🎉 გამოცდა დასრულდა!",
+
+    "scoreLabel": "ქულა",
+    "totalQuestionsLabel": "კითხვები სულ",
+
+    "finalTimeUpMessage": "დრო ამოიწურა, მაგრამ შენი პასუხები შენახულია.",
+    "finalCompletedMessage": "კარგია — შენი შედეგები შენახულია.",
+
+    "redirect": "გადამისამართება"
+  },
+
+  "Exercise": {
+    "pageTitle": "სავარჯიშოები",
+    "addExercise": "სავარჯიშოს დამატება",
+
+    "exerciseTitlePlaceholder": "სავარჯიშოს სათაური",
+    "descriptionPlaceholder": "აღწერა (არასავალდებულო)",
+    "save": "შენახვა",
+
+    "loadingExercises": "სავარჯიშოები იტვირთება...",
+    "noExercisesToday": "დღეს სავარჯიშოები არ არის",
+
+    "gradeLabel": "კლასი",
+    "dueLabel": "ჩაბარების ვადა"
+  },
+
+  "Schedule": {
+    "pageTitle": "ცხრილი",
+    "gradeLabel": "კლასი",
+    "weekdayLabel": "კვირის დღე",
+    "lessons": "გაკვეთილები",
+    "noLessons": "გაკვეთილები არ არის",
+    "students": "მოსწავლეები",
+    "noStudents": "მოსწავლეები არ არიან",
+    "teacherNotSet": "მასწავლებელი არ არის მითითებული",
+    "onlyStudentsWarning": "ეს გვერდი ხელმისაწვდომია მხოლოდ მოსწავლეებისთვის.",
+    "failedLoad": "ცხრილის/მომხმარებლების ჩატვირთვა ვერ მოხერხდა",
+    "accessDenied": "წვდომა აკრძალულია. ამ გვერდს მხოლოდ მოსწავლეები ხედავენ.",
+    "weekdays": {
+      "mon": "ორშაბათი",
+      "tue": "სამშაბათი",
+      "wed": "ოთხშაბათი",
+      "thu": "ხუთშაბათი",
+      "fri": "პარასკევი",
+      "sat": "შაბათი",
+      "sun": "კვირა"
+    }
+  },
+
+  "Attendance": {
+    "pageTitle": "დასწრება",
+    "today": "დღეს",
+    "refresh": "განახლება",
+
+    "loading": "დასწრება იტვირთება…",
+
+    "accessDeniedTitle": "წვდომა აკრძალულია",
+    "teachersOnly": "ეს გვერდი ხელმისაწვდომია მხოლოდ მასწავლებლებისთვის.",
+
+    "noLessonsTitle": "დღეს გაკვეთილები არ არის დაგეგმილი.",
+    "noLessonsSub": "როგორც კი გაკვეთილი გამოჩნდება, აქ შეძლებ დასწრების მონიშვნას.",
+
+    "room": "აუდიტორია",
+    "students": "მოსწავლეები",
+
+    "markAllPresent": "ყველას მონიშნე დასწრებული",
+    "markAllAbsent": "ყველას მონიშნე არდასწრებული",
+
+    "present": "დასწრებულია",
+    "absent": "არდასწრებულია",
+
+    "saving": "ინახება...",
+    "saveAttendance": "დასწრების შენახვა",
+
+    "weekdays": {
+      "mon": "ორშაბათი",
+      "tue": "სამშაბათი",
+      "wed": "ოთხშაბათი",
+      "thu": "ხუთშაბათი",
+      "fri": "პარასკევი",
+      "sat": "შაბათი",
+      "sun": "კვირა"
+    }
+  },
+
+  "Profile": {
+    "title": "პროფილი",
+    "subtitle": "მართეთ თქვენი პირადი ინფორმაცია",
+    "edit": "რედაქტირება",
+    "save": "შენახვა",
+    "saving": "ინახება...",
+    "cancel": "გაუქმება",
+    "loading": "პროფილი იტვირთება…",
+    "updated": "პროფილი განახლდა",
+    "loadFailed": "პროფილის ჩატვირთვა ვერ მოხერხდა",
+    "updateFailed": "პროფილის განახლება ვერ მოხერხდა",
+    "basicInfo": "ძირითადი ინფორმაცია",
+    "firstName": "სახელი",
+    "lastName": "გვარი",
+    "email": "ელ-ფოსტა",
+    "hint": "რჩევა: თქვენი ელ-ფოსტა გამოიყენება შესვლისა და შეტყობინებებისთვის."
+  },
+
+  "AISupport": {
+    "title": "AI მხარდაჭერა",
+    "online": "ონლაინ",
+    "thinking": "ფიქრობს…",
+    "newChat": "ახალი ჩათი",
+    "clearChatTitle": "ჩატის გასუფთავება",
+    "you": "შენ",
+    "assistant": "ასისტენტი",
+    "send": "გაგზავნა",
+    "intro": "გამარჯობა 👋 მე ვარ შენი AI მხარდაჭერის ასისტენტი. მკითხე ყველაფერი პლატფორმაზე, დავალებებზე, გამოცდებზე ან ტექნიკურ პრობლემებზე.",
+    "placeholder": "დაწერე შეტყობინება… (Enter გაგზავნა, Shift+Enter ახალი ხაზისთვის)",
+    "hint": "არ გააზიარო პაროლები ან პირადი მონაცემები. ეს ჩათი შეიძლება შეინახოს დებაგინგისთვის.",
+    "errorBar": "AI სერვისმა ვერ იმუშავა. სცადე ცოტა ხანში.",
+    "errorMessage": "ბოდიში — ახლა ვერ დავუკავშირდი AI სერვისს. სცადე ცოტა ხანში.",
+    "fallbackReply": "…"
+  }
+}

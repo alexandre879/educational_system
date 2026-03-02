@@ -1,0 +1,329 @@
+{
+  "Layout": {
+    "school": "MY SCHOOL",
+    "nav": {
+      "home": "HOME",
+      "announcement": "ANNOUNCEMENT",
+      "leaderboard": "LEADER BOARD",
+      "attendance": "ATTENDANCE",
+      "subjects": "SUBJECTS",
+      "exercises": "EXERCISES",
+      "exams": "EXAMS",
+      "schedule": "SCHEDULE"
+    },
+    "search": {
+      "placeholder": "Search...",
+      "subject": "Subject",
+      "exam": "Exam",
+      "announcement": "Announcement",
+      "untitled": "Untitled"
+    },
+    "menu": {
+      "profile": "PROFILE",
+      "logout": "LOG OUT"
+    },
+    "logout": {
+      "title": "Are you sure you want to log out?",
+      "ok": "Confirm",
+      "cancel": "Cancel"
+    }
+  },
+
+  "Common": {
+    "language": "Language"
+  },
+
+  "Nav": {
+    "home": "HOME",
+    "login": "LOGIN"
+  },
+
+  "Login": {
+    "title": "Welcome Back",
+    "subtitle": "Sign in to continue your journey",
+    "emailLabel": "Email",
+    "emailPlaceholder": "Enter your email",
+    "rememberMe": "Remember me",
+    "sendOtp": "Send OTP",
+    "otpLabel": "OTP",
+    "otpPlaceholder": "Enter OTP",
+    "verifyOtp": "Verify OTP",
+    "backToEmail": "Back to email",
+    "otpSent": "OTP sent to your school bot!",
+    "loginSuccess": "Login successful!",
+    "sendOtpFailed": "Failed to send OTP. Try again.",
+    "invalidOtp": "Invalid OTP. Try again."
+  },
+
+  "Home": {
+    "pageTitle": "Home",
+    "welcome": "Welcome",
+    "fallbackUser": "User",
+    "role": "Role",
+    "roleFallback": "role",
+    "grade": "Grade",
+    "email": "Email",
+
+    "totalPoints": "Total Points",
+    "subjects": "Subjects",
+    "activeExams": "Active Exams",
+
+    "pointsBySubject": "Points by Subject",
+    "progressOverview": "Progress Overview",
+    "topExamsAttempts": "Top Exams (Attempts)",
+    "weeklyActivity": "Weekly Activity",
+    "avgScoreBySubject": "Average Score by Subject",
+
+    "activeExamSessions": "Active Exam Sessions",
+    "recentExamSessions": "Recent Exam Sessions",
+
+    "loading": "Loading dashboard…",
+    "failedTitle": "Failed to load dashboard",
+    "failedHint": "Check token / API URL / console.",
+
+    "noGrade": "No grade",
+    "unknown": "Unknown",
+
+    "noPointsYet": "No points yet.",
+    "noAttemptsYet": "No attempts yet.",
+    "noFinishedYet": "No finished sessions yet.",
+    "noActiveExams": "No active exams right now.",
+    "noSessionsYet": "No sessions yet.",
+
+    "ends": "Ends",
+    "score": "Score",
+    "finished": "Finished",
+    "inProgress": "In progress",
+
+    "pointsLabel": "Points",
+    "sessionsLabel": "Sessions",
+    "avgScoreLabel": "Avg Score",
+    "attemptsLabel": "Attempts",
+
+    "done": "Done",
+    "remaining": "Remaining",
+
+    "completion": "Completion",
+    "avgScoreText": "Avg score {avg}",
+    "deltaUp": "▲ +{delta} vs previous",
+    "deltaDown": "▼ {delta} vs previous",
+
+    "finishedBadge": "Finished: {finished}/{total}",
+    "activeBadge": "Active: {active}",
+
+    "modalActiveExamsTitle": "Active Exams"
+  },
+
+  "Announcement": {
+    "pageTitle": "Announcement",
+    "addAnnouncement": "Add Announcement",
+    "allSubjects": "All subjects",
+    "chooseSubject": "Choose a subject",
+
+    "createAnnouncementTitle": "Create Announcement",
+    "submit": "Submit",
+
+    "formTitleLabel": "Title",
+    "formSubjectLabel": "Subject",
+    "formContentLabel": "Content",
+
+    "titlePlaceholder": "Enter announcement title",
+    "subjectPlaceholder": "Select a subject",
+    "contentPlaceholder": "Write your announcement...",
+
+    "validationEnterTitle": "Please enter a title!",
+    "validationSelectSubject": "Please select a subject!",
+    "validationEnterContent": "Please enter a description!",
+
+    "author": "Author",
+    "subject": "Subject",
+    "grade": "Grade",
+
+    "empty": "Empty",
+    "noCommentsYet": "No comments yet",
+
+    "commentPlaceholder": "Type your comment...",
+    "validationTypeSomething": "Please type something!",
+    "send": "Send"
+  },
+
+  "LeaderBoard": {
+    "pageTitle": "Leader board",
+    "chooseSubject": "Choose the subject",
+    "chooseSubjectFirst": "Choose a subject first.",
+    "noDataYet": "No leaderboard data yet.",
+
+    "name": "Name",
+    "email": "Email",
+    "points": "Points",
+    "position": "Position",
+
+    "profilePictureAlt": "Profile Picture",
+    "profileAlt": "Profile",
+    "pointIconAlt": "Point icon"
+  },
+
+  "Subjects": {
+    "pageTitle": "Subjects",
+    "subtitle": "Browse your assigned subjects.",
+    "all": "All",
+    "grade": "Grade",
+
+    "loadingSubjects": "Loading subjects...",
+    "noResults": "No results",
+    "tryChangingCategory": "Try changing the category.",
+
+    "bookFallback": "Book",
+    "loadingPdf": "Loading PDF…",
+    "openInNewTab": "Open in new tab",
+    "bookPdfTitle": "Book PDF",
+
+    "noPdfFound": "No PDF book found for this subject/grade.",
+    "failedToLoadPdf": "Failed to load PDF. Please try again.",
+    "failedToLoadBookPdfToast": "Failed to load book PDF",
+
+    "empty": "Empty"
+  },
+
+  "Exam": {
+    "pageTitle": "Exams",
+    "loadingExams": "Loading exams…",
+
+    "examCountSingle": "1 exam",
+    "examCountMultiple": "{count} exams",
+
+    "noExamsTitle": "No exams available",
+    "noExamsSub": "Check back later or ask your teacher.",
+
+    "duration": "Duration",
+    "questions": "Questions"
+  },
+
+  "SpecificExam": {
+    "alreadyCompleted": "You already completed this exam",
+    "timeUpEnded": "Time is up. Exam ended.",
+
+    "badgeExam": "Exam",
+    "questionLabel": "Question",
+
+    "finalTimeUpTitle": "⏰ Time is up!",
+    "finalCompletedTitle": "🎉 Exam Completed!",
+
+    "scoreLabel": "Score",
+    "totalQuestionsLabel": "Total Questions",
+
+    "finalTimeUpMessage": "Time ran out, but your answers were submitted.",
+    "finalCompletedMessage": "Nice work — your results were saved.",
+
+    "redirect": "Redirect"
+  },
+
+  "Exercise": {
+    "pageTitle": "Exercises",
+    "addExercise": "Add Exercise",
+
+    "exerciseTitlePlaceholder": "Exercise title",
+    "descriptionPlaceholder": "Description (optional)",
+    "save": "Save",
+
+    "loadingExercises": "Loading exercises...",
+    "noExercisesToday": "No exercises for today",
+
+    "gradeLabel": "Grade",
+    "dueLabel": "Due"
+  },
+
+  "Schedule": {
+    "pageTitle": "Schedule",
+    "gradeLabel": "Grade",
+    "weekdayLabel": "Weekday",
+    "lessons": "lessons",
+    "noLessons": "No lessons",
+    "students": "Students",
+    "noStudents": "No students",
+    "teacherNotSet": "Teacher not set",
+    "onlyStudentsWarning": "This page is accessible only for students.",
+    "failedLoad": "Failed to load schedule/users",
+    "accessDenied": "Access denied. Only students can view this page.",
+    "weekdays": {
+      "mon": "Monday",
+      "tue": "Tuesday",
+      "wed": "Wednesday",
+      "thu": "Thursday",
+      "fri": "Friday",
+      "sat": "Saturday",
+      "sun": "Sunday"
+    }
+  },
+
+  "Attendance": {
+    "pageTitle": "Attendance",
+    "today": "Today",
+    "refresh": "Refresh",
+
+    "loading": "Loading attendance…",
+
+    "accessDeniedTitle": "Access denied",
+    "teachersOnly": "This page is available for teachers only.",
+
+    "noLessonsTitle": "No lessons scheduled for today.",
+    "noLessonsSub": "When a lesson appears, you’ll be able to mark attendance here.",
+
+    "room": "Room",
+    "students": "students",
+
+    "markAllPresent": "Mark all Present",
+    "markAllAbsent": "Mark all Absent",
+
+    "present": "Present",
+    "absent": "Absent",
+
+    "saving": "Saving...",
+    "saveAttendance": "Save attendance",
+
+    "weekdays": {
+      "mon": "Monday",
+      "tue": "Tuesday",
+      "wed": "Wednesday",
+      "thu": "Thursday",
+      "fri": "Friday",
+      "sat": "Saturday",
+      "sun": "Sunday"
+    }
+  },
+
+  "Profile": {
+    "title": "Profile",
+    "subtitle": "Manage your personal information",
+    "edit": "Edit",
+    "save": "Save",
+    "saving": "Saving...",
+    "cancel": "Cancel",
+    "loading": "Loading profile…",
+    "updated": "Profile updated",
+    "loadFailed": "Failed to load profile",
+    "updateFailed": "Failed to update profile",
+    "basicInfo": "Basic info",
+    "firstName": "First name",
+    "lastName": "Last name",
+    "email": "Email",
+    "hint": "Tip: Your email is used for login and notifications."
+  },
+
+  "AISupport": {
+    "title": "AI Support",
+    "online": "Online",
+    "thinking": "Thinking…",
+    "newChat": "New chat",
+    "clearChatTitle": "Clear chat",
+    "you": "You",
+    "assistant": "Assistant",
+    "send": "Send",
+    "intro": "Hi 👋 I’m your AI support agent. Ask me anything about the platform, homework, exams, or technical issues.",
+    "placeholder": "Type a message… (Enter to send, Shift+Enter for new line)",
+    "hint": "Don’t share passwords or private data. This chat may be saved for debugging.",
+    "errorBar": "AI service failed. Try again in a moment.",
+    "errorMessage": "Sorry — I couldn’t reach the AI service right now. Please try again in a moment.",
+    "fallbackReply": "…"
+  }
+}
