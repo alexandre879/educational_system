@@ -1,0 +1,244 @@
+@import "../../../colors.scss";
+
+
+.navIcon {
+  color: #4693ff;
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+}
+
+.WrapperOfMainCaptionAndIcon {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.headerIcon {
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  background: rgba(22, 119, 255, 0.14);
+  border: 1px solid rgba(22, 119, 255, 0.18);
+  color: #4693ff;
+  flex-shrink: 0;
+}
+
+.pageMainCaptionStyle {
+  font-size: clamp(18px, 2.1vw, 22px);
+  font-weight: 900;
+  line-height: 1.15;
+  margin: 0;
+  word-break: break-word;
+}
+
+.exerciseMainContainer {
+  max-width: 1200px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  margin: 0 auto;
+}
+
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+
+.createBtn {
+  background: linear-gradient(135deg, $primary_blue, $primary_blue_hover);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  padding: 10px 14px;
+  border-radius: 12px;
+  cursor: pointer;
+  color: white;
+  font-weight: 800;
+  letter-spacing: 0.2px;
+
+  box-shadow:
+    0 12px 30px rgba(22, 119, 255, 0.18),
+    0 2px 0 rgba(255, 255, 255, 0.06) inset;
+
+  transition: transform 160ms ease, filter 160ms ease, box-shadow 160ms ease;
+
+  &:hover {
+    filter: brightness(1.03);
+    box-shadow:
+      0 16px 40px rgba(22, 119, 255, 0.22),
+      0 2px 0 rgba(255, 255, 255, 0.08) inset;
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+
+.createCard {
+  background: rgba(31, 31, 31, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 16px;
+
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+
+  box-shadow: 0 18px 60px rgba(0, 0, 0, 0.35);
+
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.input,
+.textarea {
+  width: 100%;
+  background: rgba(20, 20, 20, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 12px;
+  color: $text_primary;
+
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+
+  transition: border-color 160ms ease, box-shadow 160ms ease, background 160ms ease;
+
+  &:focus {
+    outline: none;
+    border-color: rgba(22, 119, 255, 0.55);
+    box-shadow: 0 0 0 3px rgba(22, 119, 255, 0.14);
+    background: rgba(20, 20, 20, 0.65);
+  }
+}
+
+.textarea {
+  resize: vertical;
+  min-height: 90px;
+}
+
+.saveBtn {
+  align-self: flex-end;
+  background: linear-gradient(135deg, $primary_blue, $primary_blue_hover);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  padding: 10px 16px;
+  border-radius: 12px;
+  cursor: pointer;
+  color: white;
+  font-weight: 800;
+
+  box-shadow:
+    0 12px 30px rgba(22, 119, 255, 0.18),
+    0 2px 0 rgba(255, 255, 255, 0.06) inset;
+
+  transition: filter 160ms ease, box-shadow 160ms ease;
+
+  &:hover {
+    filter: brightness(1.03);
+    box-shadow:
+      0 16px 40px rgba(22, 119, 255, 0.22),
+      0 2px 0 rgba(255, 255, 255, 0.08) inset;
+  }
+}
+
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.card {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 16px;
+
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+
+  box-shadow: 0 18px 60px rgba(0, 0, 0, 0.28);
+
+  transition: border-color 160ms ease, background 160ms ease, transform 160ms ease;
+
+  &:hover {
+    background: rgba(38, 38, 38, 0.75);
+    border-color: rgba(22, 119, 255, 0.18);
+    transform: translateY(-2px);
+  }
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.cardTitle {
+  font-weight: 800;
+  color: $text_primary;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.subjectBadge {
+  background: rgba(22, 119, 255, 0.14);
+  border: 1px solid rgba(22, 119, 255, 0.22);
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 13px;
+  color: rgba(240, 240, 240, 0.92);
+  flex-shrink: 0;
+}
+
+.description {
+  margin-top: 10px;
+  color: rgba(240, 240, 240, 0.82);
+  line-height: 1.55;
+  word-break: break-word;
+}
+
+.meta {
+  margin-top: 12px;
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  font-size: 13px;
+  color: rgba(240, 240, 240, 0.55);
+}
+
+
+.empty {
+  background: rgba(31, 31, 31, 0.55);
+  border: 1px solid rgba(128, 128, 128, 0.3);
+  border-radius: 16px;
+  padding: 18px;
+  border-style: dashed;
+
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+
+  color: rgba(240, 240, 240, 0.55);
+}
+
+
+@media (max-width: 720px) {
+  .headerIcon {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+  }
+}
