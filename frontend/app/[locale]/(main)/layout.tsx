@@ -22,7 +22,6 @@
 // import { UserMeData } from "./profile/interface";
 // import { AxiosError, AxiosResponse } from "axios";
 // import Cookies from "js-cookie";
-// import { dropdownItems } from "./utils";
 // import { Avatar } from "@mui/material";
 // import {
 //   ReturnedAnnouncementData,
@@ -30,13 +29,20 @@
 //   ReturnedSubjectData,
 //   SearchKind,
 // } from "./interface";
+// import { useTranslations } from "next-intl";
+// import { getDropdownItems } from "./utils";
+// import LanguageSwitcher from "../components/LanguageSwitcher/LanguageSwitcher";
+// import locale from "antd/es/date-picker/locale/en_US";
 
 // type SearchAutoOption = DefaultOptionType & {
 //   kind: SearchKind;
 //   id: number;
 // };
 
-// function getTitleFromAnnouncement(a: ReturnedAnnouncementData): string {
+// function getTitleFromAnnouncement(a: ReturnedAnnouncementData, pathname: string): string {
+
+
+//   const locale = pathname.split("/")[1];
 
 //   const maybe = a as unknown as { title?: unknown; content?: unknown };
 
@@ -47,6 +53,8 @@
 // }
 
 // export default function MainLayout({ children }: { children: ReactNode }) {
+//   const t = useTranslations("Layout");
+
 //   const [sidebarOpen, setSidebarOpen] = useState(false);
 //   const [userMe, setUserMe] = useState<UserMeData | null>(null);
 //   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -74,9 +82,11 @@
 //   const handleLogout = async () => {
 //     try {
 //       await api.post("/user/logout/", { refresh: Cookies.get("refresh") });
-//     } catch (err: unknown) {
-//       console.log("Logout failed:", err);
-//     } finally {
+//     } 
+//     catch (err: unknown) {
+//       console.log(err)
+//     } 
+//     finally {
 //       Cookies.remove("access");
 //       Cookies.remove("refresh");
 //       router.push("/login");
@@ -101,23 +111,23 @@
 //   };
 
 //   const navItems = [
-//     { href: "/home", label: "HOME", icon: <FaHome className={styles.navIcon} /> },
-//     { href: "/announcement", label: "ANNOUNCEMENT", icon: <FaBullhorn className={styles.navIcon} /> },
-//     { href: "/leader-board", label: "LEADER BOARD", icon: <FaTrophy className={styles.navIcon} /> },
+
+//     { href: `/${locale}/home`, label: t("nav.home"), icon: <FaHome className={styles.navIcon} /> },
+//     { href: `/${locale}/announcement`, label: t("nav.announcement"), icon: <FaBullhorn className={styles.navIcon} /> },
+//     { href: `/${locale}/leader-board`, label: t("nav.leaderboard"), icon: <FaTrophy className={styles.navIcon} /> },
 
 //     ...(userMe?.role === "teacher" || userMe?.role === "admin"
-//       ? [{ href: "/attendance", label: "ATTENDANCE", icon: <FaClipboardCheck className={styles.navIcon} /> }]
+//       ? [{ href: `/${locale}/attendance`, label: t("nav.attendance"), icon: <FaClipboardCheck className={styles.navIcon} /> }]
 //       : []),
 
-//     { href: "/subjects", label: "SUBJECTS", icon: <FaAtom className={styles.navIcon} /> },
-//     { href: "/exercise", label: "EXERCISES", icon: <FaBookOpen className={styles.navIcon} /> },
-//     { href: "/exam", label: "EXAMS", icon: <FaFileAlt className={styles.navIcon} /> },
+//     { href: `/${locale}/subjects`, label: t("nav.subjects"), icon: <FaAtom className={styles.navIcon} /> },
+//     { href: `/${locale}/exercise`, label: t("nav.exercises"), icon: <FaBookOpen className={styles.navIcon} /> },
+//     { href: `/${locale}/exam`, label: t("nav.exams"), icon: <FaFileAlt className={styles.navIcon} /> },
 
 //     ...(userMe?.role !== "teacher" && userMe?.role !== "admin"
-//       ? [{ href: "/schedule", label: "SCHEDULE", icon: <FaCalendarAlt className={styles.navIcon} /> }]
+//       ? [{ href: `/${locale}/schedule`, label: t("nav.schedule"), icon: <FaCalendarAlt className={styles.navIcon} /> }]
 //       : []),
 
-//     // { href: "/aisupport", label: "AI SUPPORT", icon: <FaRobot className={styles.navIcon} /> },
 //   ];
 
 //   const fetchSearch = async (q: string) => {
@@ -137,32 +147,33 @@
 
 //       const subjects: SearchAutoOption[] = (res.data?.subjects ?? []).map((s: ReturnedSubjectData) => ({
 //         value: `subject:${s.pk}`,
-//         label: `📚 Subject: ${s.name}`,
+//         label: `📚 ${t("search.subject")}: ${s.name}`,
 //         kind: "subject",
 //         id: s.pk,
 //       }));
 
 //       const exams: SearchAutoOption[] = (res.data?.exams ?? []).map((e: ReturnedExamData) => ({
 //         value: `exam:${e.pk}`,
-//         label: `📝 Exam: ${e.title}`,
+//         label: `📝 ${t("search.exam")}: ${e.title}`,
 //         kind: "exam",
 //         id: e.pk,
 //       }));
 
 //       const announcements: SearchAutoOption[] = (res.data?.announcements ?? []).map((a: ReturnedAnnouncementData) => {
-//         const title = getTitleFromAnnouncement(a);
+//         const title = getTitleFromAnnouncement(a, pathname);
 //         const short = title.slice(0, 60) + (title.length > 60 ? "..." : "");
 
 //         return {
 //           value: `announcement:${a.pk}`,
-//           label: `📣 Announcement: ${short || "Untitled"}`,
+//           label: `📣 ${t("search.announcement")}: ${short || t("search.untitled")}`,
 //           kind: "announcement",
 //           id: a.pk,
 //         };
 //       });
 
 //       setOptions([...subjects, ...exams, ...announcements]);
-//     } catch {
+//     } 
+//     catch {
 //       setOptions([]);
 //     }
 //   };
@@ -177,14 +188,13 @@
 //     }, 250);
 //   };
 
-//   // ✅ no `any` here
 //   const handleSelect = (_value: string, option: SearchAutoOption) => {
 //     const kind = option.kind;
 //     const id = option.id;
 
-//     if (kind === "subject") router.push(`/subject/${id}`);
-//     if (kind === "exam") router.push(`/exam/${id}/start/`);
-//     if (kind === "announcement") router.push(`/announcement/${id}`);
+//     if (kind === "subject") router.push(`${locale}/subject/${id}`);
+//     if (kind === "exam") router.push(`${locale}/exam/${id}/start/`);
+//     if (kind === "announcement") router.push(`${locale}/announcement/${id}`);
 
 //     setOptions([]);
 //   };
@@ -197,22 +207,27 @@
 //     <div className={styles.layoutMainContainer}>
 //       <nav className={`${styles.navBar} ${sidebarOpen ? styles.navBarOpen : ""}`}>
 //         <div className={styles.mainLogoContainer}>
-//           <FaSchool className={styles.schoolIcon} /> <span>MY SCHOOL</span>
+//           <FaSchool className={styles.schoolIcon} /> <span>{t("school")}</span>
 //         </div>
+//         <div className={styles.middleWrapper} >
+//           <div>
 
-//         {navItems.map((item) => (
-//           <Link
-//             key={item.href}
-//             href={item.href}
-//             className={`${styles.redirectionCaptions} ${isActive(item.href) ? styles.activeLink : ""}`}
-//             aria-current={isActive(item.href) ? "page" : undefined}
-//           >
-//             <div className={styles.pageRedirectionWrapper}>
-//               {item.icon}
-//               <span className={styles.MenuCommandSection}>{item.label}</span>
-//             </div>
-//           </Link>
-//         ))}
+//             {navItems.map((item) => (
+//               <Link
+//                 key={item.href}
+//                 href={item.href}
+//                 className={`${styles.redirectionCaptions} ${isActive(item.href) ? styles.activeLink : ""}`}
+//                 aria-current={isActive(item.href) ? "page" : undefined}
+//               >
+//                 <div className={styles.pageRedirectionWrapper}>
+//                   {item.icon}
+//                   <span className={styles.MenuCommandSection}>{item.label}</span>
+//                 </div>
+//               </Link>
+//             ))}
+//           </div>
+//           <LanguageSwitcher />
+//         </div>
 //       </nav>
 
 //       <div className={styles.headerAndMainWrapper}>
@@ -233,7 +248,7 @@
 //                   className={styles.searchInput}
 //                 >
 //                   <Input.Search
-//                     placeholder="Search..."
+//                     placeholder={t("search.placeholder")}
 //                     enterButton
 //                     onSearch={(v) => fetchSearch(v)}
 //                     onBlur={handleBlur}
@@ -241,13 +256,21 @@
 //                 </AutoComplete>
 //               </div>
 
-//               <Dropdown trigger={["click"]} menu={{ items: dropdownItems, onClick: onDropdownClick }} placement="bottomRight">
+//               <Dropdown
+//                 trigger={["click"]}
+//                 menu={{ items: getDropdownItems(t), onClick: onDropdownClick }}
+//                 placement="bottomRight"
+//               >
 //                 <a onClick={(e) => e.preventDefault()}>
 //                   <Space>
 //                     <div className={styles.outerWrapperProfile}>
 //                       <div className={styles.userAndDropOutLineWrapper}>
 //                         <div className={styles.profilePictureWrapper}>
-//                           <Avatar src={userMe?.profilePic ?? undefined} className={styles.avatar} sx={{ width: 40, height: 40 }} />
+//                           <Avatar
+//                             src={userMe?.profilePic ?? undefined}
+//                             className={styles.avatar}
+//                             sx={{ width: 40, height: 40 }}
+//                           />
 //                         </div>
 //                       </div>
 //                     </div>
@@ -264,16 +287,21 @@
 //       {sidebarOpen && <div className={styles.overlay} onClick={toggleSidebar} />}
 
 //       <Modal
-//         title="Are you sure you wanna log out ?"
+//         title={t("logout.title")}
 //         closable={{ "aria-label": "Custom Close Button" }}
 //         open={isModalOpen}
 //         onOk={handleOk}
 //         onCancel={handleCancel}
+//         okText={t("logout.ok")}
+//         cancelText={t("logout.cancel")}
 //         styles={{ mask: { zIndex: 1000 } }}
 //       />
 //     </div>
 //   );
 // }
+
+
+
 
 "use client";
 
@@ -288,24 +316,28 @@ import {
   FaBullhorn,
   FaAtom,
   FaClipboardCheck,
+  FaCalendarAlt,
 } from "react-icons/fa";
-import { FaCalendarAlt } from "react-icons/fa";
+
 import styles from "./MainLayout.module.scss";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { Dropdown, Modal, Space, Input, AutoComplete } from "antd";
 import type { DefaultOptionType } from "antd/es/select";
+
 import api from "@/interceptors";
 import { UserMeData } from "./profile/interface";
 import { AxiosError, AxiosResponse } from "axios";
 import Cookies from "js-cookie";
 import { Avatar } from "@mui/material";
+
 import {
   ReturnedAnnouncementData,
   ReturnedExamData,
   ReturnedSubjectData,
   SearchKind,
 } from "./interface";
+
 import { useTranslations } from "next-intl";
 import { getDropdownItems } from "./utils";
 import LanguageSwitcher from "../components/LanguageSwitcher/LanguageSwitcher";
@@ -340,6 +372,10 @@ export default function MainLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
 
+  const locale = (pathname?.split("/")[1] || "en").trim();
+
+  const cleanPath = pathname?.replace(`/${locale}`, "") || "/";
+
   useEffect(() => {
     setSidebarOpen(false);
     api
@@ -354,12 +390,14 @@ export default function MainLayout({ children }: { children: ReactNode }) {
   const handleLogout = async () => {
     try {
       await api.post("/user/logout/", { refresh: Cookies.get("refresh") });
-    } catch (err: unknown) {
+    }
+    catch (err: unknown) {
       console.log("Logout failed:", err);
-    } finally {
+    }
+    finally {
       Cookies.remove("access");
       Cookies.remove("refresh");
-      router.push("/login");
+      router.push(`/${locale}/login`);
     }
   };
 
@@ -372,29 +410,67 @@ export default function MainLayout({ children }: { children: ReactNode }) {
 
   const onDropdownClick = ({ key }: { key: string }) => {
     if (key === "logout") showModal();
-    if (key === "profile") router.push("/profile");
+    if (key === "profile") router.push(`/${locale}/profile`);
   };
 
   const isActive = (href: string) => {
-    if (href === "/home") return pathname === "/home" || pathname === "/";
-    return pathname === href || pathname.startsWith(href + "/");
+    const cleanHref = href.replace(`/${locale}`, "") || "/";
+
+    if (cleanHref === "/home") return cleanPath === "/home" || cleanPath === "/";
+    return cleanPath === cleanHref || cleanPath.startsWith(cleanHref + "/");
   };
 
   const navItems = [
-    { href: "/home", label: t("nav.home"), icon: <FaHome className={styles.navIcon} /> },
-    { href: "/announcement", label: t("nav.announcement"), icon: <FaBullhorn className={styles.navIcon} /> },
-    { href: "/leader-board", label: t("nav.leaderboard"), icon: <FaTrophy className={styles.navIcon} /> },
+    {
+      href: `/${locale}/home`,
+      label: t("nav.home"),
+      icon: <FaHome className={styles.navIcon} />,
+    },
+    {
+      href: `/${locale}/announcement`,
+      label: t("nav.announcement"),
+      icon: <FaBullhorn className={styles.navIcon} />,
+    },
+    {
+      href: `/${locale}/leader-board`,
+      label: t("nav.leaderboard"),
+      icon: <FaTrophy className={styles.navIcon} />,
+    },
 
     ...(userMe?.role === "teacher" || userMe?.role === "admin"
-      ? [{ href: "/attendance", label: t("nav.attendance"), icon: <FaClipboardCheck className={styles.navIcon} /> }]
+      ? [
+        {
+          href: `/${locale}/attendance`,
+          label: t("nav.attendance"),
+          icon: <FaClipboardCheck className={styles.navIcon} />,
+        },
+      ]
       : []),
 
-    { href: "/subjects", label: t("nav.subjects"), icon: <FaAtom className={styles.navIcon} /> },
-    { href: "/exercise", label: t("nav.exercises"), icon: <FaBookOpen className={styles.navIcon} /> },
-    { href: "/exam", label: t("nav.exams"), icon: <FaFileAlt className={styles.navIcon} /> },
+    {
+      href: `/${locale}/subjects`,
+      label: t("nav.subjects"),
+      icon: <FaAtom className={styles.navIcon} />,
+    },
+    {
+      href: `/${locale}/exercise`,
+      label: t("nav.exercises"),
+      icon: <FaBookOpen className={styles.navIcon} />,
+    },
+    {
+      href: `/${locale}/exam`,
+      label: t("nav.exams"),
+      icon: <FaFileAlt className={styles.navIcon} />,
+    },
 
     ...(userMe?.role !== "teacher" && userMe?.role !== "admin"
-      ? [{ href: "/schedule", label: t("nav.schedule"), icon: <FaCalendarAlt className={styles.navIcon} /> }]
+      ? [
+        {
+          href: `/${locale}/schedule`,
+          label: t("nav.schedule"),
+          icon: <FaCalendarAlt className={styles.navIcon} />,
+        },
+      ]
       : []),
   ];
 
@@ -413,34 +489,41 @@ export default function MainLayout({ children }: { children: ReactNode }) {
     try {
       const res = await api.get("/search/", { params: { q: trimmed } });
 
-      const subjects: SearchAutoOption[] = (res.data?.subjects ?? []).map((s: ReturnedSubjectData) => ({
-        value: `subject:${s.pk}`,
-        label: `📚 ${t("search.subject")}: ${s.name}`,
-        kind: "subject",
-        id: s.pk,
-      }));
+      const subjects: SearchAutoOption[] = (res.data?.subjects ?? []).map(
+        (s: ReturnedSubjectData) => ({
+          value: `subject:${s.pk}`,
+          label: `📚 ${t("search.subject")}: ${s.name}`,
+          kind: "subject",
+          id: s.pk,
+        })
+      );
 
-      const exams: SearchAutoOption[] = (res.data?.exams ?? []).map((e: ReturnedExamData) => ({
-        value: `exam:${e.pk}`,
-        label: `📝 ${t("search.exam")}: ${e.title}`,
-        kind: "exam",
-        id: e.pk,
-      }));
+      const exams: SearchAutoOption[] = (res.data?.exams ?? []).map(
+        (e: ReturnedExamData) => ({
+          value: `exam:${e.pk}`,
+          label: `📝 ${t("search.exam")}: ${e.title}`,
+          kind: "exam",
+          id: e.pk,
+        })
+      );
 
-      const announcements: SearchAutoOption[] = (res.data?.announcements ?? []).map((a: ReturnedAnnouncementData) => {
-        const title = getTitleFromAnnouncement(a);
-        const short = title.slice(0, 60) + (title.length > 60 ? "..." : "");
+      const announcements: SearchAutoOption[] = (res.data?.announcements ?? []).map(
+        (a: ReturnedAnnouncementData) => {
+          const title = getTitleFromAnnouncement(a);
+          const short = title.slice(0, 60) + (title.length > 60 ? "..." : "");
 
-        return {
-          value: `announcement:${a.pk}`,
-          label: `📣 ${t("search.announcement")}: ${short || t("search.untitled")}`,
-          kind: "announcement",
-          id: a.pk,
-        };
-      });
+          return {
+            value: `announcement:${a.pk}`,
+            label: `📣 ${t("search.announcement")}: ${short || t("search.untitled")}`,
+            kind: "announcement",
+            id: a.pk,
+          };
+        }
+      );
 
       setOptions([...subjects, ...exams, ...announcements]);
-    } catch {
+    }
+    catch {
       setOptions([]);
     }
   };
@@ -456,12 +539,11 @@ export default function MainLayout({ children }: { children: ReactNode }) {
   };
 
   const handleSelect = (_value: string, option: SearchAutoOption) => {
-    const kind = option.kind;
-    const id = option.id;
+    const { kind, id } = option;
 
-    if (kind === "subject") router.push(`/subject/${id}`);
-    if (kind === "exam") router.push(`/exam/${id}/start/`);
-    if (kind === "announcement") router.push(`/announcement/${id}`);
+    if (kind === "subject") router.push(`/${locale}/subject/${id}`);
+    if (kind === "exam") router.push(`/${locale}/exam/${id}/start`);
+    if (kind === "announcement") router.push(`/${locale}/announcement/${id}`);
 
     setOptions([]);
   };
@@ -476,14 +558,15 @@ export default function MainLayout({ children }: { children: ReactNode }) {
         <div className={styles.mainLogoContainer}>
           <FaSchool className={styles.schoolIcon} /> <span>{t("school")}</span>
         </div>
-        <div className={styles.middleWrapper} >
-          <div>
 
+        <div className={styles.middleWrapper}>
+          <div>
             {navItems.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
-                className={`${styles.redirectionCaptions} ${isActive(item.href) ? styles.activeLink : ""}`}
+                className={`${styles.redirectionCaptions} ${isActive(item.href) ? styles.activeLink : ""
+                  }`}
                 aria-current={isActive(item.href) ? "page" : undefined}
               >
                 <div className={styles.pageRedirectionWrapper}>
@@ -493,6 +576,7 @@ export default function MainLayout({ children }: { children: ReactNode }) {
               </Link>
             ))}
           </div>
+
           <LanguageSwitcher />
         </div>
       </nav>
