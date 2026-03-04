@@ -444,8 +444,6 @@ export default function MainLayout({ children }: { children: ReactNode }) {
     handleLogout();
   };
 
-  const handleCancel = () => setIsModalOpen(false);
-
   const onDropdownClick = ({ key }: { key: string }) => {
     if (key === "logout") showModal();
     if (key === "profile") router.push(`/${locale}/profile`);

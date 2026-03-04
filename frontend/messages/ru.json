@@ -1,0 +1,329 @@
+{
+  "Layout": {
+    "school": "МОЯ ШКОЛА",
+    "nav": {
+      "home": "ГЛАВНАЯ",
+      "announcement": "ОБЪЯВЛЕНИЯ",
+      "leaderboard": "ТАБЛИЦА ЛИДЕРОВ",
+      "attendance": "ПОСЕЩАЕМОСТЬ",
+      "subjects": "ПРЕДМЕТЫ",
+      "exercises": "УПРАЖНЕНИЯ",
+      "exams": "ЭКЗАМЕНЫ",
+      "schedule": "РАСПИСАНИЕ"
+    },
+    "search": {
+      "placeholder": "Поиск...",
+      "subject": "Предмет",
+      "exam": "Экзамен",
+      "announcement": "Объявление",
+      "untitled": "Без названия"
+    },
+    "menu": {
+      "profile": "ПРОФИЛЬ",
+      "logout": "ВЫЙТИ"
+    },
+    "logout": {
+      "title": "Вы уверены, что хотите выйти?",
+      "ok": "Подтвердить",
+      "cancel": "Отмена"
+    }
+  },
+
+  "Common": {
+    "language": "Язык"
+  },
+
+  "Nav": {
+    "home": "ГЛАВНАЯ",
+    "login": "ВХОД"
+  },
+
+  "Login": {
+    "title": "С возвращением",
+    "subtitle": "Войдите, чтобы продолжить свой путь",
+    "emailLabel": "Эл. почта",
+    "emailPlaceholder": "Введите вашу эл. почту",
+    "rememberMe": "Запомнить меня",
+    "sendOtp": "Отправить OTP",
+    "otpLabel": "OTP",
+    "otpPlaceholder": "Введите OTP",
+    "verifyOtp": "Подтвердить OTP",
+    "backToEmail": "Назад к эл. почте",
+    "otpSent": "OTP отправлен в вашего школьного бота!",
+    "loginSuccess": "Вход выполнен успешно!",
+    "sendOtpFailed": "Не удалось отправить OTP. Попробуйте снова.",
+    "invalidOtp": "Неверный OTP. Попробуйте снова."
+  },
+
+  "Home": {
+    "pageTitle": "Главная",
+    "welcome": "Добро пожаловать",
+    "fallbackUser": "Пользователь",
+    "role": "Роль",
+    "roleFallback": "роль",
+    "grade": "Класс",
+    "email": "Эл. почта",
+
+    "totalPoints": "Всего баллов",
+    "subjects": "Предметы",
+    "activeExams": "Активные экзамены",
+
+    "pointsBySubject": "Баллы по предметам",
+    "progressOverview": "Обзор прогресса",
+    "topExamsAttempts": "Топ экзаменов (попытки)",
+    "weeklyActivity": "Еженедельная активность",
+    "avgScoreBySubject": "Средний балл по предметам",
+
+    "activeExamSessions": "Активные сессии экзаменов",
+    "recentExamSessions": "Недавние сессии экзаменов",
+
+    "loading": "Загрузка панели…",
+    "failedTitle": "Не удалось загрузить панель",
+    "failedHint": "Проверьте токен / API URL / консоль.",
+
+    "noGrade": "Класс не указан",
+    "unknown": "Неизвестно",
+
+    "noPointsYet": "Баллов пока нет.",
+    "noAttemptsYet": "Попыток пока нет.",
+    "noFinishedYet": "Завершённых сессий пока нет.",
+    "noActiveExams": "Сейчас нет активных экзаменов.",
+    "noSessionsYet": "Сессий пока нет.",
+
+    "ends": "Заканчивается",
+    "score": "Баллы",
+    "finished": "Завершено",
+    "inProgress": "В процессе",
+
+    "pointsLabel": "Баллы",
+    "sessionsLabel": "Сессии",
+    "avgScoreLabel": "Средний балл",
+    "attemptsLabel": "Попытки",
+
+    "done": "Сделано",
+    "remaining": "Осталось",
+
+    "completion": "Выполнение",
+    "avgScoreText": "Средний балл {avg}",
+    "deltaUp": "▲ +{delta} по сравнению с предыдущим",
+    "deltaDown": "▼ {delta} по сравнению с предыдущим",
+
+    "finishedBadge": "Завершено: {finished}/{total}",
+    "activeBadge": "Активно: {active}",
+
+    "modalActiveExamsTitle": "Активные экзамены"
+  },
+
+  "Announcement": {
+    "pageTitle": "Объявления",
+    "addAnnouncement": "Добавить объявление",
+    "allSubjects": "Все предметы",
+    "chooseSubject": "Выберите предмет",
+
+    "createAnnouncementTitle": "Создать объявление",
+    "submit": "Отправить",
+
+    "formTitleLabel": "Заголовок",
+    "formSubjectLabel": "Предмет",
+    "formContentLabel": "Содержание",
+
+    "titlePlaceholder": "Введите заголовок объявления",
+    "subjectPlaceholder": "Выберите предмет",
+    "contentPlaceholder": "Напишите ваше объявление...",
+
+    "validationEnterTitle": "Пожалуйста, введите заголовок!",
+    "validationSelectSubject": "Пожалуйста, выберите предмет!",
+    "validationEnterContent": "Пожалуйста, введите описание!",
+
+    "author": "Автор",
+    "subject": "Предмет",
+    "grade": "Класс",
+
+    "empty": "Пусто",
+    "noCommentsYet": "Комментариев пока нет",
+
+    "commentPlaceholder": "Введите ваш комментарий...",
+    "validationTypeSomething": "Пожалуйста, напишите что-нибудь!",
+    "send": "Отправить"
+  },
+
+  "LeaderBoard": {
+    "pageTitle": "Таблица лидеров",
+    "chooseSubject": "Выберите предмет",
+    "chooseSubjectFirst": "Сначала выберите предмет.",
+    "noDataYet": "Данных таблицы лидеров пока нет.",
+
+    "name": "Имя",
+    "email": "Эл. почта",
+    "points": "Баллы",
+    "position": "Место",
+
+    "profilePictureAlt": "Фото профиля",
+    "profileAlt": "Профиль",
+    "pointIconAlt": "Иконка баллов"
+  },
+
+  "Subjects": {
+    "pageTitle": "Предметы",
+    "subtitle": "Просмотрите назначенные вам предметы.",
+    "all": "Все",
+    "grade": "Класс",
+
+    "loadingSubjects": "Загрузка предметов...",
+    "noResults": "Нет результатов",
+    "tryChangingCategory": "Попробуйте изменить категорию.",
+
+    "bookFallback": "Книга",
+    "loadingPdf": "Загрузка PDF…",
+    "openInNewTab": "Открыть в новой вкладке",
+    "bookPdfTitle": "PDF книги",
+
+    "noPdfFound": "Не найден PDF книги для этого предмета/класса.",
+    "failedToLoadPdf": "Не удалось загрузить PDF. Попробуйте снова.",
+    "failedToLoadBookPdfToast": "Не удалось загрузить PDF книги",
+
+    "empty": "Пусто"
+  },
+
+  "Exam": {
+    "pageTitle": "Экзамены",
+    "loadingExams": "Загрузка экзаменов…",
+
+    "examCountSingle": "1 экзамен",
+    "examCountMultiple": "{count} экзаменов",
+
+    "noExamsTitle": "Экзамены недоступны",
+    "noExamsSub": "Зайдите позже или спросите учителя.",
+
+    "duration": "Длительность",
+    "questions": "Вопросы"
+  },
+
+  "SpecificExam": {
+    "alreadyCompleted": "Вы уже завершили этот экзамен",
+    "timeUpEnded": "Время вышло. Экзамен завершён.",
+
+    "badgeExam": "Экзамен",
+    "questionLabel": "Вопрос",
+
+    "finalTimeUpTitle": "⏰ Время вышло!",
+    "finalCompletedTitle": "🎉 Экзамен завершён!",
+
+    "scoreLabel": "Баллы",
+    "totalQuestionsLabel": "Всего вопросов",
+
+    "finalTimeUpMessage": "Время закончилось, но ваши ответы были отправлены.",
+    "finalCompletedMessage": "Отличная работа — результаты сохранены.",
+
+    "redirect": "Перейти"
+  },
+
+  "Exercise": {
+    "pageTitle": "Упражнения",
+    "addExercise": "Добавить упражнение",
+
+    "exerciseTitlePlaceholder": "Название упражнения",
+    "descriptionPlaceholder": "Описание (необязательно)",
+    "save": "Сохранить",
+
+    "loadingExercises": "Загрузка упражнений...",
+    "noExercisesToday": "Сегодня нет упражнений",
+
+    "gradeLabel": "Класс",
+    "dueLabel": "Срок"
+  },
+
+  "Schedule": {
+    "pageTitle": "Расписание",
+    "gradeLabel": "Класс",
+    "weekdayLabel": "День недели",
+    "lessons": "уроков",
+    "noLessons": "Уроков нет",
+    "students": "ученики",
+    "noStudents": "Нет учеников",
+    "teacherNotSet": "Учитель не назначен",
+    "onlyStudentsWarning": "Эта страница доступна только для учеников.",
+    "failedLoad": "Не удалось загрузить расписание/пользователей",
+    "accessDenied": "Доступ запрещён. Только ученики могут просматривать эту страницу.",
+    "weekdays": {
+      "mon": "Понедельник",
+      "tue": "Вторник",
+      "wed": "Среда",
+      "thu": "Четверг",
+      "fri": "Пятница",
+      "sat": "Суббота",
+      "sun": "Воскресенье"
+    }
+  },
+
+  "Attendance": {
+    "pageTitle": "Посещаемость",
+    "today": "Сегодня",
+    "refresh": "Обновить",
+
+    "loading": "Загрузка посещаемости…",
+
+    "accessDeniedTitle": "Доступ запрещён",
+    "teachersOnly": "Эта страница доступна только учителям.",
+
+    "noLessonsTitle": "На сегодня уроки не запланированы.",
+    "noLessonsSub": "Когда появится урок, вы сможете отмечать посещаемость здесь.",
+
+    "room": "Кабинет",
+    "students": "учеников",
+
+    "markAllPresent": "Отметить всех как присутствующих",
+    "markAllAbsent": "Отметить всех как отсутствующих",
+
+    "present": "Присутствует",
+    "absent": "Отсутствует",
+
+    "saving": "Сохранение...",
+    "saveAttendance": "Сохранить посещаемость",
+
+    "weekdays": {
+      "mon": "Понедельник",
+      "tue": "Вторник",
+      "wed": "Среда",
+      "thu": "Четверг",
+      "fri": "Пятница",
+      "sat": "Суббота",
+      "sun": "Воскресенье"
+    }
+  },
+
+  "Profile": {
+    "title": "Профиль",
+    "subtitle": "Управляйте личной информацией",
+    "edit": "Редактировать",
+    "save": "Сохранить",
+    "saving": "Сохранение...",
+    "cancel": "Отмена",
+    "loading": "Загрузка профиля…",
+    "updated": "Профиль обновлён",
+    "loadFailed": "Не удалось загрузить профиль",
+    "updateFailed": "Не удалось обновить профиль",
+    "basicInfo": "Основная информация",
+    "firstName": "Имя",
+    "lastName": "Фамилия",
+    "email": "Эл. почта",
+    "hint": "Совет: ваша эл. почта используется для входа и уведомлений."
+  },
+
+  "AISupport": {
+    "title": "AI Поддержка",
+    "online": "В сети",
+    "thinking": "Думаю…",
+    "newChat": "Новый чат",
+    "clearChatTitle": "Очистить чат",
+    "you": "Вы",
+    "assistant": "Ассистент",
+    "send": "Отправить",
+    "intro": "Привет 👋 Я ваш AI-агент поддержки. Спрашивайте о платформе, домашке, экзаменах или технических проблемах.",
+    "placeholder": "Введите сообщение… (Enter — отправить, Shift+Enter — новая строка)",
+    "hint": "Не делитесь паролями или личными данными. Этот чат может быть сохранён для отладки.",
+    "errorBar": "Сервис AI недоступен. Попробуйте ещё раз чуть позже.",
+    "errorMessage": "Извините — сейчас не удалось подключиться к AI-сервису. Попробуйте ещё раз через минуту.",
+    "fallbackReply": "…"
+  }
+}
