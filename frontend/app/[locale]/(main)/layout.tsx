@@ -1,3 +1,4 @@
+
 // "use client";
 
 // import React, { ReactNode, useEffect, useRef, useState } from "react";
@@ -11,39 +12,34 @@
 //   FaBullhorn,
 //   FaAtom,
 //   FaClipboardCheck,
+//   FaCalendarAlt,
 // } from "react-icons/fa";
-// import { FaCalendarAlt } from "react-icons/fa";
+
 // import styles from "./MainLayout.module.scss";
 // import Link from "next/link";
 // import { usePathname, useRouter } from "next/navigation";
 // import { Dropdown, Modal, Space, Input, AutoComplete } from "antd";
 // import type { DefaultOptionType } from "antd/es/select";
+
 // import api from "@/interceptors";
 // import { UserMeData } from "./profile/interface";
 // import { AxiosError, AxiosResponse } from "axios";
 // import Cookies from "js-cookie";
 // import { Avatar } from "@mui/material";
+
 // import {
 //   ReturnedAnnouncementData,
 //   ReturnedExamData,
 //   ReturnedSubjectData,
 //   SearchKind,
 // } from "./interface";
+
 // import { useTranslations } from "next-intl";
-// import { getDropdownItems } from "./utils";
+// import { getDropdownItems, SearchAutoOption } from "./utils";
 // import LanguageSwitcher from "../components/LanguageSwitcher/LanguageSwitcher";
-// import locale from "antd/es/date-picker/locale/en_US";
-
-// type SearchAutoOption = DefaultOptionType & {
-//   kind: SearchKind;
-//   id: number;
-// };
-
-// function getTitleFromAnnouncement(a: ReturnedAnnouncementData, pathname: string): string {
 
 
-//   const locale = pathname.split("/")[1];
-
+// function getTitleFromAnnouncement(a: ReturnedAnnouncementData): string {
 //   const maybe = a as unknown as { title?: unknown; content?: unknown };
 
 //   if (typeof maybe.title === "string") return maybe.title;
@@ -68,6 +64,10 @@
 //   const pathname = usePathname();
 //   const router = useRouter();
 
+//   const locale = (pathname?.split("/")[1] || "en").trim();
+
+//   const cleanPath = pathname?.replace(`/${locale}`, "") || "/";
+
 //   useEffect(() => {
 //     setSidebarOpen(false);
 //     api
@@ -82,14 +82,14 @@
 //   const handleLogout = async () => {
 //     try {
 //       await api.post("/user/logout/", { refresh: Cookies.get("refresh") });
-//     } 
+//     }
 //     catch (err: unknown) {
-//       console.log(err)
-//     } 
+//       console.log("Logout failed:", err);
+//     }
 //     finally {
 //       Cookies.remove("access");
 //       Cookies.remove("refresh");
-//       router.push("/login");
+//       router.push(`/${locale}/login`);
 //     }
 //   };
 
@@ -102,32 +102,68 @@
 
 //   const onDropdownClick = ({ key }: { key: string }) => {
 //     if (key === "logout") showModal();
-//     if (key === "profile") router.push("/profile");
+//     if (key === "profile") router.push(`/${locale}/profile`);
 //   };
 
 //   const isActive = (href: string) => {
-//     if (href === "/home") return pathname === "/home" || pathname === "/";
-//     return pathname === href || pathname.startsWith(href + "/");
+//     const cleanHref = href.replace(`/${locale}`, "") || "/";
+
+//     if (cleanHref === "/home") return cleanPath === "/home" || cleanPath === "/";
+//     return cleanPath === cleanHref || cleanPath.startsWith(cleanHref + "/");
 //   };
 
 //   const navItems = [
-
-//     { href: `/${locale}/home`, label: t("nav.home"), icon: <FaHome className={styles.navIcon} /> },
-//     { href: `/${locale}/announcement`, label: t("nav.announcement"), icon: <FaBullhorn className={styles.navIcon} /> },
-//     { href: `/${locale}/leader-board`, label: t("nav.leaderboard"), icon: <FaTrophy className={styles.navIcon} /> },
+//     {
+//       href: `/${locale}/home`,
+//       label: t("nav.home"),
+//       icon: <FaHome className={styles.navIcon} />,
+//     },
+//     {
+//       href: `/${locale}/announcement`,
+//       label: t("nav.announcement"),
+//       icon: <FaBullhorn className={styles.navIcon} />,
+//     },
+//     {
+//       href: `/${locale}/leader-board`,
+//       label: t("nav.leaderboard"),
+//       icon: <FaTrophy className={styles.navIcon} />,
+//     },
 
 //     ...(userMe?.role === "teacher" || userMe?.role === "admin"
-//       ? [{ href: `/${locale}/attendance`, label: t("nav.attendance"), icon: <FaClipboardCheck className={styles.navIcon} /> }]
+//       ? [
+//         {
+//           href: `/${locale}/attendance`,
+//           label: t("nav.attendance"),
+//           icon: <FaClipboardCheck className={styles.navIcon} />,
+//         },
+//       ]
 //       : []),
 
-//     { href: `/${locale}/subjects`, label: t("nav.subjects"), icon: <FaAtom className={styles.navIcon} /> },
-//     { href: `/${locale}/exercise`, label: t("nav.exercises"), icon: <FaBookOpen className={styles.navIcon} /> },
-//     { href: `/${locale}/exam`, label: t("nav.exams"), icon: <FaFileAlt className={styles.navIcon} /> },
+//     {
+//       href: `/${locale}/subjects`,
+//       label: t("nav.subjects"),
+//       icon: <FaAtom className={styles.navIcon} />,
+//     },
+//     {
+//       href: `/${locale}/exercise`,
+//       label: t("nav.exercises"),
+//       icon: <FaBookOpen className={styles.navIcon} />,
+//     },
+//     {
+//       href: `/${locale}/exam`,
+//       label: t("nav.exams"),
+//       icon: <FaFileAlt className={styles.navIcon} />,
+//     },
 
 //     ...(userMe?.role !== "teacher" && userMe?.role !== "admin"
-//       ? [{ href: `/${locale}/schedule`, label: t("nav.schedule"), icon: <FaCalendarAlt className={styles.navIcon} /> }]
+//       ? [
+//         {
+//           href: `/${locale}/schedule`,
+//           label: t("nav.schedule"),
+//           icon: <FaCalendarAlt className={styles.navIcon} />,
+//         },
+//       ]
 //       : []),
-
 //   ];
 
 //   const fetchSearch = async (q: string) => {
@@ -145,34 +181,40 @@
 //     try {
 //       const res = await api.get("/search/", { params: { q: trimmed } });
 
-//       const subjects: SearchAutoOption[] = (res.data?.subjects ?? []).map((s: ReturnedSubjectData) => ({
-//         value: `subject:${s.pk}`,
-//         label: `📚 ${t("search.subject")}: ${s.name}`,
-//         kind: "subject",
-//         id: s.pk,
-//       }));
+//       const subjects: SearchAutoOption[] = (res.data?.subjects ?? []).map(
+//         (s: ReturnedSubjectData) => ({
+//           value: `subject:${s.pk}`,
+//           label: `📚 ${t("search.subject")}: ${s.name}`,
+//           kind: "subject",
+//           id: s.pk,
+//         })
+//       );
 
-//       const exams: SearchAutoOption[] = (res.data?.exams ?? []).map((e: ReturnedExamData) => ({
-//         value: `exam:${e.pk}`,
-//         label: `📝 ${t("search.exam")}: ${e.title}`,
-//         kind: "exam",
-//         id: e.pk,
-//       }));
+//       const exams: SearchAutoOption[] = (res.data?.exams ?? []).map(
+//         (e: ReturnedExamData) => ({
+//           value: `exam:${e.pk}`,
+//           label: `📝 ${t("search.exam")}: ${e.title}`,
+//           kind: "exam",
+//           id: e.pk,
+//         })
+//       );
 
-//       const announcements: SearchAutoOption[] = (res.data?.announcements ?? []).map((a: ReturnedAnnouncementData) => {
-//         const title = getTitleFromAnnouncement(a, pathname);
-//         const short = title.slice(0, 60) + (title.length > 60 ? "..." : "");
+//       const announcements: SearchAutoOption[] = (res.data?.announcements ?? []).map(
+//         (a: ReturnedAnnouncementData) => {
+//           const title = getTitleFromAnnouncement(a);
+//           const short = title.slice(0, 60) + (title.length > 60 ? "..." : "");
 
-//         return {
-//           value: `announcement:${a.pk}`,
-//           label: `📣 ${t("search.announcement")}: ${short || t("search.untitled")}`,
-//           kind: "announcement",
-//           id: a.pk,
-//         };
-//       });
+//           return {
+//             value: `announcement:${a.pk}`,
+//             label: `📣 ${t("search.announcement")}: ${short || t("search.untitled")}`,
+//             kind: "announcement",
+//             id: a.pk,
+//           };
+//         }
+//       );
 
 //       setOptions([...subjects, ...exams, ...announcements]);
-//     } 
+//     }
 //     catch {
 //       setOptions([]);
 //     }
@@ -189,12 +231,11 @@
 //   };
 
 //   const handleSelect = (_value: string, option: SearchAutoOption) => {
-//     const kind = option.kind;
-//     const id = option.id;
+//     const { kind, id } = option;
 
-//     if (kind === "subject") router.push(`${locale}/subject/${id}`);
-//     if (kind === "exam") router.push(`${locale}/exam/${id}/start/`);
-//     if (kind === "announcement") router.push(`${locale}/announcement/${id}`);
+//     if (kind === "subject") router.push(`/${locale}/subject/${id}`);
+//     if (kind === "exam") router.push(`/${locale}/exam/${id}/start`);
+//     if (kind === "announcement") router.push(`/${locale}/announcement/${id}`);
 
 //     setOptions([]);
 //   };
@@ -209,14 +250,15 @@
 //         <div className={styles.mainLogoContainer}>
 //           <FaSchool className={styles.schoolIcon} /> <span>{t("school")}</span>
 //         </div>
-//         <div className={styles.middleWrapper} >
-//           <div>
 
+//         <div className={styles.middleWrapper}>
+//           <div>
 //             {navItems.map((item) => (
 //               <Link
 //                 key={item.href}
 //                 href={item.href}
-//                 className={`${styles.redirectionCaptions} ${isActive(item.href) ? styles.activeLink : ""}`}
+//                 className={`${styles.redirectionCaptions} ${isActive(item.href) ? styles.activeLink : ""
+//                   }`}
 //                 aria-current={isActive(item.href) ? "page" : undefined}
 //               >
 //                 <div className={styles.pageRedirectionWrapper}>
@@ -226,6 +268,7 @@
 //               </Link>
 //             ))}
 //           </div>
+
 //           <LanguageSwitcher />
 //         </div>
 //       </nav>
@@ -301,8 +344,6 @@
 // }
 
 
-
-
 "use client";
 
 import React, { ReactNode, useEffect, useRef, useState } from "react";
@@ -373,7 +414,6 @@ export default function MainLayout({ children }: { children: ReactNode }) {
   const router = useRouter();
 
   const locale = (pathname?.split("/")[1] || "en").trim();
-
   const cleanPath = pathname?.replace(`/${locale}`, "") || "/";
 
   useEffect(() => {
@@ -390,11 +430,9 @@ export default function MainLayout({ children }: { children: ReactNode }) {
   const handleLogout = async () => {
     try {
       await api.post("/user/logout/", { refresh: Cookies.get("refresh") });
-    }
-    catch (err: unknown) {
+    } catch (err: unknown) {
       console.log("Logout failed:", err);
-    }
-    finally {
+    } finally {
       Cookies.remove("access");
       Cookies.remove("refresh");
       router.push(`/${locale}/login`);
@@ -421,56 +459,20 @@ export default function MainLayout({ children }: { children: ReactNode }) {
   };
 
   const navItems = [
-    {
-      href: `/${locale}/home`,
-      label: t("nav.home"),
-      icon: <FaHome className={styles.navIcon} />,
-    },
-    {
-      href: `/${locale}/announcement`,
-      label: t("nav.announcement"),
-      icon: <FaBullhorn className={styles.navIcon} />,
-    },
-    {
-      href: `/${locale}/leader-board`,
-      label: t("nav.leaderboard"),
-      icon: <FaTrophy className={styles.navIcon} />,
-    },
+    { href: `/${locale}/home`, label: t("nav.home"), icon: <FaHome className={styles.navIcon} /> },
+    { href: `/${locale}/announcement`, label: t("nav.announcement"), icon: <FaBullhorn className={styles.navIcon} /> },
+    { href: `/${locale}/leader-board`, label: t("nav.leaderboard"), icon: <FaTrophy className={styles.navIcon} /> },
 
     ...(userMe?.role === "teacher" || userMe?.role === "admin"
-      ? [
-        {
-          href: `/${locale}/attendance`,
-          label: t("nav.attendance"),
-          icon: <FaClipboardCheck className={styles.navIcon} />,
-        },
-      ]
+      ? [{ href: `/${locale}/attendance`, label: t("nav.attendance"), icon: <FaClipboardCheck className={styles.navIcon} /> }]
       : []),
 
-    {
-      href: `/${locale}/subjects`,
-      label: t("nav.subjects"),
-      icon: <FaAtom className={styles.navIcon} />,
-    },
-    {
-      href: `/${locale}/exercise`,
-      label: t("nav.exercises"),
-      icon: <FaBookOpen className={styles.navIcon} />,
-    },
-    {
-      href: `/${locale}/exam`,
-      label: t("nav.exams"),
-      icon: <FaFileAlt className={styles.navIcon} />,
-    },
+    { href: `/${locale}/subjects`, label: t("nav.subjects"), icon: <FaAtom className={styles.navIcon} /> },
+    { href: `/${locale}/exercise`, label: t("nav.exercises"), icon: <FaBookOpen className={styles.navIcon} /> },
+    { href: `/${locale}/exam`, label: t("nav.exams"), icon: <FaFileAlt className={styles.navIcon} /> },
 
     ...(userMe?.role !== "teacher" && userMe?.role !== "admin"
-      ? [
-        {
-          href: `/${locale}/schedule`,
-          label: t("nav.schedule"),
-          icon: <FaCalendarAlt className={styles.navIcon} />,
-        },
-      ]
+      ? [{ href: `/${locale}/schedule`, label: t("nav.schedule"), icon: <FaCalendarAlt className={styles.navIcon} /> }]
       : []),
   ];
 
@@ -489,41 +491,34 @@ export default function MainLayout({ children }: { children: ReactNode }) {
     try {
       const res = await api.get("/search/", { params: { q: trimmed } });
 
-      const subjects: SearchAutoOption[] = (res.data?.subjects ?? []).map(
-        (s: ReturnedSubjectData) => ({
-          value: `subject:${s.pk}`,
-          label: `📚 ${t("search.subject")}: ${s.name}`,
-          kind: "subject",
-          id: s.pk,
-        })
-      );
+      const subjects: SearchAutoOption[] = (res.data?.subjects ?? []).map((s: ReturnedSubjectData) => ({
+        value: `subject:${s.pk}`,
+        label: `📚 ${t("search.subject")}: ${s.name}`,
+        kind: "subject",
+        id: s.pk,
+      }));
 
-      const exams: SearchAutoOption[] = (res.data?.exams ?? []).map(
-        (e: ReturnedExamData) => ({
-          value: `exam:${e.pk}`,
-          label: `📝 ${t("search.exam")}: ${e.title}`,
-          kind: "exam",
-          id: e.pk,
-        })
-      );
+      const exams: SearchAutoOption[] = (res.data?.exams ?? []).map((e: ReturnedExamData) => ({
+        value: `exam:${e.pk}`,
+        label: `📝 ${t("search.exam")}: ${e.title}`,
+        kind: "exam",
+        id: e.pk,
+      }));
 
-      const announcements: SearchAutoOption[] = (res.data?.announcements ?? []).map(
-        (a: ReturnedAnnouncementData) => {
-          const title = getTitleFromAnnouncement(a);
-          const short = title.slice(0, 60) + (title.length > 60 ? "..." : "");
+      const announcements: SearchAutoOption[] = (res.data?.announcements ?? []).map((a: ReturnedAnnouncementData) => {
+        const title = getTitleFromAnnouncement(a);
+        const short = title.slice(0, 60) + (title.length > 60 ? "..." : "");
 
-          return {
-            value: `announcement:${a.pk}`,
-            label: `📣 ${t("search.announcement")}: ${short || t("search.untitled")}`,
-            kind: "announcement",
-            id: a.pk,
-          };
-        }
-      );
+        return {
+          value: `announcement:${a.pk}`,
+          label: `📣 ${t("search.announcement")}: ${short || t("search.untitled")}`,
+          kind: "announcement",
+          id: a.pk,
+        };
+      });
 
       setOptions([...subjects, ...exams, ...announcements]);
-    }
-    catch {
+    } catch {
       setOptions([]);
     }
   };
@@ -565,8 +560,7 @@ export default function MainLayout({ children }: { children: ReactNode }) {
               <Link
                 key={item.href}
                 href={item.href}
-                className={`${styles.redirectionCaptions} ${isActive(item.href) ? styles.activeLink : ""
-                  }`}
+                className={`${styles.redirectionCaptions} ${isActive(item.href) ? styles.activeLink : ""}`}
                 aria-current={isActive(item.href) ? "page" : undefined}
               >
                 <div className={styles.pageRedirectionWrapper}>
@@ -632,7 +626,10 @@ export default function MainLayout({ children }: { children: ReactNode }) {
           </div>
         </header>
 
-        <main className={styles.childrenPassingContainer}>{children}</main>
+        {/* ✅ IMPORTANT: global scroll hook */}
+        <main id="app-scroll" className={styles.childrenPassingContainer}>
+          {children}
+        </main>
       </div>
 
       {sidebarOpen && <div className={styles.overlay} onClick={toggleSidebar} />}
@@ -642,10 +639,9 @@ export default function MainLayout({ children }: { children: ReactNode }) {
         closable={{ "aria-label": "Custom Close Button" }}
         open={isModalOpen}
         onOk={handleOk}
-        onCancel={handleCancel}
+        onCancel={() => setIsModalOpen(false)}
         okText={t("logout.ok")}
         cancelText={t("logout.cancel")}
-        styles={{ mask: { zIndex: 1000 } }}
       />
     </div>
   );

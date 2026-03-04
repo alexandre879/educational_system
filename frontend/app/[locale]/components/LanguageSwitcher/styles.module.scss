@@ -1,3 +1,32 @@
+.langDropdown {
+  z-index: 99999 !important;
+  background: rgba(255, 255, 255, 0.02) !important;
+
+  :global(.ant-select-dropdown) {
+    background: rgba(255, 255, 255, 0.02) !important;
+  }
+
+  :global(.ant-select-item) {
+    background: transparent !important;
+    color: #ffffff !important;
+  }
+
+  :global(.ant-select-item-option-active) {
+    background: rgba(255, 255, 255, 0.06) !important;
+    color: #ffffff !important;
+  }
+
+  :global(.ant-select-item-option-selected) {
+    background: rgba(79, 70, 229, 0.22) !important;
+    color: #ffffff !important;
+    font-weight: 600;
+  }
+
+  :global(.ant-select-item-option-content) {
+    color: #ffffff !important;
+  }
+}
+
 .selectionWrapper {
   width: 100%;
   background-color: transparent;

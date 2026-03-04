@@ -24,10 +24,11 @@ export default function LanguageSwitcher() {
 
   return (
     <Select
-    
+      getPopupContainer={() => document.body}
       value={locale}
       onChange={setLang}
       className={styles.selectionWrapper}
+      popupClassName={styles.langDropdown}
       defaultValue={"ka"}
       options={[
         {
