@@ -362,7 +362,7 @@ export default function ProfileSettings() {
     return undefined;
   }, [preview, userMe?.profilePic, avatarBust]);
 
-  const load = async () => {
+  const load = useCallback(async () => {
     try {
       const res = await api.get<UserMeData>("user/me/");
       setUserMe(res.data);
@@ -372,15 +372,16 @@ export default function ProfileSettings() {
         last_name: res.data.last_name ?? "",
         email: res.data.email ?? "",
       });
-    } catch (err: unknown) {
+    } 
+    catch (err: unknown) {
       console.error(err);
-      message.error(t("failedLoad"));
+      message.error(t("loadFailed"));
     }
-  };
+  }, [t]);
 
   useEffect(() => {
     load();
-  }, []);
+  }, [load]);
 
   const onEdit = () => {
     if (!userMe) return;
