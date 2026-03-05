@@ -20,6 +20,9 @@ from .models import (
 )
 from .forms import UserCreationForm, UserChangeForm
 
+admin.site.site_header = "BlueWeb Administration"
+admin.site.site_title = "BlueWeb Admin"
+admin.site.index_title = "Welcome to BlueWeb Control Panel"
 
 
 
