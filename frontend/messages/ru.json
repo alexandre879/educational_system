@@ -4,7 +4,7 @@
     "nav": {
       "home": "ГЛАВНАЯ",
       "announcement": "ОБЪЯВЛЕНИЯ",
-      "leaderboard": "ТАБЛИЦА ЛИДЕРОВ",
+      "leaderboard": "ЛИДЕРБОРД",
       "attendance": "ПОСЕЩАЕМОСТЬ",
       "subjects": "ПРЕДМЕТЫ",
       "exercises": "УПРАЖНЕНИЯ",
@@ -148,7 +148,7 @@
   },
 
   "LeaderBoard": {
-    "pageTitle": "Таблица лидеров",
+    "pageTitle": "Лидерборд",
     "chooseSubject": "Выберите предмет",
     "chooseSubjectFirst": "Сначала выберите предмет.",
     "noDataYet": "Данных таблицы лидеров пока нет.",

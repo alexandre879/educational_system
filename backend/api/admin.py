@@ -41,6 +41,7 @@ class UserAdmin(BaseUserAdmin):
         "role",
         "grade_in",
         "points",
+        "profilePic",
         "is_staff",
         "is_active",
     )
@@ -56,6 +57,7 @@ class UserAdmin(BaseUserAdmin):
                 "role",
                 "grade_in",
                 "points",
+                "profilePic",
                 "subjects_taught",
             )
         }),
@@ -81,6 +83,7 @@ class UserAdmin(BaseUserAdmin):
                 "grade_in",
                 "points",
                 "subjects_taught",
+                "profilePic",
                 "password1",
                 "password2",
                 "is_staff",
