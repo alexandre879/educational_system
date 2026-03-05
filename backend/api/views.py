@@ -1223,7 +1223,7 @@ class TeacherDailyExerciseCreateView(APIView):
             return Response({"error": "Only teachers can create exercises."}, status=403)
 
         grade_id = request.data.get("grade_id")
-        subject_id = request.data.get("subject_id")  # optional
+        subject_id = request.data.get("subject_id")
         title = (request.data.get("title") or "").strip()
         description = (request.data.get("description") or "").strip()
 
@@ -1238,7 +1238,6 @@ class TeacherDailyExerciseCreateView(APIView):
         except (TypeError, ValueError):
             return Response({"error": "grade_id must be integer."}, status=400)
 
-        # day
         if date_str:
             try:
                 day = date.fromisoformat(str(date_str))
@@ -1247,7 +1246,6 @@ class TeacherDailyExerciseCreateView(APIView):
         else:
             day = timezone.localdate()
 
-        # due_date
         due_day = None
         if due_str:
             try:
