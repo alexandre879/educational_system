@@ -678,11 +678,11 @@ export default function Home() {
       finished === 0
         ? 0
         : Math.round(
-            finishedSessions.reduce(
-              (sum, s) => sum + (s.score_so_far ?? 0),
-              0
-            ) / finished
-          );
+          finishedSessions.reduce(
+            (sum, s) => sum + (s.score_so_far ?? 0),
+            0
+          ) / finished
+        );
 
     const finishedSorted = [...finishedSessions].sort((a, b) => {
       const ta = new Date(a.started_at ?? 0).getTime();
@@ -697,13 +697,13 @@ export default function Home() {
       last7.length === 0
         ? 0
         : last7.reduce((sum, s) => sum + (s.score_so_far ?? 0), 0) /
-          last7.length;
+        last7.length;
 
     const prevAvg =
       prev7.length === 0
         ? 0
         : prev7.reduce((sum, s) => sum + (s.score_so_far ?? 0), 0) /
-          prev7.length;
+        prev7.length;
 
     const delta =
       last7.length === 0 || prev7.length === 0
@@ -926,13 +926,18 @@ export default function Home() {
                 label={data.me.role ?? t("roleFallback")}
                 sx={{ backgroundColor: "#2d5899", color: "#fff" }}
               />
-              <span className={styles.preCaptions}>{t("grade")}:</span>
-              <Chip
-                size="small"
-                variant="outlined"
-                label={gradeText}
-                sx={{ borderColor: "#af3a75", color: "#fff" }}
-              />
+              {
+                data.me.grade_in &&
+                <>
+                  <span className={styles.preCaptions}>{t("grade")}:</span>
+                  <Chip
+                    size="small"
+                    variant="outlined"
+                    label={gradeText}
+                    sx={{ borderColor: "#af3a75", color: "#fff" }}
+                  />
+                </>
+              }
               <span className={styles.preCaptions}>{t("email")}:</span>
               <Typography className={styles.muted}>{data.me.email}</Typography>
             </div>
