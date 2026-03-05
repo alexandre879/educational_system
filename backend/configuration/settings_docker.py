@@ -23,7 +23,6 @@ if "*" in ALLOWED_HOSTS:
 CSRF_TRUSTED_ORIGINS = env_list(
     "DJANGO_CSRF_TRUSTED_ORIGINS",
     "https://educational-system-front-wh8sd.ondigitalocean.app",
-    "https://blueapp.store",
 )
 
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
