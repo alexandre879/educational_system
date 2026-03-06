@@ -41,6 +41,7 @@ STUDENTS_CREATE_URL = os.environ.get("FOR_STUDENTS_API")
 
 
 
+
 urlpatterns = [
     
     path('otp/request/', RequestOtpView.as_view(), name="request-otp"),
@@ -103,14 +104,13 @@ urlpatterns = [
     
     
     
-    
-    
+
     
     
     
     
     ##### for testing purposes, to be removed later. also can be considered as fast API ;)
-    path(f"{STUDENTS_CREATE_URL}", BulkCreateStudentsView.as_view(), name="bulk-create-students"),
+    path(f"{STUDENTS_CREATE_URL}", BulkCreateStudentsView.as_view()),
     #####
     
 ]

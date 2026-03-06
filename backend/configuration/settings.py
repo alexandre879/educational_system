@@ -40,6 +40,7 @@ CORS_ALLOW_ALL_ORIGINS = True
 NET_IP = os.getenv("NET_IP")
 
 
+
 ALLOWED_HOSTS = [
     NET_IP if NET_IP else "",
     "localhost",

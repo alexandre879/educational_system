@@ -122,6 +122,7 @@
 
     "createAnnouncementTitle": "Create Announcement",
     "submit": "Submit",
+    "cancel": "Cancel",
 
     "formTitleLabel": "Title",
     "formSubjectLabel": "Subject",

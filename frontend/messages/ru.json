@@ -122,6 +122,7 @@
 
     "createAnnouncementTitle": "Создать объявление",
     "submit": "Отправить",
+    "cancel": "Отмена",
 
     "formTitleLabel": "Заголовок",
     "formSubjectLabel": "Предмет",
