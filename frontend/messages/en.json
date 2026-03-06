@@ -308,7 +308,8 @@
     "firstName": "First name",
     "lastName": "Last name",
     "email": "Email",
-    "hint": "Tip: Your email is used for login and notifications."
+    "hint": "Tip: Your email is used for login and notifications.",
+    "changePhoto": "Change Photo"
   },
 
   "AISupport": {

@@ -1,440 +1,4 @@
-// @import "../../colors.scss";
-
-
-// .bookError {
-//   display: flex;
-//   justify-content: center;
-//   align-items: center;
-//   flex-direction: column;
-//   height: 100dvh;
-//   width: 100%;
-//   font-size: 30px;
-//   color: white;
-// }
-
-
-// /* Modal container */
-// .bookModal {
-//   :global(.ant-modal-content) {
-//     background: rgba(18, 18, 18, 0.92);
-//     border: 1px solid rgba(255, 255, 255, 0.08);
-//     border-radius: 18px;
-//     overflow: hidden;
-//   }
-
-//   :global(.ant-modal-header) {
-//     background: transparent;
-//     border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-//   }
-
-//   :global(.ant-modal-title) {
-//     color: rgba(240, 240, 240, 0.92);
-//     font-weight: 900;
-//   }
-
-//   :global(.ant-modal-close) {
-//     color: rgba(240, 240, 240, 0.7);
-//   }
-// }
-
-// /* Body wrapper MUST have height */
-// .bookModalBody {
-//   display: flex;
-//   flex-direction: column;
-//   gap: 12px;
-
-//   /* key: give the modal body a big height */
-//   height: min(78vh, 820px);
-// }
-
-// /* Top bar */
-// .bookTopBar {
-//   display: flex;
-//   gap: 10px;
-//   justify-content: flex-end;
-//   flex-wrap: wrap;
-// }
-
-// .bookAction {
-//   display: inline-flex;
-//   align-items: center;
-//   gap: 8px;
-
-//   padding: 10px 12px;
-//   border-radius: 12px;
-
-//   background: rgba(255, 255, 255, 0.05);
-//   border: 1px solid rgba(255, 255, 255, 0.08);
-//   color: rgba(240, 240, 240, 0.9);
-//   text-decoration: none;
-
-//   transition: transform 160ms ease, background 160ms ease, border-color 160ms ease;
-
-//   &:hover {
-//     transform: translateY(-1px);
-//     background: rgba(255, 255, 255, 0.08);
-//     border-color: rgba(22, 119, 255, 0.25);
-//   }
-// }
-
-// .pdfFrameWrap {
-//   flex: 1;
-//   min-height: 0;
-//   border-radius: 14px;
-//   overflow: hidden;
-
-//   border: 1px solid rgba(255, 255, 255, 0.08);
-//   background: rgba(0, 0, 0, 0.35);
-// }
-
-// .pdfFrame {
-//   width: 100%;
-//   height: 100%;
-//   border: 0;
-//   display: block;
-// }
-
-// .bookLoading {
-//   height: min(78vh, 820px);
-//   display: grid;
-//   place-items: center;
-//   gap: 10px;
-// }
-
-// .bookLoadingText {
-//   color: rgba(240, 240, 240, 0.7);
-//   font-weight: 700;
-// }
-
-
-// .navIcon {
-//   color: #4693ff;
-//   flex-shrink: 0;
-//   width: 22px;
-//   height: 22px;
-// }
-
-// .mainContainer {
-//   max-width: 1200px;
-//   width: 100%;
-//   margin: 0 auto;
-//   color: $text_primary;
-// }
-
-// .pageHeader {
-//   display: flex;
-//   align-items: center;
-//   justify-content: space-between;
-//   gap: 16px;
-//   margin-bottom: 16px;
-// }
-
-// .titleBlock {
-//   min-width: 0;
-// }
-
-// .titleRow {
-//   display: flex;
-//   align-items: center;
-//   gap: 10px;
-// }
-
-// .headerIcon {
-//   width: 44px;
-//   height: 44px;
-//   border-radius: 14px;
-//   display: grid;
-//   place-items: center;
-//   background: rgba(22, 119, 255, 0.14);
-//   border: 1px solid rgba(22, 119, 255, 0.18);
-//   color: #4693ff;
-//   flex-shrink: 0;
-// }
-
-// .title {
-//   font-size: 22px;
-//   font-weight: 900;
-//   margin: 0;
-// }
-
-// .subtitle {
-//   margin: 6px 0 0 0;
-//   color: $text_secondary;
-//   font-size: 13px;
-// }
-
-
-// .controls {
-//   display: flex;
-//   gap: 12px;
-//   flex-wrap: wrap;
-//   justify-content: flex-end;
-//   min-width: 0;
-// }
-
-// .searchInput {
-//   width: 320px;
-
-//   :global(.ant-input) {
-//     height: 46px;
-//     background: $table_background;
-//     border-color: rgba(255, 255, 255, 0.12);
-//     color: $text_primary;
-//   }
-
-//   :global(.ant-input::placeholder) {
-//     color: $text_secondary;
-//   }
-// }
-
-// .categorySelect {
-//   width: 210px;
-
-//   :global(.ant-select-selector) {
-//     height: 46px !important;
-//     display: flex;
-//     align-items: center;
-//     background: $table_background !important;
-//     border-color: rgba(255, 255, 255, 0.12) !important;
-//     color: $text_primary !important;
-//   }
-
-//   :global(.ant-select-selection-item) {
-//     color: $text_primary !important;
-//   }
-
-//   :global(.ant-select-arrow) {
-//     color: $text_secondary !important;
-//   }
-// }
-
-
-// .grid {
-//   display: grid;
-//   grid-template-columns: repeat(3, minmax(0, 1fr));
-//   gap: 14px;
-// }
-
-
-// .card {
-//   width: 100%;
-//   min-width: 0;
-//   text-align: left;
-
-//   border: 1px solid rgba(255, 255, 255, 0.06);
-//   background: rgba(255, 255, 255, 0.02);
-//   border-radius: 16px;
-//   padding: 14px;
-
-//   color: $text_primary;
-
-//   display: flex;
-//   flex-direction: column;
-//   gap: 12px;
-
-//   cursor: pointer;
-//   transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
-
-//   -webkit-appearance: none;
-//   appearance: none;
-// }
-
-// .card:hover {
-//   transform: translateY(-2px);
-//   border-color: rgba(22, 119, 255, 0.5);
-//   box-shadow:
-//     0 14px 28px -20px rgba(22, 119, 255, 0.55),
-//     inset 0 0 0 1px rgba(22, 119, 255, 0.15);
-// }
-
-// .cardTop {
-//   display: flex;
-//   align-items: flex-start;
-//   justify-content: space-between;
-//   gap: 12px;
-//   min-width: 0;
-// }
-
-// .cardTitle {
-//   display: flex;
-//   align-items: center;
-//   gap: 10px;
-//   min-width: 0;
-//   flex: 1;
-// }
-
-// .subjectIcon {
-//   font-size: 1.15rem;
-//   color: #4693ff;
-//   display: flex;
-//   align-items: center;
-//   flex-shrink: 0;
-// }
-
-// .subjectName {
-//   font-size: 1rem;
-//   font-weight: 900;
-
-//   min-width: 0;
-//   overflow: hidden;
-//   text-overflow: ellipsis;
-//   white-space: nowrap;
-// }
-
-
-// .categoryPill {
-//   flex-shrink: 0;
-
-//   font-size: 0.78rem;
-//   padding: 6px 10px;
-//   border-radius: 999px;
-
-//   border: 1px solid rgba(255, 255, 255, 0.09);
-//   background: rgba(0, 0, 0, 0.18);
-//   color: $text_secondary;
-
-//   max-width: 45%;
-//   min-width: 0;
-//   overflow: hidden;
-//   text-overflow: ellipsis;
-//   white-space: nowrap;
-// }
-
-// .categoryPill[data-cat="STEM"] {
-//   border-color: rgba(22, 119, 255, 0.22);
-//   background: rgba(22, 119, 255, 0.08);
-//   color: $text_primary;
-// }
-
-// .categoryPill[data-cat="Languages"] {
-//   border-color: rgba(250, 173, 20, 0.24);
-//   background: rgba(250, 173, 20, 0.08);
-//   color: $text_primary;
-// }
-
-// .categoryPill[data-cat="Humanities"] {
-//   border-color: rgba(46, 204, 113, 0.22);
-//   background: rgba(46, 204, 113, 0.08);
-//   color: $text_primary;
-// }
-
-// .categoryPill[data-cat="Arts"] {
-//   border-color: rgba(235, 47, 150, 0.22);
-//   background: rgba(235, 47, 150, 0.08);
-//   color: $text_primary;
-// }
-
-
-// .cardMeta {
-//   display: grid;
-//   grid-template-columns: 1fr;
-//   gap: 10px;
-// }
-
-// .metaItem {
-//   min-width: 0;
-//   border: 1px solid rgba(255, 255, 255, 0.06);
-//   background: rgba(0, 0, 0, 0.18);
-//   border-radius: 12px;
-//   padding: 10px;
-//   display: flex;
-//   align-items: center;
-//   gap: 4px;
-// }
-
-// .metaLabel {
-//   font-size: 0.78rem;
-//   color: $text_secondary;
-// }
-
-// .metaValue {
-//   font-size: 0.95rem;
-//   font-weight: 800;
-// }
-
-// .metaValueLine {
-//   font-size: 0.9rem;
-//   color: $text_primary;
-//   opacity: 0.9;
-
-//   overflow: hidden;
-//   display: -webkit-box;
-//   -webkit-box-orient: vertical;
-// }
-
-
-// .emptyState {
-//   margin-top: 18px;
-//   padding: 18px;
-//   border-radius: 16px;
-//   border: 1px dashed rgba(255, 255, 255, 0.12);
-//   background: rgba(255, 255, 255, 0.02);
-// }
-
-// .emptyTitle {
-//   font-weight: 900;
-// }
-
-// .emptyText {
-//   margin-top: 4px;
-//   color: $text_secondary;
-//   font-size: 13px;
-// }
-
-
-// @media (min-width: 1400px) {
-//   .grid {
-//     grid-template-columns: repeat(4, minmax(0, 1fr));
-//   }
-// }
-
-// @media (max-width: 1024px) {
-
-//   .mainContainer {
-//     display: flex;
-//     flex-direction: column;
-//     gap: 20px;
-//   }
-
-//   .pageHeader {
-//     flex-direction: column;
-//     align-items: stretch;
-//   }
-
-//   .controls {
-//     justify-content: flex-start;
-//   }
-
-//   .grid {
-//     grid-template-columns: repeat(2, minmax(0, 1fr));
-//   }
-// }
-
-// @media (max-width: 600px) {
-//   .searchInput {
-//     width: 100%;
-//   }
-
-//   .categorySelect {
-//     width: 100%;
-//   }
-
-//   .grid {
-//     grid-template-columns: 1fr;
-//   }
-
-//   .categoryPill {
-//     max-width: 60%;
-//   }
-// }
-
-
-
 @import "../../../colors.scss";
-
-/* ===============================
-   STATES
-=================================*/
 
 .bookError {
   display: flex;
@@ -447,12 +11,8 @@
   color: white;
 }
 
-/* ===============================
-   MODAL (AntD) – RESPONSIVE SAFE
-=================================*/
 
 .bookModal {
-  /* Make modal fit on small screens */
   :global(.ant-modal) {
     width: min(920px, calc(100vw - 32px)) !important;
     max-width: calc(100vw - 32px) !important;
@@ -480,24 +40,19 @@
     color: rgba(240, 240, 240, 0.7);
   }
 
-  /* Prevent body from pushing modal off screen */
   :global(.ant-modal-body) {
     padding: 16px;
   }
 }
 
-/* Body wrapper MUST have height */
 .bookModalBody {
   display: flex;
   flex-direction: column;
   gap: 12px;
-
-  /* Use dvh to behave better on mobile browser UI bars */
   height: min(78dvh, 820px);
   min-height: 0;
 }
 
-/* Top bar */
 .bookTopBar {
   display: flex;
   gap: 10px;
@@ -510,15 +65,12 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-
   padding: 10px 12px;
   border-radius: 12px;
-
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.08);
   color: rgba(240, 240, 240, 0.9);
   text-decoration: none;
-
   transition: transform 160ms ease, background 160ms ease, border-color 160ms ease;
 
   &:hover {
@@ -533,7 +85,6 @@
   min-height: 0;
   border-radius: 14px;
   overflow: hidden;
-
   border: 1px solid rgba(255, 255, 255, 0.08);
   background: rgba(0, 0, 0, 0.35);
 }
@@ -557,9 +108,6 @@
   font-weight: 700;
 }
 
-/* ===============================
-   HEADER
-=================================*/
 
 .navIcon {
   color: #4693ff;
@@ -573,8 +121,6 @@
   width: 100%;
   margin: 0 auto;
   color: $text_primary;
-
-  /* prevents random horizontal overflow from children */
   overflow-x: hidden;
 }
 
@@ -625,7 +171,7 @@
 }
 
 /* ===============================
-   CONTROLS (fix overflow)
+   CONTROLS
 =================================*/
 
 .controls {
@@ -634,8 +180,6 @@
   flex-wrap: wrap;
   justify-content: flex-end;
   min-width: 0;
-
-  /* allow wrapping without forcing horizontal scroll */
   align-items: center;
 }
 
@@ -664,26 +208,80 @@
   min-width: 0;
 
   :global(.ant-select-selector) {
+    min-height: 46px !important;
     height: 46px !important;
-    display: flex;
-    align-items: center;
-    background: $table_background !important;
-    border-color: rgba(255, 255, 255, 0.12) !important;
+    padding: 0 12px !important;
+
+    display: flex !important;
+    align-items: center !important;
+
+    border-radius: 12px !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+
+    background: rgba(20, 20, 20, 0.55) !important;
     color: $text_primary !important;
+
+    backdrop-filter: blur(10px) !important;
+    -webkit-backdrop-filter: blur(10px) !important;
+
+    box-shadow: 0 12px 34px rgba(0, 0, 0, 0.25) !important;
+    transition: transform 160ms ease, border-color 160ms ease, background 160ms ease;
+  }
+
+  &:hover :global(.ant-select-selector) {
+    transform: translateY(-1px);
+    border-color: rgba(22, 119, 255, 0.22) !important;
+    background: rgba(20, 20, 20, 0.62) !important;
   }
 
   :global(.ant-select-selection-item) {
-    color: $text_primary !important;
+    color: rgba(240, 240, 240, 0.92) !important;
+    font-weight: 600;
+    line-height: 44px !important;
+  }
+
+  :global(.ant-select-selection-placeholder) {
+    color: rgba(240, 240, 240, 0.5) !important;
+    line-height: 44px !important;
   }
 
   :global(.ant-select-arrow) {
-    color: $text_secondary !important;
+    color: rgba(240, 240, 240, 0.8) !important;
   }
 }
 
-/* ===============================
-   GRID + CARDS
-=================================*/
+.categorySelectDropdown {
+  background: rgba(31, 31, 31, 0.92) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-radius: 14px !important;
+
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+
+  box-shadow: 0 22px 80px rgba(0, 0, 0, 0.65) !important;
+  padding: 6px !important;
+
+  :global(.ant-select-item) {
+    border-radius: 10px !important;
+    color: rgba(240, 240, 240, 0.88) !important;
+    transition: background 160ms ease;
+  }
+
+  :global(.ant-select-item-option-active) {
+    background: rgba(255, 255, 255, 0.06) !important;
+  }
+
+  :global(.ant-select-item-option-selected) {
+    background: rgba(22, 119, 255, 0.14) !important;
+    color: rgba(240, 240, 240, 0.92) !important;
+    font-weight: 600;
+  }
+
+  :global(.ant-select-item-option-content) {
+    color: rgba(240, 240, 240, 0.92) !important;
+  }
+}
+
 
 .grid {
   display: grid;
@@ -695,25 +293,18 @@
   width: 100%;
   min-width: 0;
   text-align: left;
-
   border: 1px solid rgba(255, 255, 255, 0.06);
   background: rgba(255, 255, 255, 0.02);
   border-radius: 16px;
   padding: 14px;
-
   color: $text_primary;
-
   display: flex;
   flex-direction: column;
   gap: 12px;
-
   cursor: pointer;
   transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
-
   -webkit-appearance: none;
   appearance: none;
-
-  /* stops long content from widening the card */
   overflow: hidden;
 }
 
@@ -752,7 +343,6 @@
 .subjectName {
   font-size: 1rem;
   font-weight: 900;
-
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -761,15 +351,12 @@
 
 .categoryPill {
   flex-shrink: 0;
-
   font-size: 0.78rem;
   padding: 6px 10px;
   border-radius: 999px;
-
   border: 1px solid rgba(255, 255, 255, 0.09);
   background: rgba(0, 0, 0, 0.18);
   color: $text_secondary;
-
   max-width: 45%;
   min-width: 0;
   overflow: hidden;
@@ -777,22 +364,24 @@
   white-space: nowrap;
 }
 
-/* Category colors */
 .categoryPill[data-cat="STEM"] {
   border-color: rgba(22, 119, 255, 0.22);
   background: rgba(22, 119, 255, 0.08);
   color: $text_primary;
 }
+
 .categoryPill[data-cat="Languages"] {
   border-color: rgba(250, 173, 20, 0.24);
   background: rgba(250, 173, 20, 0.08);
   color: $text_primary;
 }
+
 .categoryPill[data-cat="Humanities"] {
   border-color: rgba(46, 204, 113, 0.22);
   background: rgba(46, 204, 113, 0.08);
   color: $text_primary;
 }
+
 .categoryPill[data-cat="Arts"] {
   border-color: rgba(235, 47, 150, 0.22);
   background: rgba(235, 47, 150, 0.08);
@@ -815,8 +404,6 @@
   display: flex;
   align-items: center;
   gap: 6px;
-
-  /* prevents label/value forcing width */
   overflow: hidden;
 }
 
@@ -839,15 +426,10 @@
   font-size: 0.9rem;
   color: $text_primary;
   opacity: 0.9;
-
   overflow: hidden;
   display: -webkit-box;
   -webkit-box-orient: vertical;
 }
-
-/* ===============================
-   EMPTY
-=================================*/
 
 .emptyState {
   margin-top: 18px;
@@ -867,18 +449,13 @@
   font-size: 13px;
 }
 
-/* ===============================
-   RESPONSIVE
-=================================*/
 
-/* very large screens */
 @media (min-width: 1400px) {
   .grid {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
 
-/* tablet */
 @media (max-width: 1024px) {
   .mainContainer {
     display: flex;
@@ -898,13 +475,11 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  /* modal better on tablet */
   .bookModalBody {
     height: min(76dvh, 780px);
   }
 }
 
-/* phone */
 @media (max-width: 600px) {
   .searchInput,
   .categorySelect {
@@ -920,7 +495,6 @@
     max-width: 60%;
   }
 
-  /* modal more compact on mobile */
   .bookModal {
     :global(.ant-modal) {
       width: calc(100vw - 24px) !important;
