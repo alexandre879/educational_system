@@ -301,7 +301,7 @@ export default function AnnouncementPage() {
           </Dropdown>
         </div>
       </div>
-
+ 
       <Modal
         title={t("createAnnouncementTitle")}
         open={isModalOpen}
