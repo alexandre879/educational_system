@@ -1,4 +1,4 @@
-{% extends "admin/base_site.html" %}
+{% comment %} {% extends "admin/base_site.html" %}
 {% load i18n %}
 
 {% block usertools %}
@@ -12,6 +12,42 @@
           {% get_available_languages as LANGUAGES %}
           {% for lang_code, lang_name in LANGUAGES %}
             <option value="{{ lang_code }}" {% if lang_code == LANGUAGE_CODE %}selected{% endif %}>
+              {{ lang_name }}
+            </option>
+          {% endfor %}
+        </select>
+      </form>
+    {% endif %}
+    {{ block.super }}
+  </div>
+{% endblock %} {% endcomment %}
+
+
+
+
+{% extends "admin/base_site.html" %}
+{% load i18n %}
+
+{% block usertools %}
+  <div id="user-tools">
+    {% if has_permission %}
+      {% get_current_language as CURRENT_LANGUAGE %}
+      <form action="{% url 'set_language' %}" method="post" style="display:inline; margin-right: 12px;">
+        {% csrf_token %}
+        <input name="next" type="hidden" value="" />
+        <select
+          name="language"
+          onchange="
+            const lang = this.value;
+            const path = window.location.pathname.replace(/^\/(en|ka|ru)(?=\/|$)/, '');
+            this.form.querySelector('input[name=next]').value =
+              '/' + lang + (path || '/') + window.location.search + window.location.hash;
+            this.form.submit();
+          "
+        >
+          {% get_available_languages as LANGUAGES %}
+          {% for lang_code, lang_name in LANGUAGES %}
+            <option value="{{ lang_code }}" {% if lang_code == CURRENT_LANGUAGE %}selected{% endif %}>
               {{ lang_name }}
             </option>
           {% endfor %}
