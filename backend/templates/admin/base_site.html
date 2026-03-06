@@ -1,15 +1,76 @@
 {% extends "admin/base_site.html" %}
 {% load i18n %}
+{% block extrahead %}
+  {{ block.super }}
+  <style>
+    #header {
+      display: flex !important;
+      align-items: center !important;
+      justify-content: space-between !important;
+    }
+
+    #branding {
+      display: flex !important;
+      align-items: center !important;
+      min-height: 64px !important;
+    }
+
+    #user-tools {
+      display: flex !important;
+      align-items: center !important;
+      justify-content: flex-end !important;
+      gap: 14px !important;
+      flex-wrap: nowrap !important;
+      float: none !important;
+      margin: 0 !important;
+      text-align: right !important;
+      font-size: 16px !important;
+      font-weight: 600 !important;
+
+    }
+
+    #user-tools a,
+    #user-tools strong,
+    #logout-form button {
+      font-size: 16px !important;
+      font-weight: 600 !important;
+    }
+
+
+    .admin-lang-form {
+      display: inline-flex !important;
+      align-items: center !important;
+      margin: 0 10px 0 0 !important;
+      order: -1;
+    }
+
+    .admin-lang-select {
+      min-width: 132px !important;
+      height: 38px !important;
+      padding: 0 12px !important;
+      border-radius: 8px !important;
+      border: 1px solid #d0d7de !important;
+      background: #fff !important;
+      color: #1f2328 !important;
+      font-size: 16px !important;
+      font-weight: 600 !important;
+      cursor: pointer !important;
+      outline: none !important;
+      box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04) !important;
+    }
+  </style>
+{% endblock %}
 
 {% block usertools %}
-  <div id="user-tools">
+  <div class="admin-usertools-wrap">
     {% if has_permission %}
       {% get_current_language as CURRENT_LANGUAGE %}
-      <form action="{% url 'set_language' %}" method="post" style="display:inline; margin-right: 12px;">
+      <form action="{% url 'set_language' %}" method="post" class="admin-lang-form">
         {% csrf_token %}
         <input name="next" type="hidden" value="" />
         <select
           name="language"
+          class="admin-lang-select"
           onchange="
             const lang = this.value;
             const path = window.location.pathname;

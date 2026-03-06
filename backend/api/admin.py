@@ -171,6 +171,8 @@ admin.site.site_header = _("BlueWeb Administration")
 admin.site.site_title = _("BlueWeb Admin")
 admin.site.index_title = _("Welcome to BlueWeb Control Panel")
 
+admin.site.site_url = "https://blueapp.store"
+
 
 class WithIDAdmin(admin.ModelAdmin):
     def get_list_display(self, request):
