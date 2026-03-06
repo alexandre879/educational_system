@@ -140,7 +140,7 @@ export default function AnnouncementPage() {
 
       commentForm.resetFields();
 
-    } 
+    }
     catch (error) {
       console.log(error);
     }
@@ -230,7 +230,7 @@ export default function AnnouncementPage() {
 
       announcementForm.resetFields();
       setIsModalOpen(false);
-    } 
+    }
     catch (error) {
       console.log("Validation failed:", error);
     }
@@ -279,7 +279,14 @@ export default function AnnouncementPage() {
           )}
 
           <Dropdown
-            popupRender={(menu) => <div style={{ maxHeight: 200, overflowY: "auto" }}>{menu}</div>}
+            overlayClassName={styles.glassDropdown}
+            popupRender={(menu) => (
+              <div className={styles.dropdownPopupShell}>
+                <div className={styles.dropdownScrollWrapper}>
+                  {menu}
+                </div>
+              </div>
+            )}
             menu={{
               items: [
                 { key: "all", label: t("allSubjects"), onClick: () => setSelectedSubjectId(undefined) },
@@ -290,9 +297,10 @@ export default function AnnouncementPage() {
                 })),
               ],
             }}
-            placement="bottomLeft"
+            placement="bottomCenter"
             trigger={["click"]}
             arrow={{ pointAtCenter: true }}
+            getPopupContainer={(triggerNode) => triggerNode.parentElement || document.body}
           >
             <Button className={styles.filterButton}>
               {selectedSubjectLabel}
@@ -301,7 +309,7 @@ export default function AnnouncementPage() {
           </Dropdown>
         </div>
       </div>
- 
+
       <Modal
         title={t("createAnnouncementTitle")}
         open={isModalOpen}

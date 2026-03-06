@@ -305,9 +305,10 @@ export default function LeaderBoard() {
             <Dropdown
               overlayClassName={styles.glassDropdown}
               menu={{ items: menuItems }}
-              placement="bottomLeft"
+              placement="bottomCenter"
               trigger={["click"]}
               arrow={{ pointAtCenter: true }}
+              getPopupContainer={(triggerNode) => triggerNode.parentElement || document.body}
             >
               <Button className={styles.subjectBtn}>
                 <span className={styles.subjectBtnText}>

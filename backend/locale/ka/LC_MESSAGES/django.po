@@ -1,0 +1,265 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: ka\n"
+
+msgid "BlueWeb Administration"
+msgstr "BlueWeb ადმინისტრაცია"
+
+msgid "BlueWeb Admin"
+msgstr "BlueWeb ადმინი"
+
+msgid "Welcome to BlueWeb Control Panel"
+msgstr "მოგესალმებით BlueWeb მართვის პანელში"
+
+msgid "Personal info"
+msgstr "პირადი ინფორმაცია"
+
+msgid "Permissions"
+msgstr "ნებართვები"
+
+msgid "Important dates"
+msgstr "მნიშვნელოვანი თარიღები"
+
+msgid "Text"
+msgstr "ტექსტი"
+
+msgid "Grade"
+msgstr "კლასი"
+
+msgid "Grades"
+msgstr "კლასები"
+
+msgid "Name"
+msgstr "სახელი"
+
+msgid "Grade category"
+msgstr "კლასის კატეგორია"
+
+msgid "Grade categories"
+msgstr "კლასის კატეგორიები"
+
+msgid "Category"
+msgstr "კატეგორია"
+
+msgid "Subject"
+msgstr "საგანი"
+
+msgid "Subjects"
+msgstr "საგნები"
+
+msgid "Student"
+msgstr "მოსწავლე"
+
+msgid "Teacher"
+msgstr "მასწავლებელი"
+
+msgid "Admin"
+msgstr "ადმინისტრატორი"
+
+msgid "Parent"
+msgstr "მშობელი"
+
+msgid "Email"
+msgstr "ელფოსტა"
+
+msgid "Password"
+msgstr "პაროლი"
+
+msgid "Chat ID"
+msgstr "ჩატის ID"
+
+msgid "Role"
+msgstr "როლი"
+
+msgid "Points"
+msgstr "ქულები"
+
+msgid "Subjects taught"
+msgstr "საგნები რომელსაც ასწავლის"
+
+msgid "Profile picture"
+msgstr "პროფილის სურათი"
+
+msgid "User"
+msgstr "მომხმარებელი"
+
+msgid "Users"
+msgstr "მომხმარებლები"
+
+msgid "Parent student link"
+msgstr "მშობელი-მოსწავლის კავშირი"
+
+msgid "Parent student links"
+msgstr "მშობელი-მოსწავლის კავშირები"
+
+msgid "User subject points"
+msgstr "მომხმარებლის საგნის ქულები"
+
+msgid "Title"
+msgstr "სათაური"
+
+msgid "Duration in minutes"
+msgstr "ხანგრძლივობა წუთებში"
+
+msgid "Exam"
+msgstr "გამოცდა"
+
+msgid "Exams"
+msgstr "გამოცდები"
+
+msgid "Question category"
+msgstr "კითხვის კატეგორია"
+
+msgid "Question"
+msgstr "კითხვა"
+
+msgid "Questions"
+msgstr "კითხვები"
+
+msgid "Is correct"
+msgstr "სწორია"
+
+msgid "Option"
+msgstr "ვარიანტი"
+
+msgid "Options"
+msgstr "ვარიანტები"
+
+msgid "Current question index"
+msgstr "მიმდინარე კითხვის ინდექსი"
+
+msgid "Score so far"
+msgstr "მიმდინარე ქულა"
+
+msgid "Started"
+msgstr "დაწყებულია"
+
+msgid "Finished"
+msgstr "დასრულებულია"
+
+msgid "Started at"
+msgstr "დაწყების დრო"
+
+msgid "Ends at"
+msgstr "დასრულების დრო"
+
+msgid "Submitted at"
+msgstr "გაგზავნის დრო"
+
+msgid "Is active"
+msgstr "აქტიურია"
+
+msgid "Expired"
+msgstr "ვადაგასულია"
+
+msgid "User exam session"
+msgstr "მომხმარებლის გამოცდის სესია"
+
+msgid "User exam sessions"
+msgstr "მომხმარებლის გამოცდის სესიები"
+
+msgid "Session"
+msgstr "სესია"
+
+msgid "Answer option"
+msgstr "პასუხის ვარიანტი"
+
+msgid "User answer"
+msgstr "მომხმარებლის პასუხი"
+
+msgid "User answers"
+msgstr "მომხმარებლის პასუხები"
+
+msgid "Announcement"
+msgstr "განცხადება"
+
+msgid "Announcements"
+msgstr "განცხადებები"
+
+msgid "Comment"
+msgstr "კომენტარი"
+
+msgid "Comments"
+msgstr "კომენტარები"
+
+msgid "Weekday"
+msgstr "კვირის დღე"
+
+msgid "Start time"
+msgstr "დაწყების დრო"
+
+msgid "End time"
+msgstr "დასრულების დრო"
+
+msgid "Room"
+msgstr "ოთახი"
+
+msgid "Weekly lesson"
+msgstr "კვირის გაკვეთილი"
+
+msgid "Weekly lessons"
+msgstr "კვირის გაკვეთილები"
+
+msgid "Lesson"
+msgstr "გაკვეთილი"
+
+msgid "Date"
+msgstr "თარიღი"
+
+msgid "Is present"
+msgstr "დასწრებულია"
+
+msgid "Marked by"
+msgstr "მონიშნულია"
+
+msgid "Marked at"
+msgstr "მონიშვნის დრო"
+
+msgid "Lesson attendance"
+msgstr "გაკვეთილის დასწრება"
+
+msgid "Description"
+msgstr "აღწერა"
+
+msgid "Due date"
+msgstr "ჩაბარების თარიღი"
+
+msgid "Daily exercise"
+msgstr "ყოველდღიური დავალება"
+
+msgid "Daily exercises"
+msgstr "ყოველდღიური დავალებები"
+
+msgid "PDF file"
+msgstr "PDF ფაილი"
+
+msgid "Uploaded at"
+msgstr "ატვირთვის დრო"
+
+msgid "Subject book"
+msgstr "საგნის წიგნი"
+
+msgid "Subject books"
+msgstr "საგნის წიგნები"
+
+msgid "Outstanding token"
+msgstr "აქტიური ტოკენი"
+
+msgid "Outstanding tokens"
+msgstr "აქტიური ტოკენები"
+
+msgid "Blacklisted token"
+msgstr "შავ სიაში დამატებული ტოკენი"
+
+msgid "Blacklisted tokens"
+msgstr "შავ სიაში დამატებული ტოკენები"
+
+msgid "English"
+msgstr "ინგლისური"
+
+msgid "Georgian"
+msgstr "ქართული"
+
+msgid "Russian"
+msgstr "რუსული"
