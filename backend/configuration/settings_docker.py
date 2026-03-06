@@ -13,7 +13,8 @@ DEBUG = env_bool("DJANGO_DEBUG", "0")
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", SECRET_KEY)
 
 # Your app is mounted under /back (DO trims /back before sending to Django)
-FORCE_SCRIPT_NAME = "/back"
+
+# FORCE_SCRIPT_NAME = "/back"
 
 ALLOWED_HOSTS = env_list("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1")
 if "*" in ALLOWED_HOSTS:
@@ -29,7 +30,8 @@ SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 USE_X_FORWARDED_HOST = True
 
 # Static (admin css/js)
-STATIC_URL = "/back/static/"
+# STATIC_URL = "/back/static/"
+STATIC_URL = "/static/"
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
 # Whitenoise (DO NOT overwrite middleware; insert it)
