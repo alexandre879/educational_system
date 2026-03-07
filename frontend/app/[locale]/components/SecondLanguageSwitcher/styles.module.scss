@@ -1,0 +1,129 @@
+.languageSelect {
+  position: relative;
+  width: 100%;
+}
+
+.trigger {
+  width: 118%;
+  min-height: 46px;
+  padding: 0 12px 0 12px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  border-radius: 12px;
+  border: 1px solid var(--border-medium);
+  background: var(--surface-2);
+  color: var(--text-primary);
+
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
+  cursor: pointer;
+
+  transition:
+    transform 160ms ease,
+    border-color 160ms ease,
+    background 160ms ease,
+    box-shadow 160ms ease,
+    color 160ms ease;
+
+  &:hover {
+    transform: translateY(-1px);
+    border-color: var(--primary-ring);
+    background: var(--surface-soft-hover);
+    box-shadow: 0 14px 30px rgba(22, 119, 255, 0.12);
+  }
+}
+
+.triggerText {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.arrow {
+  flex-shrink: 0;
+  font-size: 12px;
+  color: var(--text-secondary);
+  transition: transform 160ms ease, color 160ms ease;
+}
+
+.arrowOpen {
+  transform: rotate(180deg);
+}
+
+.dropdown {
+  width: 118%;
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: calc(100% + 8px);
+  z-index: 50;
+
+  padding: 6px;
+  border-radius: 12px;
+  border: 1px solid var(--border-medium);
+  background: var(--surface-2);
+  box-shadow: var(--shadow-soft);
+
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+
+  animation: dropdownUp 160ms ease;
+}
+
+.option {
+  width: 100%;
+  min-height: 42px;
+  padding: 0 12px;
+
+  display: flex;
+  align-items: center;
+
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text-primary);
+
+  font-size: 16px;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+
+  transition: background 160ms ease, color 160ms ease, transform 160ms ease;
+
+  &:hover {
+    background: rgba(22, 119, 255, 0.08);
+  }
+
+  &:active {
+    transform: scale(0.99);
+  }
+}
+
+.optionActive {
+  background: rgba(22, 119, 255, 0.15);
+  color: var(--text-strong);
+}
+
+@keyframes dropdownUp {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
