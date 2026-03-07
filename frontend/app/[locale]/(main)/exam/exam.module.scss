@@ -1,7 +1,143 @@
-@import "../../../colors.scss";
+// @import "../../../colors.scss";
+
+// .navIcon {
+//   color: #4693ff;
+//   flex-shrink: 0;
+//   width: 22px;
+//   height: 22px;
+// }
+
+// .wrapperForNonAvailableExams {
+//   display: flex;
+//   flex-direction: column;
+//   gap: 7px;
+//   width: 100%;
+//   background-color: rgba(31, 31, 31, 0.55);
+//   border: 1px solid rgba(128, 128, 128, 0.3);
+//   border-style: dashed;
+//   padding: 18px;
+//   border-radius: 16px;
+// }
+
+// .WrapperOfMainCaptionAndIcon {
+//   display: flex;
+//   align-items: center;
+//   gap: 10px;
+//   min-width: 0;
+// }
+
+// .headerIcon {
+//   width: 44px;
+//   height: 44px;
+//   border-radius: 14px;
+//   display: grid;
+//   place-items: center;
+//   background: rgba(22, 119, 255, 0.14);
+//   border: 1px solid rgba(22, 119, 255, 0.18);
+//   color: #4693ff;
+//   flex-shrink: 0;
+// }
+
+// .pageMainCaptionStyle {
+//   font-size: clamp(18px, 2.1vw, 22px);
+//   font-weight: 900;
+//   line-height: 1.15;
+//   margin: 0;
+//   word-break: break-word;
+// }
+
+// .page {
+//   max-width: 1200px;
+//   width: 100%;
+//   min-width: 0;
+//   margin: 0 auto;
+//   display: flex;
+//   flex-direction: column;
+//   gap: 18px;
+
+//   color: $text_primary;
+// }
+
+// .topBar {
+//   display: flex;
+//   align-items: flex-end;
+//   justify-content: space-between;
+//   gap: 12px;
+//   margin-bottom: 14px;
+// }
+
+// .pageTitle {
+//   font-size: 1.4rem;
+//   font-weight: 900;
+// }
+
+// .pageSub {
+//   margin-top: 4px;
+//   color: $text_secondary;
+//   font-size: 0.95rem;
+// }
+
+// .examGrid {
+//   display: grid;
+//   gap: 14px;
+//   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+//   align-items: stretch;
+// }
+
+// @media (max-width: 900px) {
+//   .examGrid {
+//     grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+//   }
+// }
+
+// @media (max-width: 600px) {
+//   .pageTitle {
+//     font-size: 1.2rem;
+//   }
+
+//   .examGrid {
+//     grid-template-columns: 1fr;
+//   }
+// }
+
+// .loaderWrapper {
+//   min-height: 60vh;
+//   display: grid;
+//   place-items: center;
+//   gap: 12px;
+// }
+
+// .loaderText {
+//   color: $text_secondary;
+//   font-size: 0.95rem;
+// }
+
+// .noExams {
+//   max-width: 1200px;
+//   width: 100%;
+//   margin: 0 auto;
+//   display: flex;
+//   flex-direction: column;
+//   justify-content: space-between;
+//   align-content: start;
+//   gap: 10px;
+// }
+
+// .noExamsTitle {
+//   font-size: 1.2rem;
+//   font-weight: 900;
+//   color: rgb(210, 99, 99);
+// }
+
+// .noExamsSub {
+//   color: $text_secondary;
+//   font-size: 0.95rem;
+//   max-width: 340px;
+// }
+
 
 .navIcon {
-  color: #4693ff;
+  color: var(--primary-blue);
   flex-shrink: 0;
   width: 22px;
   height: 22px;
@@ -12,11 +148,12 @@
   flex-direction: column;
   gap: 7px;
   width: 100%;
-  background-color: rgba(31, 31, 31, 0.55);
-  border: 1px solid rgba(128, 128, 128, 0.3);
+  background-color: var(--surface-soft);
+  border: 1px solid var(--border-medium);
   border-style: dashed;
   padding: 18px;
   border-radius: 16px;
+  color: var(--text-secondary);
 }
 
 .WrapperOfMainCaptionAndIcon {
@@ -34,7 +171,7 @@
   place-items: center;
   background: rgba(22, 119, 255, 0.14);
   border: 1px solid rgba(22, 119, 255, 0.18);
-  color: #4693ff;
+  color: var(--primary-blue);
   flex-shrink: 0;
 }
 
@@ -44,6 +181,7 @@
   line-height: 1.15;
   margin: 0;
   word-break: break-word;
+  color: var(--text-strong);
 }
 
 .page {
@@ -55,7 +193,7 @@
   flex-direction: column;
   gap: 18px;
 
-  color: $text_primary;
+  color: var(--text-primary);
 }
 
 .topBar {
@@ -69,11 +207,12 @@
 .pageTitle {
   font-size: 1.4rem;
   font-weight: 900;
+  color: var(--text-strong);
 }
 
 .pageSub {
   margin-top: 4px;
-  color: $text_secondary;
+  color: var(--text-secondary);
   font-size: 0.95rem;
 }
 
@@ -108,7 +247,7 @@
 }
 
 .loaderText {
-  color: $text_secondary;
+  color: var(--text-secondary);
   font-size: 0.95rem;
 }
 
@@ -130,7 +269,7 @@
 }
 
 .noExamsSub {
-  color: $text_secondary;
+  color: var(--text-secondary);
   font-size: 0.95rem;
   max-width: 340px;
 }

@@ -1,4 +1,48 @@
-@import "../../colors.scss";
+.bottomControls {
+  width: 100%;
+  display: flex;
+  flex-direction: row-reverse;
+  gap: 25px;
+}
+
+.themeToggle {
+  width: 118%;
+  min-height: 46px;
+  border: 1px solid var(--border-medium);
+  border-radius: 12px;
+  background: var(--surface-2);
+  color: var(--text-strong);
+
+  display: grid;
+  place-items: center;
+
+  cursor: pointer;
+  font-size: 18px;
+
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
+  transition:
+    transform 160ms ease,
+    background 160ms ease,
+    border-color 160ms ease,
+    color 160ms ease,
+    box-shadow 160ms ease;
+
+  &:hover {
+    transform: translateY(-1px);
+    background: var(--surface-soft-hover);
+    border-color: var(--primary-ring);
+    color: var(--primary-blue);
+    box-shadow: 0 14px 30px rgba(22, 119, 255, 0.12);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
 
 .searchBarComponent {
   margin-bottom: 17px;
@@ -18,37 +62,37 @@
     height: 50px;
     font-size: 14px;
 
-    background: rgba(20, 20, 20, 0.65);
-    color: $text_primary;
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: var(--surface);
+    color: var(--text-primary);
+    border: 1px solid var(--border-medium);
     border-right: none;
 
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
 
-    transition: border-color 160ms ease, box-shadow 160ms ease, background 160ms ease;
+    transition: border-color 160ms ease, box-shadow 160ms ease, background 160ms ease, color 160ms ease;
 
     &:focus {
-      border-color: rgba(22, 119, 255, 0.55);
-      box-shadow: 0 0 0 3px rgba(22, 119, 255, 0.14);
-      background: rgba(20, 20, 20, 0.75);
+      border-color: var(--primary-ring);
+      box-shadow: 0 0 0 3px var(--primary-ring-soft);
+      background: var(--surface-soft-hover);
     }
   }
 
   :global(.ant-input::placeholder) {
-    color: rgba(240, 240, 240, 0.38);
+    color: var(--placeholder);
   }
 
   :global(.ant-input-search-button) {
     height: 50px;
-    border: 1px solid rgba(255, 255, 255, 0.10);
+    border: 1px solid var(--border-strong);
 
-    background: linear-gradient(135deg, $primary_blue, $primary_blue_hover);
+    background: linear-gradient(135deg, var(--primary-blue), var(--primary-blue-hover));
     color: white;
     font-weight: 800;
 
     box-shadow:
-      0 12px 30px rgba(22, 119, 255, 0.20),
+      0 12px 30px rgba(22, 119, 255, 0.2),
       0 2px 0 rgba(255, 255, 255, 0.06) inset;
 
     transition: transform 160ms ease, filter 160ms ease, box-shadow 160ms ease;
@@ -97,42 +141,41 @@
 }
 
 .searchDropdown {
-  background: rgba(31, 31, 31, 0.82) !important;
-  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  background: var(--surface-soft) !important;
+  border: 1px solid var(--border-medium) !important;
   border-radius: 14px !important;
   padding: 6px !important;
 
   backdrop-filter: blur(12px) !important;
   -webkit-backdrop-filter: blur(12px) !important;
 
-  box-shadow: 0 18px 60px rgba(0, 0, 0, 0.6) !important;
+  box-shadow: var(--shadow-soft) !important;
   margin-top: 8px !important;
 
   :global(.ant-select-item) {
     background-color: transparent !important;
-    color: $text_primary !important;
+    color: var(--text-primary) !important;
     border-radius: 10px;
     transition: background-color 0.15s ease, transform 0.15s ease;
   }
 
   :global(.ant-select-item-option-active) {
-    background-color: rgba(255, 255, 255, 0.05) !important;
+    background-color: var(--hover-soft) !important;
   }
 
   :global(.ant-select-item-option-selected) {
     background-color: rgba(22, 119, 255, 0.14) !important;
-    color: $text_primary !important;
+    color: var(--text-primary) !important;
   }
 
   :global(.ant-select-item-option-content) {
-    color: $text_primary !important;
+    color: var(--text-primary) !important;
   }
 
   :global(.ant-empty-description) {
-    color: $text_secondary !important;
+    color: var(--text-secondary) !important;
   }
 }
-
 
 .layoutMainContainer {
   display: flex;
@@ -147,7 +190,7 @@
   background:
     radial-gradient(1200px 600px at 20% 10%, rgba(22, 119, 255, 0.14), transparent 60%),
     radial-gradient(900px 500px at 80% 20%, rgba(250, 173, 20, 0.08), transparent 55%),
-    $dark_background;
+    var(--bg);
 
   background-repeat: no-repeat;
   background-size: cover;
@@ -160,8 +203,8 @@
   width: 210px;
   z-index: 9000;
 
-  background: rgba(31, 31, 31, 0.78);
-  border-right: 1px solid rgba(255, 255, 255, 0.06);
+  background: var(--surface-soft);
+  border-right: 1px solid var(--border-medium);
 
   padding: 16px 10px;
   z-index: 1000;
@@ -172,7 +215,7 @@
   overflow-y: auto;
   overflow-x: hidden;
 
-  transition: left 0.3s ease;
+  transition: left 0.3s ease, background 160ms ease, border-color 160ms ease;
 
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
@@ -186,7 +229,7 @@
 
 .schoolIcon {
   font-size: 38px;
-  color: rgba(240, 240, 240, 0.92);
+  color: var(--text-strong);
 }
 
 .mainLogoContainer {
@@ -196,14 +239,14 @@
   align-items: end;
   gap: 10px;
 
-  color: $text_primary;
+  color: var(--text-primary);
   font-weight: 900;
   letter-spacing: 0.35px;
   font-size: 1.15rem;
 
   padding: 0 0 26px 0;
 
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid var(--border-soft, var(--border-medium));
 }
 
 .pageRedirectionWrapper {
@@ -215,15 +258,15 @@
   border-radius: 12px;
 
   cursor: pointer;
-  color: $text_primary;
+  color: var(--text-primary);
 
-  transition: background 160ms ease, transform 160ms ease, border-color 160ms ease;
+  transition: background 160ms ease, transform 160ms ease, border-color 160ms ease, color 160ms ease;
   border: 1px solid transparent;
 
   &:hover {
-    background: rgba(255, 255, 255, 0.045);
+    background: var(--hover-soft);
     transform: translateY(-1px);
-    border-color: rgba(255, 255, 255, 0.06);
+    border-color: var(--border-medium);
   }
 
   &:active {
@@ -239,7 +282,7 @@
 }
 
 .navIcon {
-  color: #4693ff;
+  color: var(--primary-blue);
   flex-shrink: 0;
   width: 17px;
   height: 17px;
@@ -278,11 +321,11 @@
   padding: 0 20px;
   z-index: 1000;
 
-  background: rgba(31, 31, 31, 0.72);
-  color: $text_primary;
+  background: var(--surface-soft);
+  color: var(--text-primary);
   font-weight: 500;
 
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid var(--border-medium);
 
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
@@ -293,9 +336,9 @@
 .burgerIcon {
   cursor: pointer;
   font-size: 24px;
-  color: $text_primary;
+  color: var(--text-primary);
   display: none;
-  transition: transform 160ms ease, opacity 160ms ease;
+  transition: transform 160ms ease, opacity 160ms ease, color 160ms ease;
 
   &:hover {
     transform: translateY(-1px);
@@ -323,8 +366,8 @@
   align-items: center;
   gap: 10px;
 
-  background: rgba(20, 20, 20, 0.55);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--surface);
+  border: 1px solid var(--border-medium);
 
   padding: 8px 10px;
   border-radius: 16px;
@@ -338,7 +381,7 @@
   &:hover {
     transform: translateY(-1px);
     border-color: rgba(22, 119, 255, 0.22);
-    background: rgba(20, 20, 20, 0.62);
+    background: var(--surface-soft-hover);
   }
 
   &:active {
@@ -356,7 +399,7 @@
   border-radius: 50%;
   overflow: hidden;
 
-  border: 1px solid rgba(255, 255, 255, 0.10);
+  border: 1px solid var(--border-strong);
   box-shadow: 0 10px 26px rgba(0, 0, 0, 0.35);
 }
 
@@ -365,15 +408,16 @@
   min-height: 0;
   min-width: 0;
 
-  color: $text_primary;
+  color: var(--text-primary);
   overflow-y: auto;
   overflow-x: hidden;
   padding: 24px;
 
   background:
     radial-gradient(1100px 520px at 25% 5%, rgba(22, 119, 255, 0.08), transparent 60%),
-    $dark_background;
+    var(--bg);
 }
+
 
 .overlay {
   display: none;
