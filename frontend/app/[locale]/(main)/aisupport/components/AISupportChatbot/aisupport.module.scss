@@ -1,12 +1,10 @@
-@import "../../../../../colors.scss";
-
 .page {
   width: 100%;
   max-width: 1100px;
   margin: 0 auto;
   padding: 18px;
   background: transparent;
-  color: $text_primary;
+  color: var(--text-primary);
 }
 
 .shell {
@@ -17,14 +15,14 @@
   flex-direction: column;
 
   border-radius: 18px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--border-medium);
 
-  background: rgba(31, 31, 31, 0.74);
+  background: var(--surface-soft);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
 
   box-shadow:
-    0 18px 60px rgba(0, 0, 0, 0.45),
+    var(--shadow-soft),
     0 0 0 1px rgba(255, 255, 255, 0.03) inset;
 
   overflow: hidden;
@@ -37,8 +35,8 @@
 
   padding: 14px 14px;
 
-  background: rgba(20, 20, 20, 0.55);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--surface);
+  border-bottom: 1px solid var(--border-medium);
 
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
@@ -64,14 +62,14 @@
 .title {
   font-size: 16px;
   font-weight: 900;
-  color: rgba(240, 240, 240, 0.92);
+  color: var(--text-strong);
   letter-spacing: 0.2px;
 }
 
 .subtitle {
   font-size: 12px;
   font-weight: 700;
-  color: rgba(240, 240, 240, 0.55);
+  color: var(--text-muted);
 }
 
 .headerActions {
@@ -84,14 +82,14 @@
   padding: 0 12px;
   border-radius: 12px;
 
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.10);
-  color: rgba(240, 240, 240, 0.9);
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  color: var(--text-strong);
 
   font-weight: 800;
   cursor: pointer;
 
-  transition: transform 0.12s ease, filter 0.12s ease;
+  transition: transform 0.12s ease, filter 0.12s ease, background 0.12s ease, border-color 0.12s ease, color 0.12s ease;
 }
 
 .secondaryBtn:active {
@@ -135,8 +133,8 @@
 }
 
 .bubble[data-role="assistant"] {
-  background: rgba(255, 255, 255, 0.05);
-  border-color: rgba(255, 255, 255, 0.07);
+  background: var(--surface);
+  border-color: var(--border-soft, var(--border-medium));
 }
 
 .bubble[data-role="user"] {
@@ -147,14 +145,14 @@
 .bubbleRole {
   font-size: 11px;
   font-weight: 900;
-  color: rgba(240, 240, 240, 0.55);
+  color: var(--text-muted);
   margin-bottom: 6px;
 }
 
 .bubbleText {
   font-size: 14px;
   line-height: 1.45;
-  color: rgba(240, 240, 240, 0.92);
+  color: var(--text-strong);
   white-space: pre-wrap;
   word-break: break-word;
 }
@@ -170,13 +168,14 @@
   width: 6px;
   height: 6px;
   border-radius: 99px;
-  background: rgba(240, 240, 240, 0.55);
+  background: var(--text-muted);
   animation: dot 1s infinite ease-in-out;
 }
 
 .typing span:nth-child(2) {
   animation-delay: 0.15s;
 }
+
 .typing span:nth-child(3) {
   animation-delay: 0.3s;
 }
@@ -195,8 +194,8 @@
 
 .footer {
   padding: 12px 14px;
-  background: rgba(20, 20, 20, 0.55);
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--surface);
+  border-top: 1px solid var(--border-medium);
 
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
@@ -208,7 +207,7 @@
   border-radius: 12px;
   background: rgba(255, 77, 79, 0.10);
   border: 1px solid rgba(255, 77, 79, 0.22);
-  color: rgba(240, 240, 240, 0.92);
+  color: var(--text-strong);
   font-weight: 800;
   font-size: 12px;
 }
@@ -223,11 +222,11 @@
   flex: 1;
   min-width: 0;
 
-  background: rgba(20, 20, 20, 0.55);
-  border: 1px solid rgba(255, 255, 255, 0.10);
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
   border-radius: 12px;
 
-  color: $text_primary;
+  color: var(--text-primary);
   padding: 12px 12px;
 
   resize: none;
@@ -240,9 +239,13 @@
   overflow: auto;
 }
 
+.input::placeholder {
+  color: var(--placeholder);
+}
+
 .input:focus {
-  border-color: rgba(22, 119, 255, 0.35);
-  box-shadow: 0 0 0 3px rgba(22, 119, 255, 0.12);
+  border-color: var(--primary-ring);
+  box-shadow: 0 0 0 3px var(--primary-ring-soft);
 }
 
 .sendBtn {
@@ -250,8 +253,8 @@
   padding: 0 16px;
   border-radius: 12px;
 
-  background: linear-gradient(135deg, $primary_blue, $primary_blue_hover);
-  border: 1px solid rgba(255, 255, 255, 0.10);
+  background: linear-gradient(135deg, var(--primary-blue), var(--primary-blue-hover));
+  border: 1px solid var(--border-strong);
   color: #fff;
 
   font-weight: 900;
@@ -279,17 +282,19 @@
   margin-top: 10px;
   font-size: 11px;
   font-weight: 700;
-  color: rgba(240, 240, 240, 0.45);
+  color: var(--text-muted);
 }
 
 @media (max-width: 720px) {
   .page {
     padding: 14px;
   }
+
   .shell {
     border-radius: 16px;
     min-height: 88dvh;
   }
+
   .chatArea {
     padding: 12px;
   }
