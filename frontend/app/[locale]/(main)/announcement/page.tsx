@@ -195,7 +195,8 @@ export default function AnnouncementPage() {
 
       setPage(1);
       scrollToTop();
-    } catch (error) {
+    } 
+    catch (error) {
       console.error("Error fetching announcements:", error);
     }
   }, []);
