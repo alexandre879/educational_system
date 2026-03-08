@@ -6,7 +6,7 @@
       "announcement": "განცხადებები",
       "leaderboard": "ლიდერბორდი",
       "attendance": "დასწრება",
-      "subjects": "საგნები",
+      "subjects": "წიგნები",
       "exercises": "სავარჯიშოები",
       "exams": "გამოცდები",
       "schedule": "ცხრილი"
@@ -65,7 +65,7 @@
     "email": "ელ-ფოსტა",
 
     "totalPoints": "სულ ქულები",
-    "subjects": "საგნები",
+    "subjects": "წიგნები",
     "activeExams": "აქტიური გამოცდები",
 
     "pointsBySubject": "ქულები საგნების მიხედვით",
@@ -165,12 +165,12 @@
   },
 
   "Subjects": {
-    "pageTitle": "საგნები",
-    "subtitle": "დაათვალიერე შენთვის მინიჭებული საგნები.",
+    "pageTitle": "წიგნები",
+    "subtitle": "დაათვალიერე შენთვის მინიჭებული წიგნები.",
     "all": "ყველა",
     "grade": "კლასი",
 
-    "loadingSubjects": "საგნები იტვირთება...",
+    "loadingSubjects": "წიგნები იტვირთება...",
     "noResults": "შედეგი ვერ მოიძებნა",
     "tryChangingCategory": "სცადე კატეგორიის შეცვლა.",
 

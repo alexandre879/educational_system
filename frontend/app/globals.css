@@ -53,6 +53,7 @@ html[data-theme="light"] {
   --surface-2: #ffffff;
   --surface-soft: rgba(255, 255, 255, 0.88);
   --surface-soft-hover: #f3f7fc;
+  --surface-bold: rgb(212, 212, 212);
 
   --text-primary: #1e293b;
   --text-strong: #0f172a;

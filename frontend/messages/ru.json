@@ -6,14 +6,14 @@
       "announcement": "ОБЪЯВЛЕНИЯ",
       "leaderboard": "ЛИДЕРБОРД",
       "attendance": "ПОСЕЩАЕМОСТЬ",
-      "subjects": "ПРЕДМЕТЫ",
+      "subjects": "КНИГИ",
       "exercises": "УПРАЖНЕНИЯ",
       "exams": "ЭКЗАМЕНЫ",
       "schedule": "РАСПИСАНИЕ"
     },
     "search": {
       "placeholder": "Поиск...",
-      "subject": "Предмет",
+      "subject": "Книги",
       "exam": "Экзамен",
       "announcement": "Объявление",
       "untitled": "Без названия"
@@ -165,12 +165,12 @@
   },
 
   "Subjects": {
-    "pageTitle": "Предметы",
-    "subtitle": "Просмотрите назначенные вам предметы.",
+    "pageTitle": "Книги",
+    "subtitle": "Просмотрите назначенные вам книги.",
     "all": "Все",
     "grade": "Класс",
 
-    "loadingSubjects": "Загрузка предметов...",
+    "loadingSubjects": "Загрузка книг...",
     "noResults": "Нет результатов",
     "tryChangingCategory": "Попробуйте изменить категорию.",
 

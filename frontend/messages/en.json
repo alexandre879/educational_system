@@ -6,7 +6,7 @@
       "announcement": "ANNOUNCEMENT",
       "leaderboard": "LEADER BOARD",
       "attendance": "ATTENDANCE",
-      "subjects": "SUBJECTS",
+      "subjects": "BOOKS",
       "exercises": "EXERCISES",
       "exams": "EXAMS",
       "schedule": "SCHEDULE"
@@ -65,7 +65,7 @@
     "email": "Email",
 
     "totalPoints": "Total Points",
-    "subjects": "Subjects",
+    "subjects": "Books",
     "activeExams": "Active Exams",
 
     "pointsBySubject": "Points by Subject",
@@ -117,7 +117,7 @@
   "Announcement": {
     "pageTitle": "Announcement",
     "addAnnouncement": "Add Announcement",
-    "allSubjects": "All subjects",
+    "allSubjects": "All books",
     "chooseSubject": "Choose a subject",
 
     "createAnnouncementTitle": "Create Announcement",
@@ -165,12 +165,12 @@
   },
 
   "Subjects": {
-    "pageTitle": "Subjects",
-    "subtitle": "Browse your assigned subjects.",
+    "pageTitle": "Books",
+    "subtitle": "Browse your assigned books.",
     "all": "All",
     "grade": "Grade",
 
-    "loadingSubjects": "Loading subjects...",
+    "loadingSubjects": "Loading books...",
     "noResults": "No results",
     "tryChangingCategory": "Try changing the category.",
 

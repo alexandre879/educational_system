@@ -275,7 +275,6 @@ export default function WeeklySchedule({ gradeId }: { gradeId?: number }) {
     fetchData(weekday);
   }, [weekday, fetchData]);
 
-  // ✅ map weekday number -> translation key
   const weekdayKey = useMemo(() => {
     const map: Record<number, string> = {
       1: "mon",
@@ -289,13 +288,10 @@ export default function WeeklySchedule({ gradeId }: { gradeId?: number }) {
     return map[weekday] ?? "mon";
   }, [weekday]);
 
-  // ✅ translated label for currently selected day
   const dayLabel = useMemo(() => t(`weekdays.${weekdayKey}`), [t, weekdayKey]);
 
-  // ✅ translated tabs
   const tabItems = useMemo(
-    () =>
-      WEEKDAYS.map((d) => {
+    () => WEEKDAYS.map((d) => {
         const dayMap: Record<number, string> = {
           1: "mon",
           2: "tue",
@@ -376,7 +372,7 @@ export default function WeeklySchedule({ gradeId }: { gradeId?: number }) {
                       <List.Item>
                         <List.Item.Meta
                           avatar={<Avatar src={s.profilePic ?? undefined}>{s.first_name?.[0]}</Avatar>}
-                          title={<span style={{ color: "#ffffff", fontWeight: 600 }}>{s.first_name} {s.last_name}</span>}
+                          title={<span style={{ color: "var(--text-primary)", fontWeight: 600 }}>{s.first_name} {s.last_name}</span>}
                           description={<span className={styles.studentMailCaptionStyle}>{s.email}</span>}
                         />
                       </List.Item>
