@@ -90,7 +90,8 @@ export default function MainLayout({ children }: { children: ReactNode }) {
 
       setTheme(savedTheme);
       document.documentElement.setAttribute("data-theme", savedTheme);
-    } catch {
+    } 
+    catch {
       // ignore
     }
   }, []);
@@ -101,7 +102,8 @@ export default function MainLayout({ children }: { children: ReactNode }) {
 
     try {
       window.localStorage.setItem(THEME_KEY, nextTheme);
-    } catch {
+    } 
+    catch {
       // ignore
     }
 
@@ -114,9 +116,11 @@ export default function MainLayout({ children }: { children: ReactNode }) {
   const handleLogout = async () => {
     try {
       await api.post("/user/logout/", { refresh: Cookies.get("refresh") });
-    } catch (err: unknown) {
+    } 
+    catch (err: unknown) {
       console.log("Logout failed:", err);
-    } finally {
+    } 
+    finally {
       Cookies.remove("access");
       Cookies.remove("refresh");
       router.push(`/${locale}/login`);
