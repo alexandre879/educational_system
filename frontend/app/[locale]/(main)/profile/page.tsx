@@ -9,8 +9,7 @@
 // import { FaUserCircle } from "react-icons/fa";
 // import { Avatar } from "@mui/material";
 // import { letterToHsl } from "./utils";
-
-
+// import { useTranslations } from "next-intl";
 
 // function getAxiosDetail(err: unknown): string | null {
 //   if (!err || typeof err !== "object") return null;
@@ -27,6 +26,8 @@
 // }
 
 // export default function ProfileSettings() {
+//   const t = useTranslations("Profile");
+
 //   const [userMe, setUserMe] = useState<UserMeData | null>(null);
 
 //   const [isEditing, setIsEditing] = useState(false);
@@ -47,12 +48,10 @@
 //     if (!url) return;
 //     try {
 //       URL.revokeObjectURL(url);
-//     }
-//     catch {
-//       console.log('error has been caught');
+//     } catch {
+//       console.log("error has been caught");
 //     }
 //   }, []);
-
 
 //   const avatarSrc = useMemo(() => {
 //     if (preview) return preview;
@@ -63,7 +62,7 @@
 //     return undefined;
 //   }, [preview, userMe?.profilePic, avatarBust]);
 
-//   const load = async () => {
+//   const load = useCallback(async () => {
 //     try {
 //       const res = await api.get<UserMeData>("user/me/");
 //       setUserMe(res.data);
@@ -73,15 +72,16 @@
 //         last_name: res.data.last_name ?? "",
 //         email: res.data.email ?? "",
 //       });
-//     } catch (err: unknown) {
+//     } 
+//     catch (err: unknown) {
 //       console.error(err);
-//       message.error("Failed to load profile");
+//       message.error(t("loadFailed"));
 //     }
-//   };
+//   }, [t]);
 
 //   useEffect(() => {
 //     load();
-//   }, []);
+//   }, [load]);
 
 //   const onEdit = () => {
 //     if (!userMe) return;
@@ -150,13 +150,11 @@
 //         setPreview(null);
 //       }
 
-//       message.success("Profile updated");
-//     } 
-//     catch (err: unknown) {
+//       message.success(t("updated"));
+//     } catch (err: unknown) {
 //       console.error(err);
-//       message.error(getAxiosDetail(err) ?? "Failed to update profile");
-//     } 
-//     finally {
+//       message.error(getAxiosDetail(err) ?? t("failedUpdate"));
+//     } finally {
 //       setSaving(false);
 //     }
 //   };
@@ -171,7 +169,7 @@
 //     return (
 //       <div className={styles.page}>
 //         <div className={styles.panel}>
-//           <div className={styles.loading}>Loading profile…</div>
+//           <div className={styles.loading}>{t("loading")}</div>
 //         </div>
 //       </div>
 //     );
@@ -186,23 +184,23 @@
 //               <FaUserCircle className={styles.icon} />
 //             </span>
 //             <div className={styles.headerText}>
-//               <h1 className={styles.title}>Profile</h1>
-//               <p className={styles.subTitle}>Manage your personal information</p>
+//               <h1 className={styles.title}>{t("title")}</h1>
+//               <p className={styles.subTitle}>{t("subtitle")}</p>
 //             </div>
 //           </div>
 
 //           <div className={styles.headerRight}>
 //             {!isEditing ? (
 //               <button className={styles.primaryBtn} type="button" onClick={onEdit}>
-//                 Edit
+//                 {t("edit")}
 //               </button>
 //             ) : (
 //               <div className={styles.headerActions}>
 //                 <button className={styles.saveBtn} type="button" onClick={onSave} disabled={saving}>
-//                   {saving ? "Saving..." : "Save"}
+//                   {saving ? t("saving") : t("save")}
 //                 </button>
 //                 <button className={styles.ghostBtn} type="button" onClick={onCancel} disabled={saving}>
-//                   Cancel
+//                   {t("cancel")}
 //                 </button>
 //               </div>
 //             )}
@@ -242,7 +240,7 @@
 
 //               {isEditing && (
 //                 <label className={styles.uploadBtn}>
-//                   Change photo
+//                   {t("changePhoto")}
 //                   <input className={styles.hiddenInput} type="file" accept="image/*" onChange={onChangeFile} />
 //                 </label>
 //               )}
@@ -251,41 +249,41 @@
 
 //           <div className={styles.rightCol}>
 //             <div className={styles.section}>
-//               <div className={styles.sectionTitle}>Basic info</div>
+//               <div className={styles.sectionTitle}>{t("basicInfo")}</div>
 
 //               <div className={styles.grid}>
 //                 <div className={styles.field}>
-//                   <label>First name</label>
+//                   <label>{t("firstName")}</label>
 //                   <input
 //                     value={form.first_name}
 //                     onChange={(e) => onChangeField("first_name", e.target.value)}
 //                     disabled={!isEditing || saving}
-//                     placeholder="First name"
+//                     placeholder={t("firstName")}
 //                   />
 //                 </div>
 
 //                 <div className={styles.field}>
-//                   <label>Last name</label>
+//                   <label>{t("lastName")}</label>
 //                   <input
 //                     value={form.last_name}
 //                     onChange={(e) => onChangeField("last_name", e.target.value)}
 //                     disabled={!isEditing || saving}
-//                     placeholder="Last name"
+//                     placeholder={t("lastName")}
 //                   />
 //                 </div>
 
 //                 <div className={styles.fieldFull}>
-//                   <label>Email</label>
+//                   <label>{t("email")}</label>
 //                   <input
 //                     value={form.email}
 //                     onChange={(e) => onChangeField("email", e.target.value)}
 //                     disabled={!isEditing || saving}
-//                     placeholder="Email"
+//                     placeholder={t("email")}
 //                   />
 //                 </div>
 //               </div>
 
-//               <div className={styles.hint}>Tip: Your email is used for login and notifications.</div>
+//               <div className={styles.hint}>{t("hint")}</div>
 //             </div>
 //           </div>
 //         </div>
@@ -296,11 +294,9 @@
 
 
 
-
-
 "use client";
 
-import React, { useCallback, useEffect, useMemo, useState, ChangeEvent } from "react";
+import { useCallback, useEffect, useState, type ChangeEvent } from "react";
 import { message } from "antd";
 import styles from "./profile.module.scss";
 import api from "@/interceptors";
@@ -325,11 +321,18 @@ function getAxiosDetail(err: unknown): string | null {
   return typeof detail === "string" ? detail : null;
 }
 
+function buildInitialForm(user: UserMeData): FormState {
+  return {
+    first_name: user.first_name ?? "",
+    last_name: user.last_name ?? "",
+    email: user.email ?? "",
+  };
+}
+
 export default function ProfileSettings() {
   const t = useTranslations("Profile");
 
   const [userMe, setUserMe] = useState<UserMeData | null>(null);
-
   const [isEditing, setIsEditing] = useState(false);
   const [saving, setSaving] = useState(false);
 
@@ -341,8 +344,7 @@ export default function ProfileSettings() {
 
   const [preview, setPreview] = useState<string | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-
-  const [avatarBust, setAvatarBust] = useState<number>(() => Date.now());
+  const [avatarBust, setAvatarBust] = useState(() => Date.now());
 
   const revokePreview = useCallback((url: string | null) => {
     if (!url) return;
@@ -353,77 +355,86 @@ export default function ProfileSettings() {
     }
   }, []);
 
-  const avatarSrc = useMemo(() => {
-    if (preview) return preview;
-    if (userMe?.profilePic) {
-      const join = userMe.profilePic.includes("?") ? "&" : "?";
-      return `${userMe.profilePic}${join}v=${avatarBust}`;
-    }
-    return undefined;
-  }, [preview, userMe?.profilePic, avatarBust]);
+  const clearPreviewState = useCallback(() => {
+    setSelectedFile(null);
+    setPreview((current) => {
+      if (current) revokePreview(current);
+      return null;
+    });
+  }, [revokePreview]);
 
-  const load = useCallback(async () => {
+  const resetFormFromUser = useCallback(
+    (user: UserMeData) => {
+      setForm(buildInitialForm(user));
+    },
+    []
+  );
+
+  const loadProfile = useCallback(async () => {
     try {
       const res = await api.get<UserMeData>("user/me/");
       setUserMe(res.data);
       setAvatarBust(Date.now());
-      setForm({
-        first_name: res.data.first_name ?? "",
-        last_name: res.data.last_name ?? "",
-        email: res.data.email ?? "",
-      });
-    } 
-    catch (err: unknown) {
+      resetFormFromUser(res.data);
+    } catch (err) {
       console.error(err);
       message.error(t("loadFailed"));
     }
-  }, [t]);
+  }, [resetFormFromUser, t]);
 
   useEffect(() => {
-    load();
-  }, [load]);
+    loadProfile();
+  }, [loadProfile]);
 
-  const onEdit = () => {
+  useEffect(() => {
+    return () => {
+      revokePreview(preview);
+    };
+  }, [preview, revokePreview]);
+
+  const avatarSrc = preview
+    ? preview
+    : userMe?.profilePic
+      ? `${userMe.profilePic}${userMe.profilePic.includes("?") ? "&" : "?"}v=${avatarBust}`
+      : undefined;
+
+  const avatarFallback = letterToHsl(userMe?.first_name);
+
+  const onEdit = useCallback(() => {
     if (!userMe) return;
     setIsEditing(true);
-    setForm({
-      first_name: userMe.first_name ?? "",
-      last_name: userMe.last_name ?? "",
-      email: userMe.email ?? "",
-    });
-    revokePreview(preview);
-    setPreview(null);
-    setSelectedFile(null);
-  };
+    resetFormFromUser(userMe);
+    clearPreviewState();
+  }, [userMe, resetFormFromUser, clearPreviewState]);
 
-  const onCancel = () => {
+  const onCancel = useCallback(() => {
     if (!userMe) return;
     setIsEditing(false);
     setSaving(false);
-    setForm({
-      first_name: userMe.first_name ?? "",
-      last_name: userMe.last_name ?? "",
-      email: userMe.email ?? "",
-    });
-    revokePreview(preview);
-    setPreview(null);
-    setSelectedFile(null);
-  };
+    resetFormFromUser(userMe);
+    clearPreviewState();
+  }, [userMe, resetFormFromUser, clearPreviewState]);
 
-  const onChangeFile = (e: ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  const onChangeFile = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
 
-    revokePreview(preview);
-    setSelectedFile(file);
-    setPreview(URL.createObjectURL(file));
-  };
+      setPreview((current) => {
+        if (current) revokePreview(current);
+        return URL.createObjectURL(file);
+      });
 
-  const onChangeField = (key: keyof FormState, value: string) => {
-    setForm((p) => ({ ...p, [key]: value }));
-  };
+      setSelectedFile(file);
+    },
+    [revokePreview]
+  );
 
-  const onSave = async () => {
+  const onChangeField = useCallback((key: keyof FormState, value: string) => {
+    setForm((prev) => ({ ...prev, [key]: value }));
+  }, []);
+
+  const onSave = useCallback(async () => {
     if (!userMe) return;
 
     try {
@@ -434,7 +445,9 @@ export default function ProfileSettings() {
       fd.append("last_name", form.last_name);
       fd.append("email", form.email);
 
-      if (selectedFile) fd.append("profilePic", selectedFile);
+      if (selectedFile) {
+        fd.append("profilePic", selectedFile);
+      }
 
       const res = await api.patch<UserMeData>("update/profile/", fd, {
         headers: { "Content-Type": "multipart/form-data" },
@@ -443,27 +456,16 @@ export default function ProfileSettings() {
       setUserMe(res.data);
       setAvatarBust(Date.now());
       setIsEditing(false);
-      setSelectedFile(null);
-
-      if (!selectedFile) {
-        revokePreview(preview);
-        setPreview(null);
-      }
+      clearPreviewState();
 
       message.success(t("updated"));
-    } catch (err: unknown) {
+    } catch (err) {
       console.error(err);
       message.error(getAxiosDetail(err) ?? t("failedUpdate"));
     } finally {
       setSaving(false);
     }
-  };
-
-  useEffect(() => {
-    return () => {
-      revokePreview(preview);
-    };
-  }, [preview, revokePreview]);
+  }, [userMe, form, selectedFile, clearPreviewState, t]);
 
   if (!userMe) {
     return (
@@ -483,6 +485,7 @@ export default function ProfileSettings() {
             <span className={styles.iconBadge}>
               <FaUserCircle className={styles.icon} />
             </span>
+
             <div className={styles.headerText}>
               <h1 className={styles.title}>{t("title")}</h1>
               <p className={styles.subTitle}>{t("subtitle")}</p>
@@ -496,10 +499,21 @@ export default function ProfileSettings() {
               </button>
             ) : (
               <div className={styles.headerActions}>
-                <button className={styles.saveBtn} type="button" onClick={onSave} disabled={saving}>
+                <button
+                  className={styles.saveBtn}
+                  type="button"
+                  onClick={onSave}
+                  disabled={saving}
+                >
                   {saving ? t("saving") : t("save")}
                 </button>
-                <button className={styles.ghostBtn} type="button" onClick={onCancel} disabled={saving}>
+
+                <button
+                  className={styles.ghostBtn}
+                  type="button"
+                  onClick={onCancel}
+                  disabled={saving}
+                >
                   {t("cancel")}
                 </button>
               </div>
@@ -511,24 +525,19 @@ export default function ProfileSettings() {
           <div className={styles.leftCol}>
             <div className={styles.avatarCard}>
               <div className={styles.avatarRing}>
-                {(() => {
-                  const av = letterToHsl(userMe.first_name);
-                  return (
-                    <Avatar
-                      src={avatarSrc}
-                      className={styles.avatar}
-                      sx={{
-                        width: 110,
-                        height: 110,
-                        bgcolor: avatarSrc ? undefined : av.bg,
-                        color: avatarSrc ? undefined : av.fg,
-                        fontWeight: 900,
-                      }}
-                    >
-                      {!avatarSrc ? av.letter : null}
-                    </Avatar>
-                  );
-                })()}
+                <Avatar
+                  src={avatarSrc}
+                  className={styles.avatar}
+                  sx={{
+                    width: 110,
+                    height: 110,
+                    bgcolor: avatarSrc ? undefined : avatarFallback.bg,
+                    color: avatarSrc ? undefined : avatarFallback.fg,
+                    fontWeight: 900,
+                  }}
+                >
+                  {!avatarSrc ? avatarFallback.letter : null}
+                </Avatar>
               </div>
 
               <div className={styles.avatarMeta}>
@@ -541,7 +550,12 @@ export default function ProfileSettings() {
               {isEditing && (
                 <label className={styles.uploadBtn}>
                   {t("changePhoto")}
-                  <input className={styles.hiddenInput} type="file" accept="image/*" onChange={onChangeFile} />
+                  <input
+                    className={styles.hiddenInput}
+                    type="file"
+                    accept="image/*"
+                    onChange={onChangeFile}
+                  />
                 </label>
               )}
             </div>
