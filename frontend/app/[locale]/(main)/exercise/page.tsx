@@ -5,9 +5,11 @@
 // import api from "@/interceptors";
 // import { FaBookOpen } from "react-icons/fa";
 // import { Exercise } from "./interface";
-
+// import { useTranslations } from "next-intl";
 
 // export default function ExercisePage() {
+//   const t = useTranslations("Exercise");
+
 //   const [loading, setLoading] = useState(true);
 //   const [items, setItems] = useState<Exercise[]>([]);
 //   const [userRole] = useState<string | null>(null);
@@ -27,8 +29,7 @@
 //         });
 
 //         setItems(res.data.items ?? []);
-//       } 
-//       catch {
+//       } catch {
 //         setItems([]);
 //       } finally {
 //         setLoading(false);
@@ -64,12 +65,15 @@
 //           <span className={styles.headerIcon}>
 //             <FaBookOpen className={styles.navIcon} />
 //           </span>
-//           <h1 className={styles.pageMainCaptionStyle}>Exercises</h1>
+//           <h1 className={styles.pageMainCaptionStyle}>{t("pageTitle")}</h1>
 //         </div>
 
 //         {userRole === "teacher" && (
-//           <button className={styles.createBtn} onClick={() => setShowCreate((p) => !p)}>
-//             + Add Exercise
+//           <button
+//             className={styles.createBtn}
+//             onClick={() => setShowCreate((p) => !p)}
+//           >
+//             + {t("addExercise")}
 //           </button>
 //         )}
 //       </div>
@@ -77,41 +81,53 @@
 //       {showCreate && (
 //         <div className={styles.createCard}>
 //           <input
-//             placeholder="Exercise title"
+//             placeholder={t("exerciseTitlePlaceholder")}
 //             value={title}
 //             onChange={(e) => setTitle(e.target.value)}
 //             className={styles.input}
 //           />
 //           <textarea
-//             placeholder="Description (optional)"
+//             placeholder={t("descriptionPlaceholder")}
 //             value={description}
 //             onChange={(e) => setDescription(e.target.value)}
 //             className={styles.textarea}
 //           />
 //           <button className={styles.saveBtn} onClick={createExercise}>
-//             Save
+//             {t("save")}
 //           </button>
 //         </div>
 //       )}
 
 //       {loading ? (
-//         <div className={styles.empty}>Loading exercises...</div>
+//         <div className={styles.empty}>{t("loadingExercises")}</div>
 //       ) : !items.length ? (
-//         <div className={styles.empty}>No exercises for today</div>
+//         <div className={styles.empty}>{t("noExercisesToday")}</div>
 //       ) : (
 //         <div className={styles.list}>
 //           {items.map((ex) => (
 //             <div key={ex.id} className={styles.card}>
 //               <div className={styles.cardHeader}>
 //                 <span className={styles.cardTitle}>{ex.title}</span>
-//                 {ex.subject && <span className={styles.subjectBadge}>{ex.subject.name}</span>}
+//                 {ex.subject && (
+//                   <span className={styles.subjectBadge}>
+//                     {ex.subject.name}
+//                   </span>
+//                 )}
 //               </div>
 
-//               {ex.description && <p className={styles.description}>{ex.description}</p>}
+//               {ex.description && (
+//                 <p className={styles.description}>{ex.description}</p>
+//               )}
 
 //               <div className={styles.meta}>
-//                 <span>Grade: {ex.grade.name}</span>
-//                 {ex.due_date && <span>Due: {ex.due_date}</span>}
+//                 <span>
+//                   {t("gradeLabel")}: {ex.grade.name}
+//                 </span>
+//                 {ex.due_date && (
+//                   <span>
+//                     {t("dueLabel")}: {ex.due_date}
+//                   </span>
+//                 )}
 //               </div>
 //             </div>
 //           ))}
@@ -122,66 +138,85 @@
 // }
 
 
-
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import styles from "./exercise.module.scss";
 import api from "@/interceptors";
 import { FaBookOpen } from "react-icons/fa";
 import { Exercise } from "./interface";
 import { useTranslations } from "next-intl";
 
+function getTodayISO() {
+  return new Date().toISOString().split("T")[0];
+}
+
 export default function ExercisePage() {
   const t = useTranslations("Exercise");
 
   const [loading, setLoading] = useState(true);
   const [items, setItems] = useState<Exercise[]>([]);
-  const [userRole] = useState<string | null>(null);
-
   const [showCreate, setShowCreate] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
 
-  const todayISO = useMemo(() => new Date().toISOString().split("T")[0], []);
+  const userRole: string | null = null;
+  const todayISO = getTodayISO();
 
-  const load = useCallback(
-    async (selectedDate?: string) => {
-      try {
-        setLoading(true);
-        const res = await api.get("/exercises/daily/", {
-          params: { date: selectedDate ?? todayISO },
-        });
+  const loadExercises = useCallback(async (date = todayISO) => {
+    try {
+      setLoading(true);
 
-        setItems(res.data.items ?? []);
-      } catch {
-        setItems([]);
-      } finally {
-        setLoading(false);
-      }
-    },
-    [todayISO]
-  );
+      const res = await api.get("/exercises/daily/", {
+        params: { date },
+      });
 
-  const createExercise = useCallback(async () => {
-    if (!title.trim()) return;
+      setItems(res.data?.items ?? []);
+    } catch {
+      setItems([]);
+    } finally {
+      setLoading(false);
+    }
+  }, [todayISO]);
 
-    await api.post("/exercises/daily/create/", {
-      grade_id: items[0]?.grade?.id,
-      date: todayISO,
-      title,
-      description,
-    });
-
+  const resetCreateForm = () => {
     setTitle("");
     setDescription("");
     setShowCreate(false);
-    await load(todayISO);
-  }, [title, items, todayISO, description, load]);
+  };
+
+  const handleToggleCreate = () => {
+    setShowCreate((prev) => !prev);
+  };
+
+  const handleCreateExercise = async () => {
+    const trimmedTitle = title.trim();
+    const trimmedDescription = description.trim();
+
+    if (!trimmedTitle) return;
+
+    const gradeId = items[0]?.grade?.id;
+    if (!gradeId) return;
+
+    try {
+      await api.post("/exercises/daily/create/", {
+        grade_id: gradeId,
+        date: todayISO,
+        title: trimmedTitle,
+        description: trimmedDescription,
+      });
+
+      resetCreateForm();
+      await loadExercises(todayISO);
+    } 
+    catch {
+      // optionally show error later
+    }
+  };
 
   useEffect(() => {
-    load(todayISO);
-  }, [load, todayISO]);
+    loadExercises();
+  }, [loadExercises]);
 
   return (
     <div className={styles.exerciseMainContainer}>
@@ -194,10 +229,7 @@ export default function ExercisePage() {
         </div>
 
         {userRole === "teacher" && (
-          <button
-            className={styles.createBtn}
-            onClick={() => setShowCreate((p) => !p)}
-          >
+          <button className={styles.createBtn} onClick={handleToggleCreate}>
             + {t("addExercise")}
           </button>
         )}
@@ -211,13 +243,15 @@ export default function ExercisePage() {
             onChange={(e) => setTitle(e.target.value)}
             className={styles.input}
           />
+
           <textarea
             placeholder={t("descriptionPlaceholder")}
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             className={styles.textarea}
           />
-          <button className={styles.saveBtn} onClick={createExercise}>
+
+          <button className={styles.saveBtn} onClick={handleCreateExercise}>
             {t("save")}
           </button>
         </div>
@@ -225,7 +259,7 @@ export default function ExercisePage() {
 
       {loading ? (
         <div className={styles.empty}>{t("loadingExercises")}</div>
-      ) : !items.length ? (
+      ) : items.length === 0 ? (
         <div className={styles.empty}>{t("noExercisesToday")}</div>
       ) : (
         <div className={styles.list}>
@@ -233,6 +267,7 @@ export default function ExercisePage() {
             <div key={ex.id} className={styles.card}>
               <div className={styles.cardHeader}>
                 <span className={styles.cardTitle}>{ex.title}</span>
+
                 {ex.subject && (
                   <span className={styles.subjectBadge}>
                     {ex.subject.name}
@@ -248,6 +283,7 @@ export default function ExercisePage() {
                 <span>
                   {t("gradeLabel")}: {ex.grade.name}
                 </span>
+
                 {ex.due_date && (
                   <span>
                     {t("dueLabel")}: {ex.due_date}
