@@ -1483,6 +1483,7 @@ class AISupportView(APIView):
         user_text = serializer.validated_data["message"]
 
         key = "sk-fc8cf129413248c0bf6283a8e95a5981"
+        
         if not key:
             return Response(
                 {"error": "Server misconfigured: missing DEEPSEEK_API_KEY"},
