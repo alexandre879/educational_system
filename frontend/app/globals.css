@@ -15,9 +15,6 @@
 
 
 
-
-
-
 :root {
   --bg: #141414;
   --surface: rgba(20, 20, 20, 0.78);
@@ -44,10 +41,11 @@
   --hover-soft: rgba(255, 255, 255, 0.06);
   --primary-ring: rgba(22, 119, 255, 0.55);
   --primary-ring-soft: rgba(22, 119, 255, 0.18);
-  
+
+  --chart-axis-text: #b8b8b8;
+  --chart-grid: rgba(255, 255, 255, 0.10);
+  --chart-axis-border: rgba(255, 255, 255, 0.18);
 }
-
-
 
 html[data-theme="light"] {
   --bg: #f5f7fb;
@@ -76,4 +74,9 @@ html[data-theme="light"] {
   --hover-soft: rgba(15, 23, 42, 0.04);
   --primary-ring: rgba(22, 119, 255, 0.55);
   --primary-ring-soft: rgba(22, 119, 255, 0.14);
+
+  /* chart */
+  --chart-axis-text: #64748b;
+  --chart-grid: rgba(15, 23, 42, 0.12);
+  --chart-axis-border: rgba(15, 23, 42, 0.22);
 }
