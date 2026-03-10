@@ -12,14 +12,23 @@ const api = axios.create({
 
 
 api.interceptors.request.use((config) => {
-  const token = Cookies.get('access');
+  const token = Cookies.get("access");
+
   if (token && config.headers) {
-    config.headers.set('Authorization', `Bearer ${token}`);
+    config.headers.set("Authorization", `Bearer ${token}`);
   }
+
+  if (config.headers) {
+    const locale =
+      typeof window !== "undefined"
+        ? window.location.pathname.split("/")[1]
+        : "ka";
+
+    config.headers.set("Accept-Language", locale);
+  }
+
   return config;
 });
-
-
 
 
 

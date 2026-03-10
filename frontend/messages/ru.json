@@ -61,6 +61,10 @@
     "fallbackUser": "Пользователь",
     "role": "Роль",
     "roleFallback": "роль",
+    "role_student": "Ученик",
+    "role_teacher": "Учитель",
+    "role_admin": "Администратор",
+    "role_parent": "Родитель",
     "grade": "Класс",
     "email": "Эл. почта",
 

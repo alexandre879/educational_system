@@ -1,3 +1,5 @@
+from typing import Any, Dict
+
 from rest_framework import serializers
 from api.models import Exam, Grade, Question, Option, User
 from rest_framework.views import APIView
@@ -35,11 +37,12 @@ class ExamCreateSerializer(serializers.ModelSerializer):
         model = Exam
         fields = ['id', 'title', 'duration', 'subject', 'grade', 'questions']
 
-    def create(self, validated_data):
+    def create(self, validated_data: dict) -> Exam:
         questions_data = validated_data.pop("questions", [])
         exam = Exam.objects.create(**validated_data)
 
         for question_data in questions_data:
+            question_data: Dict[str, Any]
             options_data = question_data.pop("options", [])
             question = Question.objects.create(exam=exam, **question_data)
 
@@ -77,7 +80,7 @@ class BulkStudentCreateSerializer(serializers.ModelSerializer):
     
 
 
-class ExamCreateView(APIView):
+class BulkExamCreateView(APIView):
     def post(self, request: Request):
         serializer = ExamCreateSerializer(data=request.data)
         if serializer.is_valid():

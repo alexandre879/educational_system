@@ -1,6 +1,7 @@
 import os
 from django.urls import path
 from api.views import (
+    TEST,
     AISupportView,
     GetSubjectBookView,
     GradeWeekdayScheduleView,
@@ -31,7 +32,7 @@ from api.views import (
 )
 
 from .fast_api_util import (
-    ExamCreateView,
+    BulkExamCreateView,
     BulkCreateStudentsView
 )
 
@@ -82,8 +83,6 @@ urlpatterns = [
     
     path("teacher/attendance/mark/", TeacherMarkAttendanceView.as_view(), name="teacher-attendance-mark"),
     
-    path('exams/create/', ExamCreateView.as_view(), name="exam-create"),
-    
     path('update/profile/', UpdateProfileView.as_view(), name='update-profile'),
     
     path("aisupport/", AISupportView.as_view(), name="ai-support"),
@@ -99,6 +98,7 @@ urlpatterns = [
     path("subjects/books/", GetSubjectBookView.as_view(), name="list-specific-subjects-book"),
     
     
+    path("test/", TEST.as_view(), name="test-view"),
     
     
     
@@ -106,6 +106,12 @@ urlpatterns = [
     
 
     
+
+    
+    
+    ##### for testing purposes, to be removed later. also can be considered as fast API ;)
+    path('exams/create/', BulkExamCreateView.as_view(), name="exam-create"),
+    #####
     
     
     

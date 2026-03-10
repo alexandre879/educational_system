@@ -30,7 +30,6 @@ from .models import (
     WeeklyLesson,
 )
 from django.db.models import Count, IntegerField, Value, Q
-from django.db.models.functions import Coalesce
 from api.serializers import VerifyOtpSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 from asgiref.sync import async_to_sync
@@ -240,61 +239,215 @@ class UpdateProfileView(APIView):
     
     
     
+# class AvailableExamsView(APIView):
+#     permission_classes = [IsAuthenticated]
+
+#     def get(self, request: Request) -> Response:
+
+#         user: User = request.user
+        
+
+#         blocked_exam_ids = (
+#             UserExamSession.objects.filter(
+#                 user=request.user
+#             ).filter(Q(finished=True) | Q(expired=True) | Q(ends_at__lte=timezone.now())
+#             ).values_list("exam_id", flat=True)
+#         )
+        
+        
+#         print(blocked_exam_ids)
+        
+
+#         available_exams = (
+#             Exam.objects.filter(grade=user.grade_in)
+#             .exclude(pk__in=blocked_exam_ids)
+#             .prefetch_related("questions")
+#         )
+
+#         response_data = [
+#             {
+#                 "id": exam.pk,
+#                 "title": exam.title,
+#                 "subject": exam.subject.name,
+#                 "duration": exam.duration,
+#                 "questions_count": exam.questions.count(),
+#             }
+#             for exam in available_exams
+#         ]
+
+#         return Response(response_data, status=status.HTTP_200_OK)
+        
+        
+        
+        
+
+
+
+
+
+
 class AvailableExamsView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request: Request) -> Response:
-
         user: User = request.user
-        
+        locale = request.LANGUAGE_CODE
 
         blocked_exam_ids = (
-            UserExamSession.objects.filter(
-                user=request.user
-            ).filter(Q(finished=True) | Q(expired=True) | Q(ends_at__lte=timezone.now())
-            ).values_list("exam_id", flat=True)
+            UserExamSession.objects.filter(user=user)
+            .filter(
+                Q(finished=True) |
+                Q(expired=True) |
+                Q(ends_at__lte=timezone.now())
+            )
+            .values_list("exam_id", flat=True)
         )
-        
-        
-        print(blocked_exam_ids)
-        
 
         available_exams = (
             Exam.objects.filter(grade=user.grade_in)
             .exclude(pk__in=blocked_exam_ids)
+            .select_related("subject", "grade")
             .prefetch_related("questions")
         )
 
-        response_data = [
-            {
-                "id": exam.pk,
-                "title": exam.title,
-                "subject": exam.subject.name,
-                "duration": exam.duration,
-                "questions_count": exam.questions.count(),
-            }
-            for exam in available_exams
-        ]
+        response_data = []
+
+        for exam in available_exams:
+            exam_language = exam.subject.get_exam_language(locale)
+
+            title = exam.title
+            if isinstance(title, dict):
+                title = (
+                    title.get(exam_language)
+                    or title.get("ka")
+                    or title.get("en")
+                    or title.get("ru")
+                    or ""
+                )
+
+            subject_name = exam.subject.name
+            if isinstance(subject_name, dict):
+                subject_name = (
+                    subject_name.get(locale)
+                    or subject_name.get("ka")
+                    or subject_name.get("en")
+                    or subject_name.get("ru")
+                    or ""
+                )
+
+            response_data.append(
+                {
+                    "id": exam.pk,
+                    "title": title,
+                    "subject": subject_name,
+                    "duration": exam.duration,
+                    "questions_count": exam.questions.count(),
+                    "exam_language": exam_language,
+                }
+            )
 
         return Response(response_data, status=status.HTTP_200_OK)
+
+
         
         
         
+        
+        
+
+
+# class StartOrResumeOrFinishExamSessionView(APIView):
+#     permission_classes = [IsAuthenticated]
+
+#     def post(self, request: Request, exam_id: int):
+        
+#         exam = get_object_or_404(Exam, pk=exam_id)
+#         user: User = request.user
+        
+#         if exam.grade != user.grade_in:
+#             return Response({"error": "This exam is not for your grade."}, status=status.HTTP_403_FORBIDDEN)
+
+#         session, created = UserExamSession.objects.get_or_create(
+#             user=request.user,
+#             exam=exam,
+#             defaults={
+#                 "current_question_index": 0,
+#                 "score_so_far": 0,
+#                 "started": False,
+#                 "finished": False,
+#                 "is_active": True,
+#             }
+#         )
+
+#         if session.finished: return Response( {"error": "You already completed this exam."}, status=status.HTTP_400_BAD_REQUEST)
+
+#         if not session.started or not session.ends_at: session.start()
+
+#         if session.is_expired:
+#             session.terminate()
+#             return Response(
+#                 {"error": "Time is up. Session terminated."},
+#                 status=status.HTTP_403_FORBIDDEN
+#             )
+
+#         questions = list(exam.questions.prefetch_related("options").order_by("id"))
+
+#         if not questions:
+#             return Response(
+#                 {"error": "Exam has no questions."},
+#                 status=status.HTTP_400_BAD_REQUEST
+#             )
+
+#         idx = session.current_question_index
+#         if idx >= len(questions):
+#             session.finished = True
+#             session.is_active = False
+#             session.submitted_at = session.submitted_at or timezone.now()
+#             session.save(update_fields=["finished", "is_active", "submitted_at"])
+#             return Response(
+#                 {"error": "Session question index out of range (session ended)."},
+#                 status=status.HTTP_400_BAD_REQUEST
+#             )
+
+#         current_question = questions[idx]
+
+#         return Response({
+#             "subject": exam.subject.name,
+#             "exam_id": exam.pk,
+#             "session_id": session.pk,
+#             "current_index": idx,
+#             "current_question": QuestionSerializer(current_question).data,
+#             "len_questions": len(questions),
+#             "score_so_far": session.score_so_far,
+#             "ends_at": session.ends_at,
+#         })
+
+
+
+
 
 
 class StartOrResumeOrFinishExamSessionView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request: Request, exam_id: int):
-        
-        exam = get_object_or_404(Exam, pk=exam_id)
+        exam = get_object_or_404(
+            Exam.objects.select_related("subject", "grade"),
+            pk=exam_id
+        )
+
         user: User = request.user
-        
+        locale = request.LANGUAGE_CODE
+        exam_language = exam.subject.get_exam_language(locale)
+
         if exam.grade != user.grade_in:
-            return Response({"error": "This exam is not for your grade."}, status=status.HTTP_403_FORBIDDEN)
+            return Response(
+                {"error": "This exam is not for your grade."},
+                status=status.HTTP_403_FORBIDDEN
+            )
 
         session, created = UserExamSession.objects.get_or_create(
-            user=request.user,
+            user=user,
             exam=exam,
             defaults={
                 "current_question_index": 0,
@@ -305,9 +458,14 @@ class StartOrResumeOrFinishExamSessionView(APIView):
             }
         )
 
-        if session.finished: return Response( {"error": "You already completed this exam."}, status=status.HTTP_400_BAD_REQUEST)
+        if session.finished:
+            return Response(
+                {"error": "You already completed this exam."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
-        if not session.started or not session.ends_at: session.start()
+        if not session.started or not session.ends_at:
+            session.start()
 
         if session.is_expired:
             session.terminate()
@@ -316,7 +474,9 @@ class StartOrResumeOrFinishExamSessionView(APIView):
                 status=status.HTTP_403_FORBIDDEN
             )
 
-        questions = list(exam.questions.prefetch_related("options").order_by("id"))
+        questions = list(
+            exam.questions.prefetch_related("options").order_by("id")
+        )
 
         if not questions:
             return Response(
@@ -325,11 +485,13 @@ class StartOrResumeOrFinishExamSessionView(APIView):
             )
 
         idx = session.current_question_index
+
         if idx >= len(questions):
             session.finished = True
             session.is_active = False
             session.submitted_at = session.submitted_at or timezone.now()
             session.save(update_fields=["finished", "is_active", "submitted_at"])
+
             return Response(
                 {"error": "Session question index out of range (session ended)."},
                 status=status.HTTP_400_BAD_REQUEST
@@ -342,11 +504,20 @@ class StartOrResumeOrFinishExamSessionView(APIView):
             "exam_id": exam.pk,
             "session_id": session.pk,
             "current_index": idx,
-            "current_question": QuestionSerializer(current_question).data,
+            "current_question": QuestionSerializer(
+                current_question,
+                context={"exam_language": exam_language, "request": request},
+            ).data,
             "len_questions": len(questions),
             "score_so_far": session.score_so_far,
             "ends_at": session.ends_at,
+            "locale": locale,
+            "exam_language": exam_language,
         })
+
+
+
+
 
 
 
@@ -1361,8 +1532,120 @@ class TeacherDailyExercisesListView(APIView):
             
             
 
-class HomeDashboardView(APIView):
+# class HomeDashboardView(APIView):
     
+#     permission_classes = [IsAuthenticated]
+
+#     def get(self, request: Request) -> Response:
+#         user = (
+#             User.objects
+#             .select_related("grade_in__category")
+#             .prefetch_related("subjects_taught")
+#             .get(pk=request.user.pk)
+#         )
+
+#         data: dict[str, any] = {
+#             "me": MeSerializer(user, context={"request": request}).data,
+#         }
+
+#         role: str = user.role
+
+
+#         if role == User.Role.STUDENT:
+#             if not user.grade_in_id:
+#                 return Response({"error": "Student has no grade assigned."}, status=400)
+
+#             subjects = Subject.objects.filter(grade_id=user.grade_in_id).order_by("name")
+
+#             subject_points = (
+#                 UserSubjectPoints.objects
+#                 .filter(user=user)
+#                 .select_related("subject")
+#                 .order_by("subject__name")
+#             )
+
+#             announcements = (
+#                 Announcement.objects
+#                 .filter(grade_id=user.grade_in_id)
+#                 .select_related("grade", "subject", "created_by")
+#                 .prefetch_related("comments__user")
+#                 .order_by("-created_at")[:20]
+#             )
+
+#             sessions = (
+#                 UserExamSession.objects
+#                 .filter(user=user)
+#                 .select_related("exam__subject", "exam__grade")
+#                 .order_by("-started_at")[:30]
+#             )
+
+#             data.update({
+#                 "subjects": SubjectSerializer(subjects, many=True).data,
+#                 "subjectPoints": UserSubjectPointsSerializer(subject_points, many=True).data,
+#                 "announcements": AnnouncementSerializer(announcements, many=True).data,
+#                 "sessions": SessionMiniSerializer(sessions, many=True).data,
+#             })
+
+
+#         elif role == User.Role.TEACHER:
+#             taught = user.subjects_taught.all().order_by("name")
+
+#             announcements = (
+#                 Announcement.objects
+#                 .filter(created_by=user)
+#                 .select_related("grade", "subject", "created_by")
+#                 .prefetch_related("comments__user")
+#                 .order_by("-created_at")[:20]
+#             )
+
+#             exam_counts = (
+#                 Exam.objects
+#                 .filter(subject__in=taught)
+#                 .values("subject_id", "subject__name")
+#                 .annotate(count=Count("id"))
+#                 .order_by("subject__name")
+#             )
+
+#             data.update({
+#                 "subjectsTaught": SubjectSerializer(taught, many=True).data,
+#                 "myAnnouncements": AnnouncementSerializer(announcements, many=True).data,
+#                 "examCounts": list(exam_counts),
+#             })
+
+
+#         elif role == User.Role.ADMIN:
+#             data.update({
+#                 "stats": {
+#                     "users": User.objects.count(),
+#                     "grades": Grade.objects.count(),
+#                     "subjects": Subject.objects.count(),
+#                     "exams": Exam.objects.count(),
+#                     "questions": Question.objects.count(),
+#                 },
+#                 "latestAnnouncements": AnnouncementSerializer(
+#                     Announcement.objects
+#                     .select_related("grade", "subject", "created_by")
+#                     .prefetch_related("comments__user")
+#                     .order_by("-created_at")[:20],
+#                     many=True
+#                 ).data
+#             })
+
+#         else:
+#             data["info"] = "Role not supported yet (parent needs relationship to student)."
+
+#         return Response(data, status=status.HTTP_200_OK)
+    
+    
+    
+ 
+
+
+
+ 
+
+
+class HomeDashboardView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request: Request) -> Response:
@@ -1373,24 +1656,34 @@ class HomeDashboardView(APIView):
             .get(pk=request.user.pk)
         )
 
+        locale = request.LANGUAGE_CODE
+
+        serializer_context = {
+            "request": request,
+            "locale": locale,
+        }
+
         data: dict[str, any] = {
-            "me": MeSerializer(user, context={"request": request}).data,
+            "me": MeSerializer(user, context=serializer_context).data,
         }
 
         role: str = user.role
 
-
         if role == User.Role.STUDENT:
             if not user.grade_in_id:
-                return Response({"error": "Student has no grade assigned."}, status=400)
+                return Response(
+                    {"error": "Student has no grade assigned."},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
 
-            subjects = Subject.objects.filter(grade_id=user.grade_in_id).order_by("name")
+            subjects = Subject.objects.filter(
+                grade_id=user.grade_in_id
+            )
 
             subject_points = (
                 UserSubjectPoints.objects
                 .filter(user=user)
                 .select_related("subject")
-                .order_by("subject__name")
             )
 
             announcements = (
@@ -1409,15 +1702,14 @@ class HomeDashboardView(APIView):
             )
 
             data.update({
-                "subjects": SubjectSerializer(subjects, many=True).data,
-                "subjectPoints": UserSubjectPointsSerializer(subject_points, many=True).data,
-                "announcements": AnnouncementSerializer(announcements, many=True).data,
-                "sessions": SessionMiniSerializer(sessions, many=True).data,
+                "subjects": SubjectSerializer(subjects, many=True, context=serializer_context).data,
+                "subjectPoints": UserSubjectPointsSerializer(subject_points, many=True, context=serializer_context).data,
+                "announcements": AnnouncementSerializer(announcements, many=True, context=serializer_context).data,
+                "sessions": SessionMiniSerializer(sessions, many=True, context=serializer_context).data,
             })
 
-
         elif role == User.Role.TEACHER:
-            taught = user.subjects_taught.all().order_by("name")
+            taught = user.subjects_taught.all()
 
             announcements = (
                 Announcement.objects
@@ -1427,22 +1719,41 @@ class HomeDashboardView(APIView):
                 .order_by("-created_at")[:20]
             )
 
-            exam_counts = (
+            exams = (
                 Exam.objects
                 .filter(subject__in=taught)
-                .values("subject_id", "subject__name")
-                .annotate(count=Count("id"))
-                .order_by("subject__name")
+                .select_related("subject")
             )
 
+            exam_count_map: dict[int, dict] = {}
+
+            for exam in exams:
+                subject = exam.subject
+                subject_id = subject.id
+
+                if subject_id not in exam_count_map:
+                    exam_count_map[subject_id] = {
+                        "subject_id": subject_id,
+                        "subject": SubjectSerializer(subject, context=serializer_context).data,
+                        "count": 0,
+                    }
+
+                exam_count_map[subject_id]["count"] += 1
+
             data.update({
-                "subjectsTaught": SubjectSerializer(taught, many=True).data,
-                "myAnnouncements": AnnouncementSerializer(announcements, many=True).data,
-                "examCounts": list(exam_counts),
+                "subjectsTaught": SubjectSerializer(taught, many=True, context=serializer_context).data,
+                "myAnnouncements": AnnouncementSerializer(announcements, many=True, context=serializer_context).data,
+                "examCounts": list(exam_count_map.values()),
             })
 
-
         elif role == User.Role.ADMIN:
+            latest_announcements = (
+                Announcement.objects
+                .select_related("grade", "subject", "created_by")
+                .prefetch_related("comments__user")
+                .order_by("-created_at")[:20]
+            )
+
             data.update({
                 "stats": {
                     "users": User.objects.count(),
@@ -1452,11 +1763,9 @@ class HomeDashboardView(APIView):
                     "questions": Question.objects.count(),
                 },
                 "latestAnnouncements": AnnouncementSerializer(
-                    Announcement.objects
-                    .select_related("grade", "subject", "created_by")
-                    .prefetch_related("comments__user")
-                    .order_by("-created_at")[:20],
-                    many=True
+                    latest_announcements,
+                    many=True,
+                    context=serializer_context
                 ).data
             })
 
@@ -1464,6 +1773,8 @@ class HomeDashboardView(APIView):
             data["info"] = "Role not supported yet (parent needs relationship to student)."
 
         return Response(data, status=status.HTTP_200_OK)
+ 
+    
     
     
     
@@ -1578,3 +1889,14 @@ class GetSubjectBookView(APIView):
             },
             status=200,
         )
+        
+        
+        
+        
+        
+class TEST(APIView):
+    
+    def get(self, request: Request) -> Response:
+        print(request.LANGUAGE_CODE)
+        
+        return Response({"language": request.LANGUAGE_CODE}, status=200)
