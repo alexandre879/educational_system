@@ -61,6 +61,10 @@
     "fallbackUser": "მომხმარებელი",
     "role": "როლი",
     "roleFallback": "როლი",
+    "role_student": "მოსწავლე",
+    "role_teacher": "მასწავლებელი",
+    "role_admin": "ადმინისტრატორი",
+    "role_parent": "მშობელი",
     "grade": "კლასი",
     "email": "ელ-ფოსტა",
 

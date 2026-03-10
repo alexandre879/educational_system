@@ -61,6 +61,10 @@
     "fallbackUser": "User",
     "role": "Role",
     "roleFallback": "role",
+    "role_student": "Student",
+    "role_teacher": "Teacher",
+    "role_admin": "Admin",
+    "role_parent": "Parent",
     "grade": "Grade",
     "email": "Email",
 
