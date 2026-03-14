@@ -744,51 +744,146 @@ class AnnouncementCreateView(APIView):
     
 
 
+# class AnnouncementListView(APIView):
+#     permission_classes = [IsAuthenticated]
+
+#     def get(self, request: Request) -> Response:
+#         user: User = request.user
+#         subject_id = request.query_params.get("subject", None)
+        
+
+#         qs = Announcement.objects.all().select_related(
+#             "grade", "grade__category", "subject", "created_by"
+#         ).prefetch_related('comments')
+        
+
+#         if user.grade_in and user.grade_in.category:
+#             qs = qs.filter(
+#                 grade=user.grade_in,
+#                 grade__category=user.grade_in.category
+#             )
+            
+            
+
+#         if subject_id:
+#             qs = qs.filter(subject__pk=subject_id)
+            
+
+#         announcements_data = AnnouncementSerializer(qs, many=True).data
+        
+
+    
+#         if user.role == User.Role.STUDENT and user.grade_in:
+#             subjects_qs = (
+#                 Subject.objects.filter(
+#                     grade=user.grade_in,
+#                     grade__category__name__iexact=user.grade_in.category.name
+#                 )
+#                 .select_related("grade", "grade__category")
+#                 .order_by("name")
+#             )
+#         elif user.role == User.Role.TEACHER and user.subjects_taught:
+#             subjects_qs = user.subjects_taught.all().select_related("grade", "grade__category").order_by("name")
+#         else:
+#             subjects_qs = Subject.objects.none()
+            
+
+
+
+#         subjects_data = [
+#             {
+#                 "id": s.pk,
+#                 "name": s.name,
+#                 "grade": {
+#                     "grade_id": s.grade.pk,
+#                     "grade_name": s.grade.name,
+#                     "grade_category_id": s.grade.category.pk,
+#                     "grade_category_name": s.grade.category.name,
+#                 }
+#             }
+#             for s in subjects_qs
+#         ]
+
+
+#         grades_qs = (
+#             Grade.objects
+#             .all()
+#             .select_related("category")
+#             .annotate(num=Cast("name", IntegerField()))
+#             .order_by("num")
+#             .distinct("num")
+#         )
+        
+        
+#         grades_data = [
+#             {
+#                 "id": g.pk,
+#                 "name": g.name,
+#                 "category_id": g.category.pk,
+#                 "category_name": g.category.name,
+#             }
+#             for g in grades_qs
+#         ]
+        
+#         categories = GradeCategory.objects.all().values('id', 'name')
+        
+
+#         return Response(
+#             {
+#                 "announcements": announcements_data,
+#                 "subjects": subjects_data,
+#                 "grades": grades_data,
+#                 "role": user.role,
+#                 'categories': categories,
+#             },
+#             status=status.HTTP_200_OK
+#         )
+        
+        
+        
+        
+        
 class AnnouncementListView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request: Request) -> Response:
         user: User = request.user
         subject_id = request.query_params.get("subject", None)
-        
 
-        qs = Announcement.objects.all().select_related(
-            "grade", "grade__category", "subject", "created_by"
-        ).prefetch_related('comments')
-        
+        qs = (
+            Announcement.objects.all()
+            .select_related("grade", "grade__category", "subject", "created_by")
+            .prefetch_related("comments")
+        )
 
         if user.grade_in and user.grade_in.category:
             qs = qs.filter(
                 grade=user.grade_in,
-                grade__category=user.grade_in.category
+                grade__category=user.grade_in.category,
             )
-            
-            
 
         if subject_id:
             qs = qs.filter(subject__pk=subject_id)
-            
 
         announcements_data = AnnouncementSerializer(qs, many=True).data
-        
 
-    
         if user.role == User.Role.STUDENT and user.grade_in:
             subjects_qs = (
                 Subject.objects.filter(
                     grade=user.grade_in,
-                    grade__category__name__iexact=user.grade_in.category.name
+                    grade__category=user.grade_in.category,
                 )
                 .select_related("grade", "grade__category")
-                .order_by("name")
+                .order_by("id")
             )
-        elif user.role == User.Role.TEACHER and user.subjects_taught:
-            subjects_qs = user.subjects_taught.all().select_related("grade", "grade__category").order_by("name")
+        elif user.role == User.Role.TEACHER:
+            subjects_qs = (
+                user.subjects_taught.all()
+                .select_related("grade", "grade__category")
+                .order_by("id")
+            )
         else:
             subjects_qs = Subject.objects.none()
-            
-
-
 
         subjects_data = [
             {
@@ -797,36 +892,31 @@ class AnnouncementListView(APIView):
                 "grade": {
                     "grade_id": s.grade.pk,
                     "grade_name": s.grade.name,
-                    "grade_category_id": s.grade.category.pk,
-                    "grade_category_name": s.grade.category.name,
-                }
+                    "grade_category_id": s.grade.category.pk if s.grade.category else None,
+                    "grade_category_name": s.grade.category.name if s.grade.category else None,
+                },
             }
             for s in subjects_qs
         ]
 
-
         grades_qs = (
-            Grade.objects
-            .all()
+            Grade.objects.all()
             .select_related("category")
             .annotate(num=Cast("name", IntegerField()))
-            .order_by("num")
-            .distinct("num")
+            .order_by("num", "id")
         )
-        
-        
+
         grades_data = [
             {
                 "id": g.pk,
                 "name": g.name,
-                "category_id": g.category.pk,
-                "category_name": g.category.name,
+                "category_id": g.category.pk if g.category else None,
+                "category_name": g.category.name if g.category else None,
             }
             for g in grades_qs
         ]
-        
-        categories = GradeCategory.objects.all().values('id', 'name')
-        
+
+        categories_data = list(GradeCategory.objects.all().values("id", "name"))
 
         return Response(
             {
@@ -834,11 +924,10 @@ class AnnouncementListView(APIView):
                 "subjects": subjects_data,
                 "grades": grades_data,
                 "role": user.role,
-                'categories': categories,
+                "categories": categories_data,
             },
-            status=status.HTTP_200_OK
+            status=status.HTTP_200_OK,
         )
-        
         
         
         
