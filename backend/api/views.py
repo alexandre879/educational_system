@@ -679,26 +679,63 @@ class PointListViewPerSubject(APIView):
     
     
 
+# class AnnouncementCreateView(APIView):
+#     permission_classes = [IsAuthenticated]
+    
+#     def post(self, request: Request) -> Response:
+#         user: User = request.user
+        
+#         if user.role != User.Role.TEACHER:
+#             return Response({'detail': 'Only teachers are allowed to post announcements'}, status=status.HTTP_403_FORBIDDEN)
+        
+#         serializer = AnnouncementValidatorSerializer(data=request.data, context={"request": request})
+#         serializer.is_valid(raise_exception=True)
+#         new_announcement = serializer.save()
+        
+#         announcement_with_related = Announcement.objects.select_related(
+#             "grade__category", "subject", "created_by"
+#         ).get(pk=new_announcement.pk)
+        
+#         response_serializer = AnnouncementSerializer(announcement_with_related)
+        
+#         return Response(response_serializer.data, status=status.HTTP_201_CREATED)
+    
+    
+    
+    
+    
+    
+    
 class AnnouncementCreateView(APIView):
     permission_classes = [IsAuthenticated]
-    
+
     def post(self, request: Request) -> Response:
         user: User = request.user
-        
+
         if user.role != User.Role.TEACHER:
-            return Response({'detail': 'Only teachers are allowed to post announcements'}, status=status.HTTP_403_FORBIDDEN)
-        
-        serializer = AnnouncementValidatorSerializer(data=request.data, context={"request": request})
+            return Response(
+                {"detail": "Only teachers are allowed to post announcements"},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        serializer = AnnouncementValidatorSerializer(
+            data=request.data,
+            context={"request": request},
+        )
         serializer.is_valid(raise_exception=True)
         new_announcement = serializer.save()
-        
+
         announcement_with_related = Announcement.objects.select_related(
             "grade__category", "subject", "created_by"
         ).get(pk=new_announcement.pk)
-        
-        response_serializer = AnnouncementSerializer(announcement_with_related)
-        
+
+        response_serializer = AnnouncementSerializer(
+            announcement_with_related,
+            context={"request": request},
+        )
+
         return Response(response_serializer.data, status=status.HTTP_201_CREATED)
+    
     
     
     

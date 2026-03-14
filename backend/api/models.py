@@ -11,15 +11,46 @@ from django.utils.translation import gettext_lazy as _
 
 
 
+# class GradeCategory(models.Model):
+#     name = models.CharField(_("Name"), max_length=50)
+
+#     class Meta:
+#         verbose_name = _("Grade category")
+#         verbose_name_plural = _("Grade categories")
+
+#     def __str__(self):
+#         return self.name
+
+
+
+
+
+
 class GradeCategory(models.Model):
-    name = models.CharField(_("Name"), max_length=50)
+    sign_name = models.CharField(_("Name"), max_length=50, blank=True, null=True)
+    name = models.JSONField(_("Name"), default=dict)
 
     class Meta:
         verbose_name = _("Grade category")
         verbose_name_plural = _("Grade categories")
 
     def __str__(self):
-        return self.name
+        return self.sign_name
+
+    def get_name(self, locale: str) -> str:
+        if isinstance(self.name, dict):
+            return (
+                self.name.get(locale)
+                or self.name.get("en")
+                or self.name.get("ka")
+                or self.name.get("ru")
+                or ""
+            )
+        return str(self.name)
+
+
+
+
 
 
 class Grade(models.Model):
@@ -40,13 +71,36 @@ class Grade(models.Model):
         return f"{self.name} ({self.category.name})"
 
 
+
 # class Subject(models.Model):
+#     class ContentMode(models.TextChoices):
+#         FIXED = "fixed", _("Fixed language")
+#         LOCALE = "locale", _("Follow website locale")
+
+#     class LanguageCode(models.TextChoices):
+#         KA = "ka", _("Georgian")
+#         EN = "en", _("English")
+#         RU = "ru", _("Russian")
+
 #     name = models.CharField(_("Name"), max_length=255)
 #     grade = models.ForeignKey(
 #         Grade,
 #         verbose_name=_("Grade"),
 #         on_delete=models.CASCADE,
 #         related_name="subjects",
+#     )
+#     content_mode = models.CharField(
+#         _("Content mode"),
+#         max_length=10,
+#         choices=ContentMode.choices,
+#         default=ContentMode.LOCALE,
+#     )
+#     fixed_language = models.CharField(
+#         _("Fixed language"),
+#         max_length=5,
+#         choices=LanguageCode.choices,
+#         blank=True,
+#         null=True,
 #     )
 
 #     class Meta:
@@ -55,6 +109,25 @@ class Grade(models.Model):
 
 #     def __str__(self):
 #         return f"{self.name} ({self.grade.name}-{self.grade.category.name})"
+
+#     def clean(self):
+#         if self.content_mode == self.ContentMode.FIXED and not self.fixed_language:
+#             raise ValidationError(
+#                 {"fixed_language": _("Fixed language is required for fixed mode.")}
+#             )
+
+#         if self.content_mode == self.ContentMode.LOCALE:
+#             self.fixed_language = None
+
+#     def get_exam_language(self, locale: str) -> str:
+#         if self.content_mode == self.ContentMode.FIXED and self.fixed_language:
+#             return self.fixed_language
+#         return locale
+
+
+
+
+
 
 
 
@@ -68,7 +141,8 @@ class Subject(models.Model):
         EN = "en", _("English")
         RU = "ru", _("Russian")
 
-    name = models.CharField(_("Name"), max_length=255)
+    sign_name = models.CharField(_("Name"), max_length=255, blank=True, null=True)
+    name = models.JSONField(_("Name"), default=dict)
     grade = models.ForeignKey(
         Grade,
         verbose_name=_("Grade"),
@@ -94,7 +168,10 @@ class Subject(models.Model):
         verbose_name_plural = _("Subjects")
 
     def __str__(self):
-        return f"{self.name} ({self.grade.name}-{self.grade.category.name})"
+        subject_name = self.get_name("en")
+        grade_name = getattr(self.grade, "name", "")
+        grade_category_name = getattr(getattr(self.grade, "category", None), "name", "")
+        return f"{subject_name} ({grade_name}-{grade_category_name})"
 
     def clean(self):
         if self.content_mode == self.ContentMode.FIXED and not self.fixed_language:
@@ -109,6 +186,113 @@ class Subject(models.Model):
         if self.content_mode == self.ContentMode.FIXED and self.fixed_language:
             return self.fixed_language
         return locale
+
+    def get_name(self, locale: str) -> str:
+        if isinstance(self.name, dict):
+            return (
+                self.name.get(locale)
+                or self.name.get("en")
+                or self.name.get("ka")
+                or self.name.get("ru")
+                or ""
+            )
+        return str(self.name)
+
+
+
+
+
+
+
+
+# class User(AbstractUser):
+#     class Role(models.TextChoices):
+#         STUDENT = "student", _("Student")
+#         TEACHER = "teacher", _("Teacher")
+#         ADMIN = "admin", _("Admin")
+#         PARENT = "parent", _("Parent")
+
+#     email = models.CharField(_("Email"), max_length=255, unique=True)
+#     password = models.CharField(_("Password"), max_length=255, default=None, null=True)
+#     chat_id = models.CharField(_("Chat ID"), max_length=255, default=None, null=True)
+#     role = models.CharField(_("Role"), max_length=255, choices=Role.choices, null=True, blank=True)
+#     grade_in = models.ForeignKey(
+#         Grade,
+#         verbose_name=_("Grade"),
+#         on_delete=models.SET_NULL,
+#         related_name="users",
+#         null=True,
+#         blank=True,
+#     )
+#     points = models.IntegerField(_("Points"), null=True, default=None)
+#     subjects_taught = models.ManyToManyField(
+#         Subject,
+#         verbose_name=_("Subjects taught"),
+#         related_name="teachers",
+#         blank=True,
+#     )
+#     profilePic = models.ImageField(
+#         _("Profile picture"),
+#         storage=ProfilePicStorage(),
+#         blank=True,
+#         null=True,
+#     )
+
+#     username = None
+#     USERNAME_FIELD = "email"
+#     REQUIRED_FIELDS = []
+
+#     objects = UserManager()
+
+#     class Meta:
+#         verbose_name = _("User")
+#         verbose_name_plural = _("Users")
+
+#     def __str__(self):
+#         if self.role == self.Role.STUDENT:
+#             return f"{self.email} ({self.role}, {self.grade_in.name if self.grade_in else 'No Grade'})"
+#         elif self.role == self.Role.TEACHER:
+#             subjects = ", ".join([s.name for s in self.subjects_taught.all()])
+#             return f"{self.email} ({self.role}, teaches: {subjects})"
+#         else:
+#             return f"{self.email} ({self.role})"
+
+#     def save(self, *args, **kwargs):
+#         update_fields = kwargs.get("update_fields")
+
+#         if update_fields is not None and "profilePic" not in update_fields:
+#             return super().save(*args, **kwargs)
+
+#         super().save(*args, **kwargs)
+
+#         if not self.profilePic:
+#             return
+
+#         try:
+#             self.profilePic.open("rb")
+#             img = Image.open(self.profilePic)
+#             img.load()
+#         finally:
+#             try:
+#                 self.profilePic.close()
+#             except Exception:
+#                 pass
+
+#         img = img.convert("RGB")
+#         img = img.resize((200, 200), Image.Resampling.LANCZOS)
+
+#         buffer = BytesIO()
+#         img.save(buffer, format="JPEG", quality=90)
+#         buffer.seek(0)
+
+#         base_name = self.profilePic.name.rsplit(".", 1)[0]
+#         new_name = base_name + ".jpg"
+
+#         self.profilePic.save(new_name, ContentFile(buffer.read()), save=False)
+
+#         super().save(update_fields=["profilePic"])
+
+
 
 
 
@@ -161,12 +345,22 @@ class User(AbstractUser):
         verbose_name = _("User")
         verbose_name_plural = _("Users")
 
+    def _localized_text(self, value):
+        if isinstance(value, dict):
+            return value.get("en") or value.get("ka") or value.get("ru") or ""
+        return str(value) if value is not None else ""
+
     def __str__(self):
         if self.role == self.Role.STUDENT:
-            return f"{self.email} ({self.role}, {self.grade_in.name if self.grade_in else 'No Grade'})"
+            grade_name = self._localized_text(self.grade_in.name) if self.grade_in else "No Grade"
+            return f"{self.email} ({self.role}, {grade_name})"
+
         elif self.role == self.Role.TEACHER:
-            subjects = ", ".join([s.name for s in self.subjects_taught.all()])
+            subjects = ", ".join(
+                self._localized_text(s.name) for s in self.subjects_taught.all()
+            )
             return f"{self.email} ({self.role}, teaches: {subjects})"
+
         else:
             return f"{self.email} ({self.role})"
 
@@ -204,7 +398,6 @@ class User(AbstractUser):
         self.profilePic.save(new_name, ContentFile(buffer.read()), save=False)
 
         super().save(update_fields=["profilePic"])
-
 
 
 
@@ -284,6 +477,7 @@ class UserSubjectPoints(models.Model):
 
 
 class Exam(models.Model):
+    sign_name = models.CharField(_("Name"), max_length=255, blank=True, null=True)
     title = models.JSONField(_("Title"), default=dict)
 
     subject = models.ForeignKey(
@@ -311,7 +505,7 @@ class Exam(models.Model):
 
     def __str__(self):
         if isinstance(self.title, dict):
-            return self.title.get("ka") or self.title.get("en") or self.title.get("ru") or "Exam"
+            return self.sign_name
         return str(self.title)
 
     def get_title(self, lang: str):
@@ -351,6 +545,7 @@ class Exam(models.Model):
 
 
 class Question(models.Model):
+    sign_name = models.CharField(_("Name"), max_length=255, blank=True, null=True)
     exam = models.ForeignKey(
         Exam,
         verbose_name=_("Exam"),
@@ -366,7 +561,7 @@ class Question(models.Model):
         verbose_name_plural = _("Questions")
 
     def __str__(self):
-        return f"{self.exam.title} - Question #{self.pk}"
+        return f"{self.exam.sign_name or self.exam.title} - Question #{self.pk}"
 
     def get_text(self, lang: str) -> str:
         if isinstance(self.text, dict):
@@ -551,10 +746,10 @@ class Announcement(models.Model):
 
     def __str__(self):
         if self.subject:
-            return f"{self.title} {self.grade.name} {self.subject.name}"
-        return f"{self.title} {self.grade.name} - Global"
+            return f"{self.title} {self.grade.sign_name} {self.subject.sign_name}"
+        return f"{self.title} {self.grade.sign_name} - Global"
 
-
+    
 class Comment(models.Model):
     content = models.TextField(_("Content"))
     announcement = models.ForeignKey(

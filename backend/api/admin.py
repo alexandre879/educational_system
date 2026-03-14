@@ -1,147 +1,3 @@
-# from django.contrib import admin
-# from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-# from .models import (
-#     DailyExercise,
-#     User,
-#     Grade,
-#     Subject,
-#     Exam,
-#     Question,
-#     Option,
-#     UserExamSession,
-#     UserAnswer,
-#     Announcement,
-#     GradeCategory,
-#     UserSubjectPoints,
-#     WeeklyLesson,
-#     LessonAttendance,
-#     ParentStudent,
-#     SubjectBook
-# )
-# from .forms import UserCreationForm, UserChangeForm
-
-# admin.site.site_header = "BlueWeb Administration"
-# admin.site.site_title = "BlueWeb Admin"
-# admin.site.index_title = "Welcome to BlueWeb Control Panel"
-
-
-
-# class WithIDAdmin(admin.ModelAdmin):
-#     def get_list_display(self, request):
-#         return ("id",) + tuple(super().get_list_display(request))
-
-
-
-
-# class UserAdmin(BaseUserAdmin):
-#     form = UserChangeForm
-#     add_form = UserCreationForm
-
-#     list_display = (
-#         "email",
-#         "first_name",
-#         "last_name",
-#         "role",
-#         "grade_in",
-#         "points",
-#         "profilePic",
-#         "is_staff",
-#         "is_active",
-#     )
-
-#     list_filter = ("is_staff", "is_active", "role", "grade_in")
-
-#     fieldsets = (
-#         (None, {"fields": ("email", "password")}),
-#         ("Personal info", {
-#             "fields": (
-#                 "first_name",
-#                 "last_name",
-#                 "role",
-#                 "grade_in",
-#                 "points",
-#                 "profilePic",
-#                 "subjects_taught",
-#             )
-#         }),
-#         ("Permissions", {
-#             "fields": (
-#                 "is_staff",
-#                 "is_active",
-#                 "is_superuser",
-#                 "groups",
-#                 "user_permissions",
-#             )
-#         }),
-#     )
-
-#     add_fieldsets = (
-#         (None, {
-#             "classes": ("wide",),
-#             "fields": (
-#                 "email",
-#                 "first_name",
-#                 "last_name",
-#                 "role",
-#                 "grade_in",
-#                 "points",
-#                 "subjects_taught",
-#                 "profilePic",
-#                 "password1",
-#                 "password2",
-#                 "is_staff",
-#                 "is_active",
-#             ),
-#         }),
-#     )
-
-#     search_fields = ("email", "first_name", "last_name")
-#     ordering = ("email",)
-#     filter_horizontal = ("groups", "user_permissions", "subjects_taught")
-
-
-#     def get_list_display(self, request):
-#         return ("id",) + self.list_display
-
-
-
-
-# admin.site.register(User, UserAdmin)
-# admin.site.register(Grade, WithIDAdmin)
-# admin.site.register(Subject, WithIDAdmin)
-# admin.site.register(Exam, WithIDAdmin)
-# admin.site.register(Question, WithIDAdmin)
-# admin.site.register(Option, WithIDAdmin)
-# admin.site.register(UserExamSession, WithIDAdmin)
-# admin.site.register(UserAnswer, WithIDAdmin)
-# admin.site.register(Announcement, WithIDAdmin)
-# admin.site.register(GradeCategory, WithIDAdmin)
-# admin.site.register(UserSubjectPoints, WithIDAdmin)
-# admin.site.register(WeeklyLesson, WithIDAdmin)
-# admin.site.register(LessonAttendance, WithIDAdmin)
-# admin.site.register(ParentStudent, WithIDAdmin)
-# admin.site.register(DailyExercise, WithIDAdmin)
-
-
-
-# @admin.register(SubjectBook)
-# class SubjectBookAdmin(WithIDAdmin):
-#     list_display = ("grade_name", "subject", "pdf_file", "uploaded_at")
-#     list_select_related = ("subject", "subject__grade")
-#     search_fields = ("subject__name", "subject__grade__name")
-#     list_filter = ("subject__grade",)
-
-#     @admin.display(description="Grade")
-#     def grade_name(self, obj):
-#         return obj.subject.grade.name if obj.subject and obj.subject.grade else "-"
-
-
-
-
-
-
-
-
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.utils.translation import gettext_lazy as _
@@ -254,8 +110,8 @@ class UserAdmin(BaseUserAdmin):
 
 @admin.register(GradeCategory)
 class GradeCategoryAdmin(WithIDAdmin):
-    list_display = ("name",)
-    search_fields = ("name",)
+    list_display = ("sign_name", "name")
+    search_fields = ("sign_name", "name")
 
 
 @admin.register(Grade)
@@ -268,15 +124,15 @@ class GradeAdmin(WithIDAdmin):
 
 @admin.register(Subject)
 class SubjectAdmin(WithIDAdmin):
-    list_display = ("name", "grade")
-    search_fields = ("name", "grade__name", "grade__category__name")
+    list_display = ("sign_name", "name", "grade")
+    search_fields = ("name", "sign_name", "grade__name", "grade__category__name")
     list_filter = ("grade", "grade__category")
     list_select_related = ("grade", "grade__category")
 
 
 @admin.register(Exam)
 class ExamAdmin(WithIDAdmin):
-    list_display = ("title", "subject", "grade", "duration")
+    list_display = ("sign_name", "duration")
     search_fields = ("title", "subject__name", "grade__name")
     list_filter = ("grade", "subject")
     list_select_related = ("subject", "grade")
@@ -284,7 +140,7 @@ class ExamAdmin(WithIDAdmin):
 
 @admin.register(Question)
 class QuestionAdmin(WithIDAdmin):
-    list_display = ("short_text", "exam", "question_category", "points")
+    list_display = ("sign_name", "short_text", "exam", "question_category", "points")
     search_fields = ("text", "exam__title", "question_category")
     list_filter = ("exam",)
 

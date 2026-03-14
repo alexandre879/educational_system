@@ -245,6 +245,18 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 .navIcon {
   color: var(--primary-blue);
   flex-shrink: 0;
@@ -307,11 +319,9 @@
   color: white;
   font-weight: 800;
   letter-spacing: 0.2px;
-
   box-shadow:
     0 12px 30px rgba(22, 119, 255, 0.18),
     0 2px 0 rgba(255, 255, 255, 0.06) inset;
-
   transition: transform 160ms ease, filter 160ms ease, box-shadow 160ms ease;
 
   &:hover {
@@ -331,12 +341,9 @@
   border: 1px solid var(--border-medium);
   border-radius: 16px;
   padding: 16px;
-
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-
   box-shadow: var(--shadow-soft);
-
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -350,11 +357,13 @@
   border-radius: 12px;
   padding: 12px;
   color: var(--text-primary);
-
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-
-  transition: border-color 160ms ease, box-shadow 160ms ease, background 160ms ease, color 160ms ease;
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    background 160ms ease,
+    color 160ms ease;
 
   &::placeholder {
     color: var(--placeholder);
@@ -382,11 +391,9 @@
   cursor: pointer;
   color: white;
   font-weight: 800;
-
   box-shadow:
     0 12px 30px rgba(22, 119, 255, 0.18),
     0 2px 0 rgba(255, 255, 255, 0.06) inset;
-
   transition: filter 160ms ease, box-shadow 160ms ease;
 
   &:hover {
@@ -408,12 +415,9 @@
   border: 1px solid var(--border-medium);
   border-radius: 16px;
   padding: 16px;
-
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-
   box-shadow: var(--shadow-soft);
-
   transition: border-color 160ms ease, background 160ms ease, transform 160ms ease;
 
   &:hover {
@@ -429,6 +433,7 @@
   align-items: center;
   gap: 10px;
   min-width: 0;
+  flex-wrap: wrap;
 }
 
 .cardTitle {
@@ -472,10 +477,8 @@
   border-radius: 16px;
   padding: 18px;
   border-style: dashed;
-
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-
   color: var(--text-secondary);
 }
 
@@ -484,5 +487,9 @@
     width: 40px;
     height: 40px;
     border-radius: 12px;
+  }
+
+  .cardTitle {
+    white-space: normal;
   }
 }
