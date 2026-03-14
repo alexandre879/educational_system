@@ -18,12 +18,13 @@ export interface Announcement {
 }
 
 
+
 export interface CreateAnnouncementData {
-    title: string;
-    content: string;
-    subject_name: string;
-    grade_id: number;
-    category_id: number;
+  title: string;
+  content: string;
+  subject_id: number;
+  grade_id: number;
+  category_id: number;
 }
 
 

@@ -1,11 +1,12 @@
+type LocalizedValue = string | Record<string, string>;
+
 export interface BackendSubject {
   pk: number;
-  name: string;
+  name: LocalizedValue;
   grade__pk: number;
-  grade__name: string;
-  grade__category__pk: number;
-  grade__category__name: string;
-};
+  grade__name: LocalizedValue;
+  grade__category__name: LocalizedValue;
+}
 
 
 
