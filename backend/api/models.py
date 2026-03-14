@@ -1,6 +1,7 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from api.managers import UserManager
+from .translation import get_localized_json_value
 from .storage import BookStorage, ProfilePicStorage
 from PIL import Image
 from io import BytesIO
@@ -11,23 +12,8 @@ from django.utils.translation import gettext_lazy as _
 
 
 
-# class GradeCategory(models.Model):
-#     name = models.CharField(_("Name"), max_length=50)
-
-#     class Meta:
-#         verbose_name = _("Grade category")
-#         verbose_name_plural = _("Grade categories")
-
-#     def __str__(self):
-#         return self.name
-
-
-
-
-
 
 class GradeCategory(models.Model):
-    sign_name = models.CharField(_("Name"), max_length=50, blank=True, null=True)
     name = models.JSONField(_("Name"), default=dict)
 
     class Meta:
@@ -35,20 +21,10 @@ class GradeCategory(models.Model):
         verbose_name_plural = _("Grade categories")
 
     def __str__(self):
-        return self.sign_name
+        return get_localized_json_value(self.name)
 
     def get_name(self, locale: str) -> str:
-        if isinstance(self.name, dict):
-            return (
-                self.name.get(locale)
-                or self.name.get("en")
-                or self.name.get("ka")
-                or self.name.get("ru")
-                or ""
-            )
-        return str(self.name)
-
-
+        return get_localized_json_value(self.name, locale)
 
 
 
@@ -68,63 +44,9 @@ class Grade(models.Model):
         verbose_name_plural = _("Grades")
 
     def __str__(self):
-        return f"{self.name} ({self.category.name})"
-
-
-
-# class Subject(models.Model):
-#     class ContentMode(models.TextChoices):
-#         FIXED = "fixed", _("Fixed language")
-#         LOCALE = "locale", _("Follow website locale")
-
-#     class LanguageCode(models.TextChoices):
-#         KA = "ka", _("Georgian")
-#         EN = "en", _("English")
-#         RU = "ru", _("Russian")
-
-#     name = models.CharField(_("Name"), max_length=255)
-#     grade = models.ForeignKey(
-#         Grade,
-#         verbose_name=_("Grade"),
-#         on_delete=models.CASCADE,
-#         related_name="subjects",
-#     )
-#     content_mode = models.CharField(
-#         _("Content mode"),
-#         max_length=10,
-#         choices=ContentMode.choices,
-#         default=ContentMode.LOCALE,
-#     )
-#     fixed_language = models.CharField(
-#         _("Fixed language"),
-#         max_length=5,
-#         choices=LanguageCode.choices,
-#         blank=True,
-#         null=True,
-#     )
-
-#     class Meta:
-#         verbose_name = _("Subject")
-#         verbose_name_plural = _("Subjects")
-
-#     def __str__(self):
-#         return f"{self.name} ({self.grade.name}-{self.grade.category.name})"
-
-#     def clean(self):
-#         if self.content_mode == self.ContentMode.FIXED and not self.fixed_language:
-#             raise ValidationError(
-#                 {"fixed_language": _("Fixed language is required for fixed mode.")}
-#             )
-
-#         if self.content_mode == self.ContentMode.LOCALE:
-#             self.fixed_language = None
-
-#     def get_exam_language(self, locale: str) -> str:
-#         if self.content_mode == self.ContentMode.FIXED and self.fixed_language:
-#             return self.fixed_language
-#         return locale
-
-
+        if self.category:
+            return f"{self.name} {self.category}"
+        return self.name
 
 
 
@@ -141,7 +63,6 @@ class Subject(models.Model):
         EN = "en", _("English")
         RU = "ru", _("Russian")
 
-    sign_name = models.CharField(_("Name"), max_length=255, blank=True, null=True)
     name = models.JSONField(_("Name"), default=dict)
     grade = models.ForeignKey(
         Grade,
@@ -168,10 +89,8 @@ class Subject(models.Model):
         verbose_name_plural = _("Subjects")
 
     def __str__(self):
-        subject_name = self.get_name("en")
-        grade_name = getattr(self.grade, "name", "")
-        grade_category_name = getattr(getattr(self.grade, "category", None), "name", "")
-        return f"{subject_name} ({grade_name}-{grade_category_name})"
+        subject_name = get_localized_json_value(self.name)
+        return f"{subject_name} ({self.grade})"
 
     def clean(self):
         if self.content_mode == self.ContentMode.FIXED and not self.fixed_language:
@@ -188,16 +107,7 @@ class Subject(models.Model):
         return locale
 
     def get_name(self, locale: str) -> str:
-        if isinstance(self.name, dict):
-            return (
-                self.name.get(locale)
-                or self.name.get("en")
-                or self.name.get("ka")
-                or self.name.get("ru")
-                or ""
-            )
-        return str(self.name)
-
+        return get_localized_json_value(self.name, locale)
 
 
 
@@ -476,24 +386,21 @@ class UserSubjectPoints(models.Model):
 
 
 
-class Exam(models.Model):
-    sign_name = models.CharField(_("Name"), max_length=255, blank=True, null=True)
-    title = models.JSONField(_("Title"), default=dict)
 
+class Exam(models.Model):
+    title = models.JSONField(_("Title"), default=dict)
     subject = models.ForeignKey(
         Subject,
         verbose_name=_("Subject"),
         on_delete=models.CASCADE,
         related_name="exams",
     )
-
     grade = models.ForeignKey(
         Grade,
         verbose_name=_("Grade"),
         on_delete=models.CASCADE,
         related_name="exams",
     )
-
     duration = models.PositiveIntegerField(
         _("Duration in minutes"),
         help_text=_("Duration in minutes"),
@@ -504,21 +411,11 @@ class Exam(models.Model):
         verbose_name_plural = _("Exams")
 
     def __str__(self):
-        if isinstance(self.title, dict):
-            return self.sign_name
-        return str(self.title)
+        exam_title = get_localized_json_value(self.title)
+        return f"{exam_title} ({self.subject})"
 
     def get_title(self, lang: str):
-        if isinstance(self.title, dict):
-            return (
-                self.title.get(lang)
-                or self.title.get("ka")
-                or self.title.get("en")
-                or self.title.get("ru")
-                or ""
-            )
-        return str(self.title)
-
+        return get_localized_json_value(self.title, lang)
 
 
 
@@ -543,9 +440,7 @@ class Exam(models.Model):
 
 
 
-
 class Question(models.Model):
-    sign_name = models.CharField(_("Name"), max_length=255, blank=True, null=True)
     exam = models.ForeignKey(
         Exam,
         verbose_name=_("Exam"),
@@ -561,19 +456,13 @@ class Question(models.Model):
         verbose_name_plural = _("Questions")
 
     def __str__(self):
-        return f"{self.exam.sign_name or self.exam.title} - Question #{self.pk}"
+        return f"{self.exam} - Question #{self.pk}"
 
     def get_text(self, lang: str) -> str:
-        if isinstance(self.text, dict):
-            return self.text.get(lang) or self.text.get("ka") or self.text.get("en") or ""
-        return str(self.text)
+        return get_localized_json_value(self.text, lang)
 
     def get_category(self, lang: str) -> str:
-        if isinstance(self.question_category, dict):
-            return self.question_category.get(lang) or self.question_category.get("ka") or self.question_category.get("en") or ""
-        return str(self.question_category or "")
-
-
+        return get_localized_json_value(self.question_category, lang)
 
 
 # class Option(models.Model):
@@ -596,7 +485,6 @@ class Question(models.Model):
 
 
 
-
 class Option(models.Model):
     question = models.ForeignKey(
         Question,
@@ -612,15 +500,10 @@ class Option(models.Model):
         verbose_name_plural = _("Options")
 
     def __str__(self):
-        if isinstance(self.title, dict):
-            return self.title.get("ka") or self.title.get("en") or self.title.get("ru") or str(self.pk)
-        return str(self.title)
+        return get_localized_json_value(self.title) or str(self.pk)
 
     def get_title(self, lang: str) -> str:
-        if isinstance(self.title, dict):
-            return self.title.get(lang) or self.title.get("ka") or self.title.get("en") or self.title.get("ru") or ""
-        return str(self.title)
-
+        return get_localized_json_value(self.title, lang)
 
 
 
@@ -715,6 +598,7 @@ class UserAnswer(models.Model):
         return f"{self.session.user.email if self.session else 'Unknown User'} - Q{self.question.pk if self.question else 'Unknown'} ({'Correct' if self.is_correct else 'Wrong'})"
 
 
+
 class Announcement(models.Model):
     title = models.CharField(_("Title"), max_length=255)
     content = models.TextField(_("Content"))
@@ -746,9 +630,10 @@ class Announcement(models.Model):
 
     def __str__(self):
         if self.subject:
-            return f"{self.title} {self.grade.sign_name} {self.subject.sign_name}"
-        return f"{self.title} {self.grade.sign_name} - Global"
+            return f"{self.title} - {self.subject}"
+        return f"{self.title} - {self.grade} - Global"
 
+    
     
 class Comment(models.Model):
     content = models.TextField(_("Content"))
@@ -843,8 +728,16 @@ class WeeklyLesson(models.Model):
         self.full_clean()
         return super().save(*args, **kwargs)
 
+    
     def __str__(self):
-        return f"{self.grade} {self.get_weekday_display()} {self.start_time}-{self.end_time} {self.subject.name}"
+        subject_name = get_localized_json_value(self.subject.name) if self.subject else ""
+        category_name = (
+            get_localized_json_value(self.grade.category.name)
+            if self.grade and self.grade.category
+            else ""
+        )
+    
+        return f"{self.grade.name} {category_name} {self.weekday} {self.start_time}-{self.end_time} {subject_name}"
 
 
 class LessonAttendance(models.Model):
