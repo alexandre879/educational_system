@@ -557,11 +557,27 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 .navIcon {
   color: var(--primary-blue);
   flex-shrink: 0;
   width: 22px;
   height: 22px;
+  transition: transform 220ms ease;
 }
 
 .WrapperOfMainCaptionAndIcon {
@@ -586,6 +602,21 @@
 
   box-shadow: 0 14px 36px rgba(0, 0, 0, 0.25);
   flex-shrink: 0;
+
+  transition:
+    transform 220ms ease,
+    box-shadow 220ms ease,
+    border-color 220ms ease;
+}
+
+.WrapperOfMainCaptionAndIcon:hover .headerIcon {
+  transform: translateY(-2px) scale(1.02);
+  border-color: rgba(22, 119, 255, 0.28);
+  box-shadow: 0 18px 42px rgba(0, 0, 0, 0.28);
+}
+
+.WrapperOfMainCaptionAndIcon:hover .navIcon {
+  transform: scale(1.07);
 }
 
 .pageMainCaptionStyle {
@@ -606,6 +637,8 @@
   background: transparent;
   color: var(--text-primary);
   min-height: 60vh;
+
+  animation: pageFadeIn 320ms ease;
 }
 
 .topBar {
@@ -615,6 +648,7 @@
   gap: 14px;
   margin-bottom: 16px;
   flex-wrap: wrap;
+  animation: fadeUp 260ms ease;
 }
 
 .titleBlock {
@@ -647,12 +681,18 @@
   -webkit-backdrop-filter: blur(10px);
 
   box-shadow: 0 12px 34px rgba(0, 0, 0, 0.25);
-  transition: transform 0.12s ease, border-color 0.18s ease, background 0.18s ease, color 0.18s ease;
+  transition:
+    transform 180ms ease,
+    border-color 180ms ease,
+    background 180ms ease,
+    color 180ms ease,
+    box-shadow 180ms ease;
 
   &:hover {
     border-color: rgba(22, 119, 255, 0.35);
     background: rgba(22, 119, 255, 0.08);
-    transform: translateY(-1px);
+    transform: translateY(-2px);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.28);
   }
 
   &:active {
@@ -678,6 +718,7 @@
   -webkit-backdrop-filter: blur(12px);
 
   box-shadow: var(--shadow-soft);
+  animation: fadeUp 260ms ease;
 }
 
 .loadingText {
@@ -703,6 +744,7 @@
   -webkit-backdrop-filter: blur(12px);
 
   box-shadow: var(--shadow-soft);
+  animation: fadeUp 280ms ease;
 }
 
 .emptyTitle {
@@ -745,7 +787,19 @@
     var(--shadow-soft),
     0 0 0 1px rgba(255, 255, 255, 0.03) inset;
 
-  transition: transform 160ms ease, border-color 160ms ease, background 160ms ease;
+  transition:
+    transform 180ms ease,
+    border-color 180ms ease,
+    background 180ms ease,
+    box-shadow 180ms ease;
+  animation: fadeUp 300ms ease;
+}
+
+.subjectItem:hover {
+  border-color: rgba(22, 119, 255, 0.2);
+  box-shadow:
+    0 18px 42px rgba(0, 0, 0, 0.2),
+    0 0 0 1px rgba(255, 255, 255, 0.03) inset;
 }
 
 .subjectItem[open] {
@@ -770,7 +824,7 @@
   gap: 12px;
 
   user-select: none;
-  transition: background 0.2s ease;
+  transition: background 0.2s ease, transform 0.18s ease;
 }
 
 .subjectSummary:hover {
@@ -804,6 +858,15 @@
   padding: 4px 10px;
   border-radius: 999px;
   flex: 0 0 auto;
+
+  transition:
+    transform 180ms ease,
+    background 180ms ease,
+    border-color 180ms ease;
+}
+
+.subjectSummary:hover .badge {
+  transform: translateY(-1px);
 }
 
 .subjectRight {
@@ -820,11 +883,21 @@
   border: 1px solid rgba(22, 119, 255, 0.25);
   padding: 4px 10px;
   border-radius: 999px;
+
+  transition:
+    transform 180ms ease,
+    border-color 180ms ease,
+    background 180ms ease;
+}
+
+.subjectSummary:hover .timeChip {
+  transform: translateY(-1px);
+  border-color: rgba(22, 119, 255, 0.35);
 }
 
 .chev {
   color: var(--text-secondary);
-  transition: transform 0.25s ease;
+  transition: transform 0.25s ease, color 0.2s ease;
 }
 
 .subjectItem[open] .chev {
@@ -833,7 +906,7 @@
 
 .lessonBody {
   padding: 12px 14px 14px;
-  animation: fadeSlide 0.22s ease forwards;
+  animation: fadeSlide 0.24s ease forwards;
 }
 
 .lessonTopRow {
@@ -859,6 +932,11 @@
   border: 1px solid var(--border-medium);
   padding: 4px 10px;
   border-radius: 999px;
+
+  transition:
+    transform 180ms ease,
+    border-color 180ms ease,
+    background 180ms ease;
 }
 
 .studentsCount {
@@ -885,10 +963,16 @@
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
 
-  transition: transform 0.12s ease, background 0.18s ease, border-color 0.18s ease, color 0.18s ease;
+  transition:
+    transform 0.18s ease,
+    background 0.18s ease,
+    border-color 0.18s ease,
+    color 0.18s ease,
+    box-shadow 0.18s ease;
 
   &:hover {
-    transform: translateY(-1px);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.14);
   }
 
   &:active {
@@ -953,13 +1037,18 @@
   background: var(--surface);
   border: 1px solid var(--border-soft, var(--border-medium));
 
-  transition: background 0.2s ease, transform 0.15s ease, border-color 0.18s ease;
+  transition:
+    background 0.2s ease,
+    transform 0.18s ease,
+    border-color 0.18s ease,
+    box-shadow 0.18s ease;
 }
 
 .studentRow:hover {
   background: rgba(22, 119, 255, 0.06);
   border-color: rgba(22, 119, 255, 0.18);
-  transform: translateX(2px);
+  transform: translateX(3px);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.1);
 }
 
 .studentName {
@@ -983,12 +1072,18 @@
   font-weight: 900;
   cursor: pointer;
 
-  transition: transform 0.18s ease, background 0.18s ease, border-color 0.18s ease, color 0.18s ease;
+  transition:
+    transform 0.18s ease,
+    background 0.18s ease,
+    border-color 0.18s ease,
+    color 0.18s ease,
+    box-shadow 0.18s ease;
   min-width: 92px;
 
   &:hover {
-    transform: translateY(-1px);
+    transform: translateY(-2px);
     border-color: rgba(22, 119, 255, 0.35);
+    box-shadow: 0 10px 22px rgba(0, 0, 0, 0.12);
   }
 
   &:active {
@@ -1026,11 +1121,18 @@
     0 12px 30px rgba(22, 119, 255, 0.20),
     0 2px 0 rgba(255, 255, 255, 0.06) inset;
 
-  transition: transform 0.12s ease, filter 0.18s ease, opacity 0.18s ease;
+  transition:
+    transform 0.18s ease,
+    filter 0.18s ease,
+    opacity 0.18s ease,
+    box-shadow 0.18s ease;
 
   &:hover {
     filter: brightness(1.04);
-    transform: translateY(-1px);
+    transform: translateY(-2px);
+    box-shadow:
+      0 16px 36px rgba(22, 119, 255, 0.24),
+      0 2px 0 rgba(255, 255, 255, 0.06) inset;
   }
 
   &:active {
@@ -1086,6 +1188,17 @@
 
   .saveBtn {
     width: 100%;
+  }
+}
+
+@keyframes pageFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 

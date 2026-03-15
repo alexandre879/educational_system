@@ -263,6 +263,12 @@
 
 
 
+
+
+
+
+
+
 @import "../../../../../colors.scss";
 
 /* ================== CARD ================== */
@@ -284,15 +290,26 @@
   gap: 12px;
 
   cursor: pointer;
-  transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+  transition:
+    transform 0.18s ease,
+    border-color 0.18s ease,
+    box-shadow 0.18s ease,
+    background 0.18s ease;
+  animation: fadeUp 280ms ease;
+  will-change: transform, box-shadow;
 }
 
 .card:hover {
-  transform: translateY(-2px);
+  transform: translateY(-3px);
   border-color: rgba(22, 119, 255, 0.5);
+  background: rgba(255, 255, 255, 0.028);
   box-shadow:
-    0 14px 28px -20px rgba(22, 119, 255, 0.55),
+    0 18px 34px -22px rgba(22, 119, 255, 0.55),
     inset 0 0 0 1px rgba(22, 119, 255, 0.15);
+}
+
+.card:active {
+  transform: translateY(-1px) scale(0.997);
 }
 
 /* ================== TOP ROW ================== */
@@ -316,6 +333,11 @@
 .emoji {
   font-size: 1.15rem;
   flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+
+.card:hover .emoji {
+  transform: scale(1.08) rotate(-4deg);
 }
 
 .titleText {
@@ -326,9 +348,15 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  transition: transform 0.18s ease, opacity 0.18s ease;
 }
 
-/* ✅ more blue, less gold */
+.card:hover .titleText {
+  transform: translateX(1px);
+}
+
+/* ================== SUBJECT PILL ================== */
+
 .subjectPill {
   flex-shrink: 0;
 
@@ -346,6 +374,19 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+
+  transition:
+    transform 0.18s ease,
+    border-color 0.18s ease,
+    background 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+.card:hover .subjectPill {
+  transform: translateY(-1px);
+  border-color: rgba(22, 119, 255, 0.34);
+  background: rgba(22, 119, 255, 0.18);
+  box-shadow: 0 8px 18px -14px rgba(22, 119, 255, 0.42);
 }
 
 /* ================== META ================== */
@@ -366,16 +407,38 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
+
+  transition:
+    transform 0.18s ease,
+    border-color 0.18s ease,
+    background 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+.card:hover .metaItem {
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.metaItem:hover {
+  transform: translateY(-1px);
+  background: rgba(0, 0, 0, 0.22);
+  box-shadow: 0 10px 18px -16px rgba(0, 0, 0, 0.55);
 }
 
 .metaLabel {
   font-size: 0.78rem;
   color: $text_secondary;
+  transition: color 0.18s ease;
 }
 
 .metaValue {
   font-size: 0.95rem;
   font-weight: 800;
+  transition: transform 0.18s ease, color 0.18s ease;
+}
+
+.metaItem:hover .metaValue {
+  transform: translateX(1px);
 }
 
 /* ================== RESPONSIVE ================== */
@@ -477,5 +540,16 @@
     max-width: 62%;
     font-size: 0.74rem;
     padding: 5px 7px;
+  }
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }

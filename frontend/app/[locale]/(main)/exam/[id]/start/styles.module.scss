@@ -386,6 +386,390 @@
 
 
 
+
+
+
+
+// .examMainContainer {
+//   width: 100%;
+//   min-height: 80vh;
+
+//   padding: 18px;
+//   color: var(--text-primary);
+
+//   display: flex;
+//   flex-direction: column;
+//   gap: 14px;
+// }
+
+// .examCard {
+//   width: 100%;
+//   max-width: 1200px;
+//   margin: 0 auto;
+
+//   border-radius: 18px;
+//   padding: 18px;
+
+//   background: var(--surface-soft);
+//   border: 1px solid var(--border-soft, var(--border-medium));
+
+//   box-shadow: var(--shadow-soft);
+//   backdrop-filter: blur(10px);
+
+//   display: flex;
+//   flex-direction: column;
+//   gap: 14px;
+// }
+
+// .examHeader {
+//   display: flex;
+//   align-items: center;
+//   justify-content: space-between;
+//   gap: 12px;
+//   min-width: 0;
+// }
+
+// .examTitle {
+//   display: flex;
+//   align-items: baseline;
+//   gap: 10px;
+//   min-width: 0;
+
+//   h1 {
+//     margin: 0;
+//     font-size: 1.1rem;
+//     font-weight: 900;
+//     color: var(--text-primary);
+
+//     min-width: 0;
+//     overflow: hidden;
+//     text-overflow: ellipsis;
+//     white-space: nowrap;
+//   }
+// }
+
+// .examBadge {
+//   flex-shrink: 0;
+//   font-size: 0.78rem;
+//   font-weight: 800;
+//   color: var(--text-strong);
+
+//   padding: 6px 10px;
+//   border-radius: 999px;
+
+//   background: rgba(22, 119, 255, 0.14);
+//   border: 1px solid rgba(22, 119, 255, 0.22);
+// }
+
+// .timer {
+//   flex-shrink: 0;
+
+//   display: flex;
+//   align-items: center;
+//   gap: 8px;
+
+//   padding: 8px 12px;
+//   border-radius: 999px;
+
+//   background: var(--surface);
+//   border: 1px solid var(--border-medium);
+
+//   font-weight: 900;
+//   color: var(--text-primary);
+// }
+
+// .timerDanger {
+//   color: #ff4d4f;
+//   border-color: rgba(255, 77, 79, 0.35);
+//   background: rgba(255, 77, 79, 0.08);
+// }
+
+// .questionText {
+//   margin: 0;
+//   font-size: 1.15rem;
+//   font-weight: 900;
+//   line-height: 1.35;
+//   color: var(--text-primary);
+
+//   padding: 12px 12px;
+//   border-radius: 14px;
+
+//   background: var(--surface);
+//   border: 1px solid var(--border-soft, var(--border-medium));
+// }
+
+// .optionsList {
+//   list-style: none;
+//   padding: 0;
+//   margin: 0;
+
+//   display: flex;
+//   flex-direction: column;
+//   gap: 10px;
+// }
+
+// .specificQuestionWrapper {
+//   width: 100%;
+//   min-width: 0;
+
+//   display: flex;
+//   align-items: center;
+//   gap: 10px;
+
+//   padding: 10px 10px;
+//   border-radius: 14px;
+
+//   background: var(--surface);
+//   border: 1px solid var(--border-soft, var(--border-medium));
+
+//   cursor: pointer;
+//   transition: transform 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
+
+//   &:hover {
+//     transform: translateY(-1px);
+//     border-color: rgba(22, 119, 255, 0.45);
+//     background: rgba(22, 119, 255, 0.06);
+//   }
+
+//   &:active {
+//     transform: translateY(0);
+//   }
+// }
+
+// .optionIndex {
+//   flex-shrink: 0;
+//   width: 28px;
+//   height: 28px;
+//   border-radius: 10px;
+
+//   display: grid;
+//   place-items: center;
+
+//   font-weight: 900;
+//   font-size: 0.9rem;
+
+//   color: var(--text-primary);
+//   background: var(--surface);
+//   border: 1px solid var(--border-medium);
+// }
+
+// .optionButton {
+//   flex: 1;
+//   min-width: 0;
+
+//   background: transparent;
+//   border: none;
+//   color: var(--text-primary);
+//   text-align: left;
+
+//   font-size: 0.95rem;
+//   font-weight: 700;
+//   line-height: 1.25;
+
+//   padding: 10px 10px;
+//   border-radius: 12px;
+
+//   cursor: pointer;
+
+//   &:disabled {
+//     opacity: 0.6;
+//     cursor: not-allowed;
+//   }
+// }
+
+// .locked {
+//   opacity: 0.6;
+//   pointer-events: none;
+// }
+
+// .progress {
+//   max-width: 200px;
+//   width: 100%;
+//   display: flex;
+//   align-items: center;
+//   justify-content: space-between;
+//   gap: 10px;
+
+//   padding: 12px;
+//   border-radius: 14px;
+
+//   background: var(--surface);
+//   border: 1px solid var(--border-soft, var(--border-medium));
+
+//   color: var(--text-secondary);
+//   font-size: 0.95rem;
+//   font-weight: 700;
+// }
+
+// .progress strong {
+//   color: var(--text-primary);
+//   font-weight: 900;
+// }
+
+// .loaderWrapper {
+//   display: flex;
+//   justify-content: center;
+//   align-items: center;
+//   width: 100%;
+//   min-height: 60vh;
+// }
+
+// .loader {
+//   width: 52px;
+//   padding: 8px;
+//   aspect-ratio: 1;
+//   border-radius: 50%;
+//   background: var(--primary-blue);
+
+//   --_m: conic-gradient(#0000 10%, #000), linear-gradient(#000 0 0) content-box;
+//   -webkit-mask: var(--_m);
+//   mask: var(--_m);
+//   -webkit-mask-composite: source-out;
+//   mask-composite: subtract;
+
+//   animation: l3 1s infinite linear;
+// }
+
+// @keyframes l3 {
+//   to {
+//     transform: rotate(1turn);
+//   }
+// }
+
+// .finalExamContainer {
+//   width: 100%;
+//   max-width: 760px;
+//   margin: 20px auto;
+
+//   background: var(--surface);
+//   color: var(--text-primary);
+
+//   border: 1px solid var(--border-soft, var(--border-medium));
+//   border-radius: 18px;
+
+//   padding: 26px 18px;
+//   text-align: center;
+
+//   display: flex;
+//   flex-direction: column;
+//   align-items: center;
+//   gap: 12px;
+
+//   box-shadow: var(--shadow-soft);
+// }
+
+// .finalHeader {
+//   font-size: 1.5rem;
+//   font-weight: 1000;
+//   letter-spacing: 0.2px;
+//   color: var(--text-primary);
+// }
+
+// .finalScore {
+//   font-size: 1.25rem;
+//   font-weight: 900;
+//   color: var(--primary-blue);
+// }
+
+// .finalTotal {
+//   font-size: 1rem;
+//   color: var(--text-primary);
+//   opacity: 0.9;
+// }
+
+// .finalMessage {
+//   font-size: 0.95rem;
+//   color: var(--text-secondary);
+//   max-width: 52ch;
+// }
+
+// .buttonStyle {
+//   height: 42px;
+//   width: 140px;
+//   border-radius: 12px;
+
+//   background: linear-gradient(135deg, var(--primary-blue), var(--primary-blue-hover));
+//   color: white;
+
+//   font-weight: 900;
+//   font-size: 14px;
+
+//   border: none;
+//   cursor: pointer;
+
+//   display: flex;
+//   align-items: center;
+//   justify-content: center;
+
+//   transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
+
+//   &:hover {
+//     filter: brightness(1.04);
+//     transform: translateY(-1px);
+//     box-shadow: 0 14px 28px -20px rgba(0, 0, 0, 0.6);
+//   }
+
+//   &:active {
+//     transform: translateY(0);
+//     box-shadow: none;
+//   }
+
+//   &:focus {
+//     outline: none;
+//     box-shadow: 0 0 0 3px var(--primary-ring-soft);
+//   }
+// }
+
+// @media (max-width: 1024px) {
+//   .examMainContainer {
+//     padding: 16px;
+//   }
+
+//   .examCard {
+//     padding: 16px;
+//     border-radius: 16px;
+//   }
+
+//   .questionText {
+//     font-size: 1.08rem;
+//   }
+// }
+
+// @media (max-width: 600px) {
+//   .examMainContainer {
+//     padding: 14px;
+//   }
+
+//   .examHeader {
+//     flex-direction: column;
+//     align-items: flex-start;
+//   }
+
+//   .timer {
+//     width: 100%;
+//     justify-content: space-between;
+//   }
+
+//   .questionText {
+//     font-size: 1.02rem;
+//   }
+
+//   .optionIndex {
+//     width: 26px;
+//     height: 26px;
+//     border-radius: 9px;
+//   }
+
+//   .buttonStyle {
+//     width: 100%;
+//   }
+// }
+
+
+
+
+
+
 .examMainContainer {
   width: 100%;
   min-height: 80vh;
@@ -396,6 +780,8 @@
   display: flex;
   flex-direction: column;
   gap: 14px;
+
+  animation: pageFadeIn 320ms ease;
 }
 
 .examCard {
@@ -415,6 +801,20 @@
   display: flex;
   flex-direction: column;
   gap: 14px;
+
+  animation: fadeUp 300ms ease;
+  transition:
+    transform 180ms ease,
+    border-color 180ms ease,
+    box-shadow 180ms ease,
+    background 180ms ease;
+}
+
+.examCard:hover {
+  border-color: rgba(22, 119, 255, 0.18);
+  box-shadow:
+    0 18px 42px rgba(0, 0, 0, 0.16),
+    0 0 0 1px rgba(255, 255, 255, 0.03) inset;
 }
 
 .examHeader {
@@ -455,6 +855,16 @@
 
   background: rgba(22, 119, 255, 0.14);
   border: 1px solid rgba(22, 119, 255, 0.22);
+
+  transition:
+    transform 180ms ease,
+    border-color 180ms ease,
+    background 180ms ease;
+}
+
+.examCard:hover .examBadge {
+  transform: translateY(-1px);
+  border-color: rgba(22, 119, 255, 0.32);
 }
 
 .timer {
@@ -472,12 +882,23 @@
 
   font-weight: 900;
   color: var(--text-primary);
+
+  transition:
+    transform 180ms ease,
+    border-color 180ms ease,
+    background 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.examCard:hover .timer {
+  transform: translateY(-1px);
 }
 
 .timerDanger {
   color: #ff4d4f;
   border-color: rgba(255, 77, 79, 0.35);
   background: rgba(255, 77, 79, 0.08);
+  animation: dangerPulse 1.35s ease-in-out infinite;
 }
 
 .questionText {
@@ -492,6 +913,16 @@
 
   background: var(--surface);
   border: 1px solid var(--border-soft, var(--border-medium));
+
+  animation: fadeUp 340ms ease;
+  transition:
+    border-color 180ms ease,
+    background 180ms ease,
+    transform 180ms ease;
+}
+
+.examCard:hover .questionText {
+  border-color: rgba(22, 119, 255, 0.14);
 }
 
 .optionsList {
@@ -519,12 +950,19 @@
   border: 1px solid var(--border-soft, var(--border-medium));
 
   cursor: pointer;
-  transition: transform 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
+  transition:
+    transform 0.18s ease,
+    border-color 0.18s ease,
+    background-color 0.18s ease,
+    box-shadow 0.18s ease;
+
+  animation: fadeUp 360ms ease;
 
   &:hover {
-    transform: translateY(-1px);
+    transform: translateY(-2px);
     border-color: rgba(22, 119, 255, 0.45);
     background: rgba(22, 119, 255, 0.06);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
   }
 
   &:active {
@@ -547,6 +985,16 @@
   color: var(--text-primary);
   background: var(--surface);
   border: 1px solid var(--border-medium);
+
+  transition:
+    transform 180ms ease,
+    border-color 180ms ease,
+    background 180ms ease;
+}
+
+.specificQuestionWrapper:hover .optionIndex {
+  transform: scale(1.04);
+  border-color: rgba(22, 119, 255, 0.32);
 }
 
 .optionButton {
@@ -566,6 +1014,7 @@
   border-radius: 12px;
 
   cursor: pointer;
+  transition: color 180ms ease, opacity 180ms ease;
 
   &:disabled {
     opacity: 0.6;
@@ -595,6 +1044,17 @@
   color: var(--text-secondary);
   font-size: 0.95rem;
   font-weight: 700;
+
+  animation: fadeUp 380ms ease;
+  transition:
+    transform 180ms ease,
+    border-color 180ms ease,
+    background 180ms ease;
+}
+
+.examCard:hover .progress {
+  transform: translateY(-1px);
+  border-color: rgba(22, 119, 255, 0.16);
 }
 
 .progress strong {
@@ -608,6 +1068,7 @@
   align-items: center;
   width: 100%;
   min-height: 60vh;
+  animation: fadeUp 220ms ease;
 }
 
 .loader {
@@ -652,6 +1113,18 @@
   gap: 12px;
 
   box-shadow: var(--shadow-soft);
+  animation: modalPop 280ms ease;
+  transition:
+    transform 180ms ease,
+    border-color 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.finalExamContainer:hover {
+  border-color: rgba(22, 119, 255, 0.18);
+  box-shadow:
+    0 18px 40px rgba(0, 0, 0, 0.16),
+    0 0 0 1px rgba(255, 255, 255, 0.03) inset;
 }
 
 .finalHeader {
@@ -697,12 +1170,16 @@
   align-items: center;
   justify-content: center;
 
-  transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease,
+    filter 0.18s ease,
+    opacity 0.18s ease;
 
   &:hover {
     filter: brightness(1.04);
-    transform: translateY(-1px);
-    box-shadow: 0 14px 28px -20px rgba(0, 0, 0, 0.6);
+    transform: translateY(-2px);
+    box-shadow: 0 14px 28px -18px rgba(0, 0, 0, 0.6);
   }
 
   &:active {
@@ -758,5 +1235,48 @@
 
   .buttonStyle {
     width: 100%;
+  }
+}
+
+@keyframes pageFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes modalPop {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes dangerPulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 77, 79, 0.08);
+  }
+  50% {
+    box-shadow: 0 0 0 6px rgba(255, 77, 79, 0.08);
   }
 }

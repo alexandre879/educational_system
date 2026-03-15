@@ -1,19 +1,16 @@
-// @import "../../../colors.scss";
-
-
 // .navIcon {
-//   color: #4693ff;
+//   color: var(--primary-blue);
 //   flex-shrink: 0;
 //   width: 22px;
 //   height: 22px;
 // }
 
 // .studentMailCaptionStyle {
-//   color: #bbbbbb
+//   color: var(--text-secondary);
 // }
 
 // .noLeassongsCaptionStyle {
-//   color: grey;
+//   color: var(--text-muted);
 // }
 
 // .WrapperOfMainCaptionAndIcon {
@@ -31,7 +28,7 @@
 //   place-items: center;
 //   background: rgba(22, 119, 255, 0.14);
 //   border: 1px solid rgba(22, 119, 255, 0.18);
-//   color: #4693ff;
+//   color: var(--primary-blue);
 //   flex-shrink: 0;
 // }
 
@@ -41,13 +38,14 @@
 //   line-height: 1.15;
 //   margin: 0;
 //   word-break: break-word;
+//   color: var(--text-strong);
 // }
 
 // .page {
 //   width: 100%;
 //   max-width: 1200px;
 //   margin: 0 auto;
-//   color: $text_primary;
+//   color: var(--text-primary);
 
 //   :global(.ant-tabs-nav) {
 //     margin-bottom: 16px !important;
@@ -55,18 +53,17 @@
 
 //   :global(.ant-tabs-tab) {
 //     font-weight: 600 !important;
-//     color: $text_secondary !important;
+//     color: var(--text-secondary) !important;
 //   }
 
 //   :global(.ant-tabs-tab-active .ant-tabs-tab-btn) {
-//     color: $primary_blue !important;
+//     color: var(--primary-blue) !important;
 //   }
 
 //   :global(.ant-tabs-ink-bar) {
-//     background: $primary_blue !important;
+//     background: var(--primary-blue) !important;
 //   }
 // }
-
 
 // .header {
 //   margin-bottom: 18px;
@@ -81,30 +78,28 @@
 
 // .icon {
 //   font-size: 22px;
-//   color: $primary_blue;
+//   color: var(--primary-blue);
 //   margin-top: 4px;
 // }
 
 // .title {
 //   margin: 0 !important;
-//   color: $text_primary !important;
+//   color: var(--text-primary) !important;
 //   font-weight: 800 !important;
 // }
 
 // .subtitle {
 //   display: inline-block;
 //   margin-top: 4px;
-//   color: $text_secondary;
+//   color: var(--text-secondary);
 //   font-size: 13px;
 // }
-
 
 // .loading {
 //   min-height: 260px;
 //   display: grid;
 //   place-items: center;
 // }
-
 
 // .split {
 //   display: grid;
@@ -117,24 +112,24 @@
 //   }
 // }
 
-
 // .dayCard {
-//   background: $table_background !important;
+//   background: var(--surface-soft) !important;
+//   border: 1px solid var(--border-medium);
 //   border-radius: 18px;
-//   box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+//   box-shadow: var(--shadow-soft);
 //   padding: 16px;
 // }
 
-
 // .studentsCard {
-//   background: $table_background !important;
+//   background: var(--surface-soft) !important;
+//   border: 1px solid var(--border-medium);
 //   border-radius: 18px;
-//   box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+//   box-shadow: var(--shadow-soft);
 //   padding: 16px;
 
 //   :global(.ant-list-item) {
 //     padding: 10px 0 !important;
-//     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+//     border-bottom: 1px solid var(--border-soft, var(--border-medium));
 //   }
 
 //   :global(.ant-list-item:last-child) {
@@ -142,11 +137,10 @@
 //   }
 
 //   :global(.ant-avatar) {
-//     background: $primary_blue !important;
+//     background: var(--primary-blue) !important;
 //     font-weight: 700;
 //   }
 // }
-
 
 // .dayHeader {
 //   display: flex;
@@ -154,7 +148,7 @@
 //   justify-content: space-between;
 //   margin-bottom: 14px;
 //   padding-bottom: 10px;
-//   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+//   border-bottom: 1px solid var(--border-soft, var(--border-medium));
 // }
 
 // .dayTitle {
@@ -163,26 +157,25 @@
 //   gap: 8px;
 //   font-weight: 800;
 //   font-size: 14px;
-//   color: $text_primary;
+//   color: var(--text-primary);
 // }
 
 // .dayCount {
 //   font-size: 12px;
-//   color: $text_secondary;
+//   color: var(--text-secondary);
 // }
-
 
 // .studentsTitle {
 //   display: flex;
 //   align-items: center;
 //   gap: 8px;
+//   color: var(--text-primary);
 
 //   svg {
-//     color: $primary_blue;
+//     color: var(--primary-blue);
 //     font-size: 16px;
 //   }
 // }
-
 
 // .dayList {
 //   display: flex;
@@ -190,14 +183,12 @@
 //   gap: 12px;
 // }
 
-
 // .lesson {
 //   border-radius: 14px;
 //   padding: 12px;
-//   background: rgba(255, 255, 255, 0.03);
-//   border: 1px solid rgba(255, 255, 255, 0.06);
+//   background: var(--surface);
+//   border: 1px solid var(--border-soft, var(--border-medium));
 // }
-
 
 // .timeBlock {
 //   display: flex;
@@ -210,20 +201,18 @@
 // .time {
 //   font-weight: 900;
 //   font-size: 12px;
-//   color: $highlight_accent;
+//   color: var(--primary-blue);
 //   letter-spacing: 0.3px;
 // }
-
 
 // .roomTag {
 //   background: rgba(22, 119, 255, 0.15) !important;
 //   border: 1px solid rgba(22, 119, 255, 0.35) !important;
-//   color: $text_primary !important;
+//   color: var(--text-primary) !important;
 //   border-radius: 999px !important;
 //   margin: 0 !important;
 //   font-size: 11px;
 // }
-
 
 // .info {
 //   display: flex;
@@ -235,7 +224,7 @@
 // .subject {
 //   font-weight: 800;
 //   font-size: 14px;
-//   color: $text_primary;
+//   color: var(--text-primary);
 //   white-space: nowrap;
 //   overflow: hidden;
 //   text-overflow: ellipsis;
@@ -245,21 +234,20 @@
 //   display: flex;
 //   align-items: center;
 //   gap: 8px;
-//   color: $text_secondary;
+//   color: var(--text-secondary);
 //   font-size: 12px;
 // }
 
 // .teacher {
-//   color: $text_secondary;
+//   color: var(--text-secondary);
 //   white-space: nowrap;
 //   overflow: hidden;
 //   text-overflow: ellipsis;
 // }
 
 // .teacherMuted {
-//   color: rgba(140, 140, 140, 0.6);
+//   color: var(--text-muted);
 // }
-
 
 // .emptyDay {
 //   padding: 20px 0;
@@ -267,9 +255,12 @@
 // }
 
 // .emptyText {
-//   color: $text_secondary;
+//   color: var(--text-secondary);
 //   font-size: 13px;
 // }
+
+
+
 
 
 
@@ -279,6 +270,7 @@
   flex-shrink: 0;
   width: 22px;
   height: 22px;
+  transition: transform 220ms ease;
 }
 
 .studentMailCaptionStyle {
@@ -306,6 +298,20 @@
   border: 1px solid rgba(22, 119, 255, 0.18);
   color: var(--primary-blue);
   flex-shrink: 0;
+  transition:
+    transform 220ms ease,
+    box-shadow 220ms ease,
+    border-color 220ms ease;
+}
+
+.WrapperOfMainCaptionAndIcon:hover .headerIcon {
+  transform: translateY(-2px) scale(1.02);
+  border-color: rgba(22, 119, 255, 0.28);
+  box-shadow: 0 18px 42px rgba(0, 0, 0, 0.24);
+}
+
+.WrapperOfMainCaptionAndIcon:hover .navIcon {
+  transform: scale(1.07);
 }
 
 .pageMainCaptionStyle {
@@ -322,14 +328,25 @@
   max-width: 1200px;
   margin: 0 auto;
   color: var(--text-primary);
+  animation: pageFadeIn 320ms ease;
 
   :global(.ant-tabs-nav) {
     margin-bottom: 16px !important;
+    animation: fadeUp 240ms ease;
   }
 
   :global(.ant-tabs-tab) {
     font-weight: 600 !important;
     color: var(--text-secondary) !important;
+    transition:
+      color 180ms ease,
+      transform 180ms ease,
+      opacity 180ms ease !important;
+  }
+
+  :global(.ant-tabs-tab:hover) {
+    color: var(--text-primary) !important;
+    transform: translateY(-1px);
   }
 
   :global(.ant-tabs-tab-active .ant-tabs-tab-btn) {
@@ -339,10 +356,15 @@
   :global(.ant-tabs-ink-bar) {
     background: var(--primary-blue) !important;
   }
+
+  :global(.ant-tabs-content-holder) {
+    animation: fadeUp 260ms ease;
+  }
 }
 
 .header {
   margin-bottom: 18px;
+  animation: fadeUp 260ms ease;
 }
 
 .titleRow {
@@ -356,6 +378,11 @@
   font-size: 22px;
   color: var(--primary-blue);
   margin-top: 4px;
+  transition: transform 220ms ease;
+}
+
+.titleRow:hover .icon {
+  transform: scale(1.06);
 }
 
 .title {
@@ -375,6 +402,7 @@
   min-height: 260px;
   display: grid;
   place-items: center;
+  animation: fadeUp 220ms ease;
 }
 
 .split {
@@ -394,6 +422,20 @@
   border-radius: 18px;
   box-shadow: var(--shadow-soft);
   padding: 16px;
+  animation: fadeUp 280ms ease;
+  transition:
+    transform 180ms ease,
+    border-color 180ms ease,
+    box-shadow 180ms ease,
+    background 180ms ease;
+}
+
+.dayCard:hover {
+  transform: translateY(-2px);
+  border-color: rgba(22, 119, 255, 0.18);
+  box-shadow:
+    0 18px 40px rgba(0, 0, 0, 0.14),
+    0 0 0 1px rgba(255, 255, 255, 0.03) inset;
 }
 
 .studentsCard {
@@ -402,10 +444,29 @@
   border-radius: 18px;
   box-shadow: var(--shadow-soft);
   padding: 16px;
+  animation: fadeUp 320ms ease;
+  transition:
+    transform 180ms ease,
+    border-color 180ms ease,
+    box-shadow 180ms ease,
+    background 180ms ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    border-color: rgba(22, 119, 255, 0.18);
+    box-shadow:
+      0 18px 40px rgba(0, 0, 0, 0.14),
+      0 0 0 1px rgba(255, 255, 255, 0.03) inset;
+  }
 
   :global(.ant-list-item) {
     padding: 10px 0 !important;
     border-bottom: 1px solid var(--border-soft, var(--border-medium));
+    transition: background 180ms ease;
+  }
+
+  :global(.ant-list-item:hover) {
+    background: rgba(255, 255, 255, 0.015);
   }
 
   :global(.ant-list-item:last-child) {
@@ -415,6 +476,12 @@
   :global(.ant-avatar) {
     background: var(--primary-blue) !important;
     font-weight: 700;
+    transition: transform 180ms ease, box-shadow 180ms ease;
+  }
+
+  :global(.ant-list-item:hover .ant-avatar) {
+    transform: scale(1.04);
+    box-shadow: 0 10px 22px rgba(22, 119, 255, 0.18);
   }
 }
 
@@ -439,6 +506,11 @@
 .dayCount {
   font-size: 12px;
   color: var(--text-secondary);
+  transition: transform 180ms ease, color 180ms ease;
+}
+
+.dayCard:hover .dayCount {
+  transform: translateY(-1px);
 }
 
 .studentsTitle {
@@ -450,7 +522,12 @@
   svg {
     color: var(--primary-blue);
     font-size: 16px;
+    transition: transform 180ms ease;
   }
+}
+
+.studentsCard:hover .studentsTitle svg {
+  transform: scale(1.08);
 }
 
 .dayList {
@@ -464,6 +541,19 @@
   padding: 12px;
   background: var(--surface);
   border: 1px solid var(--border-soft, var(--border-medium));
+  transition:
+    background 180ms ease,
+    border-color 180ms ease,
+    transform 180ms ease,
+    box-shadow 180ms ease;
+  animation: fadeUp 300ms ease;
+}
+
+.lesson:hover {
+  background: var(--surface-soft-hover);
+  border-color: rgba(22, 119, 255, 0.18);
+  transform: translateY(-2px);
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.1);
 }
 
 .timeBlock {
@@ -479,6 +569,11 @@
   font-size: 12px;
   color: var(--primary-blue);
   letter-spacing: 0.3px;
+  transition: transform 180ms ease;
+}
+
+.lesson:hover .time {
+  transform: translateX(1px);
 }
 
 .roomTag {
@@ -488,6 +583,15 @@
   border-radius: 999px !important;
   margin: 0 !important;
   font-size: 11px;
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease,
+    border-color 180ms ease !important;
+}
+
+.lesson:hover .roomTag {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 16px -14px rgba(22, 119, 255, 0.42);
 }
 
 .info {
@@ -504,6 +608,11 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  transition: transform 180ms ease;
+}
+
+.lesson:hover .subject {
+  transform: translateX(1px);
 }
 
 .meta {
@@ -528,9 +637,32 @@
 .emptyDay {
   padding: 20px 0;
   text-align: center;
+  animation: fadeUp 240ms ease;
 }
 
 .emptyText {
   color: var(--text-secondary);
   font-size: 13px;
+}
+
+@keyframes pageFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
