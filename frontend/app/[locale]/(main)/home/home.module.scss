@@ -569,7 +569,6 @@
 
 
 
-
 .page {
   width: 100%;
   max-width: 1200px;
@@ -582,6 +581,8 @@
   background: transparent;
   color: var(--text-primary);
   min-height: auto;
+
+  animation: pageFadeIn 320ms ease;
 }
 
 .center {
@@ -590,6 +591,7 @@
   place-items: center;
   gap: 12px;
   color: var(--text-secondary);
+  animation: fadeUp 260ms ease;
 }
 
 .muted {
@@ -607,6 +609,7 @@
   flex-shrink: 0;
   width: 22px;
   height: 22px;
+  transition: transform 220ms ease;
 }
 
 .WrapperOfMainCaptionAndIcon {
@@ -631,6 +634,21 @@
 
   box-shadow: 0 14px 36px rgba(0, 0, 0, 0.25);
   flex-shrink: 0;
+
+  transition:
+    transform 220ms ease,
+    box-shadow 220ms ease,
+    border-color 220ms ease;
+}
+
+.WrapperOfMainCaptionAndIcon:hover .headerIcon {
+  transform: translateY(-2px) scale(1.02);
+  border-color: rgba(22, 119, 255, 0.28);
+  box-shadow: 0 18px 42px rgba(0, 0, 0, 0.28);
+}
+
+.WrapperOfMainCaptionAndIcon:hover .navIcon {
+  transform: scale(1.06);
 }
 
 .pageMainCaptionStyle {
@@ -658,19 +676,16 @@
     var(--shadow-soft),
     0 0 0 1px rgba(255, 255, 255, 0.03) inset;
 
-  transition: border-color 160ms ease, background 160ms ease, transform 160ms ease;
-}
-
-.header:hover,
-.card:hover,
-.listItem:hover,
-.row:hover {
-  border-color: rgba(22, 119, 255, 0.22);
-  transform: translateY(-1px);
+  transition:
+    border-color 180ms ease,
+    background 180ms ease,
+    transform 180ms ease,
+    box-shadow 180ms ease;
 }
 
 .header {
   padding: 18px;
+  animation: fadeUp 260ms ease;
 }
 
 .card {
@@ -678,10 +693,22 @@
   min-width: 0;
   cursor: default;
   contain: layout paint;
+  animation: fadeUp 300ms ease;
 }
 
 .cardClickable {
   cursor: pointer;
+}
+
+.header:hover,
+.card:hover,
+.listItem:hover,
+.row:hover {
+  border-color: rgba(22, 119, 255, 0.22);
+  transform: translateY(-2px);
+  box-shadow:
+    0 18px 40px rgba(0, 0, 0, 0.2),
+    0 0 0 1px rgba(255, 255, 255, 0.03) inset;
 }
 
 .profile {
@@ -697,6 +724,12 @@
   height: 64px !important;
   border: 2px solid rgba(22, 119, 255, 0.75);
   box-shadow: 0 14px 30px rgba(22, 119, 255, 0.18);
+  transition: transform 220ms ease, box-shadow 220ms ease;
+}
+
+.profile:hover .avatar {
+  transform: scale(1.03);
+  box-shadow: 0 18px 36px rgba(22, 119, 255, 0.22);
 }
 
 .profileText {
@@ -740,6 +773,11 @@
   align-items: stretch;
 }
 
+.grid3 > *,
+.grid2 > * {
+  animation: fadeUp 340ms ease;
+}
+
 .cardLabel {
   color: var(--text-strong);
   font-size: 0.9rem;
@@ -753,6 +791,12 @@
   background: linear-gradient(135deg, var(--primary-blue), var(--primary-blue-hover));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+
+  transition: transform 180ms ease;
+}
+
+.card:hover .cardValue {
+  transform: translateY(-1px);
 }
 
 .sectionTitle {
@@ -818,6 +862,7 @@
 
 .listItem {
   padding: 12px;
+  animation: fadeUp 300ms ease;
 }
 
 .listTop {
@@ -852,6 +897,7 @@
   grid-template-columns: 1fr auto;
   gap: 10px;
   padding: 12px;
+  animation: fadeUp 320ms ease;
 }
 
 .rowMain {
@@ -904,14 +950,40 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 
-  transition: transform 160ms ease, filter 160ms ease;
+  transition:
+    transform 180ms ease,
+    filter 180ms ease,
+    box-shadow 180ms ease;
 
   &:hover {
-    transform: translateY(-1px);
+    transform: translateY(-2px);
     filter: brightness(1.03);
+    box-shadow: 0 14px 30px rgba(22, 119, 255, 0.22);
   }
 
   &:active {
+    transform: translateY(0);
+  }
+}
+
+@keyframes pageFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
     transform: translateY(0);
   }
 }
