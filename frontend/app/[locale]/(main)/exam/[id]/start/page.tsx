@@ -4,15 +4,23 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import styles from "./styles.module.scss";
 import api from "@/interceptors";
 import { useParams, useRouter, usePathname } from "next/navigation";
-import { ExamSessionData, ExamSessionEndResponse, OptionData } from "../../interface";
+import {
+  ExamSessionData,
+  ExamSessionEndResponse,
+  OptionData,
+} from "../../interface";
 import { AxiosError, AxiosResponse } from "axios";
 import { useTranslations } from "next-intl";
 
-function isExamSessionData(data: ExamSessionData | ExamSessionEndResponse): data is ExamSessionData {
+function isExamSessionData(
+  data: ExamSessionData | ExamSessionEndResponse
+): data is ExamSessionData {
   return (data as ExamSessionData).current_question !== undefined;
 }
 
-function isExamSessionEndResponse(data: ExamSessionData | ExamSessionEndResponse): data is ExamSessionEndResponse {
+function isExamSessionEndResponse(
+  data: ExamSessionData | ExamSessionEndResponse
+): data is ExamSessionEndResponse {
   return (data as ExamSessionEndResponse).final_score !== undefined;
 }
 
@@ -32,8 +40,22 @@ function getLocalizedValue(
   return value[lang] || value.ka || value.en || value.ru || "";
 }
 
+function getOptionLabel(index: number, lang: string): string {
+  const alphabets: Record<string, string[]> = {
+    en: "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""),
+    ka: ["ა", "ბ", "გ", "დ", "ე", "ვ", "ზ", "თ", "ი", "კ"],
+    ru: ["А", "Б", "В", "Г", "Д", "Е", "Ж", "З", "И", "К"],
+  };
+
+  const letters = alphabets[lang] || alphabets.en;
+  return letters[index] || String(index + 1);
+}
+
 type WithEndsAt = { ends_at?: string | null };
 type WithExamLanguage = { exam_language?: string };
+type WithLocalizedSubject = {
+  subject?: string | Record<string, string> | null;
+};
 
 export default function SpecificExam() {
   const t = useTranslations("SpecificExam");
@@ -47,7 +69,9 @@ export default function SpecificExam() {
     return seg || "en";
   }, [pathname]);
 
-  const [data, setData] = useState<ExamSessionData | ExamSessionEndResponse | null>(null);
+  const [data, setData] = useState<
+    ExamSessionData | ExamSessionEndResponse | null
+  >(null);
   const [loading, setLoading] = useState(true);
 
   const [timeLeftMs, setTimeLeftMs] = useState(0);
@@ -72,7 +96,10 @@ export default function SpecificExam() {
   useEffect(() => {
     setLoading(true);
 
-    api.post<ExamSessionData | ExamSessionEndResponse>(`exams/${ExamId}/start_or_resume/`)
+    api
+      .post<ExamSessionData | ExamSessionEndResponse>(
+        `exams/${ExamId}/start_or_resume/`
+      )
       .then((res: AxiosResponse<ExamSessionData | ExamSessionEndResponse>) => {
         setData(res.data);
       })
@@ -97,14 +124,15 @@ export default function SpecificExam() {
       setLocked(true);
       setLoading(true);
 
-      const res = await api.post<ExamSessionData | ExamSessionEndResponse>(`exams/${ExamId}/start_or_resume/`);
+      const res = await api.post<ExamSessionData | ExamSessionEndResponse>(
+        `exams/${ExamId}/start_or_resume/`
+      );
       setData(res.data);
     } 
     catch {
       alert(t("timeUpEnded"));
       router.push(`/${locale}/exam`);
-    } 
-    finally {
+    } finally {
       setLoading(false);
     }
   }, [ExamId, router, locale, t]);
@@ -150,18 +178,27 @@ export default function SpecificExam() {
     };
   }, [endsAt, finishSessionDueToTimeout]);
 
-  const onAnswerSubmit = async (session_id: number, question_id: number, option_id: number) => {
+  const onAnswerSubmit = async (
+    session_id: number,
+    question_id: number,
+    option_id: number
+  ) => {
     if (locked) return;
 
     try {
       setLoading(true);
-      const res = await api.post<ExamSessionData | ExamSessionEndResponse>(`sessions/${session_id}/answer/`, {
-        question_id,
-        option_id,
-      });
+
+      const res = await api.post<ExamSessionData | ExamSessionEndResponse>(
+        `sessions/${session_id}/answer/`,
+        {
+          question_id,
+          option_id,
+        }
+      );
 
       setData(res.data);
-    } catch (err: unknown) {
+    }
+    catch (err: unknown) {
       if (err instanceof AxiosError && err.response?.status === 403) {
         setLocked(true);
         setEndedByTimeout(true);
@@ -170,7 +207,8 @@ export default function SpecificExam() {
       }
 
       console.log(err);
-    } finally {
+    }
+    finally {
       setLoading(false);
     }
   };
@@ -184,19 +222,30 @@ export default function SpecificExam() {
   }
 
   if (data && isExamSessionData(data)) {
-    const questionText = getLocalizedValue(data.current_question.text, examLanguage);
+    const questionText = getLocalizedValue(
+      data.current_question.text,
+      examLanguage
+    );
+
+    const subjectTitle = getLocalizedValue(
+      (data as unknown as WithLocalizedSubject).subject,
+      examLanguage
+    );
 
     return (
       <div className={styles.examMainContainer}>
         <div className={styles.examCard}>
           <div className={styles.examHeader}>
             <div className={styles.examTitle}>
-              <h1 title={String(data.subject)}>{data.subject}</h1>
+              <h1 title={subjectTitle}>{subjectTitle}</h1>
               <span className={styles.examBadge}>{t("badgeExam")}</span>
             </div>
 
             {endsAt && (
-              <div className={`${styles.timer} ${timeLeftMs <= 60_000 ? styles.timerDanger : ""}`}>
+              <div
+                className={`${styles.timer} ${timeLeftMs <= 60_000 ? styles.timerDanger : ""
+                  }`}
+              >
                 <span>⏳</span>
                 <span>{formatTime(timeLeftMs)}</span>
               </div>
@@ -206,22 +255,42 @@ export default function SpecificExam() {
           <h2 className={styles.questionText}>{questionText}</h2>
 
           <ul className={styles.optionsList}>
-            {data.current_question.options.map((option: OptionData, index: number) => {
-              const optionTitle = getLocalizedValue(option.title, examLanguage);
+            {data.current_question.options.map(
+              (option: OptionData, index: number) => {
+                const optionTitle = getLocalizedValue(
+                  option.title,
+                  examLanguage
+                );
 
-              return (
-                <li
-                  key={option.id}
-                  className={`${styles.specificQuestionWrapper} ${locked ? styles.locked : ""}`}
-                  onClick={() => !locked && onAnswerSubmit(data.session_id, data.current_question.id, option.id)}
-                >
-                  <span className={styles.optionIndex}>{index + 1}</span>
-                  <button className={styles.optionButton} disabled={locked}>
-                    {optionTitle}
-                  </button>
-                </li>
-              );
-            })}
+                return (
+                  <li
+                    key={option.id}
+                    className={`${styles.specificQuestionWrapper} ${locked ? styles.locked : ""
+                      }`}
+                    onClick={() =>
+                      !locked &&
+                      onAnswerSubmit(
+                        data.session_id,
+                        data.current_question.id,
+                        option.id
+                      )
+                    }
+                  >
+                    <span className={styles.optionIndex}>
+                      {`${getOptionLabel(index, examLanguage)})`}
+                    </span>
+
+                    <button
+                      type="button"
+                      className={styles.optionButton}
+                      disabled={locked}
+                    >
+                      {optionTitle}
+                    </button>
+                  </li>
+                );
+              }
+            )}
           </ul>
 
           <div className={styles.progress}>
@@ -250,10 +319,16 @@ export default function SpecificExam() {
         </div>
 
         <div className={styles.finalMessage}>
-          {endedByTimeout ? t("finalTimeUpMessage") : t("finalCompletedMessage")}
+          {endedByTimeout
+            ? t("finalTimeUpMessage")
+            : t("finalCompletedMessage")}
         </div>
 
-        <button className={styles.buttonStyle} onClick={() => router.push(`/${locale}/exam`)}>
+        <button
+          type="button"
+          className={styles.buttonStyle}
+          onClick={() => router.push(`/${locale}/exam`)}
+        >
           {t("redirect")}
         </button>
       </div>

@@ -55,37 +55,45 @@
 
 html[data-theme="light"] {
   --bg: #f5f7fb;
+
+  /* 🔥 SURFACES (add layering contrast) */
   --surface: #ffffff;
   --surface-2: #ffffff;
-  --surface-soft: rgba(255, 255, 255, 0.88);
+  --surface-soft: #ffffff;
   --surface-soft-hover: #f3f7fc;
-  --surface-bold: rgb(212, 212, 212);
+  --surface-bold: #e5e7eb; /* 🔥 FIX: better neutral */
 
+  /* 🔥 TEXT (slightly stronger contrast) */
   --text-primary: #1e293b;
-  --text-strong: #0f172a;
+  --text-strong: #020617; /* 🔥 darker for titles */
   --text-secondary: #64748b;
   --text-muted: #94a3b8;
-  --text-bold-grey: #a7a7a7;
+  --text-bold-grey: #6b7280;
   --placeholder: rgba(100, 116, 139, 0.65);
 
+  /* BRAND */
   --primary-blue: #1677ff;
   --primary-blue-hover: #4096ff;
   --highlight-accent: #faad14;
 
-  --border-medium: rgba(15, 23, 42, 0.12);
-  --border-strong: rgba(15, 23, 42, 0.18);
+  /* 🔥 BORDERS (THIS IS THE MAIN FIX) */
+  --border-medium: rgba(15, 23, 42, 0.16);  /* ⬆ stronger */
+  --border-strong: rgba(15, 23, 42, 0.26);  /* ⬆ stronger */
 
-  --shadow-soft: 0 18px 60px rgba(15, 23, 42, 0.08);
+  /* 🔥 SHADOW (less blur, more structure) */
+  --shadow-soft: 0 8px 24px rgba(15, 23, 42, 0.08);
 
-  --hover-soft: rgba(15, 23, 42, 0.04);
+  /* INTERACTION */
+  --hover-soft: rgba(15, 23, 42, 0.05);
   --primary-ring: rgba(22, 119, 255, 0.55);
-  --primary-ring-soft: rgba(22, 119, 255, 0.14);
+  --primary-ring-soft: rgba(22, 119, 255, 0.1);
 
+  /* CHART */
   --chart-axis-text: #64748b;
   --chart-grid: rgba(15, 23, 42, 0.12);
   --chart-axis-border: rgba(15, 23, 42, 0.22);
 
-  /* success */
+  /* SUCCESS */
   --success-text: #0369a1;
   --success-bg: rgba(14, 165, 233, 0.12);
   --success-border: rgba(14, 165, 233, 0.22);
