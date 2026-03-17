@@ -292,6 +292,9 @@ class AvailableExamsView(APIView):
     def get(self, request: Request) -> Response:
         user: User = request.user
         locale = request.LANGUAGE_CODE
+        
+        print(f"User {user.email} is requesting available exams with locale {locale}")
+        print("User grade:", user.grade_in)
 
         blocked_exam_ids = (
             UserExamSession.objects.filter(user=user)
