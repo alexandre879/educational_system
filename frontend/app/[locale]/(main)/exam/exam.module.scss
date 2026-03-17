@@ -1,178 +1,32 @@
-// @import "../../../colors.scss";
-
-// .navIcon {
-//   color: #4693ff;
-//   flex-shrink: 0;
-//   width: 22px;
-//   height: 22px;
-// }
-
-// .wrapperForNonAvailableExams {
-//   display: flex;
-//   flex-direction: column;
-//   gap: 7px;
-//   width: 100%;
-//   background-color: rgba(31, 31, 31, 0.55);
-//   border: 1px solid rgba(128, 128, 128, 0.3);
-//   border-style: dashed;
-//   padding: 18px;
-//   border-radius: 16px;
-// }
-
-// .WrapperOfMainCaptionAndIcon {
-//   display: flex;
-//   align-items: center;
-//   gap: 10px;
-//   min-width: 0;
-// }
-
-// .headerIcon {
-//   width: 44px;
-//   height: 44px;
-//   border-radius: 14px;
-//   display: grid;
-//   place-items: center;
-//   background: rgba(22, 119, 255, 0.14);
-//   border: 1px solid rgba(22, 119, 255, 0.18);
-//   color: #4693ff;
-//   flex-shrink: 0;
-// }
-
-// .pageMainCaptionStyle {
-//   font-size: clamp(18px, 2.1vw, 22px);
-//   font-weight: 900;
-//   line-height: 1.15;
-//   margin: 0;
-//   word-break: break-word;
-// }
-
-// .page {
-//   max-width: 1200px;
-//   width: 100%;
-//   min-width: 0;
-//   margin: 0 auto;
-//   display: flex;
-//   flex-direction: column;
-//   gap: 18px;
-
-//   color: $text_primary;
-// }
-
-// .topBar {
-//   display: flex;
-//   align-items: flex-end;
-//   justify-content: space-between;
-//   gap: 12px;
-//   margin-bottom: 14px;
-// }
-
-// .pageTitle {
-//   font-size: 1.4rem;
-//   font-weight: 900;
-// }
-
-// .pageSub {
-//   margin-top: 4px;
-//   color: $text_secondary;
-//   font-size: 0.95rem;
-// }
-
-// .examGrid {
-//   display: grid;
-//   gap: 14px;
-//   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-//   align-items: stretch;
-// }
-
-// @media (max-width: 900px) {
-//   .examGrid {
-//     grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-//   }
-// }
-
-// @media (max-width: 600px) {
-//   .pageTitle {
-//     font-size: 1.2rem;
-//   }
-
-//   .examGrid {
-//     grid-template-columns: 1fr;
-//   }
-// }
-
-// .loaderWrapper {
-//   min-height: 60vh;
-//   display: grid;
-//   place-items: center;
-//   gap: 12px;
-// }
-
-// .loaderText {
-//   color: $text_secondary;
-//   font-size: 0.95rem;
-// }
-
-// .noExams {
-//   max-width: 1200px;
-//   width: 100%;
-//   margin: 0 auto;
-//   display: flex;
-//   flex-direction: column;
-//   justify-content: space-between;
-//   align-content: start;
-//   gap: 10px;
-// }
-
-// .noExamsTitle {
-//   font-size: 1.2rem;
-//   font-weight: 900;
-//   color: rgb(210, 99, 99);
-// }
-
-// .noExamsSub {
-//   color: $text_secondary;
-//   font-size: 0.95rem;
-//   max-width: 340px;
-// }
-
-
-
-
-.navIcon {
-  color: var(--primary-blue);
-  flex-shrink: 0;
-  width: 22px;
-  height: 22px;
-  transition: transform 220ms ease;
-}
-
-.wrapperForNonAvailableExams {
+.page {
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+  color: var(--text-primary);
+  overflow-x: hidden;
   display: flex;
   flex-direction: column;
-  gap: 7px;
-  width: 100%;
-  background-color: var(--surface-soft);
-  border: 1px solid var(--border-medium);
-  border-style: dashed;
-  padding: 18px;
-  border-radius: 16px;
-  color: var(--text-secondary);
-  animation: fadeUp 280ms ease;
-  transition:
-    border-color 180ms ease,
-    background 180ms ease,
-    transform 180ms ease,
-    box-shadow 180ms ease;
-
-  &:hover {
-    border-color: rgba(22, 119, 255, 0.22);
-    background: var(--surface-soft-hover);
-    transform: translateY(-2px);
-    box-shadow: 0 14px 32px rgba(0, 0, 0, 0.16);
-  }
+  gap: 20px;
+  animation: pageFadeIn 320ms ease;
 }
 
-.WrapperOfMainCaptionAndIcon {
+
+.topBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-width: 0;
+  animation: fadeUp 260ms ease;
+}
+
+.titleBlock {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.titleRow {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -195,121 +49,172 @@
     border-color 220ms ease;
 }
 
-.WrapperOfMainCaptionAndIcon:hover .headerIcon {
+.titleRow:hover .headerIcon {
   transform: translateY(-2px) scale(1.02);
   border-color: rgba(22, 119, 255, 0.28);
   box-shadow: 0 18px 42px rgba(0, 0, 0, 0.24);
 }
 
-.WrapperOfMainCaptionAndIcon:hover .navIcon {
+.navIcon {
+  color: var(--primary-blue);
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  transition: transform 220ms ease;
+}
+
+.titleRow:hover .navIcon {
   transform: scale(1.07);
 }
 
 .pageMainCaptionStyle {
-  font-size: clamp(18px, 2.1vw, 22px);
+  font-size: 22px;
   font-weight: 900;
-  line-height: 1.15;
   margin: 0;
-  word-break: break-word;
-  color: var(--text-strong);
-}
-
-.page {
-  max-width: 1200px;
-  width: 100%;
   min-width: 0;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-  color: var(--text-primary);
-  animation: pageFadeIn 320ms ease;
-}
-
-.topBar {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 14px;
-  animation: fadeUp 260ms ease;
-}
-
-.pageTitle {
-  font-size: 1.4rem;
-  font-weight: 900;
   color: var(--text-strong);
 }
 
 .pageSub {
-  margin-top: 4px;
+  margin: 6px 0 0 54px;
   color: var(--text-secondary);
-  font-size: 0.95rem;
+  font-size: 13px;
+  min-width: 0;
 }
+
 
 .examGrid {
   display: grid;
   gap: 14px;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  align-items: stretch;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  align-items: start;
+  justify-content: start;
 }
 
 .examGrid > * {
-  animation: fadeUp 320ms ease;
+  width: 100%;
+  max-width: 760px;
+  margin: 0;
+  animation: fadeUp 300ms ease;
 }
 
-@media (max-width: 900px) {
-  .examGrid {
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  }
-}
-
-@media (max-width: 600px) {
-  .pageTitle {
-    font-size: 1.2rem;
-  }
-
-  .examGrid {
-    grid-template-columns: 1fr;
-  }
-}
 
 .loaderWrapper {
   min-height: 60vh;
   display: grid;
   place-items: center;
-  gap: 12px;
+  gap: 10px;
   animation: fadeUp 240ms ease;
 }
 
 .loaderText {
   color: var(--text-secondary);
-  font-size: 0.95rem;
+  font-weight: 700;
+  font-size: 14px;
 }
 
 .noExams {
   max-width: 1200px;
   width: 100%;
   margin: 0 auto;
+  color: var(--text-primary);
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  align-content: start;
-  gap: 10px;
-  animation: fadeUp 280ms ease;
+  gap: 16px;
+  animation: pageFadeIn 320ms ease;
+}
+
+.emptyCard {
+  width: 100%;
+  min-width: 0;
+  border: 1px solid var(--border-soft, var(--border-medium));
+  background: var(--surface);
+  border-radius: 16px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition:
+    transform 0.18s ease,
+    border-color 0.18s ease,
+    box-shadow 0.18s ease,
+    background 0.18s ease;
+  overflow: hidden;
+}
+
+.emptyCard:hover {
+  transform: translateY(-3px);
+  border-color: rgba(22, 119, 255, 0.28);
+  box-shadow:
+    0 16px 30px -20px rgba(22, 119, 255, 0.35),
+    inset 0 0 0 1px rgba(22, 119, 255, 0.08);
+  background: var(--surface-soft-hover);
 }
 
 .noExamsTitle {
-  font-size: 1.2rem;
   font-weight: 900;
-  color: rgb(210, 99, 99);
+  font-size: 1rem;
+  color: var(--text-strong);
+  margin: 0;
 }
 
 .noExamsSub {
   color: var(--text-secondary);
-  font-size: 0.95rem;
-  max-width: 340px;
+  font-size: 13px;
+  line-height: 1.45;
+  margin: 0;
 }
+
+
+@media (max-width: 1024px) {
+  .page,
+  .noExams {
+    gap: 18px;
+  }
+
+  .topBar {
+    align-items: stretch;
+  }
+
+  .examGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .examGrid > * {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 600px) {
+  .examGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .headerIcon {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+  }
+
+  .navIcon {
+    width: 20px;
+    height: 20px;
+  }
+
+  .pageMainCaptionStyle {
+    font-size: 20px;
+  }
+
+  .pageSub {
+    margin-left: 50px;
+    font-size: 12px;
+  }
+
+  .emptyCard {
+    padding: 14px;
+  }
+}
+
 
 @keyframes pageFadeIn {
   from {
