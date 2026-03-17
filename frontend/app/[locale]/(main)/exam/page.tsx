@@ -25,6 +25,7 @@
 //         setLoading(false);
 //       }
 //     };
+
 //     fetchExams();
 //   }, []);
 
@@ -35,40 +36,48 @@
 //       : t("examCountMultiple", { count: n });
 //   }, [exams.length, t]);
 
-//   if (loading)
+//   if (loading) {
 //     return (
 //       <div className={styles.loaderWrapper}>
 //         <div className={styles.loader} />
 //         <div className={styles.loaderText}>{t("loadingExams")}</div>
 //       </div>
 //     );
+//   }
 
-//   if (exams.length === 0)
+//   if (exams.length === 0) {
 //     return (
 //       <div className={styles.noExams}>
-//         <div className={styles.WrapperOfMainCaptionAndIcon}>
-//           <span className={styles.headerIcon}>
-//             <FaFileAlt className={styles.navIcon} />
-//           </span>
-//           <h1 className={styles.pageMainCaptionStyle}>{t("pageTitle")}</h1>
+//         <div className={styles.topBar}>
+//           <div className={styles.titleBlock}>
+//             <div className={styles.titleRow}>
+//               <span className={styles.headerIcon}>
+//                 <FaFileAlt className={styles.navIcon} />
+//               </span>
+//               <h1 className={styles.pageMainCaptionStyle}>{t("pageTitle")}</h1>
+//             </div>
+//           </div>
 //         </div>
-//         <div className={styles.wrapperForNonAvailableExams}>
+
+//         <div className={styles.emptyCard}>
 //           <div className={styles.noExamsTitle}>{t("noExamsTitle")}</div>
 //           <div className={styles.noExamsSub}>{t("noExamsSub")}</div>
 //         </div>
 //       </div>
 //     );
+//   }
 
 //   return (
 //     <div className={styles.page}>
 //       <div className={styles.topBar}>
-//         <div>
-//           <div className={styles.WrapperOfMainCaptionAndIcon}>
+//         <div className={styles.titleBlock}>
+//           <div className={styles.titleRow}>
 //             <span className={styles.headerIcon}>
 //               <FaFileAlt className={styles.navIcon} />
 //             </span>
 //             <h1 className={styles.pageMainCaptionStyle}>{t("pageTitle")}</h1>
 //           </div>
+
 //           <div className={styles.pageSub}>{countText}</div>
 //         </div>
 //       </div>
@@ -91,9 +100,6 @@
 
 
 
-
-
-
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
@@ -102,10 +108,19 @@ import styles from "./exam.module.scss";
 import ExamSectionComponent from "./ExamComponents/ExamSectionComponent/ExamSectionComponent";
 import { ExamListData } from "./interface";
 import { FaFileAlt } from "react-icons/fa";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
+
+type LocalizedValue = string | Record<string, string> | null | undefined;
+
+function getLocalizedValue(value: LocalizedValue, locale: string): string {
+  if (!value) return "";
+  if (typeof value === "string") return value;
+  return value[locale] || value.ka || value.en || value.ru || "";
+}
 
 export default function Exam() {
   const t = useTranslations("Exam");
+  const locale = useLocale();
 
   const [exams, setExams] = useState<ExamListData[]>([]);
   const [loading, setLoading] = useState(true);
@@ -179,16 +194,28 @@ export default function Exam() {
       </div>
 
       <div className={styles.examGrid}>
-        {exams.map(({ id, title, subject, duration, questions_count }) => (
-          <ExamSectionComponent
-            key={id}
-            id={id}
-            title={title}
-            subject={subject}
-            duration={duration}
-            questions_count={questions_count}
-          />
-        ))}
+        {exams.map(({ id, title, subject, duration, questions_count }) => {
+          const localizedTitle = getLocalizedValue(
+            title as LocalizedValue,
+            locale
+          );
+
+          const localizedSubject = getLocalizedValue(
+            subject as LocalizedValue,
+            locale
+          );
+
+          return (
+            <ExamSectionComponent
+              key={id}
+              id={id}
+              title={localizedTitle}
+              subject={localizedSubject}
+              duration={duration}
+              questions_count={questions_count}
+            />
+          );
+        })}
       </div>
     </div>
   );
