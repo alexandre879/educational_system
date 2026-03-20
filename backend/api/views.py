@@ -29,7 +29,7 @@ from .models import (
     Question,
     WeeklyLesson,
 )
-from django.db.models import Count, IntegerField, Value, Q
+from django.db.models import IntegerField, Q
 from api.serializers import VerifyOtpSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 from asgiref.sync import async_to_sync
@@ -62,6 +62,7 @@ from django.utils import timezone
 from openai import OpenAI
 from rest_framework.permissions import IsAdminUser
 from pathlib import Path
+
 
 
 
