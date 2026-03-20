@@ -4,12 +4,12 @@
 // import { UserOutlined } from "@ant-design/icons";
 // import api from "@/interceptors";
 // import styles from "./leader-board.module.scss";
-// import Image from "next/image";
 // import { Avatar, Button, Dropdown, Empty } from "antd";
 // import type { MenuProps } from "antd";
 // import { LeaderboardEntry, Subject } from "./interface";
 // import { FaTrophy } from "react-icons/fa";
 // import { useTranslations } from "next-intl";
+// import { usePathname } from "next/navigation";
 
 // function getPositionClass(rank: number, stylesObj: typeof styles) {
 //   if (rank === 1) return stylesObj.positionWrapperGold;
@@ -22,8 +22,18 @@
 //   return profilePic && profilePic.trim() !== "" ? profilePic : "/avatar.png";
 // }
 
+// type LocalizedValue = string | Record<string, string> | null | undefined;
+
+// function getLocalizedValue(value: LocalizedValue, locale: string) {
+//   if (!value) return "";
+//   if (typeof value === "string") return value;
+//   return value[locale] || value.ka || value.en || value.ru || "";
+// }
+
 // export default function LeaderBoard() {
 //   const t = useTranslations("LeaderBoard");
+//   const pathname = usePathname();
+//   const locale = pathname?.split("/")[1] || "en";
 
 //   const [subjects, setSubjects] = useState<Subject[]>([]);
 //   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
@@ -48,40 +58,51 @@
 //     fetchSubjects();
 //   }, [fetchSubjects]);
 
-//   const handleSubjectClick = useCallback(async (subject: Subject) => {
-//     const {
-//       pk: subjectID,
-//       grade__category__pk: categoryID,
-//       grade__pk: gradeID,
-//       name,
-//     } = subject;
+//   const handleSubjectClick = useCallback(
+//     async (subject: Subject) => {
+//       const {
+//         pk: subjectID,
+//         grade__category__pk: categoryID,
+//         grade__pk: gradeID,
+//       } = subject;
 
-//     setChosenSubject(name);
-
-//     try {
-//       setLoadingLeaderboard(true);
-
-//       const res = await api.get<LeaderboardEntry[]>(
-//         `/leader-board/list/${subjectID}/${gradeID}/${categoryID}/`
+//       const localizedSubjectName = getLocalizedValue(subject.name, locale);
+//       const localizedGradeName = getLocalizedValue(subject.grade__name, locale);
+//       const localizedCategoryName = getLocalizedValue(
+//         subject.grade__category__name,
+//         locale
 //       );
 
-//       setLeaderboard(res.data ?? []);
-//     } catch (error) {
-//       console.error(error);
-//       setLeaderboard([]);
-//     } finally {
-//       setLoadingLeaderboard(false);
-//     }
-//   }, []);
+//       setChosenSubject(
+//         `${localizedSubjectName} ${localizedGradeName} (${localizedCategoryName})`
+//       );
+
+//       try {
+//         setLoadingLeaderboard(true);
+
+//         const res = await api.get<LeaderboardEntry[]>(
+//           `/leader-board/list/${subjectID}/${gradeID}/${categoryID}/`
+//         );
+
+//         setLeaderboard(res.data ?? []);
+//       } catch (error) {
+//         console.error(error);
+//         setLeaderboard([]);
+//       } finally {
+//         setLoadingLeaderboard(false);
+//       }
+//     },
+//     [locale]
+//   );
 
 //   const menuItems: MenuProps["items"] = useMemo(
 //     () =>
 //       subjects.map((subject) => ({
 //         key: String(subject.pk),
-//         label: `${subject.name} ${subject.grade__name} (${subject.grade__category__name})`,
+//         label: `${getLocalizedValue(subject.name, locale)} ${getLocalizedValue(subject.grade__name, locale)} (${getLocalizedValue(subject.grade__category__name, locale)})`,
 //         onClick: () => handleSubjectClick(subject),
 //       })),
-//     [subjects, handleSubjectClick]
+//     [subjects, handleSubjectClick, locale]
 //   );
 
 //   const sortedLeaderboard = useMemo(
@@ -176,12 +197,18 @@
 //                     <td className={styles.ImageFirstAndLastNameWrapper}>
 //                       <Avatar
 //                         size={40}
-//                         src={profileSrc !== "/avatar.png" ? profileSrc : undefined}
+//                         src={
+//                           profileSrc !== "/avatar.png" ? profileSrc : undefined
+//                         }
 //                         icon={<UserOutlined />}
 //                       />
 //                       <div className={styles.firstAndLastNameWrapper}>
-//                         <span className={styles.nameText}>{user.first_name}</span>
-//                         <span className={styles.nameText}>{user.last_name}</span>
+//                         <span className={styles.nameText}>
+//                           {user.first_name}
+//                         </span>
+//                         <span className={styles.nameText}>
+//                           {user.last_name}
+//                         </span>
 //                       </div>
 //                     </td>
 
@@ -214,7 +241,10 @@
 //           </div>
 //         ) : sortedLeaderboard.length === 0 ? (
 //           <div className={styles.mobileEmpty}>
-//             <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={emptyText} />
+//             <Empty
+//               image={Empty.PRESENTED_IMAGE_SIMPLE}
+//               description={emptyText}
+//             />
 //           </div>
 //         ) : (
 //           sortedLeaderboard.map((user, index) => {
@@ -225,12 +255,13 @@
 //               <div key={`${user.email}-m-${rank}`} className={styles.mobileCard}>
 //                 <div className={styles.mobileTop}>
 //                   <div className={styles.mobileLeft}>
-//                     <Image
-//                       src={profileSrc}
-//                       alt={t("profileAlt")}
+//                     <Avatar
+//                       size={42}
+//                       src={
+//                         profileSrc !== "/avatar.png" ? profileSrc : undefined
+//                       }
+//                       icon={<UserOutlined />}
 //                       className={styles.image}
-//                       width={40}
-//                       height={40}
 //                     />
 //                     <div className={styles.mobileNameBlock}>
 //                       <div className={styles.mobileName}>
@@ -247,13 +278,6 @@
 
 //                 <div className={styles.mobileBottom}>
 //                   <div className={styles.pointWrapper}>
-//                     <Image
-//                       className={styles.pointIcon}
-//                       src="/point.svg"
-//                       width={18}
-//                       height={18}
-//                       alt={t("pointIconAlt")}
-//                     />
 //                     <span className={styles.pointsText}>{user.points}</span>
 //                   </div>
 //                 </div>
@@ -268,15 +292,12 @@
 
 
 
-
-
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { UserOutlined } from "@ant-design/icons";
 import api from "@/interceptors";
 import styles from "./leader-board.module.scss";
-import Image from "next/image";
 import { Avatar, Button, Dropdown, Empty } from "antd";
 import type { MenuProps } from "antd";
 import { LeaderboardEntry, Subject } from "./interface";
@@ -358,12 +379,10 @@ export default function LeaderBoard() {
         );
 
         setLeaderboard(res.data ?? []);
-      } 
-      catch (error) {
+      } catch (error) {
         console.error(error);
         setLeaderboard([]);
-      } 
-      finally {
+      } finally {
         setLoadingLeaderboard(false);
       }
     },
@@ -530,12 +549,13 @@ export default function LeaderBoard() {
               <div key={`${user.email}-m-${rank}`} className={styles.mobileCard}>
                 <div className={styles.mobileTop}>
                   <div className={styles.mobileLeft}>
-                    <Image
-                      src={profileSrc}
-                      alt={t("profileAlt")}
+                    <Avatar
+                      size={42}
+                      src={
+                        profileSrc !== "/avatar.png" ? profileSrc : undefined
+                      }
+                      icon={<UserOutlined />}
                       className={styles.image}
-                      width={40}
-                      height={40}
                     />
                     <div className={styles.mobileNameBlock}>
                       <div className={styles.mobileName}>
@@ -547,20 +567,13 @@ export default function LeaderBoard() {
                     </div>
                   </div>
 
-                  {renderRank(rank)}
-                </div>
-
-                <div className={styles.mobileBottom}>
-                  <div className={styles.pointWrapper}>
-                    <Image
-                      className={styles.pointIcon}
-                      src="/point.svg"
-                      width={18}
-                      height={18}
-                      alt={t("pointIconAlt")}
-                    />
-                    <span className={styles.pointsText}>{user.points}</span>
+                  <div className={styles.mobileBottom}>
+                    <div className={styles.pointWrapper}>
+                      <span className={styles.pointsText}>{user.points}</span>
+                    </div>
                   </div>
+
+                  {renderRank(rank)}
                 </div>
               </div>
             );
