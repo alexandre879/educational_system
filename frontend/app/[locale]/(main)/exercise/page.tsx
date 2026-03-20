@@ -1129,7 +1129,6 @@
 
 
 
-
 "use client";
 
 import { useEffect, useMemo, useState, useCallback } from "react";
@@ -1137,8 +1136,8 @@ import styles from "./exercise.module.scss";
 import api from "@/interceptors";
 import { FaBookOpen } from "react-icons/fa";
 import { useTranslations } from "next-intl";
-import { usePathname } from "next/navigation";
-import { Button, Select } from "antd";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { Select } from "antd";
 
 type LocalizedValue = string | Record<string, string> | null | undefined;
 
@@ -1176,7 +1175,12 @@ function getLocalizedValue(value: LocalizedValue, locale: string): string {
 export default function ExercisePage() {
   const t = useTranslations("Exercise");
   const pathname = usePathname();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
   const locale = pathname?.split("/")[1] || "en";
+  const openSubjectParam = searchParams.get("openSubject");
+  const openSubjectId = openSubjectParam ? Number(openSubjectParam) : null;
 
   const [loading, setLoading] = useState(true);
   const [items, setItems] = useState<Exercise[]>([]);
@@ -1188,27 +1192,56 @@ export default function ExercisePage() {
 
   const todayISO = getTodayISO();
 
-  const loadExercises = useCallback(async (date = todayISO) => {
-    try {
-      setLoading(true);
+  const replaceSubjectQuery = useCallback(
+    (id?: number | null) => {
+      const params = new URLSearchParams(searchParams.toString());
 
-      const res = await api.get<ExerciseResponse>("/exercises/daily/", {
-        params: { date },
-      });
+      if (id) {
+        params.set("openSubject", String(id));
+      } else {
+        params.delete("openSubject");
+      }
 
-      setItems(res.data?.items ?? []);
-      setUserRole(res.data?.role ?? null);
-    } catch (error) {
-      console.log(error);
-      setItems([]);
-    } finally {
-      setLoading(false);
-    }
-  }, [todayISO]);
+      const query = params.toString();
+      router.replace(query ? `${pathname}?${query}` : pathname, { scroll: false });
+    },
+    [pathname, router, searchParams]
+  );
+
+  const loadExercises = useCallback(
+    async (date = todayISO) => {
+      try {
+        setLoading(true);
+
+        const res = await api.get<ExerciseResponse>("/exercises/daily/", {
+          params: { date },
+        });
+
+        setItems(res.data?.items ?? []);
+        setUserRole(res.data?.role ?? null);
+      } catch (error) {
+        console.log(error);
+        setItems([]);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [todayISO]
+  );
 
   useEffect(() => {
     loadExercises();
   }, [loadExercises]);
+
+  useEffect(() => {
+    if (loading) return;
+
+    if (openSubjectId && !Number.isNaN(openSubjectId)) {
+      setSelectedSubjectId(openSubjectId);
+    } else if (!openSubjectParam) {
+      setSelectedSubjectId(null);
+    }
+  }, [loading, openSubjectId, openSubjectParam]);
 
   const resetCreateForm = () => {
     setTitle("");
@@ -1242,6 +1275,12 @@ export default function ExercisePage() {
     } catch (error) {
       console.log(error);
     }
+  };
+
+  const handleSubjectChange = (value: number | undefined) => {
+    const nextValue = value ?? null;
+    setSelectedSubjectId(nextValue);
+    replaceSubjectQuery(nextValue);
   };
 
   const subjectOptions = useMemo(() => {
@@ -1290,7 +1329,7 @@ export default function ExercisePage() {
               allowClear
               placeholder={t("subjectPlaceholder")}
               value={selectedSubjectId ?? undefined}
-              onChange={(value) => setSelectedSubjectId(value ?? null)}
+              onChange={handleSubjectChange}
               style={{ minWidth: 220 }}
               options={subjectOptions}
             />
