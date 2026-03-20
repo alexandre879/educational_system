@@ -100,6 +100,11 @@
 
 
 
+
+
+
+
+
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
@@ -109,6 +114,7 @@ import ExamSectionComponent from "./ExamComponents/ExamSectionComponent/ExamSect
 import { ExamListData } from "./interface";
 import { FaFileAlt } from "react-icons/fa";
 import { useTranslations, useLocale } from "next-intl";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 type LocalizedValue = string | Record<string, string> | null | undefined;
 
@@ -121,9 +127,15 @@ function getLocalizedValue(value: LocalizedValue, locale: string): string {
 export default function Exam() {
   const t = useTranslations("Exam");
   const locale = useLocale();
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
 
   const [exams, setExams] = useState<ExamListData[]>([]);
   const [loading, setLoading] = useState(true);
+
+  const openExamParam = searchParams.get("openExam");
+  const openExamId = openExamParam ? Number(openExamParam) : null;
 
   useEffect(() => {
     const fetchExams = async () => {
@@ -140,12 +152,36 @@ export default function Exam() {
     fetchExams();
   }, []);
 
+  useEffect(() => {
+    if (loading) return;
+    if (!openExamId || Number.isNaN(openExamId)) return;
+
+    const targetExam = exams.find((exam) => exam.id === openExamId);
+    if (!targetExam) return;
+
+    router.replace(`/${locale}/exam/${openExamId}/start`);
+  }, [loading, openExamId, exams, router, locale]);
+
   const countText = useMemo(() => {
     const n = exams.length;
     return n === 1
       ? t("examCountSingle")
       : t("examCountMultiple", { count: n });
   }, [exams.length, t]);
+
+  const clearOpenExamQuery = () => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete("openExam");
+    const query = params.toString();
+    router.replace(query ? `${pathname}?${query}` : pathname, { scroll: false });
+  };
+
+  useEffect(() => {
+    if (loading) return;
+    if (openExamParam && (openExamId === null || Number.isNaN(openExamId))) {
+      clearOpenExamQuery();
+    }
+  }, [loading, openExamParam, openExamId]);
 
   if (loading) {
     return (

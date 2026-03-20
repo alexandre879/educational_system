@@ -1049,8 +1049,125 @@ class LeaderBoardListView(APIView):
         
 
 
+# class SearchAnythingView(APIView):
+#     permission_classes = [IsAuthenticated]
+
+#     def get(self, request: Request) -> Response:
+#         serializer = SearchQuerySerializer(data=request.query_params)
+#         if not serializer.is_valid():
+#             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+#         user: User = request.user
+#         query = serializer.validated_data["q"].strip()
+
+#         if user.grade_in and user.grade_in.category:
+#             grade = user.grade_in
+            
+#             subjects = (
+#                 Subject.objects
+#                 .filter(name__istartswith=query, grade=grade)
+#                 .select_related("grade__category")
+#                 .values("pk", "name", "grade__name", "grade__category__name")
+#                 .distinct()
+#             )
+
+#             exams = (
+#                 Exam.objects
+#                 .filter(title__istartswith=query, grade=grade)
+#                 .values("pk", "title", "grade__name", "grade__category__name")
+#                 .distinct()
+#             )
+
+#             announcements = (
+#                 Announcement.objects
+#                 .filter(title__istartswith=query, grade=grade)
+#                 .values("pk", "title", "content", "grade__name", "grade__category__name")
+#                 .distinct()
+#             )
+
+#             return Response(
+#                 {"subjects": list(subjects), "exams": list(exams), "announcements": list(announcements)},
+#                 status=status.HTTP_200_OK
+#             )
+
+
+#         taught_subjects = user.subjects_taught.select_related("grade__category")
+        
+        
+#         print(taught_subjects.values_list("pk", flat=True))
+
+#         subjects = (
+#             Subject.objects
+#             .filter(name__istartswith=query, pk__in=taught_subjects.values_list("pk", flat=True))
+#             .select_related("grade__category")
+#             .values("pk", "name", "grade__name", "grade__category__name")
+#             .order_by("pk")
+#             .distinct()
+#         )
+
+#         exams = (
+#             Exam.objects
+#             .filter(title__istartswith=query, subject__in=taught_subjects)
+#             .select_related("subject__grade__category")
+#             .values(
+#                 "pk", "title",
+#                 "subject__pk", "subject__name",
+#                 "subject__grade__name", "subject__grade__category__name"
+#             )
+#             .order_by("pk")
+#             .distinct()
+#         )
+
+#         announcements = (
+#             Announcement.objects
+#             .filter(title__istartswith=query, subject__in=taught_subjects)
+#             .select_related("subject__grade__category")
+#             .values(
+#                 "title", "pk", "content",
+#                 "subject__pk", "subject__name",
+#                 "subject__grade__name", "subject__grade__category__name"
+#             )
+#             .order_by("pk")
+#             .distinct()
+#         )
+
+#         return Response(
+#             {"subjects": list(subjects), "exams": list(exams), "announcements": list(announcements)},
+#             status=status.HTTP_200_OK
+#         )
+            
+            
+            
+            
+    
 class SearchAnythingView(APIView):
     permission_classes = [IsAuthenticated]
+
+    def subject_name_q(self, query: str) -> Q:
+        return (
+            Q(name__en__icontains=query) |
+            Q(name__ka__icontains=query) |
+            Q(name__ru__icontains=query)
+        )
+
+    def exam_title_q(self, query: str) -> Q:
+        return (
+            Q(title__en__icontains=query) |
+            Q(title__ka__icontains=query) |
+            Q(title__ru__icontains=query)
+        )
+
+    def announcement_q(self, query: str) -> Q:
+        return (
+            Q(title__icontains=query) |
+            Q(content__icontains=query)
+        )
+
+    def exercise_q(self, query: str) -> Q:
+        return (
+            Q(title__icontains=query) |
+            Q(description__icontains=query)
+        )
 
     def get(self, request: Request) -> Response:
         serializer = SearchQuerySerializer(data=request.query_params)
@@ -1060,81 +1177,189 @@ class SearchAnythingView(APIView):
         user: User = request.user
         query = serializer.validated_data["q"].strip()
 
+        if not query:
+            return Response(
+                {
+                    "subjects": [],
+                    "exams": [],
+                    "announcements": [],
+                    "exercises": [],
+                },
+                status=status.HTTP_200_OK,
+            )
+
+        # ---------------- STUDENT ----------------
         if user.grade_in and user.grade_in.category:
             grade = user.grade_in
-            
+
             subjects = (
                 Subject.objects
-                .filter(name__istartswith=query, grade=grade)
+                .filter(self.subject_name_q(query), grade=grade)
                 .select_related("grade__category")
-                .values("pk", "name", "grade__name", "grade__category__name")
+                .values(
+                    "pk",
+                    "name",
+                    "grade__pk",
+                    "grade__name",
+                    "grade__category__name",
+                )
                 .distinct()
+                .order_by("pk")[:20]
             )
 
             exams = (
                 Exam.objects
-                .filter(title__istartswith=query, grade=grade)
-                .values("pk", "title", "grade__name", "grade__category__name")
+                .filter(self.exam_title_q(query), grade=grade)
+                .select_related("subject__grade__category", "grade__category")
+                .values(
+                    "pk",
+                    "title",
+                    "grade__pk",
+                    "grade__name",
+                    "grade__category__name",
+                    "subject__pk",
+                    "subject__name",
+                )
                 .distinct()
+                .order_by("pk")[:20]
             )
 
             announcements = (
                 Announcement.objects
-                .filter(title__istartswith=query, grade=grade)
-                .values("pk", "title", "content", "grade__name", "grade__category__name")
+                .filter(self.announcement_q(query), grade=grade)
+                .select_related("subject__grade__category", "grade__category")
+                .values(
+                    "pk",
+                    "title",
+                    "content",
+                    "grade__pk",
+                    "grade__name",
+                    "grade__category__name",
+                    "subject__pk",
+                    "subject__name",
+                )
                 .distinct()
+                .order_by("-created_at")[:20]
+            )
+
+            exercises = (
+                DailyExercise.objects
+                .filter(self.exercise_q(query), grade=grade)
+                .select_related("grade__category", "subject")
+                .values(
+                    "id",
+                    "title",
+                    "description",
+                    "due_date",
+                    "grade__id",
+                    "grade__name",
+                    "grade__category__name",
+                    "subject__id",
+                    "subject__name",
+                )
+                .distinct()
+                .order_by("-created_at")[:20]
             )
 
             return Response(
-                {"subjects": list(subjects), "exams": list(exams), "announcements": list(announcements)},
-                status=status.HTTP_200_OK
+                {
+                    "subjects": list(subjects),
+                    "exams": list(exams),
+                    "announcements": list(announcements),
+                    "exercises": list(exercises),
+                },
+                status=status.HTTP_200_OK,
             )
 
-
+        # ---------------- TEACHER / ADMIN / PARENT FALLBACK ----------------
         taught_subjects = user.subjects_taught.select_related("grade__category")
-        
-        
-        print(taught_subjects.values_list("pk", flat=True))
+        taught_subject_ids = list(taught_subjects.values_list("pk", flat=True))
+        taught_grade_ids = list(
+            taught_subjects.values_list("grade__pk", flat=True).distinct()
+        )
 
         subjects = (
             Subject.objects
-            .filter(name__istartswith=query, pk__in=taught_subjects.values_list("pk", flat=True))
+            .filter(self.subject_name_q(query), pk__in=taught_subject_ids)
             .select_related("grade__category")
-            .values("pk", "name", "grade__name", "grade__category__name")
-            .order_by("pk")
+            .values(
+                "pk",
+                "name",
+                "grade__pk",
+                "grade__name",
+                "grade__category__name",
+            )
             .distinct()
+            .order_by("pk")[:20]
         )
 
         exams = (
             Exam.objects
-            .filter(title__istartswith=query, subject__in=taught_subjects)
+            .filter(self.exam_title_q(query), subject__in=taught_subjects)
             .select_related("subject__grade__category")
             .values(
-                "pk", "title",
-                "subject__pk", "subject__name",
-                "subject__grade__name", "subject__grade__category__name"
+                "pk",
+                "title",
+                "subject__pk",
+                "subject__name",
+                "subject__grade__pk",
+                "subject__grade__name",
+                "subject__grade__category__name",
             )
-            .order_by("pk")
             .distinct()
+            .order_by("pk")[:20]
         )
 
         announcements = (
             Announcement.objects
-            .filter(title__istartswith=query, subject__in=taught_subjects)
+            .filter(self.announcement_q(query), subject__in=taught_subjects)
             .select_related("subject__grade__category")
             .values(
-                "title", "pk", "content",
-                "subject__pk", "subject__name",
-                "subject__grade__name", "subject__grade__category__name"
+                "pk",
+                "title",
+                "content",
+                "subject__pk",
+                "subject__name",
+                "subject__grade__pk",
+                "subject__grade__name",
+                "subject__grade__category__name",
             )
-            .order_by("pk")
             .distinct()
+            .order_by("-created_at")[:20]
+        )
+
+        exercises = (
+            DailyExercise.objects
+            .filter(
+                self.exercise_q(query),
+                grade__id__in=taught_grade_ids,
+            )
+            .select_related("grade__category", "subject")
+            .values(
+                "id",
+                "title",
+                "description",
+                "due_date",
+                "grade__id",
+                "grade__name",
+                "grade__category__name",
+                "subject__id",
+                "subject__name",
+            )
+            .distinct()
+            .order_by("-created_at")[:20]
         )
 
         return Response(
-            {"subjects": list(subjects), "exams": list(exams), "announcements": list(announcements)},
-            status=status.HTTP_200_OK
+            {
+                "subjects": list(subjects),
+                "exams": list(exams),
+                "announcements": list(announcements),
+                "exercises": list(exercises),
+            },
+            status=status.HTTP_200_OK,
         )
+            
             
             
             
