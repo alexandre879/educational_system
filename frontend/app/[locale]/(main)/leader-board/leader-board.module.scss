@@ -31,6 +31,8 @@
 //   display: flex;
 //   gap: 12px;
 //   margin-bottom: 18px;
+//   min-width: 0;
+//   flex-wrap: wrap;
 // }
 
 // .headerIcon {
@@ -43,11 +45,9 @@
 //   border: 1px solid rgba(22, 119, 255, 0.18);
 //   color: var(--primary-blue);
 //   flex-shrink: 0;
-
 //   backdrop-filter: blur(10px);
 //   -webkit-backdrop-filter: blur(10px);
 //   box-shadow: 0 14px 36px rgba(0, 0, 0, 0.25);
-
 //   transition:
 //     transform 220ms ease,
 //     box-shadow 220ms ease,
@@ -59,6 +59,7 @@
 //   align-items: center;
 //   gap: 10px;
 //   flex-wrap: wrap;
+//   min-width: 0;
 // }
 
 // .WrapperOfMainCaptionAndIcon {
@@ -85,11 +86,9 @@
 //   width: 100%;
 //   max-width: 1200px;
 //   margin: 0 auto;
-
 //   background: transparent;
 //   color: var(--text-primary);
 //   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-
 //   animation: pageFadeIn 320ms ease;
 
 //   .controlsRow {
@@ -98,6 +97,7 @@
 //     justify-content: flex-end;
 //     gap: 12px;
 //     flex-wrap: wrap;
+//     min-width: 0;
 //   }
 
 //   .wrapperOfDropDownAndCaption {
@@ -105,6 +105,7 @@
 //     align-items: center;
 //     gap: 12px;
 //     min-width: 0;
+//     flex: 1 1 auto;
 //   }
 
 //   .subjectBtn {
@@ -112,18 +113,14 @@
 //     align-items: center !important;
 //     gap: 8px !important;
 //     max-width: 100%;
-
+//     min-width: 0;
 //     border-radius: 12px !important;
 //     border: 1px solid var(--border-medium) !important;
-
 //     background: var(--surface) !important;
 //     color: var(--text-primary) !important;
-
 //     backdrop-filter: blur(10px) !important;
 //     -webkit-backdrop-filter: blur(10px) !important;
-
 //     box-shadow: 0 12px 34px rgba(0, 0, 0, 0.25) !important;
-
 //     transition:
 //       transform 180ms ease,
 //       border-color 180ms ease,
@@ -166,13 +163,19 @@
 
 //   .image {
 //     border-radius: 50%;
-//     flex-shrink: 0;
+//     flex-shrink: 0 !important;
+//     object-fit: cover;
+//     display: inline-flex;
+//     width: 44px;
+//     height: 44px;
+//     min-width: 44px;
+//     min-height: 44px;
 //     transition: transform 220ms ease, box-shadow 220ms ease;
 //   }
 
 //   .blankCaptionStyle {
-//     color: var(--text-muted);
-//     font-weight: 600;
+//     color: var(--text-secondary) !important;
+//     font-weight: 700;
 //   }
 
 //   .firstAndLastNameWrapper {
@@ -181,6 +184,7 @@
 //     gap: 6px;
 //     min-width: 0;
 //     flex-wrap: wrap;
+//     flex: 1 1 auto;
 //   }
 
 //   .nameText {
@@ -198,18 +202,14 @@
 //     width: 30px;
 //     height: 30px;
 //     border-radius: 12px;
-
 //     display: flex;
 //     justify-content: center;
 //     align-items: center;
-
 //     font-weight: 900;
 //     letter-spacing: 0.2px;
-
 //     box-shadow:
 //       0 10px 22px rgba(0, 0, 0, 0.35),
 //       0 0 0 1px rgba(255, 255, 255, 0.06) inset;
-
 //     flex-shrink: 0;
 //     transition:
 //       transform 180ms ease,
@@ -236,7 +236,6 @@
 //     background: var(--surface);
 //     color: var(--text-strong);
 //     border: 1px solid var(--border-medium);
-
 //     backdrop-filter: blur(10px);
 //     -webkit-backdrop-filter: blur(10px);
 //   }
@@ -244,22 +243,17 @@
 //   .pointWrapper {
 //     width: 110px;
 //     height: 40px;
-
 //     border-radius: 12px;
-
 //     display: inline-flex;
 //     justify-content: center;
 //     align-items: center;
 //     gap: 8px;
-
 //     background: var(--surface-bold);
 //     border: 1px solid var(--border-medium);
-
 //     backdrop-filter: blur(10px);
 //     -webkit-backdrop-filter: blur(10px);
-
 //     box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
-
+//     flex-shrink: 0;
 //     transition:
 //       transform 180ms ease,
 //       box-shadow 180ms ease,
@@ -286,14 +280,11 @@
 //     border-collapse: separate;
 //     border-spacing: 0;
 //     overflow: hidden;
-
 //     border-radius: 18px;
 //     border: 1px solid var(--border-medium);
-
 //     background: var(--surface-soft);
 //     backdrop-filter: blur(12px);
 //     -webkit-backdrop-filter: blur(12px);
-
 //     box-shadow:
 //       var(--shadow-soft),
 //       0 0 0 1px rgba(255, 255, 255, 0.03) inset;
@@ -323,7 +314,6 @@
 //             background-color 180ms ease,
 //             border-color 180ms ease;
 //           vertical-align: middle;
-
 //           background: transparent;
 //         }
 
@@ -340,6 +330,7 @@
 
 //   .tableContainer {
 //     width: 100%;
+//     min-width: 0;
 //   }
 
 //   .ImageFirstAndLastNameWrapper {
@@ -393,6 +384,14 @@
 //     text-align: center;
 //     background: transparent;
 //     color: var(--text-secondary);
+
+//     :global(.ant-empty-description) {
+//       color: var(--text-secondary) !important;
+//     }
+
+//     :global(.ant-empty-normal) {
+//       margin-block: 0 !important;
+//     }
 //   }
 
 //   .mobileList {
@@ -404,23 +403,18 @@
 //   .mobileCard {
 //     border-radius: 18px;
 //     padding: 12px;
-
 //     border: 1px solid var(--border-medium);
 //     background: var(--surface-soft);
-
 //     backdrop-filter: blur(12px);
 //     -webkit-backdrop-filter: blur(12px);
-
 //     box-shadow:
 //       var(--shadow-soft),
 //       0 0 0 1px rgba(255, 255, 255, 0.03) inset;
-
 //     transition:
 //       transform 180ms ease,
 //       border-color 180ms ease,
 //       background 180ms ease,
 //       box-shadow 180ms ease;
-
 //     animation: fadeUp 300ms ease;
 
 //     &:hover {
@@ -435,7 +429,7 @@
 
 //   .mobileTop {
 //     display: flex;
-//     align-items: flex-start;
+//     align-items: center;
 //     justify-content: space-between;
 //     gap: 12px;
 //     min-width: 0;
@@ -446,14 +440,16 @@
 //     align-items: center;
 //     gap: 10px;
 //     min-width: 0;
-//     flex: 1;
+//     flex: 1 1 auto;
 //   }
 
 //   .mobileNameBlock {
 //     min-width: 0;
 //     display: flex;
 //     flex-direction: column;
+//     justify-content: center;
 //     gap: 4px;
+//     flex: 1 1 auto;
 //   }
 
 //   .mobileName {
@@ -475,9 +471,11 @@
 //   }
 
 //   .mobileBottom {
-//     margin-top: 10px;
 //     display: flex;
-//     justify-content: flex-start;
+//     align-items: center;
+//     justify-content: center;
+//     flex-shrink: 0;
+//     margin-top: 0;
 //   }
 
 //   .mobileEmpty {
@@ -485,13 +483,24 @@
 //     background: var(--surface-soft);
 //     border-radius: 18px;
 //     padding: 16px;
-
 //     backdrop-filter: blur(12px);
 //     -webkit-backdrop-filter: blur(12px);
-
 //     box-shadow: var(--shadow-soft);
 //     color: var(--text-secondary);
 //     animation: fadeUp 260ms ease;
+
+//     :global(.ant-empty-description) {
+//       color: var(--text-secondary) !important;
+//       font-weight: 700;
+//     }
+
+//     :global(.ant-empty-image svg) {
+//       fill: var(--text-muted) !important;
+//     }
+
+//     :global(.ant-empty-normal) {
+//       margin-block: 0 !important;
+//     }
 //   }
 
 //   .glassDropdown {
@@ -499,13 +508,10 @@
 //       background: var(--surface-soft) !important;
 //       border: 1px solid var(--border-medium) !important;
 //       border-radius: 14px !important;
-
 //       backdrop-filter: blur(14px) !important;
 //       -webkit-backdrop-filter: blur(14px) !important;
-
 //       box-shadow: var(--shadow-soft) !important;
 //       padding: 6px !important;
-
 //       animation: dropdownFadeIn 180ms ease;
 //     }
 
@@ -531,8 +537,29 @@
 
 //   @media (max-width: 1024px) {
 //     .anotherPage {
-//       display: flex;
-//       gap: 8px;
+//       align-items: flex-start;
+//       justify-content: space-between;
+//       gap: 10px;
+//     }
+
+//     .controlsRow {
+//       width: 100%;
+//       justify-content: flex-start;
+//     }
+
+//     .wrapperOfDropDownAndCaption {
+//       width: 100%;
+//       min-width: 0;
+//     }
+
+//     .dropDownAndButtonWrapper {
+//       width: 100%;
+//       justify-content: flex-start;
+//       min-width: 0;
+//     }
+
+//     .subjectBtn {
+//       max-width: 100%;
 //     }
 
 //     .subjectBtnText {
@@ -545,28 +572,183 @@
 //       th,
 //       td {
 //         padding: 10px 12px;
+//         vertical-align: middle;
 //       }
 //     }
 
 //     .emailCell {
-//       max-width: 260px;
+//       max-width: 220px;
+//     }
+
+//     .ImageFirstAndLastNameWrapper {
+//       display: flex;
+//       align-items: center;
+//       gap: 10px;
+//       min-width: 0;
+//     }
+
+//     .firstAndLastNameWrapper {
+//       display: flex;
+//       align-items: center;
+//       gap: 6px;
+//       min-width: 0;
+//       flex-wrap: wrap;
+//       flex: 1 1 auto;
+//     }
+
+//     .nameText {
+//       min-width: 0;
+//       overflow: hidden;
+//       text-overflow: ellipsis;
+//       white-space: nowrap;
+//     }
+
+//     .image {
+//       width: 40px;
+//       height: 40px;
+//       min-width: 40px;
+//       min-height: 40px;
+//     }
+
+//     .pointWrapper {
+//       width: 96px;
+//       height: 38px;
+//       flex-shrink: 0;
+//     }
+
+//     .positionWrapperGold,
+//     .positionWrapperSilver,
+//     .positionWrapperBronce,
+//     .positionWrapperNormal {
+//       width: 28px;
+//       height: 28px;
+//       border-radius: 10px;
+//       flex-shrink: 0;
 //     }
 //   }
 
-//   @media (max-width: 600px) {
+//   @media (max-width: 768px) {
+//     .anotherPage {
+//       flex-direction: column;
+//       align-items: stretch;
+//     }
+
+//     .wrapperOfDropDownAndCaption {
+//       width: 100%;
+//     }
+
+//     .dropDownAndButtonWrapper {
+//       width: 100%;
+//     }
+
+//     .subjectBtn {
+//       max-width: 100%;
+//     }
+
+//     .subjectBtnText {
+//       max-width: 100%;
+//     }
+
 //     .tableOuter {
 //       display: none;
 //     }
 
 //     .mobileList {
 //       display: flex;
+//       flex-direction: column;
+//       gap: 12px;
+//     }
+
+//     .mobileCard {
+//       padding: 12px 14px;
+//     }
+
+//     .mobileTop {
+//       display: flex;
+//       align-items: center;
+//       justify-content: space-between;
+//       gap: 12px;
+//       min-width: 0;
+//     }
+
+//     .mobileLeft {
+//       display: flex;
+//       align-items: center;
+//       gap: 10px;
+//       min-width: 0;
+//       flex: 1 1 auto;
+//     }
+
+//     .mobileCard .image {
+//       width: 42px;
+//       height: 42px;
+//       min-width: 42px;
+//       min-height: 42px;
+//       flex-shrink: 0 !important;
+//     }
+
+//     .mobileNameBlock {
+//       min-width: 0;
+//       flex: 1 1 auto;
+//       display: flex;
+//       flex-direction: column;
+//       justify-content: center;
+//       gap: 4px;
+//     }
+
+//     .mobileName {
+//       min-width: 0;
+//       overflow: hidden;
+//       text-overflow: ellipsis;
+//       white-space: nowrap;
+//     }
+
+//     .mobileEmail {
+//       min-width: 0;
+//       overflow: hidden;
+//       text-overflow: ellipsis;
+//       white-space: nowrap;
+//     }
+
+//     .mobileBottom {
+//       display: flex;
+//       align-items: center;
+//       justify-content: center;
+//       flex-shrink: 0;
+//       margin-top: 0;
 //     }
 
 //     .pointWrapper {
 //       width: auto;
+//       min-width: 92px;
 //       height: 36px;
 //       padding: 0 10px;
 //       gap: 6px;
+//       display: inline-flex;
+//       align-items: center;
+//       justify-content: center;
+//       flex-shrink: 0;
+//     }
+
+//     .positionWrapperGold,
+//     .positionWrapperSilver,
+//     .positionWrapperBronce,
+//     .positionWrapperNormal {
+//       width: 30px;
+//       height: 30px;
+//       border-radius: 10px;
+//       flex-shrink: 0;
+//     }
+//   }
+
+//   @media (max-width: 600px) {
+//     .subjectBtnText {
+//       max-width: 210px;
+//     }
+
+//     .pointWrapper {
+//       min-width: 88px;
+//       height: 34px;
 //     }
 
 //     .positionWrapperGold,
@@ -578,13 +760,75 @@
 //       border-radius: 10px;
 //     }
 
-//     .subjectBtnText {
-//       max-width: 210px;
-//     }
-
 //     .pointIcon {
 //       width: 16px !important;
 //       height: 16px !important;
+//     }
+
+//     .mobileCard {
+//       padding: 12px;
+//       border-radius: 16px;
+//     }
+
+//     .mobileTop {
+//       gap: 10px;
+//     }
+
+//     .mobileLeft {
+//       align-items: center;
+//       gap: 9px;
+//     }
+
+//     .mobileName {
+//       font-size: 0.95rem;
+//       max-width: 100%;
+//     }
+
+//     .mobileEmail {
+//       font-size: 0.85rem;
+//       max-width: 100%;
+//     }
+
+//     .nameText {
+//       max-width: 100%;
+//     }
+
+//     .pointsText {
+//       line-height: 1;
+//     }
+//   }
+
+//   @media (max-width: 420px) {
+//     .mobileTop {
+//       gap: 8px;
+//       align-items: center;
+//     }
+
+//     .mobileLeft {
+//       min-width: 0;
+//       flex: 1 1 auto;
+//       gap: 8px;
+//     }
+
+//     .mobileNameBlock {
+//       min-width: 0;
+//       flex: 1 1 auto;
+//     }
+
+//     .mobileName,
+//     .mobileEmail,
+//     .nameText {
+//       max-width: 100%;
+//     }
+
+//     .subjectBtnText {
+//       max-width: 160px;
+//     }
+
+//     .pointWrapper {
+//       min-width: 82px;
+//       height: 34px;
+//       padding: 0 8px;
 //     }
 //   }
 // }
@@ -621,9 +865,6 @@
 //     transform: translateY(0);
 //   }
 // }
-
-
-
 
 
 
@@ -742,19 +983,29 @@
     flex: 1 1 auto;
   }
 
-  .subjectBtn {
-    display: inline-flex !important;
-    align-items: center !important;
-    gap: 8px !important;
-    max-width: 100%;
+  .subjectDropdown {
+    position: relative;
+    display: inline-flex;
     min-width: 0;
-    border-radius: 12px !important;
-    border: 1px solid var(--border-medium) !important;
-    background: var(--surface) !important;
-    color: var(--text-primary) !important;
-    backdrop-filter: blur(10px) !important;
-    -webkit-backdrop-filter: blur(10px) !important;
-    box-shadow: 0 12px 34px rgba(0, 0, 0, 0.25) !important;
+    max-width: 100%;
+  }
+
+  .subjectDropdownTrigger {
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    max-width: 100%;
+    min-width: 240px;
+    border-radius: 12px;
+    border: 1px solid var(--border-medium);
+    background: var(--surface);
+    color: var(--text-primary);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    box-shadow: 0 12px 34px rgba(0, 0, 0, 0.25);
+    padding: 10px 14px;
+    cursor: pointer;
     transition:
       transform 180ms ease,
       border-color 180ms ease,
@@ -762,16 +1013,29 @@
       color 180ms ease,
       box-shadow 180ms ease;
 
-    &:hover {
+    &:hover:not(:disabled) {
       transform: translateY(-2px);
-      border-color: rgba(22, 119, 255, 0.22) !important;
-      background: var(--surface-soft-hover) !important;
-      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.28) !important;
+      border-color: rgba(22, 119, 255, 0.22);
+      background: var(--surface-soft-hover);
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.28);
     }
 
-    &:active {
+    &:active:not(:disabled) {
       transform: translateY(0);
     }
+
+    &:disabled {
+      opacity: 0.75;
+      cursor: not-allowed;
+    }
+  }
+
+  .subjectDropdownTriggerOpen {
+    border-color: rgba(22, 119, 255, 0.28);
+    background: var(--surface-soft-hover);
+    box-shadow:
+      0 16px 40px rgba(0, 0, 0, 0.28),
+      0 0 0 3px rgba(22, 119, 255, 0.08);
   }
 
   .subjectBtnText {
@@ -782,7 +1046,7 @@
     white-space: nowrap;
   }
 
-  .subjectBtnArrow {
+  .subjectDropdownArrow {
     flex-shrink: 0;
     opacity: 0.85;
     font-size: 12px;
@@ -790,9 +1054,57 @@
     transition: transform 180ms ease, opacity 180ms ease;
   }
 
-  .subjectBtn:hover .subjectBtnArrow {
-    transform: translateY(1px);
+  .subjectDropdownArrowOpen {
+    transform: rotate(180deg);
     opacity: 1;
+  }
+
+  .subjectDropdownMenu {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    z-index: 40;
+    min-width: 100%;
+    max-width: min(520px, 90vw);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 6px;
+    border-radius: 14px;
+    border: 1px solid var(--border-medium);
+    background: var(--surface-soft);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    box-shadow: var(--shadow-soft);
+    animation: dropdownFadeIn 180ms ease;
+    max-height: 320px;
+    overflow-y: auto;
+  }
+
+  .subjectDropdownItem {
+    width: 100%;
+    text-align: left;
+    border: 0;
+    background: transparent;
+    border-radius: 10px;
+    color: var(--text-primary);
+    padding: 10px 12px;
+    cursor: pointer;
+    transition:
+      background 180ms ease,
+      color 180ms ease,
+      transform 180ms ease;
+
+    &:hover {
+      background: var(--hover-soft);
+      transform: translateX(2px);
+    }
+  }
+
+  .subjectDropdownItemActive {
+    background: rgba(22, 119, 255, 0.14);
+    color: var(--text-strong);
+    font-weight: 600;
   }
 
   .image {
@@ -1137,38 +1449,6 @@
     }
   }
 
-  .glassDropdown {
-    :global(.ant-dropdown-menu) {
-      background: var(--surface-soft) !important;
-      border: 1px solid var(--border-medium) !important;
-      border-radius: 14px !important;
-      backdrop-filter: blur(14px) !important;
-      -webkit-backdrop-filter: blur(14px) !important;
-      box-shadow: var(--shadow-soft) !important;
-      padding: 6px !important;
-      animation: dropdownFadeIn 180ms ease;
-    }
-
-    :global(.ant-dropdown-menu-item) {
-      border-radius: 10px !important;
-      color: var(--text-primary) !important;
-      transition:
-        background 180ms ease,
-        color 180ms ease,
-        transform 180ms ease;
-    }
-
-    :global(.ant-dropdown-menu-item:hover) {
-      background: var(--hover-soft) !important;
-      transform: translateX(2px);
-    }
-
-    :global(.ant-dropdown-menu-item-selected) {
-      background: rgba(22, 119, 255, 0.14) !important;
-      color: var(--text-strong) !important;
-    }
-  }
-
   @media (max-width: 1024px) {
     .anotherPage {
       align-items: flex-start;
@@ -1192,7 +1472,14 @@
       min-width: 0;
     }
 
-    .subjectBtn {
+    .subjectDropdown {
+      width: 100%;
+      max-width: 100%;
+    }
+
+    .subjectDropdownTrigger {
+      width: 100%;
+      min-width: 0;
       max-width: 100%;
     }
 
@@ -1275,8 +1562,12 @@
       width: 100%;
     }
 
-    .subjectBtn {
-      max-width: 100%;
+    .subjectDropdown {
+      width: 100%;
+    }
+
+    .subjectDropdownTrigger {
+      width: 100%;
     }
 
     .subjectBtnText {
