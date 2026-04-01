@@ -1635,12 +1635,12 @@ class TeacherMarkAttendanceView(APIView):
 
                 if student.id in all_ids and student.id in absent_ids:
                     text = (
-                        f"🚨 <b>დასწრების შეტყობინება</b>\n\n"
-                        f"👤 <b>{student_name}</b>\n"
+                        f"🚨 დასწრების შეტყობინება\n\n"
+                        f"👤 {student_name}\n"
                         f"📚 {lesson.subject.name}\n"
                         f"🕒 {lesson.start_time.strftime('%H:%M')}–{lesson.end_time.strftime('%H:%M')}\n"
                         f"📅 {day}\n\n"
-                        f"<b>სტატუსი:</b> ❌ არ გამოცხადდა"
+                        f"სტატუსი: ❌ არ გამოცხადდა"
                     )
                 else:
                     text = (
@@ -1727,20 +1727,7 @@ class StudentDailyExercisesView(APIView):
 
 
 class TeacherDailyExerciseCreateView(APIView):
-    """
-    Teacher creates an exercise for a grade (and optional subject)
-    POST /exercises/daily/create/
 
-    Body:
-    {
-      "grade_id": 8,
-      "subject_id": 12,           // optional
-      "date": "2026-02-14",       // optional (default today)
-      "due_date": "2026-02-16",   // optional
-      "title": "Homework #1",
-      "description": "Solve 1-10 tasks"
-    }
-    """
     permission_classes = [IsAuthenticated]
 
     def post(self, request: Request) -> Response:
@@ -1794,11 +1781,9 @@ class TeacherDailyExerciseCreateView(APIView):
             if not subject:
                 return Response({"error": "Subject not found."}, status=404)
 
-            # IMPORTANT: subject must belong to grade
             if subject.grade_id != grade.id:
                 return Response({"error": "Subject must belong to the selected grade."}, status=400)
 
-            # OPTIONAL safety: teacher must teach that subject
             if not user.subjects_taught.filter(pk=subject.id).exists():
                 return Response({"error": "You can't assign exercises for a subject you don't teach."}, status=403)
 

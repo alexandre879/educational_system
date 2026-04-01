@@ -764,7 +764,7 @@ function getString(v: unknown): string | null {
   if (typeof v === "number") return String(v);
   return null;
 }
-
+3
 function getRecord(v: unknown): MaybeRecord | null {
   return isRecord(v) ? v : null;
 }
