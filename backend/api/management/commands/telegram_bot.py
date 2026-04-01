@@ -76,7 +76,6 @@ async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 async def handle_email(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    # ✅ guard: sometimes updates don’t contain message/text
     if not update.message or not update.message.text:
         return ASK_EMAIL
 
@@ -95,7 +94,6 @@ async def handle_email(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return ASK_EMAIL
 
     try:
-        # ✅ this is where DB connection/query happens
         user = await sync_to_async(User.objects.get)(email=email)
 
     except User.DoesNotExist:
@@ -105,7 +103,6 @@ async def handle_email(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return ASK_EMAIL
 
     except OperationalError as e:
-        # ✅ Pattern A: show the REAL DB connection error in terminal
         print("\n========== DB OPERATIONAL ERROR ==========")
         print(repr(e))
         traceback.print_exc()
@@ -118,7 +115,6 @@ async def handle_email(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return ASK_EMAIL
 
     except Exception as e:
-        # ✅ Pattern A: catch anything else and print traceback
         print("\n========== UNEXPECTED ERROR ==========")
         print(repr(e))
         traceback.print_exc()
@@ -130,7 +126,6 @@ async def handle_email(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
         return ASK_EMAIL
 
-    # --- normal flow ---
     if user.chat_id and user.chat_id != str(chat_id):
         await update.message.reply_text(
             "❌ ეს მეილი უკვე დაკავშირებულია სხვა Telegram აქაუნთთან.",
