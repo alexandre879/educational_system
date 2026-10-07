@@ -1,16 +1,24 @@
 from django.contrib.auth.models import AbstractUser
-from django.db import models
-from api.managers import UserManager
-from .translation import get_localized_json_value
-from .storage import BookStorage, ProfilePicStorage
-from PIL import Image
-from io import BytesIO
-from django.core.files.base import ContentFile
-from django.utils import timezone
 from django.core.exceptions import ValidationError
+from django.core.validators import MaxValueValidator, MinValueValidator
+from django.db import models
+from django.db.models import F
+from django.db.models.functions import Coalesce
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
+from api.managers import UserManager
 
+from .storage import BookStorage, ProfilePicStorage
+from .translation import get_localized_json_value
+from .utils import normalize_image_to_square
+
+
+PROFILE_PIC_SIZE = 512
+
+# Georgian schools mark on a 1–10 scale.
+MIN_MARK = 1
+MAX_MARK = 10
 
 
 class GradeCategory(models.Model):
@@ -25,8 +33,6 @@ class GradeCategory(models.Model):
 
     def get_name(self, locale: str) -> str:
         return get_localized_json_value(self.name, locale)
-
-
 
 
 class Grade(models.Model):
@@ -47,10 +53,6 @@ class Grade(models.Model):
         if self.category:
             return f"{self.name} {self.category}"
         return self.name
-
-
-
-
 
 
 class Subject(models.Model):
@@ -110,108 +112,6 @@ class Subject(models.Model):
         return get_localized_json_value(self.name, locale)
 
 
-
-
-
-
-
-# class User(AbstractUser):
-#     class Role(models.TextChoices):
-#         STUDENT = "student", _("Student")
-#         TEACHER = "teacher", _("Teacher")
-#         ADMIN = "admin", _("Admin")
-#         PARENT = "parent", _("Parent")
-
-#     email = models.CharField(_("Email"), max_length=255, unique=True)
-#     password = models.CharField(_("Password"), max_length=255, default=None, null=True)
-#     chat_id = models.CharField(_("Chat ID"), max_length=255, default=None, null=True)
-#     role = models.CharField(_("Role"), max_length=255, choices=Role.choices, null=True, blank=True)
-#     grade_in = models.ForeignKey(
-#         Grade,
-#         verbose_name=_("Grade"),
-#         on_delete=models.SET_NULL,
-#         related_name="users",
-#         null=True,
-#         blank=True,
-#     )
-#     points = models.IntegerField(_("Points"), null=True, default=None)
-#     subjects_taught = models.ManyToManyField(
-#         Subject,
-#         verbose_name=_("Subjects taught"),
-#         related_name="teachers",
-#         blank=True,
-#     )
-#     profilePic = models.ImageField(
-#         _("Profile picture"),
-#         storage=ProfilePicStorage(),
-#         blank=True,
-#         null=True,
-#     )
-
-#     username = None
-#     USERNAME_FIELD = "email"
-#     REQUIRED_FIELDS = []
-
-#     objects = UserManager()
-
-#     class Meta:
-#         verbose_name = _("User")
-#         verbose_name_plural = _("Users")
-
-#     def __str__(self):
-#         if self.role == self.Role.STUDENT:
-#             return f"{self.email} ({self.role}, {self.grade_in.name if self.grade_in else 'No Grade'})"
-#         elif self.role == self.Role.TEACHER:
-#             subjects = ", ".join([s.name for s in self.subjects_taught.all()])
-#             return f"{self.email} ({self.role}, teaches: {subjects})"
-#         else:
-#             return f"{self.email} ({self.role})"
-
-#     def save(self, *args, **kwargs):
-#         update_fields = kwargs.get("update_fields")
-
-#         if update_fields is not None and "profilePic" not in update_fields:
-#             return super().save(*args, **kwargs)
-
-#         super().save(*args, **kwargs)
-
-#         if not self.profilePic:
-#             return
-
-#         try:
-#             self.profilePic.open("rb")
-#             img = Image.open(self.profilePic)
-#             img.load()
-#         finally:
-#             try:
-#                 self.profilePic.close()
-#             except Exception:
-#                 pass
-
-#         img = img.convert("RGB")
-#         img = img.resize((200, 200), Image.Resampling.LANCZOS)
-
-#         buffer = BytesIO()
-#         img.save(buffer, format="JPEG", quality=90)
-#         buffer.seek(0)
-
-#         base_name = self.profilePic.name.rsplit(".", 1)[0]
-#         new_name = base_name + ".jpg"
-
-#         self.profilePic.save(new_name, ContentFile(buffer.read()), save=False)
-
-#         super().save(update_fields=["profilePic"])
-
-
-
-
-
-
-
-
-
-
-
 class User(AbstractUser):
     class Role(models.TextChoices):
         STUDENT = "student", _("Student")
@@ -255,64 +155,61 @@ class User(AbstractUser):
         verbose_name = _("User")
         verbose_name_plural = _("Users")
 
-    def _localized_text(self, value):
-        if isinstance(value, dict):
-            return value.get("en") or value.get("ka") or value.get("ru") or ""
-        return str(value) if value is not None else ""
-
     def __str__(self):
         if self.role == self.Role.STUDENT:
-            grade_name = self._localized_text(self.grade_in.name) if self.grade_in else "No Grade"
+            grade_name = str(self.grade_in) if self.grade_in else "No Grade"
             return f"{self.email} ({self.role}, {grade_name})"
 
-        elif self.role == self.Role.TEACHER:
+        if self.role == self.Role.TEACHER:
             subjects = ", ".join(
-                self._localized_text(s.name) for s in self.subjects_taught.all()
+                get_localized_json_value(s.name) for s in self.subjects_taught.all()
             )
             return f"{self.email} ({self.role}, teaches: {subjects})"
 
-        else:
-            return f"{self.email} ({self.role})"
+        return f"{self.email} ({self.role})"
 
     def save(self, *args, **kwargs):
         update_fields = kwargs.get("update_fields")
+        pic = self.profilePic
 
-        if update_fields is not None and "profilePic" not in update_fields:
-            return super().save(*args, **kwargs)
+        # Only a freshly assigned upload is uncommitted; resize it once, before
+        # it is sent to storage, instead of re-processing on every save.
+        if (
+            pic
+            and not pic._committed
+            and (update_fields is None or "profilePic" in update_fields)
+        ):
+            self.profilePic = normalize_image_to_square(pic.file, size=PROFILE_PIC_SIZE)
 
         super().save(*args, **kwargs)
 
-        if not self.profilePic:
-            return
 
-        try:
-            self.profilePic.open("rb")
-            img = Image.open(self.profilePic)
-            img.load()
-        finally:
-            try:
-                self.profilePic.close()
-            except Exception:
-                pass
+class PushDevice(models.Model):
+    """A phone with the mobile app installed, identified by its Expo push token."""
 
-        img = img.convert("RGB")
-        img = img.resize((200, 200), Image.Resampling.LANCZOS)
+    class Platform(models.TextChoices):
+        IOS = "ios", "iOS"
+        ANDROID = "android", "Android"
 
-        buffer = BytesIO()
-        img.save(buffer, format="JPEG", quality=90)
-        buffer.seek(0)
+    user = models.ForeignKey(
+        User,
+        verbose_name=_("User"),
+        on_delete=models.CASCADE,
+        related_name="push_devices",
+    )
+    token = models.CharField(_("Push token"), max_length=255, unique=True)
+    platform = models.CharField(_("Platform"), max_length=10, choices=Platform.choices, blank=True)
+    # Language the app was set to, so notifications arrive in it.
+    language = models.CharField(_("Language"), max_length=5, default="ka")
+    created_at = models.DateTimeField(_("Created at"), auto_now_add=True)
+    updated_at = models.DateTimeField(_("Updated at"), auto_now=True)
 
-        base_name = self.profilePic.name.rsplit(".", 1)[0]
-        new_name = base_name + ".jpg"
+    class Meta:
+        verbose_name = _("Push device")
+        verbose_name_plural = _("Push devices")
 
-        self.profilePic.save(new_name, ContentFile(buffer.read()), save=False)
-
-        super().save(update_fields=["profilePic"])
-
-
-
-
-
+    def __str__(self):
+        return f"{self.user.email} ({self.platform or 'unknown'})"
 
 
 class ParentStudent(models.Model):
@@ -353,38 +250,7 @@ class UserSubjectPoints(models.Model):
         unique_together = ("user", "subject")
 
     def __str__(self):
-        return f"{self.user.email} - {self.subject.name} ({self.points} points)"
-
-
-# class Exam(models.Model):
-#     title = models.CharField(_("Title"), max_length=255)
-#     subject = models.ForeignKey(
-#         Subject,
-#         verbose_name=_("Subject"),
-#         on_delete=models.CASCADE,
-#         related_name="exams",
-#     )
-#     grade = models.ForeignKey(
-#         Grade,
-#         verbose_name=_("Grade"),
-#         on_delete=models.CASCADE,
-#         related_name="exams",
-#     )
-#     duration = models.PositiveIntegerField(_("Duration in minutes"), help_text=_("Duration in minutes"))
-
-#     class Meta:
-#         verbose_name = _("Exam")
-#         verbose_name_plural = _("Exams")
-
-#     def __str__(self):
-#         return f"{self.title} - {self.subject.grade}"
-
-
-
-
-
-
-
+        return f"{self.user.email} - {get_localized_json_value(self.subject.name)} ({self.points} points)"
 
 
 class Exam(models.Model):
@@ -405,6 +271,17 @@ class Exam(models.Model):
         _("Duration in minutes"),
         help_text=_("Duration in minutes"),
     )
+    # Optional: the day the exam is planned for, shown in students' calendars.
+    scheduled_for = models.DateField(_("Scheduled for"), null=True, blank=True)
+    created_by = models.ForeignKey(
+        User,
+        verbose_name=_("Created by"),
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="created_exams",
+    )
+    created_at = models.DateTimeField(_("Created at"), auto_now_add=True, null=True)
 
     class Meta:
         verbose_name = _("Exam")
@@ -416,28 +293,6 @@ class Exam(models.Model):
 
     def get_title(self, lang: str):
         return get_localized_json_value(self.title, lang)
-
-
-
-
-# class Question(models.Model):
-#     exam = models.ForeignKey(
-#         Exam,
-#         verbose_name=_("Exam"),
-#         on_delete=models.CASCADE,
-#         related_name="questions",
-#     )
-#     question_category = models.CharField(_("Question category"), max_length=255, blank=True, null=True)
-#     text = models.TextField(_("Text"))
-#     points = models.PositiveIntegerField(_("Points"), default=1)
-
-#     class Meta:
-#         verbose_name = _("Question")
-#         verbose_name_plural = _("Questions")
-
-#     def __str__(self):
-#         return f"{self.text} - {self.exam.title}"
-
 
 
 class Question(models.Model):
@@ -465,26 +320,6 @@ class Question(models.Model):
         return get_localized_json_value(self.question_category, lang)
 
 
-# class Option(models.Model):
-#     question = models.ForeignKey(
-#         Question,
-#         verbose_name=_("Question"),
-#         on_delete=models.CASCADE,
-#         related_name="options",
-#     )
-#     title = models.CharField(_("Title"), max_length=255)
-#     is_correct = models.BooleanField(_("Is correct"), default=False)
-
-#     class Meta:
-#         verbose_name = _("Option")
-#         verbose_name_plural = _("Options")
-
-#     def __str__(self):
-#         return f"{self.title}"
-
-
-
-
 class Option(models.Model):
     question = models.ForeignKey(
         Question,
@@ -504,9 +339,6 @@ class Option(models.Model):
 
     def get_title(self, lang: str) -> str:
         return get_localized_json_value(self.title, lang)
-
-
-
 
 
 class UserExamSession(models.Model):
@@ -538,6 +370,13 @@ class UserExamSession(models.Model):
         verbose_name = _("User exam session")
         verbose_name_plural = _("User exam sessions")
 
+    def __str__(self):
+        return f"{self.user.email} - {get_localized_json_value(self.exam.title)}"
+
+    @property
+    def is_expired(self) -> bool:
+        return self.ends_at is not None and timezone.now() >= self.ends_at
+
     def start(self):
         if not self.started_at:
             self.started_at = timezone.now()
@@ -549,20 +388,41 @@ class UserExamSession(models.Model):
         self.is_active = True
         self.save(update_fields=["started_at", "ends_at", "started", "is_active"])
 
-    @property
-    def is_expired(self) -> bool:
-        return self.ends_at is not None and timezone.now() >= self.ends_at
+    def finish(self, *, timed_out: bool = False) -> None:
+        """
+        Close the session and credit its score to the student's global and
+        per-subject points. Idempotent: a finished session is never credited twice.
 
-    def terminate(self):
-        self.is_active = False
-        self.expired = True
+        Callers must hold a row lock on the session (``select_for_update``)
+        inside a transaction so concurrent requests cannot both credit it.
+        """
+        if self.finished:
+            return
+
         self.finished = True
-        if not self.submitted_at:
-            self.submitted_at = timezone.now()
-        self.save(update_fields=["is_active", "finished", "submitted_at"])
+        self.is_active = False
+        self.expired = timed_out
+        self.submitted_at = self.submitted_at or timezone.now()
+        self.save(
+            update_fields=[
+                "finished",
+                "is_active",
+                "expired",
+                "submitted_at",
+                "score_so_far",
+                "current_question_index",
+            ]
+        )
 
-    def __str__(self):
-        return f"{self.user.email} - {self.exam.title}"
+        score = self.score_so_far
+        User.objects.filter(pk=self.user_id).update(points=Coalesce(F("points"), 0) + score)
+
+        subject_points, _ = UserSubjectPoints.objects.get_or_create(
+            user_id=self.user_id,
+            subject_id=self.exam.subject_id,
+            defaults={"points": 0},
+        )
+        UserSubjectPoints.objects.filter(pk=subject_points.pk).update(points=F("points") + score)
 
 
 class UserAnswer(models.Model):
@@ -595,8 +455,10 @@ class UserAnswer(models.Model):
         verbose_name_plural = _("User answers")
 
     def __str__(self):
-        return f"{self.session.user.email if self.session else 'Unknown User'} - Q{self.question.pk if self.question else 'Unknown'} ({'Correct' if self.is_correct else 'Wrong'})"
-
+        user = self.session.user.email if self.session else "Unknown User"
+        question = self.question.pk if self.question else "Unknown"
+        verdict = "Correct" if self.is_correct else "Wrong"
+        return f"{user} - Q{question} ({verdict})"
 
 
 class Announcement(models.Model):
@@ -633,8 +495,7 @@ class Announcement(models.Model):
             return f"{self.title} - {self.subject}"
         return f"{self.title} - {self.grade} - Global"
 
-    
-    
+
 class Comment(models.Model):
     content = models.TextField(_("Content"))
     announcement = models.ForeignKey(
@@ -683,7 +544,6 @@ class WeeklyLesson(models.Model):
         on_delete=models.CASCADE,
         related_name="weekly_lessons",
     )
-
     teacher = models.ForeignKey(
         User,
         verbose_name=_("Teacher"),
@@ -728,7 +588,6 @@ class WeeklyLesson(models.Model):
         self.full_clean()
         return super().save(*args, **kwargs)
 
-    
     def __str__(self):
         subject_name = get_localized_json_value(self.subject.name) if self.subject else ""
         category_name = (
@@ -736,7 +595,7 @@ class WeeklyLesson(models.Model):
             if self.grade and self.grade.category
             else ""
         )
-    
+
         return f"{self.grade.name} {category_name} {self.weekday} {self.start_time}-{self.end_time} {subject_name}"
 
 
@@ -791,7 +650,6 @@ class DailyExercise(models.Model):
         null=True,
         blank=True,
     )
-
     teacher = models.ForeignKey(
         User,
         verbose_name=_("Teacher"),
@@ -829,7 +687,79 @@ class DailyExercise(models.Model):
         return super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"{self.date} | {self.grade} | {self.subject.name if self.subject else 'General'} | {self.title}"
+        subject_name = get_localized_json_value(self.subject.name) if self.subject else "General"
+        return f"{self.date} | {self.grade} | {subject_name} | {self.title}"
+
+
+class ExerciseCompletion(models.Model):
+    """A student marked a daily exercise as done."""
+
+    exercise = models.ForeignKey(
+        DailyExercise,
+        verbose_name=_("Exercise"),
+        on_delete=models.CASCADE,
+        related_name="completions",
+    )
+    student = models.ForeignKey(
+        User,
+        verbose_name=_("Student"),
+        on_delete=models.CASCADE,
+        related_name="exercise_completions",
+    )
+    completed_at = models.DateTimeField(_("Completed at"), auto_now_add=True)
+
+    class Meta:
+        verbose_name = _("Exercise completion")
+        verbose_name_plural = _("Exercise completions")
+        constraints = [
+            models.UniqueConstraint(fields=["exercise", "student"], name="unique_exercise_completion")
+        ]
+
+    def __str__(self):
+        return f"{self.student.email} ✓ {self.exercise.title}"
+
+
+class Mark(models.Model):
+    """A gradebook entry: a teacher's mark for a student in one subject."""
+
+    student = models.ForeignKey(
+        User,
+        verbose_name=_("Student"),
+        on_delete=models.CASCADE,
+        related_name="marks",
+        limit_choices_to={"role": User.Role.STUDENT},
+    )
+    subject = models.ForeignKey(
+        Subject,
+        verbose_name=_("Subject"),
+        on_delete=models.CASCADE,
+        related_name="marks",
+    )
+    teacher = models.ForeignKey(
+        User,
+        verbose_name=_("Teacher"),
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="given_marks",
+        limit_choices_to={"role": User.Role.TEACHER},
+    )
+    value = models.PositiveSmallIntegerField(
+        _("Mark"),
+        validators=[MinValueValidator(MIN_MARK), MaxValueValidator(MAX_MARK)],
+    )
+    date = models.DateField(_("Date"), default=timezone.localdate)
+    comment = models.CharField(_("Comment"), max_length=255, blank=True)
+    created_at = models.DateTimeField(_("Created at"), auto_now_add=True)
+
+    class Meta:
+        verbose_name = _("Mark")
+        verbose_name_plural = _("Marks")
+        ordering = ["-date", "-created_at"]
+        indexes = [models.Index(fields=["student", "subject"])]
+
+    def __str__(self):
+        return f"{self.student.email} · {get_localized_json_value(self.subject.name)} · {self.value}"
 
 
 class SubjectBook(models.Model):
@@ -855,4 +785,6 @@ class SubjectBook(models.Model):
         verbose_name_plural = _("Subject books")
 
     def __str__(self):
-        return f"{self.subject.grade.name} - {self.subject.name if self.subject else 'No Subject'}"
+        if not self.subject:
+            return "No Subject"
+        return f"{self.subject.grade.name} - {get_localized_json_value(self.subject.name)}"

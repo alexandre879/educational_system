@@ -1,11 +1,10 @@
 import os
+
 import django
+from django.core.management import call_command
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "configuration.settings")
-django.setup()
-
-from backend.api.management.commands.telegram_bot import run_bot
 
 if __name__ == "__main__":
-    run_bot() 
-
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "configuration.settings")
+    django.setup()
+    call_command("telegram_bot")

@@ -1,8 +1,9 @@
-import os
-from dotenv import load_dotenv
+import logging
 
-from django.core.management.base import BaseCommand
 from asgiref.sync import sync_to_async
+from django.conf import settings
+from django.core.management.base import BaseCommand
+from django.db.utils import OperationalError
 
 from telegram import Update, ReplyKeyboardMarkup
 from telegram.ext import (
@@ -14,13 +15,10 @@ from telegram.ext import (
     ConversationHandler,
 )
 
-import traceback
-from django.db.utils import OperationalError
 from api.models import User
 
-load_dotenv()
-BOT_TOKEN = os.getenv("BOT_TOKEN")
 
+logger = logging.getLogger(__name__)
 
 ASK_EMAIL = 1
 
@@ -94,7 +92,7 @@ async def handle_email(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return ASK_EMAIL
 
     try:
-        user = await sync_to_async(User.objects.get)(email=email)
+        user = await sync_to_async(User.objects.get)(email__iexact=email)
 
     except User.DoesNotExist:
         await update.message.reply_text(
@@ -102,11 +100,8 @@ async def handle_email(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
         return ASK_EMAIL
 
-    except OperationalError as e:
-        print("\n========== DB OPERATIONAL ERROR ==========")
-        print(repr(e))
-        traceback.print_exc()
-        print("=========================================\n")
+    except OperationalError:
+        logger.exception("Database error while linking Telegram chat %s", chat_id)
 
         await context.bot.send_message(
             chat_id=chat_id,
@@ -114,11 +109,8 @@ async def handle_email(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
         return ASK_EMAIL
 
-    except Exception as e:
-        print("\n========== UNEXPECTED ERROR ==========")
-        print(repr(e))
-        traceback.print_exc()
-        print("======================================\n")
+    except Exception:
+        logger.exception("Unexpected error while linking Telegram chat %s", chat_id)
 
         await context.bot.send_message(
             chat_id=chat_id,
@@ -135,7 +127,7 @@ async def handle_email(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     if not user.chat_id:
         user.chat_id = str(chat_id)
-        await sync_to_async(user.save)()
+        await sync_to_async(user.save)(update_fields=["chat_id"])
         await update.message.reply_text(
             f"✅ თქვენი Telegram ახლა დაკავშირებულია სახელით: {user.first_name} {user.last_name}.",
             reply_markup=MAIN_KEYBOARD,
@@ -160,11 +152,12 @@ class Command(BaseCommand):
     help = "Run Telegram bot (polling)"
 
     def handle(self, *args, **options):
-        if not BOT_TOKEN:
+        token = settings.TELEGRAM_BOT_TOKEN
+        if not token:
             self.stderr.write("❌ BOT_TOKEN is missing. Set it in your .env file.")
             return
 
-        app = ApplicationBuilder().token(BOT_TOKEN).build()
+        app = ApplicationBuilder().token(token).build()
 
         conv = ConversationHandler(
             entry_points=[

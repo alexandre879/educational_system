@@ -12,9 +12,13 @@ type ChatMessage = {
   role: Role;
   content: string;
   createdAt: number;
+  // Local fallback text shown when a request failed; never sent back as context.
+  isError?: boolean;
 };
 
 const STORAGE_KEY = "ai_support_chat_history_v2";
+// How many previous messages are sent along so the assistant can follow the conversation.
+const CONTEXT_MESSAGES = 10;
 
 function uid() {
   return `${Date.now()}_${Math.random().toString(16).slice(2)}`;
@@ -23,16 +27,8 @@ function uid() {
 export default function AISupportChatbot() {
   const t = useTranslations("AISupport");
 
-  const [messages, setMessages] = useState<ChatMessage[]>(() => {
-    if (typeof window === "undefined") return [];
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      const parsed = raw ? (JSON.parse(raw) as ChatMessage[]) : [];
-      return Array.isArray(parsed) ? parsed : [];
-    } catch {
-      return [];
-    }
-  });
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [restored, setRestored] = useState(false);
 
   const [input, setInput] = useState("");
   const [isThinking, setIsThinking] = useState(false);
@@ -43,13 +39,27 @@ export default function AISupportChatbot() {
 
   const hasMessages = messages.length > 0;
 
+  // Restore after mount: reading localStorage during render would make the
+  // first client render differ from the server HTML (hydration error).
   useEffect(() => {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      const parsed: unknown = raw ? JSON.parse(raw) : [];
+      if (Array.isArray(parsed)) setMessages(parsed as ChatMessage[]);
+    } catch {
+      // ignore unreadable history
+    }
+    setRestored(true);
+  }, []);
+
+  useEffect(() => {
+    if (!restored) return;
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(messages));
     } catch {
-      console.log("error has been caught");
+      // storage full or disabled
     }
-  }, [messages]);
+  }, [messages, restored]);
 
   // auto scroll
   useEffect(() => {
@@ -97,10 +107,15 @@ export default function AISupportChatbot() {
       createdAt: Date.now(),
     };
 
+    const history = messages
+      .filter((m) => !m.isError)
+      .slice(-CONTEXT_MESSAGES)
+      .map(({ role, content }) => ({ role, content }));
+
     setMessages((prev) => [...prev, userMsg]);
 
     try {
-      const res = await api.post("/aisupport/", { message: text });
+      const res = await api.post("/aisupport/", { message: text, history });
 
       const reply = String(res.data?.reply ?? "").trim() || t("fallbackReply");
 
@@ -121,6 +136,7 @@ export default function AISupportChatbot() {
         role: "assistant",
         content: t("errorMessage"),
         createdAt: Date.now(),
+        isError: true,
       };
 
       setMessages((prev) => [...prev, botMsg]);

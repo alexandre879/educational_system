@@ -1,8 +1,10 @@
-import type { Metadata } from "next";
-import type { Viewport } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import { NextIntlClientProvider } from "next-intl";
+import { hasLocale, NextIntlClientProvider } from "next-intl";
+import { getMessages } from "next-intl/server";
 import { notFound } from "next/navigation";
+import { routing } from "@/i18n/routing";
+import AntdReact19Patch from "./components/AntdReact19Patch";
 import "../globals.css";
 
 const geistSans = Geist({
@@ -35,17 +37,16 @@ export default async function LocaleLayout({
 }) {
   const { locale } = await params;
 
-  let messages;
-  try {
-    messages = (await import(`../../messages/${locale}.json`)).default;
-  }
-  catch {
+  if (!hasLocale(routing.locales, locale)) {
     notFound();
   }
+
+  const messages = await getMessages({ locale });
 
   return (
     <html lang={locale}>
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
+        <AntdReact19Patch />
         <NextIntlClientProvider locale={locale} messages={messages}>
           {children}
         </NextIntlClientProvider>

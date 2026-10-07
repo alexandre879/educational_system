@@ -1,4 +1,3 @@
-
 FROM python:3.12.9-slim
 
 ENV PYTHONDONTWRITEBYTECODE=1
@@ -7,7 +6,7 @@ ENV PYTHONUNBUFFERED=1
 WORKDIR /app
 
 # system deps (psycopg2 needs libpq)
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     libpq-dev \
   && rm -rf /var/lib/apt/lists/*
@@ -19,12 +18,10 @@ RUN pip install --no-cache-dir -r requirements.txt
 # copy project
 COPY . /app
 
-# make entrypoint executable
 RUN chmod +x /app/entrypoint.sh
 
 EXPOSE 8000
 
-CMD ["sh", "/app/entrypoint.sh"]
-
-
-
+# The entrypoint migrates + collects static, then runs CMD (or the compose `command`).
+ENTRYPOINT ["sh", "/app/entrypoint.sh"]
+CMD ["gunicorn", "configuration.wsgi:application", "--bind", "0.0.0.0:8000", "--workers", "3"]

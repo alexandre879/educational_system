@@ -9,26 +9,23 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@ant-design/icons": "^5.6.1",
     "@ant-design/v5-patch-for-react-19": "^1.0.3",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
     "@mui/material": "^7.3.2",
-    "ant-design": "^1.0.0",
+    "@sentry/browser": "^11.4.0",
     "antd": "^5.27.4",
-    "antd-img-crop": "^4.27.0",
     "axios": "^1.12.2",
     "chart.js": "^4.5.1",
-    "cookies-js": "^1.2.3",
     "js-cookie": "^3.0.5",
     "lucide-react": "^0.564.0",
-    "next": "15.5.3",
+    "next": "^15.5.27",
     "next-intl": "^4.8.3",
-    "react": "19.1.0",
+    "react": "^19.1.9",
     "react-chartjs-2": "^5.3.1",
-    "react-chatbotify": "^2.5.0",
-    "react-dom": "19.1.0",
+    "react-dom": "^19.1.9",
     "react-icons": "^5.5.0",
-    "recharts": "^3.2.1",
     "sass": "^1.97.3"
   },
   "devDependencies": {
@@ -37,9 +34,8 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "@types/recharts": "^2.0.1",
     "eslint": "^9",
-    "eslint-config-next": "15.5.3",
+    "eslint-config-next": "^15.5.27",
     "typescript": "^5"
   }
 }

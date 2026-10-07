@@ -16,24 +16,34 @@
 
 
 :root {
-  --bg: #141414;
-  --surface: rgba(20, 20, 20, 0.78);
-  --surface-2: rgba(20, 20, 20, 0.86);
-  --surface-soft: rgba(31, 31, 31, 0.78);
-  --surface-soft-hover: rgba(38, 38, 38, 0.82);
+  /* Same palette as the mobile app (dark). */
+  --bg: #090b10;
+  --surface: rgba(18, 22, 31, 0.86);
+  --surface-2: rgba(18, 22, 31, 0.92);
+  --surface-soft: rgba(18, 22, 31, 0.8);
+  --surface-soft-hover: rgba(27, 33, 48, 0.88);
 
-  --text-primary: #f0f0f0;
-  --text-strong: rgba(240, 240, 240, 0.92);
-  --text-secondary: #b8b8b8;
-  --text-muted: rgba(240, 240, 240, 0.55);
-  --placeholder: rgba(240, 240, 240, 0.35);
-  --text-bold-grey: #a7a7a7;
+  --text-primary: #f2f4f8;
+  --text-strong: #ffffff;
+  --text-secondary: #a6afc0;
+  --text-muted: rgba(242, 244, 248, 0.55);
+  --placeholder: rgba(242, 244, 248, 0.35);
+  --text-bold-grey: #a6afc0;
 
-  --primary-blue: #1677ff;
-  --primary-blue-hover: #4096ff;
-  --highlight-accent: #faad14;
+  --primary-blue: #4c8dff;
+  --primary-blue-hover: #6fa3ff;
+  --primary-muted: rgba(76, 141, 255, 0.16);
+  --highlight-accent: #fbbf24;
 
-  --border-medium: rgba(255, 255, 255, 0.08);
+  /* Brand gradient used for hero banners and the active navigation item. */
+  --brand-gradient: linear-gradient(135deg, #1556d6 0%, #4b47e0 50%, #7344d9 100%);
+  --brand-shadow: 0 12px 32px rgba(22, 119, 255, 0.28);
+
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
+
+  --border-medium: rgba(255, 255, 255, 0.07);
   --border-strong: rgba(255, 255, 255, 0.12);
 
   --shadow-soft: 0 18px 60px rgba(0, 0, 0, 0.35);
@@ -49,12 +59,23 @@
   --success-text: #7dd3fc;
   --success-bg: rgba(14, 165, 233, 0.12);
   --success-border: rgba(14, 165, 233, 0.28);
+
+  /* Status tones, as in the mobile app: marks, attendance, answers, homework. */
+  --surface-muted: #1b2130;
+  --ok: #22c55e;
+  --ok-muted: rgba(34, 197, 94, 0.16);
+  --bad: #f87171;
+  --bad-muted: rgba(248, 113, 113, 0.16);
+  --warn: #fbbf24;
+  --warn-muted: rgba(251, 191, 36, 0.16);
+  --accent: #a78bfa;
+  --accent-muted: rgba(167, 139, 250, 0.16);
 }
 
 
 
 html[data-theme="light"] {
-  --bg: #f5f7fb;
+  --bg: #f3f5fa;
 
   /* 🔥 SURFACES (add layering contrast) */
   --surface: #ffffff;
@@ -64,24 +85,26 @@ html[data-theme="light"] {
   --surface-bold: #e5e7eb; /* 🔥 FIX: better neutral */
 
   /* 🔥 TEXT (slightly stronger contrast) */
-  --text-primary: #1e293b;
+  --text-primary: #0b1220;
   --text-strong: #020617; /* 🔥 darker for titles */
-  --text-secondary: #64748b;
-  --text-muted: #94a3b8;
+  --text-secondary: #5b6577;
+  --text-muted: #97a0b2;
   --text-bold-grey: #6b7280;
   --placeholder: rgba(100, 116, 139, 0.65);
 
   /* BRAND */
   --primary-blue: #1677ff;
   --primary-blue-hover: #4096ff;
-  --highlight-accent: #faad14;
+  --primary-muted: rgba(22, 119, 255, 0.1);
+  --highlight-accent: #d97706;
+  --brand-gradient: linear-gradient(135deg, #1677ff 0%, #5b5cff 50%, #8b5cf6 100%);
 
   /* 🔥 BORDERS (THIS IS THE MAIN FIX) */
   --border-medium: rgba(15, 23, 42, 0.16);  /* ⬆ stronger */
   --border-strong: rgba(15, 23, 42, 0.26);  /* ⬆ stronger */
 
   /* 🔥 SHADOW (less blur, more structure) */
-  --shadow-soft: 0 8px 24px rgba(15, 23, 42, 0.08);
+  --shadow-soft: 0 1px 2px rgba(16, 24, 40, 0.05), 0 8px 24px rgba(16, 24, 40, 0.06);
 
   /* INTERACTION */
   --hover-soft: rgba(15, 23, 42, 0.05);
@@ -97,4 +120,14 @@ html[data-theme="light"] {
   --success-text: #0369a1;
   --success-bg: rgba(14, 165, 233, 0.12);
   --success-border: rgba(14, 165, 233, 0.22);
+
+  --surface-muted: #edf0f7;
+  --ok: #16a34a;
+  --ok-muted: rgba(22, 163, 74, 0.12);
+  --bad: #e5484d;
+  --bad-muted: rgba(229, 72, 77, 0.12);
+  --warn: #d97706;
+  --warn-muted: rgba(245, 158, 11, 0.14);
+  --accent: #7c3aed;
+  --accent-muted: rgba(124, 58, 237, 0.1);
 }
