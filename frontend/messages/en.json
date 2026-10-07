@@ -9,14 +9,18 @@
       "subjects": "BOOKS",
       "exercises": "EXERCISES",
       "exams": "EXAMS",
-      "schedule": "SCHEDULE"
+      "schedule": "SCHEDULE",
+      "calendar": "CALENDAR",
+      "marks": "MARKS",
+      "gradebook": "GRADEBOOK"
     },
     "search": {
       "placeholder": "Search...",
       "subject": "Subject",
       "exam": "Exam",
       "announcement": "Announcement",
-      "untitled": "Untitled"
+      "untitled": "Untitled",
+      "exercise": "Exercise"
     },
     "menu": {
       "profile": "PROFILE",
@@ -28,16 +32,13 @@
       "cancel": "Cancel"
     }
   },
-
   "Common": {
     "language": "Language"
   },
-
   "Nav": {
     "home": "HOME",
     "login": "LOGIN"
   },
-
   "Login": {
     "title": "Welcome Back",
     "subtitle": "Sign in to continue your journey",
@@ -52,9 +53,9 @@
     "otpSent": "OTP sent to your school bot!",
     "loginSuccess": "Login successful!",
     "sendOtpFailed": "Failed to send OTP. Try again.",
-    "invalidOtp": "Invalid OTP. Try again."
+    "invalidOtp": "Invalid OTP. Try again.",
+    "tooManyRequests": "Too many attempts. Please wait a moment and try again."
   },
-
   "Home": {
     "pageTitle": "Home",
     "welcome": "Welcome",
@@ -67,177 +68,140 @@
     "role_parent": "Parent",
     "grade": "Grade",
     "email": "Email",
-
     "totalPoints": "Total Points",
     "subjects": "Books",
     "activeExams": "Active Exams",
-
     "pointsBySubject": "Points by Subject",
     "progressOverview": "Progress Overview",
     "topExamsAttempts": "Top Exams (Attempts)",
     "weeklyActivity": "Weekly Activity",
     "avgScoreBySubject": "Average Score by Subject",
-
     "activeExamSessions": "Active Exam Sessions",
     "recentExamSessions": "Recent Exam Sessions",
-
     "loading": "Loading dashboard…",
     "failedTitle": "Failed to load dashboard",
     "failedHint": "Check token / API URL / console.",
-
     "noGrade": "No grade",
     "unknown": "Unknown",
-
     "noPointsYet": "No points yet.",
     "noAttemptsYet": "No attempts yet.",
     "noFinishedYet": "No finished sessions yet.",
     "noActiveExams": "No active exams right now.",
     "noSessionsYet": "No sessions yet.",
-
     "ends": "Ends",
     "score": "Score",
     "finished": "Finished",
     "inProgress": "In progress",
-
     "pointsLabel": "Points",
     "sessionsLabel": "Sessions",
     "avgScoreLabel": "Avg Score",
     "attemptsLabel": "Attempts",
-
     "done": "Done",
     "remaining": "Remaining",
-
     "completion": "Completion",
     "avgScoreText": "Avg score {avg}",
     "deltaUp": "▲ +{delta} vs previous",
     "deltaDown": "▼ {delta} vs previous",
-
     "finishedBadge": "Finished: {finished}/{total}",
     "activeBadge": "Active: {active}",
-
     "modalActiveExamsTitle": "Active Exams"
   },
-
   "Announcement": {
     "pageTitle": "Announcement",
     "addAnnouncement": "Add Announcement",
     "allSubjects": "All books",
     "chooseSubject": "Choose a subject",
-
     "createAnnouncementTitle": "Create Announcement",
     "submit": "Submit",
     "cancel": "Cancel",
-
     "formTitleLabel": "Title",
     "formSubjectLabel": "Subject",
     "formContentLabel": "Content",
-
     "titlePlaceholder": "Enter announcement title",
     "subjectPlaceholder": "Select a subject",
     "contentPlaceholder": "Write your announcement...",
-
     "validationEnterTitle": "Please enter a title!",
     "validationSelectSubject": "Please select a subject!",
     "validationEnterContent": "Please enter a description!",
-
     "author": "Author",
     "subject": "Subject",
     "grade": "Grade",
-
     "empty": "Empty",
     "noCommentsYet": "No comments yet",
-
     "commentPlaceholder": "Type your comment...",
     "validationTypeSomething": "Please type something!",
     "send": "Send"
   },
-
   "LeaderBoard": {
     "pageTitle": "Leader board",
     "chooseSubject": "Choose the subject",
     "chooseSubjectFirst": "Choose a subject first.",
     "noDataYet": "No leaderboard data yet.",
-
     "name": "Name",
     "email": "Email",
     "points": "Points",
     "position": "Position",
-
     "profilePictureAlt": "Profile Picture",
     "profileAlt": "Profile",
-    "pointIconAlt": "Point icon"
+    "pointIconAlt": "Point icon",
+    "loading": "Loading..."
   },
-
   "Subjects": {
     "pageTitle": "Books",
     "subtitle": "Browse your assigned books.",
     "all": "All",
     "grade": "Grade",
-
     "loadingSubjects": "Loading books...",
     "noResults": "No results",
     "tryChangingCategory": "Try changing the category.",
-
     "bookFallback": "Book",
     "loadingPdf": "Loading PDF…",
     "openInNewTab": "Open in new tab",
     "bookPdfTitle": "Book PDF",
-
     "noPdfFound": "No PDF book found for this subject/grade.",
     "failedToLoadPdf": "Failed to load PDF. Please try again.",
     "failedToLoadBookPdfToast": "Failed to load book PDF",
-
     "empty": "Empty"
   },
-
   "Exam": {
     "pageTitle": "Exams",
     "loadingExams": "Loading exams…",
-
     "examCountSingle": "1 exam",
     "examCountMultiple": "{count} exams",
-
     "noExamsTitle": "No exams available",
     "noExamsSub": "Check back later or ask your teacher.",
-
     "duration": "Duration",
     "questions": "Questions"
   },
-
   "SpecificExam": {
     "alreadyCompleted": "You already completed this exam",
     "timeUpEnded": "Time is up. Exam ended.",
-
     "badgeExam": "Exam",
     "questionLabel": "Question",
-
     "finalTimeUpTitle": "⏰ Time is up!",
     "finalCompletedTitle": "🎉 Exam Completed!",
-
     "scoreLabel": "Score",
     "totalQuestionsLabel": "Total Questions",
-
     "finalTimeUpMessage": "Time ran out, but your answers were submitted.",
     "finalCompletedMessage": "Nice work — your results were saved.",
-
     "redirect": "Redirect"
   },
-
   "Exercise": {
     "pageTitle": "Exercises",
     "addExercise": "Add Exercise",
-
     "exerciseTitlePlaceholder": "Exercise title",
     "descriptionPlaceholder": "Description (optional)",
     "save": "Save",
-
     "loadingExercises": "Loading exercises...",
     "noExercisesToday": "No exercises for today",
-
     "gradeLabel": "Grade",
-    "dueLabel": "Due"
+    "dueLabel": "Due",
+    "cancel": "Cancel",
+    "subjectPlaceholder": "Select subject",
+    "noExercisesForSubject": "No exercises for this subject today.",
+    "unknownSubject": "Unknown subject",
+    "createFailed": "Couldn't save the exercise. Please try again."
   },
-
   "Schedule": {
     "pageTitle": "Schedule",
     "gradeLabel": "Grade",
@@ -258,34 +222,26 @@
       "fri": "Friday",
       "sat": "Saturday",
       "sun": "Sunday"
-    }
+    },
+    "subjectNotSet": "Subject not set"
   },
-
   "Attendance": {
     "pageTitle": "Attendance",
     "today": "Today",
     "refresh": "Refresh",
-
     "loading": "Loading attendance…",
-
     "accessDeniedTitle": "Access denied",
     "teachersOnly": "This page is available for teachers only.",
-
     "noLessonsTitle": "No lessons scheduled for today.",
     "noLessonsSub": "When a lesson appears, you’ll be able to mark attendance here.",
-
     "room": "Room",
     "students": "students",
-
     "markAllPresent": "Mark all Present",
     "markAllAbsent": "Mark all Absent",
-
     "present": "Present",
     "absent": "Absent",
-
     "saving": "Saving...",
     "saveAttendance": "Save attendance",
-
     "weekdays": {
       "mon": "Monday",
       "tue": "Tuesday",
@@ -296,7 +252,6 @@
       "sun": "Sunday"
     }
   },
-
   "Profile": {
     "title": "Profile",
     "subtitle": "Manage your personal information",
@@ -315,7 +270,6 @@
     "hint": "Tip: Your email is used for login and notifications.",
     "changePhoto": "Change Photo"
   },
-
   "AISupport": {
     "title": "AI Support",
     "online": "Online",
@@ -331,5 +285,296 @@
     "errorBar": "AI service failed. Try again in a moment.",
     "errorMessage": "Sorry — I couldn’t reach the AI service right now. Please try again in a moment.",
     "fallbackReply": "…"
+  },
+  "App": {
+    "common": {
+      "appName": "Blueapp",
+      "retry": "Try again",
+      "cancel": "Cancel",
+      "save": "Save",
+      "saving": "Saving…",
+      "send": "Send",
+      "loading": "Loading…",
+      "close": "Close",
+      "confirm": "Confirm",
+      "today": "Today",
+      "unknown": "Unknown",
+      "points": "Points",
+      "grade": "Grade",
+      "subject": "Subject",
+      "allSubjects": "All subjects",
+      "noGrade": "No grade",
+      "minutes": "{count} min",
+      "errorTitle": "Something went wrong",
+      "networkError": "Can't reach the server. Check your internet connection.",
+      "genericError": "Something went wrong. Please try again.",
+      "forbidden": "You don't have access to this."
+    },
+    "roles": {
+      "student": "Student",
+      "teacher": "Teacher",
+      "admin": "Administrator",
+      "parent": "Parent"
+    },
+    "home": {
+      "title": "Home",
+      "greeting": "Hi, {name}",
+      "totalPoints": "Total points",
+      "subjects": "Subjects",
+      "activeExams": "Active exams",
+      "continueExam": "Continue",
+      "endsAt": "Ends at {time}",
+      "pointsBySubject": "Points by subject",
+      "noPointsYet": "No points yet — finish an exam to earn some.",
+      "recentExams": "Recent exams",
+      "noSessionsYet": "You haven't taken any exams yet.",
+      "finished": "Finished",
+      "inProgress": "In progress",
+      "score": "Score: {score}",
+      "latestAnnouncements": "Latest announcements",
+      "noAnnouncements": "No announcements yet.",
+      "subjectsTaught": "Subjects you teach",
+      "examsCount": "Exams: {count}",
+      "myAnnouncements": "Your announcements",
+      "statsUsers": "Users",
+      "statsGrades": "Grades",
+      "statsSubjects": "Subjects",
+      "statsExams": "Exams",
+      "statsQuestions": "Questions",
+      "children": "Your children",
+      "noChildren": "No students are linked to your account yet. Ask the school to connect them.",
+      "attendanceToday": "Today's attendance",
+      "noAttendanceToday": "No attendance marked yet today.",
+      "present": "Present",
+      "absent": "Absent",
+      "goodMorning": "Good morning, {name}",
+      "goodAfternoon": "Good afternoon, {name}",
+      "goodEvening": "Good evening, {name}",
+      "todayLessons": "Today's lessons",
+      "noLessonsToday": "No lessons today 🎉",
+      "now": "Now",
+      "seeAll": "See all",
+      "ranking": "Ranking",
+      "streak": "{count}-day streak",
+      "pendingHomework": "Homework due",
+      "averageMark": "Average mark",
+      "calendar": "Calendar",
+      "marks": "Marks",
+      "search": "Search",
+      "results": "Results",
+      "gradebook": "Gradebook",
+      "myExams": "Exams",
+      "attendanceRate": "Attendance",
+      "childDetails": "Details"
+    },
+    "exams": {
+      "title": "Exams",
+      "empty": "No exams available",
+      "emptyHint": "Check back later or ask your teacher.",
+      "questionsCount": "Questions: {count}",
+      "start": "Start",
+      "startTitle": "Start the exam?",
+      "startMessage": "You'll have {minutes} minutes. The timer keeps running even if you close the page.",
+      "available": "Available",
+      "completed": "Results",
+      "noResults": "No finished exams yet.",
+      "scoreOf": "{score} / {max}",
+      "correctOf": "{correct} of {total} correct",
+      "timedOut": "Time ran out"
+    },
+    "exam": {
+      "progress": "Question {current} of {total}",
+      "leaveTitle": "Leave the exam?",
+      "leaveMessage": "The timer keeps running. You can come back and continue until time is up.",
+      "leave": "Leave",
+      "stay": "Stay",
+      "timeUpTitle": "Time's up!",
+      "completedTitle": "Exam completed!",
+      "timeUpMessage": "Time ran out, but your answers were saved.",
+      "completedMessage": "Great job — your results are saved.",
+      "score": "Score",
+      "totalQuestions": "Questions",
+      "subjectPoints": "Subject points",
+      "totalPoints": "Total points",
+      "backToExams": "Back to exams",
+      "alreadyCompleted": "You've already completed this exam.",
+      "unavailable": "This exam isn't available.",
+      "reviewAnswers": "Review answers",
+      "greatScore": "Excellent result! 🎉"
+    },
+    "exercises": {
+      "title": "Exercises",
+      "empty": "No exercises for this day.",
+      "due": "Due {date}",
+      "add": "New exercise",
+      "subjectLabel": "Subject",
+      "subjectPlaceholder": "Choose a subject",
+      "titleLabel": "Title",
+      "titlePlaceholder": "e.g. Page 42, exercises 1–5",
+      "descriptionLabel": "Description",
+      "descriptionPlaceholder": "Optional details",
+      "dueLabel": "Due",
+      "noDue": "No due date",
+      "tomorrow": "Tomorrow",
+      "inDays": "In {count} days",
+      "nextWeek": "In a week",
+      "created": "Exercise added",
+      "createFailed": "Couldn't save the exercise. Please try again.",
+      "noSubjects": "You don't teach any subjects yet.",
+      "markDone": "Mark as done",
+      "done": "Done",
+      "doneCount": "{done}/{total} done",
+      "streak": "🔥 {count}-day streak!",
+      "notDone": "Not done yet",
+      "updateFailed": "Couldn't update the exercise."
+    },
+    "review": {
+      "title": "Answers",
+      "yourAnswer": "Your answer",
+      "correctAnswer": "Correct answer",
+      "notAnswered": "Not answered",
+      "correct": "Correct",
+      "wrong": "Wrong",
+      "summary": "{correct} of {total} correct"
+    },
+    "teacherExams": {
+      "title": "My exams",
+      "empty": "You haven't created any exams yet.",
+      "emptyHint": "Create a quiz for your class — students get a notification.",
+      "create": "New exam",
+      "submissions": "{count} submitted",
+      "average": "Avg {score} / {max}",
+      "questions": "{count} questions",
+      "subjectLabel": "Subject",
+      "subjectPlaceholder": "Choose a subject",
+      "titleLabel": "Title",
+      "titlePlaceholder": "e.g. Fractions quiz",
+      "durationLabel": "Duration",
+      "dateLabel": "Date",
+      "noDate": "No date",
+      "questionLabel": "Question {number}",
+      "questionPlaceholder": "Type the question",
+      "optionPlaceholder": "Answer {letter}",
+      "pointsLabel": "Points",
+      "addOption": "Add answer",
+      "addQuestion": "Add question",
+      "removeQuestion": "Remove question",
+      "markCorrect": "Click the circle next to the correct answer.",
+      "publish": "Publish exam",
+      "published": "Exam published — the class has been notified",
+      "publishFailed": "Couldn't publish the exam. Please try again.",
+      "incomplete": "Fill in every question and answer, and mark the correct one."
+    },
+    "marks": {
+      "title": "Marks",
+      "average": "Average",
+      "noMarks": "No marks yet",
+      "noMarksHint": "Marks from teachers will appear here.",
+      "count": "{count} marks"
+    },
+    "gradebook": {
+      "title": "Gradebook",
+      "noSubjects": "You don't teach any subjects yet.",
+      "noStudents": "No students in this class.",
+      "addMark": "Add mark",
+      "markFor": "Mark for {name}",
+      "commentPlaceholder": "Comment (optional)",
+      "saved": "Mark saved",
+      "saveFailed": "Couldn't save the mark.",
+      "deleteTitle": "Delete this mark?",
+      "deleteMessage": "The {value} from {date} will be removed.",
+      "delete": "Delete",
+      "deleted": "Mark deleted",
+      "noMarks": "No marks"
+    },
+    "calendar": {
+      "title": "Calendar",
+      "lessons": "Lessons",
+      "homework": "Homework due",
+      "exams": "Exams",
+      "nothing": "Nothing planned for this day."
+    },
+    "child": {
+      "attendance": "Attendance",
+      "attendanceRate": "{rate}% present",
+      "noAttendance": "No attendance records this month.",
+      "presentCount": "{count} present",
+      "absentCount": "{count} absent",
+      "marks": "Marks",
+      "exams": "Exam results",
+      "viewAll": "View all",
+      "noExams": "No finished exams yet."
+    },
+    "schedule": {
+      "title": "Schedule",
+      "empty": "No lessons on this day.",
+      "room": "Room {room}",
+      "teacherNotSet": "Teacher not set",
+      "noChildGrade": "No linked student with a grade yet."
+    },
+    "time": {
+      "justNow": "Just now",
+      "minutesAgo": "{count} min ago",
+      "hoursAgo": "{count} h ago",
+      "yesterday": "Yesterday"
+    },
+    "dates": {
+      "monthsLong": {
+        "m1": "January",
+        "m2": "February",
+        "m3": "March",
+        "m4": "April",
+        "m5": "May",
+        "m6": "June",
+        "m7": "July",
+        "m8": "August",
+        "m9": "September",
+        "m10": "October",
+        "m11": "November",
+        "m12": "December"
+      },
+      "months": {
+        "m1": "Jan",
+        "m2": "Feb",
+        "m3": "Mar",
+        "m4": "Apr",
+        "m5": "May",
+        "m6": "Jun",
+        "m7": "Jul",
+        "m8": "Aug",
+        "m9": "Sep",
+        "m10": "Oct",
+        "m11": "Nov",
+        "m12": "Dec"
+      },
+      "weekdaysShort": {
+        "d1": "Mon",
+        "d2": "Tue",
+        "d3": "Wed",
+        "d4": "Thu",
+        "d5": "Fri",
+        "d6": "Sat",
+        "d7": "Sun"
+      },
+      "weekdaysLong": {
+        "d1": "Monday",
+        "d2": "Tuesday",
+        "d3": "Wednesday",
+        "d4": "Thursday",
+        "d5": "Friday",
+        "d6": "Saturday",
+        "d7": "Sunday"
+      }
+    },
+    "web": {
+      "previousDay": "Previous day",
+      "nextDay": "Next day",
+      "previousMonth": "Previous month",
+      "nextMonth": "Next month",
+      "back": "Back",
+      "dueDate": "Due date",
+      "deleteMarkHint": "Click a mark to delete it.",
+      "removeOption": "Remove answer"
+    }
   }
 }

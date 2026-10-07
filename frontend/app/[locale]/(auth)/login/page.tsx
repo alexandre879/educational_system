@@ -1,21 +1,20 @@
 "use client";
 
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import styles from "./login.module.scss";
 import axios from "axios";
-import { usePathname, useRouter } from "next/navigation";
-import Cookies from "cookies-js";
-import { useTranslations } from "next-intl";
+import { useRouter } from "next/navigation";
+import { useLocale, useTranslations } from "next-intl";
 import { MoonOutlined, SunOutlined } from "@ant-design/icons";
 import LanguageSwitcher from "../../components/LanguageSwitcher/LanguageSwitcher";
+import { API_BASE_URL } from "@/interceptors";
+import { setTokens } from "@/lib/auth";
 
 const REMEMBER_EMAIL_KEY = "rememberedEmail";
 const THEME_KEY = "theme";
 
 const Login = () => {
   const t = useTranslations("Login");
-
-  const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "/back/api";
 
   const [step, setStep] = useState<"email" | "otp">("email");
   const [email, setEmail] = useState("");
@@ -24,14 +23,13 @@ const Login = () => {
 
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
 
   const router = useRouter();
-  const pathname = usePathname();
+  const locale = useLocale();
 
-  const locale = useMemo(() => {
-    const seg = (pathname ?? "").split("/")[1];
-    return seg || "en";
-  }, [pathname]);
+  const errorMessage = (err: unknown, fallback: string) =>
+    axios.isAxiosError(err) && err.response?.status === 429 ? t("tooManyRequests") : fallback;
 
   useEffect(() => {
     try {
@@ -68,8 +66,10 @@ const Login = () => {
 
   const onEmailFinish = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (submitting) return;
 
     try {
+      setSubmitting(true);
       setError(null);
       setSuccess(null);
 
@@ -92,8 +92,10 @@ const Login = () => {
       setSuccess(t("otpSent"));
       setStep("otp");
     } catch (err) {
-      setError(t("sendOtpFailed"));
+      setError(errorMessage(err, t("sendOtpFailed")));
       console.error(err);
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -101,8 +103,10 @@ const Login = () => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     const otp = String(formData.get("otp") ?? "");
+    if (submitting) return;
 
     try {
+      setSubmitting(true);
       setError(null);
       setSuccess(null);
 
@@ -112,13 +116,14 @@ const Login = () => {
       });
 
       setSuccess(t("loginSuccess"));
-      Cookies.set("access", res.data.access);
-      Cookies.set("refresh", res.data.refresh);
+      setTokens(res.data.access, res.data.refresh);
 
       router.push(`/${locale}/home`);
     } catch (err) {
-      setError(t("invalidOtp"));
+      setError(errorMessage(err, t("invalidOtp")));
       console.error(err);
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -167,7 +172,7 @@ const Login = () => {
               <label htmlFor="remember">{t("rememberMe")}</label>
             </div>
 
-            <button type="submit" className={styles.submitButton}>
+            <button type="submit" className={styles.submitButton} disabled={submitting}>
               {t("sendOtp")}
             </button>
 
@@ -206,9 +211,11 @@ const Login = () => {
               required
               inputMode="numeric"
               autoComplete="one-time-code"
+              maxLength={6}
+              pattern="[0-9]{6}"
             />
 
-            <button type="submit" className={styles.submitButton}>
+            <button type="submit" className={styles.submitButton} disabled={submitting}>
               {t("verifyOtp")}
             </button>
 

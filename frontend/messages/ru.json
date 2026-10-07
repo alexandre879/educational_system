@@ -9,14 +9,18 @@
       "subjects": "КНИГИ",
       "exercises": "УПРАЖНЕНИЯ",
       "exams": "ЭКЗАМЕНЫ",
-      "schedule": "РАСПИСАНИЕ"
+      "schedule": "РАСПИСАНИЕ",
+      "calendar": "КАЛЕНДАРЬ",
+      "marks": "ОЦЕНКИ",
+      "gradebook": "ЖУРНАЛ"
     },
     "search": {
       "placeholder": "Поиск...",
-      "subject": "Книги",
+      "subject": "Предмет",
       "exam": "Экзамен",
       "announcement": "Объявление",
-      "untitled": "Без названия"
+      "untitled": "Без названия",
+      "exercise": "Задание"
     },
     "menu": {
       "profile": "ПРОФИЛЬ",
@@ -28,16 +32,13 @@
       "cancel": "Отмена"
     }
   },
-
   "Common": {
     "language": "Язык"
   },
-
   "Nav": {
     "home": "ГЛАВНАЯ",
     "login": "ВХОД"
   },
-
   "Login": {
     "title": "С возвращением",
     "subtitle": "Войдите, чтобы продолжить свой путь",
@@ -52,9 +53,9 @@
     "otpSent": "OTP отправлен в вашего школьного бота!",
     "loginSuccess": "Вход выполнен успешно!",
     "sendOtpFailed": "Не удалось отправить OTP. Попробуйте снова.",
-    "invalidOtp": "Неверный OTP. Попробуйте снова."
+    "invalidOtp": "Неверный OTP. Попробуйте снова.",
+    "tooManyRequests": "Слишком много попыток. Подождите немного и попробуйте снова."
   },
-
   "Home": {
     "pageTitle": "Главная",
     "welcome": "Добро пожаловать",
@@ -67,177 +68,140 @@
     "role_parent": "Родитель",
     "grade": "Класс",
     "email": "Эл. почта",
-
     "totalPoints": "Всего баллов",
     "subjects": "Предметы",
     "activeExams": "Активные экзамены",
-
     "pointsBySubject": "Баллы по предметам",
     "progressOverview": "Обзор прогресса",
     "topExamsAttempts": "Топ экзаменов (попытки)",
     "weeklyActivity": "Еженедельная активность",
     "avgScoreBySubject": "Средний балл по предметам",
-
     "activeExamSessions": "Активные сессии экзаменов",
     "recentExamSessions": "Недавние сессии экзаменов",
-
     "loading": "Загрузка панели…",
     "failedTitle": "Не удалось загрузить панель",
     "failedHint": "Проверьте токен / API URL / консоль.",
-
     "noGrade": "Класс не указан",
     "unknown": "Неизвестно",
-
     "noPointsYet": "Баллов пока нет.",
     "noAttemptsYet": "Попыток пока нет.",
     "noFinishedYet": "Завершённых сессий пока нет.",
     "noActiveExams": "Сейчас нет активных экзаменов.",
     "noSessionsYet": "Сессий пока нет.",
-
     "ends": "Заканчивается",
     "score": "Баллы",
     "finished": "Завершено",
     "inProgress": "В процессе",
-
     "pointsLabel": "Баллы",
     "sessionsLabel": "Сессии",
     "avgScoreLabel": "Средний балл",
     "attemptsLabel": "Попытки",
-
     "done": "Сделано",
     "remaining": "Осталось",
-
     "completion": "Выполнение",
     "avgScoreText": "Средний балл {avg}",
     "deltaUp": "▲ +{delta} по сравнению с предыдущим",
     "deltaDown": "▼ {delta} по сравнению с предыдущим",
-
     "finishedBadge": "Завершено: {finished}/{total}",
     "activeBadge": "Активно: {active}",
-
     "modalActiveExamsTitle": "Активные экзамены"
   },
-
   "Announcement": {
     "pageTitle": "Объявления",
     "addAnnouncement": "Добавить объявление",
     "allSubjects": "Все предметы",
     "chooseSubject": "Выберите предмет",
-
     "createAnnouncementTitle": "Создать объявление",
     "submit": "Отправить",
     "cancel": "Отмена",
-
     "formTitleLabel": "Заголовок",
     "formSubjectLabel": "Предмет",
     "formContentLabel": "Содержание",
-
     "titlePlaceholder": "Введите заголовок объявления",
     "subjectPlaceholder": "Выберите предмет",
     "contentPlaceholder": "Напишите ваше объявление...",
-
     "validationEnterTitle": "Пожалуйста, введите заголовок!",
     "validationSelectSubject": "Пожалуйста, выберите предмет!",
     "validationEnterContent": "Пожалуйста, введите описание!",
-
     "author": "Автор",
     "subject": "Предмет",
     "grade": "Класс",
-
     "empty": "Пусто",
     "noCommentsYet": "Комментариев пока нет",
-
     "commentPlaceholder": "Введите ваш комментарий...",
     "validationTypeSomething": "Пожалуйста, напишите что-нибудь!",
     "send": "Отправить"
   },
-
   "LeaderBoard": {
     "pageTitle": "Лидерборд",
     "chooseSubject": "Выберите предмет",
     "chooseSubjectFirst": "Сначала выберите предмет.",
     "noDataYet": "Данных таблицы лидеров пока нет.",
-
     "name": "Имя",
     "email": "Эл. почта",
     "points": "Баллы",
     "position": "Место",
-
     "profilePictureAlt": "Фото профиля",
     "profileAlt": "Профиль",
-    "pointIconAlt": "Иконка баллов"
+    "pointIconAlt": "Иконка баллов",
+    "loading": "Загрузка..."
   },
-
   "Subjects": {
     "pageTitle": "Книги",
     "subtitle": "Просмотрите назначенные вам книги.",
     "all": "Все",
     "grade": "Класс",
-
     "loadingSubjects": "Загрузка книг...",
     "noResults": "Нет результатов",
     "tryChangingCategory": "Попробуйте изменить категорию.",
-
     "bookFallback": "Книга",
     "loadingPdf": "Загрузка PDF…",
     "openInNewTab": "Открыть в новой вкладке",
     "bookPdfTitle": "PDF книги",
-
     "noPdfFound": "Не найден PDF книги для этого предмета/класса.",
     "failedToLoadPdf": "Не удалось загрузить PDF. Попробуйте снова.",
     "failedToLoadBookPdfToast": "Не удалось загрузить PDF книги",
-
     "empty": "Пусто"
   },
-
   "Exam": {
     "pageTitle": "Экзамены",
     "loadingExams": "Загрузка экзаменов…",
-
     "examCountSingle": "1 экзамен",
     "examCountMultiple": "{count} экзаменов",
-
     "noExamsTitle": "Экзамены недоступны",
     "noExamsSub": "Зайдите позже или спросите учителя.",
-
     "duration": "Длительность",
     "questions": "Вопросы"
   },
-
   "SpecificExam": {
     "alreadyCompleted": "Вы уже завершили этот экзамен",
     "timeUpEnded": "Время вышло. Экзамен завершён.",
-
     "badgeExam": "Экзамен",
     "questionLabel": "Вопрос",
-
     "finalTimeUpTitle": "⏰ Время вышло!",
     "finalCompletedTitle": "🎉 Экзамен завершён!",
-
     "scoreLabel": "Баллы",
     "totalQuestionsLabel": "Всего вопросов",
-
     "finalTimeUpMessage": "Время закончилось, но ваши ответы были отправлены.",
     "finalCompletedMessage": "Отличная работа — результаты сохранены.",
-
     "redirect": "Перейти"
   },
-
   "Exercise": {
     "pageTitle": "Упражнения",
     "addExercise": "Добавить упражнение",
-
     "exerciseTitlePlaceholder": "Название упражнения",
     "descriptionPlaceholder": "Описание (необязательно)",
     "save": "Сохранить",
-
     "loadingExercises": "Загрузка упражнений...",
     "noExercisesToday": "Сегодня нет упражнений",
-
     "gradeLabel": "Класс",
-    "dueLabel": "Срок"
+    "dueLabel": "Срок",
+    "cancel": "Отмена",
+    "subjectPlaceholder": "Выберите предмет",
+    "noExercisesForSubject": "По этому предмету сегодня нет заданий.",
+    "unknownSubject": "Неизвестный предмет",
+    "createFailed": "Не удалось сохранить задание. Попробуйте снова."
   },
-
   "Schedule": {
     "pageTitle": "Расписание",
     "gradeLabel": "Класс",
@@ -258,34 +222,26 @@
       "fri": "Пятница",
       "sat": "Суббота",
       "sun": "Воскресенье"
-    }
+    },
+    "subjectNotSet": "Предмет не указан"
   },
-
   "Attendance": {
     "pageTitle": "Посещаемость",
     "today": "Сегодня",
     "refresh": "Обновить",
-
     "loading": "Загрузка посещаемости…",
-
     "accessDeniedTitle": "Доступ запрещён",
     "teachersOnly": "Эта страница доступна только учителям.",
-
     "noLessonsTitle": "На сегодня уроки не запланированы.",
     "noLessonsSub": "Когда появится урок, вы сможете отмечать посещаемость здесь.",
-
     "room": "Кабинет",
     "students": "учеников",
-
     "markAllPresent": "Отметить всех как присутствующих",
     "markAllAbsent": "Отметить всех как отсутствующих",
-
     "present": "Присутствует",
     "absent": "Отсутствует",
-
     "saving": "Сохранение...",
     "saveAttendance": "Сохранить посещаемость",
-
     "weekdays": {
       "mon": "Понедельник",
       "tue": "Вторник",
@@ -296,7 +252,6 @@
       "sun": "Воскресенье"
     }
   },
-
   "Profile": {
     "title": "Профиль",
     "subtitle": "Управляйте личной информацией",
@@ -315,7 +270,6 @@
     "hint": "Совет: ваша эл. почта используется для входа и уведомлений.",
     "changePhoto": "Сменить фото"
   },
-
   "AISupport": {
     "title": "AI Поддержка",
     "online": "В сети",
@@ -331,5 +285,296 @@
     "errorBar": "Сервис AI недоступен. Попробуйте ещё раз чуть позже.",
     "errorMessage": "Извините — сейчас не удалось подключиться к AI-сервису. Попробуйте ещё раз через минуту.",
     "fallbackReply": "…"
+  },
+  "App": {
+    "common": {
+      "appName": "Blueapp",
+      "retry": "Повторить",
+      "cancel": "Отмена",
+      "save": "Сохранить",
+      "saving": "Сохранение…",
+      "send": "Отправить",
+      "loading": "Загрузка…",
+      "close": "Закрыть",
+      "confirm": "Подтвердить",
+      "today": "Сегодня",
+      "unknown": "Неизвестно",
+      "points": "Баллы",
+      "grade": "Класс",
+      "subject": "Предмет",
+      "allSubjects": "Все предметы",
+      "noGrade": "Класс не указан",
+      "minutes": "{count} мин",
+      "errorTitle": "Что-то пошло не так",
+      "networkError": "Нет связи с сервером. Проверьте подключение к интернету.",
+      "genericError": "Что-то пошло не так. Попробуйте снова.",
+      "forbidden": "У вас нет доступа к этому разделу."
+    },
+    "roles": {
+      "student": "Ученик",
+      "teacher": "Учитель",
+      "admin": "Администратор",
+      "parent": "Родитель"
+    },
+    "home": {
+      "title": "Главная",
+      "greeting": "Привет, {name}",
+      "totalPoints": "Всего баллов",
+      "subjects": "Предметы",
+      "activeExams": "Активные экзамены",
+      "continueExam": "Продолжить",
+      "endsAt": "Заканчивается в {time}",
+      "pointsBySubject": "Баллы по предметам",
+      "noPointsYet": "Баллов пока нет — завершите экзамен, чтобы их получить.",
+      "recentExams": "Недавние экзамены",
+      "noSessionsYet": "Вы ещё не сдавали экзамены.",
+      "finished": "Завершён",
+      "inProgress": "В процессе",
+      "score": "Баллы: {score}",
+      "latestAnnouncements": "Последние объявления",
+      "noAnnouncements": "Объявлений пока нет.",
+      "subjectsTaught": "Ваши предметы",
+      "examsCount": "Экзамены: {count}",
+      "myAnnouncements": "Ваши объявления",
+      "statsUsers": "Пользователи",
+      "statsGrades": "Классы",
+      "statsSubjects": "Предметы",
+      "statsExams": "Экзамены",
+      "statsQuestions": "Вопросы",
+      "children": "Ваши дети",
+      "noChildren": "К вашему аккаунту пока не привязан ни один ученик. Попросите школу их связать.",
+      "attendanceToday": "Посещаемость сегодня",
+      "noAttendanceToday": "Сегодня посещаемость ещё не отмечена.",
+      "present": "Присутствовал(а)",
+      "absent": "Отсутствовал(а)",
+      "goodMorning": "Доброе утро, {name}",
+      "goodAfternoon": "Добрый день, {name}",
+      "goodEvening": "Добрый вечер, {name}",
+      "todayLessons": "Уроки сегодня",
+      "noLessonsToday": "Сегодня уроков нет 🎉",
+      "now": "Сейчас",
+      "seeAll": "Все",
+      "ranking": "Рейтинг",
+      "streak": "{count} дн. подряд",
+      "pendingHomework": "К сдаче",
+      "averageMark": "Средний балл",
+      "calendar": "Календарь",
+      "marks": "Оценки",
+      "search": "Поиск",
+      "results": "Итоги",
+      "gradebook": "Журнал",
+      "myExams": "Экзамены",
+      "attendanceRate": "Посещаемость",
+      "childDetails": "Подробнее"
+    },
+    "exams": {
+      "title": "Экзамены",
+      "empty": "Нет доступных экзаменов",
+      "emptyHint": "Зайдите позже или спросите учителя.",
+      "questionsCount": "Вопросов: {count}",
+      "start": "Начать",
+      "startTitle": "Начать экзамен?",
+      "startMessage": "У вас будет {minutes} мин. Таймер продолжит идти, даже если вы закроете страницу.",
+      "available": "Доступные",
+      "completed": "Результаты",
+      "noResults": "Пока нет завершённых экзаменов.",
+      "scoreOf": "{score} / {max}",
+      "correctOf": "{correct} из {total} верно",
+      "timedOut": "Время вышло"
+    },
+    "exam": {
+      "progress": "Вопрос {current} из {total}",
+      "leaveTitle": "Выйти из экзамена?",
+      "leaveMessage": "Таймер продолжит идти. Вы сможете вернуться и продолжить, пока не выйдет время.",
+      "leave": "Выйти",
+      "stay": "Остаться",
+      "timeUpTitle": "Время вышло!",
+      "completedTitle": "Экзамен завершён!",
+      "timeUpMessage": "Время закончилось, но ваши ответы сохранены.",
+      "completedMessage": "Отличная работа — результаты сохранены.",
+      "score": "Баллы",
+      "totalQuestions": "Вопросы",
+      "subjectPoints": "Баллы по предмету",
+      "totalPoints": "Всего баллов",
+      "backToExams": "К экзаменам",
+      "alreadyCompleted": "Вы уже завершили этот экзамен.",
+      "unavailable": "Этот экзамен недоступен.",
+      "reviewAnswers": "Посмотреть ответы",
+      "greatScore": "Отличный результат! 🎉"
+    },
+    "exercises": {
+      "title": "Задания",
+      "empty": "На этот день заданий нет.",
+      "due": "Срок: {date}",
+      "add": "Новое задание",
+      "subjectLabel": "Предмет",
+      "subjectPlaceholder": "Выберите предмет",
+      "titleLabel": "Название",
+      "titlePlaceholder": "Напр. стр. 42, упражнения 1–5",
+      "descriptionLabel": "Описание",
+      "descriptionPlaceholder": "Подробности (необязательно)",
+      "dueLabel": "Срок",
+      "noDue": "Без срока",
+      "tomorrow": "Завтра",
+      "inDays": "Через {count} дн.",
+      "nextWeek": "Через неделю",
+      "created": "Задание добавлено",
+      "createFailed": "Не удалось сохранить задание. Попробуйте снова.",
+      "noSubjects": "Вы пока не ведёте ни одного предмета.",
+      "markDone": "Отметить выполненным",
+      "done": "Выполнено",
+      "doneCount": "Выполнили: {done}/{total}",
+      "streak": "🔥 {count} дн. подряд!",
+      "notDone": "Ещё не выполнено",
+      "updateFailed": "Не удалось обновить задание."
+    },
+    "review": {
+      "title": "Ответы",
+      "yourAnswer": "Ваш ответ",
+      "correctAnswer": "Правильный ответ",
+      "notAnswered": "Нет ответа",
+      "correct": "Верно",
+      "wrong": "Неверно",
+      "summary": "{correct} из {total} верно"
+    },
+    "teacherExams": {
+      "title": "Мои экзамены",
+      "empty": "Вы ещё не создали ни одного экзамена.",
+      "emptyHint": "Создайте тест для класса — ученики получат уведомление.",
+      "create": "Новый экзамен",
+      "submissions": "Сдали: {count}",
+      "average": "Ср. {score} / {max}",
+      "questions": "Вопросов: {count}",
+      "subjectLabel": "Предмет",
+      "subjectPlaceholder": "Выберите предмет",
+      "titleLabel": "Название",
+      "titlePlaceholder": "напр. Тест по дробям",
+      "durationLabel": "Длительность",
+      "dateLabel": "Дата",
+      "noDate": "Без даты",
+      "questionLabel": "Вопрос {number}",
+      "questionPlaceholder": "Введите вопрос",
+      "optionPlaceholder": "Ответ {letter}",
+      "pointsLabel": "Баллы",
+      "addOption": "Добавить ответ",
+      "addQuestion": "Добавить вопрос",
+      "removeQuestion": "Удалить вопрос",
+      "markCorrect": "Отметьте кружок рядом с правильным ответом.",
+      "publish": "Опубликовать экзамен",
+      "published": "Экзамен опубликован — класс получил уведомление",
+      "publishFailed": "Не удалось опубликовать экзамен. Попробуйте ещё раз.",
+      "incomplete": "Заполните все вопросы и ответы и отметьте правильный."
+    },
+    "marks": {
+      "title": "Оценки",
+      "average": "Средний балл",
+      "noMarks": "Оценок пока нет",
+      "noMarksHint": "Здесь появятся оценки от учителей.",
+      "count": "Оценок: {count}"
+    },
+    "gradebook": {
+      "title": "Журнал",
+      "noSubjects": "Вы пока не ведёте ни одного предмета.",
+      "noStudents": "В этом классе нет учеников.",
+      "addMark": "Поставить оценку",
+      "markFor": "Оценка — {name}",
+      "commentPlaceholder": "Комментарий (необязательно)",
+      "saved": "Оценка сохранена",
+      "saveFailed": "Не удалось сохранить оценку.",
+      "deleteTitle": "Удалить оценку?",
+      "deleteMessage": "Оценка {value} от {date} будет удалена.",
+      "delete": "Удалить",
+      "deleted": "Оценка удалена",
+      "noMarks": "Нет оценок"
+    },
+    "calendar": {
+      "title": "Календарь",
+      "lessons": "Уроки",
+      "homework": "Сдать задания",
+      "exams": "Экзамены",
+      "nothing": "На этот день ничего не запланировано."
+    },
+    "child": {
+      "attendance": "Посещаемость",
+      "attendanceRate": "Присутствие {rate}%",
+      "noAttendance": "В этом месяце нет записей о посещаемости.",
+      "presentCount": "Присутствовал(а): {count}",
+      "absentCount": "Пропуски: {count}",
+      "marks": "Оценки",
+      "exams": "Результаты экзаменов",
+      "viewAll": "Все",
+      "noExams": "Пока нет завершённых экзаменов."
+    },
+    "schedule": {
+      "title": "Расписание",
+      "empty": "В этот день уроков нет.",
+      "room": "Кабинет {room}",
+      "teacherNotSet": "Учитель не указан",
+      "noChildGrade": "Пока нет привязанного ученика с классом."
+    },
+    "time": {
+      "justNow": "Только что",
+      "minutesAgo": "{count} мин назад",
+      "hoursAgo": "{count} ч назад",
+      "yesterday": "Вчера"
+    },
+    "dates": {
+      "monthsLong": {
+        "m1": "Январь",
+        "m2": "Февраль",
+        "m3": "Март",
+        "m4": "Апрель",
+        "m5": "Май",
+        "m6": "Июнь",
+        "m7": "Июль",
+        "m8": "Август",
+        "m9": "Сентябрь",
+        "m10": "Октябрь",
+        "m11": "Ноябрь",
+        "m12": "Декабрь"
+      },
+      "months": {
+        "m1": "янв",
+        "m2": "фев",
+        "m3": "мар",
+        "m4": "апр",
+        "m5": "мая",
+        "m6": "июн",
+        "m7": "июл",
+        "m8": "авг",
+        "m9": "сен",
+        "m10": "окт",
+        "m11": "ноя",
+        "m12": "дек"
+      },
+      "weekdaysShort": {
+        "d1": "Пн",
+        "d2": "Вт",
+        "d3": "Ср",
+        "d4": "Чт",
+        "d5": "Пт",
+        "d6": "Сб",
+        "d7": "Вс"
+      },
+      "weekdaysLong": {
+        "d1": "Понедельник",
+        "d2": "Вторник",
+        "d3": "Среда",
+        "d4": "Четверг",
+        "d5": "Пятница",
+        "d6": "Суббота",
+        "d7": "Воскресенье"
+      }
+    },
+    "web": {
+      "previousDay": "Предыдущий день",
+      "nextDay": "Следующий день",
+      "previousMonth": "Предыдущий месяц",
+      "nextMonth": "Следующий месяц",
+      "back": "Назад",
+      "dueDate": "Срок сдачи",
+      "deleteMarkHint": "Нажмите на оценку, чтобы удалить её.",
+      "removeOption": "Удалить ответ"
+    }
   }
 }

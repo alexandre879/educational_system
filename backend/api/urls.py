@@ -1,122 +1,104 @@
-import os
+from django.conf import settings
 from django.urls import path
+from rest_framework_simplejwt.views import TokenRefreshView
+
 from api.views import (
-    TEST,
     AISupportView,
+    AnnouncementCreateView,
+    AnnouncementDetailView,
+    AnnouncementListView,
+    AttendanceHistoryView,
+    AvailableExamsView,
+    CalendarView,
+    CreateCommentView,
+    DailyExercisesView,
+    ExamHistoryView,
+    ExerciseCompleteView,
     GetSubjectBookView,
     GradeWeekdayScheduleView,
     HomeDashboardView,
-    ListCommentsView,
-    RefreshTokenView,
-    RequestOtpView,
-    TeacherMarkAttendanceView,
-    TeacherTodayLessonsAttendanceView,
-    VerifyOtpView,
-    UserMeView,
-    StartOrResumeOrFinishExamSessionView,
-    SubmitAnswerView, 
-    LogoutView,
-    AvailableExamsView,
-    PointListViewPerSubject,
-    AnnouncementCreateView,
-    AnnouncementListView,
-    CreateCommentView,
     LeaderBoardListView,
+    ListCommentsView,
+    LogoutView,
     MySubjectsListView,
-    UpdateProfileView,
+    PushDeviceRegisterView,
+    PushDeviceUnregisterView,
+    RequestOtpView,
     SearchAnythingView,
-    StudentDailyExercisesView,
+    SessionReviewView,
+    StartOrResumeOrFinishExamSessionView,
+    StudentMarksView,
+    SubmitAnswerView,
     TeacherDailyExerciseCreateView,
-    TeacherDailyExercisesListView, 
-    
+    TeacherDailyExercisesListView,
+    TeacherExamsView,
+    TeacherMarkAttendanceView,
+    TeacherMarkDeleteView,
+    TeacherMarksView,
+    TeacherTodayLessonsAttendanceView,
+    UpdateProfileView,
+    UserMeView,
+    VerifyOtpView,
 )
 
-from .fast_api_util import (
-    BulkExamCreateView,
-    BulkCreateStudentsView
-)
-
-
-STUDENTS_CREATE_URL = os.environ.get("FOR_STUDENTS_API")
-
-
-
+from .fast_api_util import BulkCreateStudentsView, BulkExamCreateView
 
 
 urlpatterns = [
-    
-    path('otp/request/', RequestOtpView.as_view(), name="request-otp"),
-    
-    path('otp/verify/', VerifyOtpView.as_view(), name="verify-otp"),
-    
-    path('user/me/', UserMeView.as_view(), name="user-me"),
-    
-    path('home/', HomeDashboardView.as_view(), name="home-dashboard"),
-    
-    path('user/logout/', LogoutView.as_view(), name="log-out"),
-    
-    path('auth/refresh/', RefreshTokenView.as_view(), name="refresh-token"),
-    
-    path('exams/', AvailableExamsView.as_view(), name='available_exams'),
-    
-    path('exams/<int:exam_id>/start_or_resume/', StartOrResumeOrFinishExamSessionView.as_view(), name='start_exam'),
-    
-    path('sessions/<int:session_id>/answer/', SubmitAnswerView.as_view(), name='submit_answer'),
-    
-    path('points/leaderboard/', PointListViewPerSubject.as_view(), name="leaderboard"),
-    
-    path('announcements/list/', AnnouncementListView.as_view(), name='announcements-list'),
-    
-    path('announcements/create/', AnnouncementCreateView.as_view(), name='announcements-create'),
-    
-    path('comments/create/', CreateCommentView.as_view(), name='comments-create'),
-    
-    path('comments/', ListCommentsView.as_view(), name='comments-list'), 
-    
-    path('leader-board/list/<int:subject_pk>/<int:grade_pk>/<int:category_pk>/', LeaderBoardListView.as_view(), name='leader-board-list'),
-    
-    path('my_subjects/', MySubjectsListView.as_view(), name='my-subjects-list'),
-    
-    path('schedule/grade-weekday/', GradeWeekdayScheduleView.as_view(), name='weekly-lessons'),
-    
-    path("teacher/attendance/today-lessons/", TeacherTodayLessonsAttendanceView.as_view(), name="teacher-today-lessons"),
-    
-    path("teacher/attendance/mark/", TeacherMarkAttendanceView.as_view(), name="teacher-attendance-mark"),
-    
-    path('update/profile/', UpdateProfileView.as_view(), name='update-profile'),
-    
-    path("aisupport/", AISupportView.as_view(), name="ai-support"),
-    
-    path('search/', SearchAnythingView.as_view(), name='search-anything'),
-    
-    path("exercises/daily/", StudentDailyExercisesView.as_view(), name="student-daily-exercises"),
+    path("otp/request/", RequestOtpView.as_view(), name="request-otp"),
+    path("otp/verify/", VerifyOtpView.as_view(), name="verify-otp"),
+    path("auth/refresh/", TokenRefreshView.as_view(), name="refresh-token"),
+    path("user/logout/", LogoutView.as_view(), name="log-out"),
+    path("user/me/", UserMeView.as_view(), name="user-me"),
+    path("push/register/", PushDeviceRegisterView.as_view(), name="push-register"),
+    path("push/unregister/", PushDeviceUnregisterView.as_view(), name="push-unregister"),
+    path("update/profile/", UpdateProfileView.as_view(), name="update-profile"),
+    path("home/", HomeDashboardView.as_view(), name="home-dashboard"),
 
-    path("exercises/daily/create/", TeacherDailyExerciseCreateView.as_view(), name="teacher-daily-exercise-create"),
+    path("exams/", AvailableExamsView.as_view(), name="available_exams"),
+    path("exams/<int:exam_id>/start_or_resume/", StartOrResumeOrFinishExamSessionView.as_view(), name="start_exam"),
+    path("sessions/<int:session_id>/answer/", SubmitAnswerView.as_view(), name="submit_answer"),
+    path("sessions/<int:session_id>/review/", SessionReviewView.as_view(), name="session-review"),
+    path("exams/history/", ExamHistoryView.as_view(), name="exam-history"),
+    path("teacher/exams/", TeacherExamsView.as_view(), name="teacher-exams"),
 
-    path("exercises/daily/teacher/", TeacherDailyExercisesListView.as_view(), name="teacher-daily-exercises-list"),
-    
+    path("announcements/list/", AnnouncementListView.as_view(), name="announcements-list"),
+    path("announcements/create/", AnnouncementCreateView.as_view(), name="announcements-create"),
+    path("announcements/<int:announcement_id>/", AnnouncementDetailView.as_view(), name="announcements-detail"),
+    path("comments/create/", CreateCommentView.as_view(), name="comments-create"),
+    path("comments/", ListCommentsView.as_view(), name="comments-list"),
+
+    path(
+        "leader-board/list/<int:subject_pk>/<int:grade_pk>/<int:category_pk>/",
+        LeaderBoardListView.as_view(),
+        name="leader-board-list",
+    ),
+    path("my_subjects/", MySubjectsListView.as_view(), name="my-subjects-list"),
     path("subjects/books/", GetSubjectBookView.as_view(), name="list-specific-subjects-book"),
-    
-    
-    path("test/", TEST.as_view(), name="test-view"),
-    
-    
-    
-    
-    
+    path("search/", SearchAnythingView.as_view(), name="search-anything"),
 
-    
+    path("schedule/grade-weekday/", GradeWeekdayScheduleView.as_view(), name="weekly-lessons"),
+    path("teacher/attendance/today-lessons/", TeacherTodayLessonsAttendanceView.as_view(), name="teacher-today-lessons"),
+    path("teacher/attendance/mark/", TeacherMarkAttendanceView.as_view(), name="teacher-attendance-mark"),
 
-    
-    
-    ##### for testing purposes, to be removed later. also can be considered as fast API ;)
-    path('exams/create/', BulkExamCreateView.as_view(), name="exam-create"),
-    #####
-    
-    
-    
-    ##### for testing purposes, to be removed later. also can be considered as fast API ;)
-    path(f"{STUDENTS_CREATE_URL}", BulkCreateStudentsView.as_view()),
-    #####
-    
+    path("exercises/daily/", DailyExercisesView.as_view(), name="student-daily-exercises"),
+    path("exercises/daily/create/", TeacherDailyExerciseCreateView.as_view(), name="teacher-daily-exercise-create"),
+    path("exercises/daily/teacher/", TeacherDailyExercisesListView.as_view(), name="teacher-daily-exercises-list"),
+    path("exercises/<int:exercise_id>/complete/", ExerciseCompleteView.as_view(), name="exercise-complete"),
+
+    path("marks/", StudentMarksView.as_view(), name="marks"),
+    path("teacher/marks/", TeacherMarksView.as_view(), name="teacher-marks"),
+    path("teacher/marks/<int:mark_id>/", TeacherMarkDeleteView.as_view(), name="teacher-mark-delete"),
+    path("attendance/history/", AttendanceHistoryView.as_view(), name="attendance-history"),
+    path("calendar/", CalendarView.as_view(), name="calendar"),
+
+    path("aisupport/", AISupportView.as_view(), name="ai-support"),
+
+    # Admin-only bulk import endpoints.
+    path("exams/create/", BulkExamCreateView.as_view(), name="exam-create"),
 ]
+
+if settings.STUDENTS_BULK_CREATE_PATH:
+    urlpatterns.append(
+        path(settings.STUDENTS_BULK_CREATE_PATH, BulkCreateStudentsView.as_view(), name="students-bulk-create"),
+    )

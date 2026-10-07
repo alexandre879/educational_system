@@ -9,14 +9,18 @@
       "subjects": "წიგნები",
       "exercises": "სავარჯიშოები",
       "exams": "გამოცდები",
-      "schedule": "ცხრილი"
+      "schedule": "ცხრილი",
+      "calendar": "კალენდარი",
+      "marks": "ნიშნები",
+      "gradebook": "ჟურნალი"
     },
     "search": {
       "placeholder": "ძიება...",
       "subject": "საგანი",
       "exam": "გამოცდა",
       "announcement": "განცხადება",
-      "untitled": "უსათაურო"
+      "untitled": "უსათაურო",
+      "exercise": "დავალება"
     },
     "menu": {
       "profile": "პროფილი",
@@ -28,16 +32,13 @@
       "cancel": "გაუქმება"
     }
   },
-
   "Common": {
     "language": "ენა"
   },
-
   "Nav": {
     "home": "მთავარი",
     "login": "შესვლა"
   },
-
   "Login": {
     "title": "კეთილი იყოს შენი დაბრუნება",
     "subtitle": "გააგრძელე სწავლა ავტორიზირებით",
@@ -52,9 +53,9 @@
     "otpSent": "OTP გაიგზავნა შენს სკოლის ბოტზე!",
     "loginSuccess": "შესვლა წარმატებულია!",
     "sendOtpFailed": "OTP ვერ გაიგზავნა. სცადე თავიდან.",
-    "invalidOtp": "არასწორი OTP. სცადე თავიდან."
+    "invalidOtp": "არასწორი OTP. სცადე თავიდან.",
+    "tooManyRequests": "ძალიან ბევრი მცდელობა. მოიცადე და სცადე თავიდან."
   },
-
   "Home": {
     "pageTitle": "მთავარი",
     "welcome": "მოგესალმები",
@@ -67,177 +68,140 @@
     "role_parent": "მშობელი",
     "grade": "კლასი",
     "email": "ელ-ფოსტა",
-
     "totalPoints": "სულ ქულები",
     "subjects": "წიგნები",
     "activeExams": "აქტიური გამოცდები",
-
     "pointsBySubject": "ქულები საგნების მიხედვით",
     "progressOverview": "პროგრესის მიმოხილვა",
     "topExamsAttempts": "ტოპ გამოცდები (ცდები)",
     "weeklyActivity": "კვირის აქტივობა",
     "avgScoreBySubject": "საშუალო ქულა საგნების მიხედვით",
-
     "activeExamSessions": "აქტიური გამოცდების სესიები",
     "recentExamSessions": "ბოლო გამოცდების სესიები",
-
     "loading": "დეშბორდი იტვირთება…",
     "failedTitle": "დეშბორდის ჩატვირთვა ვერ მოხერხდა",
     "failedHint": "შეამოწმე token / API URL / კონსოლი.",
-
     "noGrade": "კლასი არ არის",
     "unknown": "უცნობი",
-
     "noPointsYet": "ჯერ ქულები არ გაქვს.",
     "noAttemptsYet": "ჯერ ცდები არ გაქვს.",
     "noFinishedYet": "დასრულებული სესიები ჯერ არ გაქვს.",
     "noActiveExams": "ახლა აქტიური გამოცდები არ არის.",
     "noSessionsYet": "ჯერ სესიები არ გაქვს.",
-
     "ends": "მთავრდება",
     "score": "ქულა",
     "finished": "დასრულდა",
     "inProgress": "მიმდინარეობს",
-
     "pointsLabel": "ქულები",
     "sessionsLabel": "სესიები",
     "avgScoreLabel": "საშ. ქულა",
     "attemptsLabel": "ცდები",
-
     "done": "დასრულებული",
     "remaining": "დარჩენილი",
-
     "completion": "დასრულება",
     "avgScoreText": "საშ. ქულა {avg}",
     "deltaUp": "▲ +{delta} წინა პერიოდთან",
     "deltaDown": "▼ {delta} წინა პერიოდთან",
-
     "finishedBadge": "დასრულებული: {finished}/{total}",
     "activeBadge": "აქტიური: {active}",
-
     "modalActiveExamsTitle": "აქტიური გამოცდები"
   },
-
   "Announcement": {
     "pageTitle": "განცხადებები",
     "addAnnouncement": "განცხადების დამატება",
     "allSubjects": "ყველა საგანი",
     "chooseSubject": "აირჩიე საგანი",
-
     "createAnnouncementTitle": "განცხადების შექმნა",
     "submit": "დადასტურება",
     "cancel": "გაუქმება",
-
     "formTitleLabel": "სათაური",
     "formSubjectLabel": "საგანი",
     "formContentLabel": "შინაარსი",
-
     "titlePlaceholder": "შეიყვანე განცხადების სათაური",
     "subjectPlaceholder": "აირჩიე საგანი",
     "contentPlaceholder": "დაწერე განცხადება...",
-
     "validationEnterTitle": "გთხოვ შეიყვანე სათაური!",
     "validationSelectSubject": "გთხოვ აირჩიე საგანი!",
     "validationEnterContent": "გთხოვ შეიყვანე აღწერა!",
-
     "author": "ავტორი",
     "subject": "საგანი",
     "grade": "კლასი",
-
     "empty": "ცარიელია",
     "noCommentsYet": "კომენტარი ჯერ არ არის",
-
     "commentPlaceholder": "დაწერე კომენტარი...",
     "validationTypeSomething": "გთხოვ რაღაც დაწერე!",
     "send": "გაგზავნა"
   },
-
   "LeaderBoard": {
     "pageTitle": "ლიდერბორდი",
     "chooseSubject": "აირჩიე საგანი",
     "chooseSubjectFirst": "ჯერ აირჩიე საგანი.",
     "noDataYet": "ლიდერბორდის მონაცემები ჯერ არ არის.",
-
     "name": "სახელი",
     "email": "ელ-ფოსტა",
     "points": "ქულები",
     "position": "პოზიცია",
-
     "profilePictureAlt": "პროფილის სურათი",
     "profileAlt": "პროფილი",
-    "pointIconAlt": "ქულის აიკონი"
+    "pointIconAlt": "ქულის აიკონი",
+    "loading": "იტვირთება..."
   },
-
   "Subjects": {
     "pageTitle": "წიგნები",
     "subtitle": "დაათვალიერე შენთვის მინიჭებული წიგნები.",
     "all": "ყველა",
     "grade": "კლასი",
-
     "loadingSubjects": "წიგნები იტვირთება...",
     "noResults": "შედეგი ვერ მოიძებნა",
     "tryChangingCategory": "სცადე კატეგორიის შეცვლა.",
-
     "bookFallback": "წიგნი",
     "loadingPdf": "PDF იტვირთება…",
     "openInNewTab": "ახალ ტაბში გახსნა",
     "bookPdfTitle": "წიგნი PDF",
-
     "noPdfFound": "ამ საგნის/კლასისთვის PDF წიგნი ვერ მოიძებნა.",
     "failedToLoadPdf": "PDF ვერ ჩაიტვირთა. სცადე თავიდან.",
     "failedToLoadBookPdfToast": "წიგნის PDF ვერ ჩაიტვირთა",
-
     "empty": "ცარიელია"
   },
-
   "Exam": {
     "pageTitle": "გამოცდები",
     "loadingExams": "გამოცდები იტვირთება…",
-
     "examCountSingle": "1 გამოცდა",
     "examCountMultiple": "{count} გამოცდა",
-
     "noExamsTitle": "გამოცდები ხელმისაწვდომი არ არის",
     "noExamsSub": "სცადე მოგვიანებით ან ჰკითხე მასწავლებელს.",
-
     "duration": "ხანგრძლივობა",
     "questions": "კითხვები"
   },
-
   "SpecificExam": {
     "alreadyCompleted": "ეს გამოცდა უკვე დასრულებული გაქვს",
     "timeUpEnded": "დრო ამოიწურა. გამოცდა დასრულდა.",
-
     "badgeExam": "გამოცდა",
     "questionLabel": "კითხვა",
-
     "finalTimeUpTitle": "⏰ დრო ამოიწურა!",
     "finalCompletedTitle": "🎉 გამოცდა დასრულდა!",
-
     "scoreLabel": "ქულა",
     "totalQuestionsLabel": "კითხვები სულ",
-
     "finalTimeUpMessage": "დრო ამოიწურა, მაგრამ შენი პასუხები შენახულია.",
     "finalCompletedMessage": "კარგია — შენი შედეგები შენახულია.",
-
     "redirect": "გადამისამართება"
   },
-
   "Exercise": {
     "pageTitle": "სავარჯიშოები",
     "addExercise": "სავარჯიშოს დამატება",
-
     "exerciseTitlePlaceholder": "სავარჯიშოს სათაური",
     "descriptionPlaceholder": "აღწერა (არასავალდებულო)",
     "save": "შენახვა",
-
     "loadingExercises": "სავარჯიშოები იტვირთება...",
     "noExercisesToday": "დღეს სავარჯიშოები არ არის",
-
     "gradeLabel": "კლასი",
-    "dueLabel": "ჩაბარების ვადა"
+    "dueLabel": "ჩაბარების ვადა",
+    "cancel": "გაუქმება",
+    "subjectPlaceholder": "აირჩიე საგანი",
+    "noExercisesForSubject": "ამ საგანში დღეს დავალება არ არის.",
+    "unknownSubject": "უცნობი საგანი",
+    "createFailed": "დავალება ვერ შეინახა. სცადე თავიდან."
   },
-
   "Schedule": {
     "pageTitle": "ცხრილი",
     "gradeLabel": "კლასი",
@@ -258,34 +222,26 @@
       "fri": "პარასკევი",
       "sat": "შაბათი",
       "sun": "კვირა"
-    }
+    },
+    "subjectNotSet": "საგანი არ არის მითითებული"
   },
-
   "Attendance": {
     "pageTitle": "დასწრება",
     "today": "დღეს",
     "refresh": "განახლება",
-
     "loading": "დასწრება იტვირთება…",
-
     "accessDeniedTitle": "წვდომა აკრძალულია",
     "teachersOnly": "ეს გვერდი ხელმისაწვდომია მხოლოდ მასწავლებლებისთვის.",
-
     "noLessonsTitle": "დღეს გაკვეთილები არ არის დაგეგმილი.",
     "noLessonsSub": "როგორც კი გაკვეთილი გამოჩნდება, აქ შეძლებ დასწრების მონიშვნას.",
-
     "room": "აუდიტორია",
     "students": "მოსწავლეები",
-
     "markAllPresent": "ყველას მონიშნე დასწრებული",
     "markAllAbsent": "ყველას მონიშნე არდასწრებული",
-
     "present": "დასწრებულია",
     "absent": "არდასწრებულია",
-
     "saving": "ინახება...",
     "saveAttendance": "დასწრების შენახვა",
-
     "weekdays": {
       "mon": "ორშაბათი",
       "tue": "სამშაბათი",
@@ -296,7 +252,6 @@
       "sun": "კვირა"
     }
   },
-
   "Profile": {
     "title": "პროფილი",
     "subtitle": "მართეთ თქვენი პირადი ინფორმაცია",
@@ -315,7 +270,6 @@
     "hint": "რჩევა: თქვენი ელ-ფოსტა გამოიყენება შესვლისა და შეტყობინებებისთვის.",
     "changePhoto": "ფოტოს შეცვლა"
   },
-
   "AISupport": {
     "title": "AI მხარდაჭერა",
     "online": "ონლაინ",
@@ -331,5 +285,296 @@
     "errorBar": "AI სერვისმა ვერ იმუშავა. სცადე ცოტა ხანში.",
     "errorMessage": "ბოდიში — ახლა ვერ დავუკავშირდი AI სერვისს. სცადე ცოტა ხანში.",
     "fallbackReply": "…"
+  },
+  "App": {
+    "common": {
+      "appName": "Blueapp",
+      "retry": "თავიდან ცდა",
+      "cancel": "გაუქმება",
+      "save": "შენახვა",
+      "saving": "ინახება…",
+      "send": "გაგზავნა",
+      "loading": "იტვირთება…",
+      "close": "დახურვა",
+      "confirm": "დადასტურება",
+      "today": "დღეს",
+      "unknown": "უცნობი",
+      "points": "ქულები",
+      "grade": "კლასი",
+      "subject": "საგანი",
+      "allSubjects": "ყველა საგანი",
+      "noGrade": "კლასი არ არის",
+      "minutes": "{count} წთ",
+      "errorTitle": "რაღაც შეცდომა მოხდა",
+      "networkError": "სერვერთან კავშირი ვერ დამყარდა. შეამოწმე ინტერნეტი.",
+      "genericError": "რაღაც შეცდომა მოხდა. სცადე თავიდან.",
+      "forbidden": "ამაზე წვდომა არ გაქვს."
+    },
+    "roles": {
+      "student": "მოსწავლე",
+      "teacher": "მასწავლებელი",
+      "admin": "ადმინისტრატორი",
+      "parent": "მშობელი"
+    },
+    "home": {
+      "title": "მთავარი",
+      "greeting": "გამარჯობა, {name}",
+      "totalPoints": "სულ ქულები",
+      "subjects": "საგნები",
+      "activeExams": "აქტიური გამოცდები",
+      "continueExam": "გაგრძელება",
+      "endsAt": "მთავრდება {time}-ზე",
+      "pointsBySubject": "ქულები საგნების მიხედვით",
+      "noPointsYet": "ჯერ ქულები არ გაქვს — დაასრულე გამოცდა და მიიღებ.",
+      "recentExams": "ბოლო გამოცდები",
+      "noSessionsYet": "ჯერ არცერთი გამოცდა არ ჩაგიბარებია.",
+      "finished": "დასრულდა",
+      "inProgress": "მიმდინარეობს",
+      "score": "ქულა: {score}",
+      "latestAnnouncements": "ბოლო განცხადებები",
+      "noAnnouncements": "განცხადებები ჯერ არ არის.",
+      "subjectsTaught": "შენი საგნები",
+      "examsCount": "გამოცდები: {count}",
+      "myAnnouncements": "შენი განცხადებები",
+      "statsUsers": "მომხმარებლები",
+      "statsGrades": "კლასები",
+      "statsSubjects": "საგნები",
+      "statsExams": "გამოცდები",
+      "statsQuestions": "კითხვები",
+      "children": "შენი შვილები",
+      "noChildren": "შენს ანგარიშს ჯერ მოსწავლე არ აქვს მიბმული. სთხოვე სკოლას დაკავშირება.",
+      "attendanceToday": "დღევანდელი დასწრება",
+      "noAttendanceToday": "დღეს დასწრება ჯერ არ მონიშნულა.",
+      "present": "დაესწრო",
+      "absent": "არ დაესწრო",
+      "goodMorning": "დილა მშვიდობისა, {name}",
+      "goodAfternoon": "დღე მშვიდობისა, {name}",
+      "goodEvening": "საღამო მშვიდობისა, {name}",
+      "todayLessons": "დღევანდელი გაკვეთილები",
+      "noLessonsToday": "დღეს გაკვეთილები არ გაქვს 🎉",
+      "now": "ახლა",
+      "seeAll": "ყველა",
+      "ranking": "რეიტინგი",
+      "streak": "{count} დღე ზედიზედ",
+      "pendingHomework": "შესასრულებელი",
+      "averageMark": "საშუალო ნიშანი",
+      "calendar": "კალენდარი",
+      "marks": "ნიშნები",
+      "search": "ძიება",
+      "results": "შედეგები",
+      "gradebook": "ჟურნალი",
+      "myExams": "გამოცდები",
+      "attendanceRate": "დასწრება",
+      "childDetails": "დეტალები"
+    },
+    "exams": {
+      "title": "გამოცდები",
+      "empty": "გამოცდები ხელმისაწვდომი არ არის",
+      "emptyHint": "სცადე მოგვიანებით ან ჰკითხე მასწავლებელს.",
+      "questionsCount": "კითხვები: {count}",
+      "start": "დაწყება",
+      "startTitle": "დავიწყოთ გამოცდა?",
+      "startMessage": "გექნება {minutes} წუთი. ტაიმერი გაგრძელდება, გვერდის დახურვის შემთხვევაშიც.",
+      "available": "ხელმისაწვდომი",
+      "completed": "შედეგები",
+      "noResults": "დასრულებული გამოცდები ჯერ არ არის.",
+      "scoreOf": "{score} / {max}",
+      "correctOf": "{correct} სწორი {total}-დან",
+      "timedOut": "დრო ამოიწურა"
+    },
+    "exam": {
+      "progress": "კითხვა {current} / {total}",
+      "leaveTitle": "გამოცდიდან გასვლა?",
+      "leaveMessage": "ტაიმერი გაგრძელდება. შეგიძლია დაბრუნდე და გააგრძელო, სანამ დრო არ ამოიწურება.",
+      "leave": "გასვლა",
+      "stay": "დარჩენა",
+      "timeUpTitle": "დრო ამოიწურა!",
+      "completedTitle": "გამოცდა დასრულდა!",
+      "timeUpMessage": "დრო ამოიწურა, მაგრამ შენი პასუხები შენახულია.",
+      "completedMessage": "კარგია — შენი შედეგები შენახულია.",
+      "score": "ქულა",
+      "totalQuestions": "კითხვები",
+      "subjectPoints": "საგნის ქულები",
+      "totalPoints": "სულ ქულები",
+      "backToExams": "გამოცდებზე დაბრუნება",
+      "alreadyCompleted": "ეს გამოცდა უკვე დასრულებული გაქვს.",
+      "unavailable": "ეს გამოცდა ხელმისაწვდომი არ არის.",
+      "reviewAnswers": "პასუხების ნახვა",
+      "greatScore": "შესანიშნავი შედეგია! 🎉"
+    },
+    "exercises": {
+      "title": "დავალებები",
+      "empty": "ამ დღეს დავალებები არ არის.",
+      "due": "ვადა: {date}",
+      "add": "ახალი დავალება",
+      "subjectLabel": "საგანი",
+      "subjectPlaceholder": "აირჩიე საგანი",
+      "titleLabel": "სათაური",
+      "titlePlaceholder": "მაგ. გვ. 42, სავარჯიშოები 1–5",
+      "descriptionLabel": "აღწერა",
+      "descriptionPlaceholder": "დამატებითი ინფორმაცია (არასავალდებულო)",
+      "dueLabel": "ვადა",
+      "noDue": "ვადის გარეშე",
+      "tomorrow": "ხვალ",
+      "inDays": "{count} დღეში",
+      "nextWeek": "ერთ კვირაში",
+      "created": "დავალება დაემატა",
+      "createFailed": "დავალება ვერ შეინახა. სცადე თავიდან.",
+      "noSubjects": "ჯერ არცერთ საგანს არ ასწავლი.",
+      "markDone": "შესრულებულად მონიშვნა",
+      "done": "შესრულებულია",
+      "doneCount": "შეასრულა: {done}/{total}",
+      "streak": "🔥 {count} დღე ზედიზედ!",
+      "notDone": "ჯერ არ შესრულებულა",
+      "updateFailed": "დავალების განახლება ვერ მოხერხდა."
+    },
+    "review": {
+      "title": "პასუხები",
+      "yourAnswer": "შენი პასუხი",
+      "correctAnswer": "სწორი პასუხი",
+      "notAnswered": "უპასუხოდ",
+      "correct": "სწორია",
+      "wrong": "არასწორია",
+      "summary": "{correct} სწორი {total}-დან"
+    },
+    "teacherExams": {
+      "title": "ჩემი გამოცდები",
+      "empty": "ჯერ არცერთი გამოცდა არ შეგიქმნია.",
+      "emptyHint": "შექმენი ქვიზი კლასისთვის — მოსწავლეები შეტყობინებას მიიღებენ.",
+      "create": "ახალი გამოცდა",
+      "submissions": "ჩააბარა: {count}",
+      "average": "საშ. {score} / {max}",
+      "questions": "{count} კითხვა",
+      "subjectLabel": "საგანი",
+      "subjectPlaceholder": "აირჩიე საგანი",
+      "titleLabel": "სათაური",
+      "titlePlaceholder": "მაგ. წილადების ქვიზი",
+      "durationLabel": "ხანგრძლივობა",
+      "dateLabel": "თარიღი",
+      "noDate": "თარიღის გარეშე",
+      "questionLabel": "კითხვა {number}",
+      "questionPlaceholder": "ჩაწერე კითხვა",
+      "optionPlaceholder": "პასუხი {letter}",
+      "pointsLabel": "ქულა",
+      "addOption": "პასუხის დამატება",
+      "addQuestion": "კითხვის დამატება",
+      "removeQuestion": "კითხვის წაშლა",
+      "markCorrect": "მონიშნე წრე სწორი პასუხის გვერდით.",
+      "publish": "გამოცდის გამოქვეყნება",
+      "published": "გამოცდა გამოქვეყნდა — კლასმა შეტყობინება მიიღო",
+      "publishFailed": "გამოცდის გამოქვეყნება ვერ მოხერხდა. სცადე თავიდან.",
+      "incomplete": "შეავსე ყველა კითხვა და პასუხი და მონიშნე სწორი."
+    },
+    "marks": {
+      "title": "ნიშნები",
+      "average": "საშუალო",
+      "noMarks": "ნიშნები ჯერ არ არის",
+      "noMarksHint": "მასწავლებლების ნიშნები აქ გამოჩნდება.",
+      "count": "{count} ნიშანი"
+    },
+    "gradebook": {
+      "title": "ჟურნალი",
+      "noSubjects": "ჯერ არცერთ საგანს არ ასწავლი.",
+      "noStudents": "ამ კლასში მოსწავლეები არ არიან.",
+      "addMark": "ნიშნის დაწერა",
+      "markFor": "ნიშანი — {name}",
+      "commentPlaceholder": "კომენტარი (არასავალდებულო)",
+      "saved": "ნიშანი შენახულია",
+      "saveFailed": "ნიშნის შენახვა ვერ მოხერხდა.",
+      "deleteTitle": "წავშალოთ ნიშანი?",
+      "deleteMessage": "{value} ({date}) წაიშლება.",
+      "delete": "წაშლა",
+      "deleted": "ნიშანი წაიშალა",
+      "noMarks": "ნიშნები არ არის"
+    },
+    "calendar": {
+      "title": "კალენდარი",
+      "lessons": "გაკვეთილები",
+      "homework": "ჩასაბარებელი დავალებები",
+      "exams": "გამოცდები",
+      "nothing": "ამ დღისთვის არაფერია დაგეგმილი."
+    },
+    "child": {
+      "attendance": "დასწრება",
+      "attendanceRate": "{rate}% დასწრება",
+      "noAttendance": "ამ თვეში დასწრების ჩანაწერები არ არის.",
+      "presentCount": "დაესწრო: {count}",
+      "absentCount": "გააცდინა: {count}",
+      "marks": "ნიშნები",
+      "exams": "გამოცდების შედეგები",
+      "viewAll": "ყველა",
+      "noExams": "დასრულებული გამოცდები ჯერ არ არის."
+    },
+    "schedule": {
+      "title": "ცხრილი",
+      "empty": "ამ დღეს გაკვეთილები არ არის.",
+      "room": "აუდიტორია {room}",
+      "teacherNotSet": "მასწავლებელი არ არის მითითებული",
+      "noChildGrade": "კლასზე მიბმული მოსწავლე ჯერ არ გყავს."
+    },
+    "time": {
+      "justNow": "ახლახან",
+      "minutesAgo": "{count} წთ წინ",
+      "hoursAgo": "{count} სთ წინ",
+      "yesterday": "გუშინ"
+    },
+    "dates": {
+      "monthsLong": {
+        "m1": "იანვარი",
+        "m2": "თებერვალი",
+        "m3": "მარტი",
+        "m4": "აპრილი",
+        "m5": "მაისი",
+        "m6": "ივნისი",
+        "m7": "ივლისი",
+        "m8": "აგვისტო",
+        "m9": "სექტემბერი",
+        "m10": "ოქტომბერი",
+        "m11": "ნოემბერი",
+        "m12": "დეკემბერი"
+      },
+      "months": {
+        "m1": "იან",
+        "m2": "თებ",
+        "m3": "მარ",
+        "m4": "აპრ",
+        "m5": "მაი",
+        "m6": "ივნ",
+        "m7": "ივლ",
+        "m8": "აგვ",
+        "m9": "სექ",
+        "m10": "ოქტ",
+        "m11": "ნოე",
+        "m12": "დეკ"
+      },
+      "weekdaysShort": {
+        "d1": "ორშ",
+        "d2": "სამ",
+        "d3": "ოთხ",
+        "d4": "ხუთ",
+        "d5": "პარ",
+        "d6": "შაბ",
+        "d7": "კვი"
+      },
+      "weekdaysLong": {
+        "d1": "ორშაბათი",
+        "d2": "სამშაბათი",
+        "d3": "ოთხშაბათი",
+        "d4": "ხუთშაბათი",
+        "d5": "პარასკევი",
+        "d6": "შაბათი",
+        "d7": "კვირა"
+      }
+    },
+    "web": {
+      "previousDay": "წინა დღე",
+      "nextDay": "შემდეგი დღე",
+      "previousMonth": "წინა თვე",
+      "nextMonth": "შემდეგი თვე",
+      "back": "უკან",
+      "dueDate": "ჩაბარების ვადა",
+      "deleteMarkHint": "ნიშნის წასაშლელად დააჭირე მას.",
+      "removeOption": "პასუხის წაშლა"
+    }
   }
 }
