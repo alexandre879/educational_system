@@ -1,0 +1,22 @@
+{% comment %}
+Unfold's language switcher, but it sends the user back to the same page in the new language.
+The admin lives under /<lang>/admin/ (or /back/<lang>/admin/ behind the production proxy), so the
+language prefix in the current path is swapped; set_language then also stores the choice.
+{% endcomment %}
+<form action="{% if languages_action %}{{ languages_action }}{% else %}{% url 'set_language' %}{% endif %}" method="post" class="flex w-full"
+      onsubmit="this.elements.next.value = window.location.pathname.replace(/^((?:\/back)?)\/(en|ka|ru)(?=\/|$)/, '$1/{{ language.code }}') + window.location.search + window.location.hash;">
+    {% csrf_token %}
+
+    <input name="next" type="hidden" value="">
+    <input name="language" type="hidden" value="{{ language.code }}">
+
+    <button type="submit" class="block cursor-pointer flex flex-row grow items-center gap-1 mx-1 px-3 py-2 rounded-default text-left hover:bg-base-100 hover:text-base-700 dark:hover:bg-base-700 dark:hover:text-base-200 {% if language.code == LANGUAGE_CODE %}text-primary-600 dark:text-primary-500 dark:hover:text-primary-500! hover:text-primary-600!{% endif %}">
+        {% for language_key, language_flag in language_flags.items %}
+            {% if language_key == language.code %}
+                <span class="mr-1">{{ language_flag }}</span>
+            {% endif %}
+        {% endfor %}
+
+        {{ language.name_local }} <span class="ml-auto uppercase font-semibold text-xs text-subtle">{{ language.code }}</span>
+    </button>
+</form>

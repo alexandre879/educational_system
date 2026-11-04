@@ -76,6 +76,8 @@ LOCALE_PATHS = [BASE_DIR / "locale"]
 # ---------------------------------------------------------------------------
 
 INSTALLED_APPS = [
+    # Admin theme; must come before django.contrib.admin. Configured in UNFOLD below.
+    "unfold",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -245,6 +247,12 @@ SIMPLE_JWT = {
 # ---------------------------------------------------------------------------
 
 TELEGRAM_BOT_TOKEN = os.getenv("BOT_TOKEN", "")
+# People with a linked Telegram also get their notifications there (each can turn it off in the bot).
+TELEGRAM_NOTIFICATIONS_ENABLED = env_bool("TELEGRAM_NOTIFICATIONS_ENABLED", default=True)
+# Animated premium emoji in the bot's messages. Telegram shows them while the bot's owner has Premium.
+TELEGRAM_PREMIUM_EMOJI = env_bool("TELEGRAM_PREMIUM_EMOJI", default=True)
+# The website, for the "Open" buttons under Telegram messages.
+WEBSITE_URL = os.getenv("WEBSITE_URL", "https://blueapp.store").rstrip("/")
 
 OTP_TTL_SECONDS = env_int("OTP_TIMEOUT", 300)
 OTP_RESEND_COOLDOWN_SECONDS = env_int("OTP_RATE_LIMIT", 30)
@@ -272,6 +280,46 @@ if SENTRY_DSN:
         traces_sample_rate=float(os.getenv("SENTRY_TRACES_SAMPLE_RATE", "0.1")),
         send_default_pii=False,
     )
+
+
+# ---------------------------------------------------------------------------
+# Admin look (django-unfold): the app's blue, its icon, sidebar and dashboard
+# ---------------------------------------------------------------------------
+
+UNFOLD = {
+    "SITE_TITLE": "Blueapp",
+    "SITE_HEADER": "Blueapp",
+    "SITE_SUBHEADER": _("School administration"),
+    "SITE_URL": os.getenv("ADMIN_SITE_URL", "https://blueapp.store"),
+    "SITE_ICON": "api.admin_ui.site_icon",
+    "SITE_FAVICONS": "api.admin_ui.site_favicons",
+    "SHOW_LANGUAGES": True,
+    "SHOW_HISTORY": True,
+    "BORDER_RADIUS": "10px",
+    "ENVIRONMENT": "api.admin_ui.environment_callback",
+    "DASHBOARD_CALLBACK": "api.admin_ui.dashboard_callback",
+    "COLORS": {
+        # Tailwind blue: the 500 shade is the app's #1677FF.
+        "primary": {
+            "50": "oklch(97% .014 254.604)",
+            "100": "oklch(93.2% .032 255.585)",
+            "200": "oklch(88.2% .059 254.128)",
+            "300": "oklch(80.9% .105 251.813)",
+            "400": "oklch(70.7% .165 254.624)",
+            "500": "oklch(62.3% .214 259.815)",
+            "600": "oklch(54.6% .245 262.881)",
+            "700": "oklch(48.8% .243 264.376)",
+            "800": "oklch(42.4% .199 265.638)",
+            "900": "oklch(37.9% .146 265.522)",
+            "950": "oklch(28.2% .091 267.935)",
+        },
+    },
+    "SIDEBAR": {
+        "show_search": True,
+        "show_all_applications": True,
+        "navigation": "api.admin_ui.sidebar_navigation",
+    },
+}
 
 
 LOGGING = {

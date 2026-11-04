@@ -7,6 +7,7 @@ import { spacing, useTheme } from "@/theme";
 
 import { AppText } from "./AppText";
 import { Button } from "./Button";
+import { GlassBackdrop, useLiquidGlass } from "./Glass";
 import { Icon, type IconName } from "./Icon";
 import { SkeletonList } from "./Skeleton";
 
@@ -43,10 +44,12 @@ interface EmptyStateProps {
 
 export function EmptyState({ icon, title, message, action }: EmptyStateProps) {
   const { colors } = useTheme();
+  const glass = useLiquidGlass();
   return (
     <View style={styles.center}>
       <View style={[styles.iconCircle, { backgroundColor: colors.primaryMuted }]}>
-        <View style={[styles.iconInner, { backgroundColor: colors.surface, boxShadow: colors.shadow }]}>
+        <View style={[styles.iconInner, !glass && { backgroundColor: colors.surface, boxShadow: colors.shadow }]}>
+          <GlassBackdrop radius={22} />
           <Icon name={icon} size={30} color={colors.primary} />
         </View>
       </View>

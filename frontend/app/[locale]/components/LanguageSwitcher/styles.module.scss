@@ -17,8 +17,8 @@
   background: var(--surface-2);
   color: var(--text-primary);
 
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: var(--glass-filter);
+  -webkit-backdrop-filter: var(--glass-filter);
 
   box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
   cursor: pointer;
@@ -34,7 +34,7 @@
     transform: translateY(-1px);
     border-color: var(--primary-ring);
     background: var(--surface-soft-hover);
-    box-shadow: 0 14px 30px rgba(22, 119, 255, 0.12);
+    box-shadow: 0 14px 30px rgb(var(--primary-rgb) / 0.12);
   }
 
   &:active {
@@ -80,8 +80,8 @@
   flex-direction: column;
   gap: 4px;
 
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: var(--glass-filter);
+  -webkit-backdrop-filter: var(--glass-filter);
 
   transform-origin: top center;
   animation: dropdownIn 180ms ease;
@@ -112,7 +112,7 @@
   transition: background 160ms ease, color 160ms ease, transform 160ms ease;
 
   &:hover {
-    background: rgba(22, 119, 255, 0.08);
+    background: rgb(var(--primary-rgb) / 0.08);
   }
 
   &:active {
@@ -133,7 +133,7 @@
 }
 
 .optionActive {
-  background: rgba(22, 119, 255, 0.15);
+  background: rgb(var(--primary-rgb) / 0.15);
   color: var(--text-strong);
 }
 

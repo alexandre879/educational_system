@@ -19,8 +19,8 @@
   border-radius: 14px;
   display: grid;
   place-items: center;
-  background: rgba(22, 119, 255, 0.14);
-  border: 1px solid rgba(22, 119, 255, 0.18);
+  background: rgb(var(--primary-rgb) / 0.14);
+  border: 1px solid rgb(var(--primary-rgb) / 0.18);
   color: var(--primary-blue);
   flex-shrink: 0;
   transition:
@@ -31,7 +31,7 @@
 
 .WrapperOfMainCaptionAndIcon:hover .headerIcon {
   transform: translateY(-2px) scale(1.02);
-  border-color: rgba(22, 119, 255, 0.28);
+  border-color: rgb(var(--primary-rgb) / 0.28);
   box-shadow: 0 18px 42px rgba(0, 0, 0, 0.24);
 }
 
@@ -78,7 +78,7 @@
   font-weight: 800;
   letter-spacing: 0.2px;
   box-shadow:
-    0 12px 30px rgba(22, 119, 255, 0.18),
+    0 12px 30px rgb(var(--primary-rgb) / 0.18),
     0 2px 0 rgba(255, 255, 255, 0.06) inset;
   transition:
     transform 180ms ease,
@@ -90,7 +90,7 @@
     filter: brightness(1.03);
     transform: translateY(-2px);
     box-shadow:
-      0 16px 40px rgba(22, 119, 255, 0.22),
+      0 16px 40px rgb(var(--primary-rgb) / 0.22),
       0 2px 0 rgba(255, 255, 255, 0.08) inset;
   }
 
@@ -104,8 +104,8 @@
   border: 1px solid var(--border-medium);
   border-radius: 16px;
   padding: 16px;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: var(--glass-filter);
+  -webkit-backdrop-filter: var(--glass-filter);
   box-shadow: var(--shadow-soft);
   display: flex;
   flex-direction: column;
@@ -118,7 +118,7 @@
 }
 
 .createCard:hover {
-  border-color: rgba(22, 119, 255, 0.18);
+  border-color: rgb(var(--primary-rgb) / 0.18);
   box-shadow:
     0 18px 40px rgba(0, 0, 0, 0.14),
     0 0 0 1px rgba(255, 255, 255, 0.03) inset;
@@ -132,8 +132,8 @@
   border-radius: 12px;
   padding: 12px;
   color: var(--text-primary);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: var(--glass-filter);
+  -webkit-backdrop-filter: var(--glass-filter);
   transition:
     border-color 180ms ease,
     box-shadow 180ms ease,
@@ -169,7 +169,7 @@
   color: white;
   font-weight: 800;
   box-shadow:
-    0 12px 30px rgba(22, 119, 255, 0.18),
+    0 12px 30px rgb(var(--primary-rgb) / 0.18),
     0 2px 0 rgba(255, 255, 255, 0.06) inset;
   transition:
     transform 180ms ease,
@@ -181,7 +181,7 @@
     filter: brightness(1.03);
     transform: translateY(-2px);
     box-shadow:
-      0 16px 40px rgba(22, 119, 255, 0.22),
+      0 16px 40px rgb(var(--primary-rgb) / 0.22),
       0 2px 0 rgba(255, 255, 255, 0.08) inset;
   }
 
@@ -201,8 +201,8 @@
   border: 1px solid var(--border-medium);
   border-radius: 16px;
   padding: 16px;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: var(--glass-filter);
+  -webkit-backdrop-filter: var(--glass-filter);
   box-shadow: var(--shadow-soft);
   transition:
     border-color 180ms ease,
@@ -213,7 +213,7 @@
 
   &:hover {
     background: var(--surface-soft-hover);
-    border-color: rgba(22, 119, 255, 0.18);
+    border-color: rgb(var(--primary-rgb) / 0.18);
     transform: translateY(-3px);
     box-shadow:
       0 18px 40px rgba(0, 0, 0, 0.16),
@@ -245,8 +245,8 @@
 }
 
 .subjectBadge {
-  background: rgba(22, 119, 255, 0.14);
-  border: 1px solid rgba(22, 119, 255, 0.22);
+  background: rgb(var(--primary-rgb) / 0.14);
+  border: 1px solid rgb(var(--primary-rgb) / 0.22);
   padding: 4px 10px;
   border-radius: 999px;
   font-size: 13px;
@@ -261,8 +261,8 @@
 
 .card:hover .subjectBadge {
   transform: translateY(-1px);
-  border-color: rgba(22, 119, 255, 0.3);
-  box-shadow: 0 8px 18px -14px rgba(22, 119, 255, 0.42);
+  border-color: rgb(var(--primary-rgb) / 0.3);
+  box-shadow: 0 8px 18px -14px rgb(var(--primary-rgb) / 0.42);
 }
 
 .description {
@@ -288,8 +288,8 @@
   border-radius: 16px;
   padding: 18px;
   border-style: dashed;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: var(--glass-filter);
+  -webkit-backdrop-filter: var(--glass-filter);
   color: var(--text-secondary);
   animation: fadeUp 260ms ease;
   transition:
@@ -300,7 +300,7 @@
 }
 
 .empty:hover {
-  border-color: rgba(22, 119, 255, 0.18);
+  border-color: rgb(var(--primary-rgb) / 0.18);
   background: var(--surface-soft-hover);
 }
 

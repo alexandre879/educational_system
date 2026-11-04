@@ -18,13 +18,25 @@ export function Hero({ children, style }: { children: ReactNode; style?: StylePr
       />
       <View style={[styles.circle, styles.circleLarge]} />
       <View style={[styles.circle, styles.circleSmall]} />
+      {/* Specular sheen across the top, so the banner reads as tinted glass. */}
+      <LinearGradient
+        pointerEvents="none"
+        colors={["rgba(255, 255, 255, 0.22)", "rgba(255, 255, 255, 0)"]}
+        style={styles.sheen}
+      />
       <View style={styles.content}>{children}</View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  wrapper: { borderRadius: radius.xl, overflow: "hidden" },
+  wrapper: {
+    borderRadius: radius.xl,
+    overflow: "hidden",
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: "rgba(255, 255, 255, 0.3)",
+  },
+  sheen: { position: "absolute", top: 0, left: 0, right: 0, height: "45%" },
   content: { padding: spacing.xl, gap: spacing.md },
   circle: { position: "absolute", borderRadius: 999, backgroundColor: "rgba(255, 255, 255, 0.10)" },
   circleLarge: { width: 220, height: 220, top: -90, right: -60 },

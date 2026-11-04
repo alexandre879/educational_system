@@ -76,6 +76,13 @@ export function formatTime(value: Date | string): string {
   return `${pad(date.getHours())}:${pad(date.getMinutes())}`;
 }
 
+/** Time only for today, otherwise "12 Oct, 14:05". */
+export function formatTimestamp(value: string, t: Translate): string {
+  const date = new Date(value);
+  if (toISODate(date) === toISODate(new Date())) return formatTime(date);
+  return `${formatDay(date, t)}, ${formatTime(date)}`;
+}
+
 /** "Just now", "5 min ago", "3 h ago", "Yesterday", then the date. */
 export function formatRelative(value: string, t: Translate, now: Date = new Date()): string {
   const date = new Date(value);

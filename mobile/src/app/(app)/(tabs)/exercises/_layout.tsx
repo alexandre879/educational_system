@@ -9,7 +9,7 @@ export default function ExercisesStack() {
 
   return (
     <Stack screenOptions={screenOptions}>
-      <Stack.Screen name="index" options={{ title: t("exercises.title") }} />
+      <Stack.Screen name="index" options={{ title: t("exercises.title"), headerShown: false }} />
       <Stack.Screen
         name="new"
         options={{ title: t("exercises.add"), presentation: "modal", headerLargeTitleEnabled: false }}

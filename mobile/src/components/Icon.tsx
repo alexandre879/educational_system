@@ -51,6 +51,11 @@ export const ICONS = {
   circle: { ios: "circle", android: "radio_button_unchecked" },
   checkmark: { ios: "checkmark", android: "check" },
   minus: { ios: "minus", android: "remove" },
+  reply: { ios: "arrowshape.turn.up.left.fill", android: "reply" },
+  edit: { ios: "pencil", android: "edit" },
+  copy: { ios: "doc.on.doc", android: "content_copy" },
+  arrowDown: { ios: "arrow.down", android: "arrow_downward" },
+  blocked: { ios: "nosign", android: "block" },
 } as const;
 
 export type IconName = keyof typeof ICONS;

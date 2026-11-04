@@ -9,7 +9,7 @@ export default function MoreStack() {
 
   return (
     <Stack screenOptions={screenOptions}>
-      <Stack.Screen name="index" options={{ title: t("more.title") }} />
+      <Stack.Screen name="index" options={{ title: t("more.title"), headerShown: false }} />
       <Stack.Screen name="profile" options={{ title: t("profile.title") }} />
       <Stack.Screen name="schedule" options={{ title: t("schedule.title") }} />
       <Stack.Screen name="books" options={{ title: t("books.title") }} />

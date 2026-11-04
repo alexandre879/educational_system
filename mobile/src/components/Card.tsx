@@ -4,6 +4,7 @@ import { Pressable, StyleSheet, View, type StyleProp, type ViewStyle } from "rea
 import { radius, spacing, useTheme } from "@/theme";
 
 import { AppText } from "./AppText";
+import { GlassBackdrop, useLiquidGlass } from "./Glass";
 
 interface CardProps {
   children: ReactNode;
@@ -14,13 +15,26 @@ interface CardProps {
 
 export function Card({ children, onPress, style, accessibilityLabel }: CardProps) {
   const { colors } = useTheme();
+  const glass = useLiquidGlass();
+  // On iOS 26 the card is a pane of Liquid Glass; elsewhere a solid surface.
   const base = [
     styles.card,
-    { backgroundColor: colors.surface, borderColor: colors.border, boxShadow: colors.shadow },
+    glass
+      ? { borderColor: colors.border }
+      : { backgroundColor: colors.surface, borderColor: colors.border, boxShadow: colors.shadow },
     style,
   ];
+  const cornerRadius = Number(StyleSheet.flatten(style)?.borderRadius ?? radius.lg);
+  const backdrop = <GlassBackdrop radius={cornerRadius} />;
 
-  if (!onPress) return <View style={base}>{children}</View>;
+  if (!onPress) {
+    return (
+      <View style={base}>
+        {backdrop}
+        {children}
+      </View>
+    );
+  }
 
   return (
     <Pressable
@@ -29,6 +43,7 @@ export function Card({ children, onPress, style, accessibilityLabel }: CardProps
       onPress={onPress}
       style={({ pressed }) => [base, pressed && styles.pressed]}
     >
+      {backdrop}
       {children}
     </Pressable>
   );

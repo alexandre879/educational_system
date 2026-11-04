@@ -27,11 +27,11 @@
 
 .card:hover {
   transform: translateY(-3px);
-  border-color: rgba(22, 119, 255, 0.5);
+  border-color: rgb(var(--primary-rgb) / 0.5);
   background: var(--surface-soft-hover);
   box-shadow:
-    0 16px 30px -20px rgba(22, 119, 255, 0.55),
-    inset 0 0 0 1px rgba(22, 119, 255, 0.15);
+    0 16px 30px -20px rgb(var(--primary-rgb) / 0.55),
+    inset 0 0 0 1px rgb(var(--primary-rgb) / 0.15);
 }
 
 .card:active {
@@ -88,8 +88,8 @@
   font-size: 0.8rem;
   color: var(--text-primary);
 
-  background: rgba(22, 119, 255, 0.14);
-  border: 1px solid rgba(22, 119, 255, 0.22);
+  background: rgb(var(--primary-rgb) / 0.14);
+  border: 1px solid rgb(var(--primary-rgb) / 0.22);
 
   padding: 6px 10px;
   border-radius: 999px;
@@ -109,9 +109,9 @@
 
 .card:hover .subjectPill {
   transform: translateY(-1px);
-  border-color: rgba(22, 119, 255, 0.34);
-  background: rgba(22, 119, 255, 0.18);
-  box-shadow: 0 8px 18px -14px rgba(22, 119, 255, 0.42);
+  border-color: rgb(var(--primary-rgb) / 0.34);
+  background: rgb(var(--primary-rgb) / 0.18);
+  box-shadow: 0 8px 18px -14px rgb(var(--primary-rgb) / 0.42);
 }
 
 

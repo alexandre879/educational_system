@@ -25,6 +25,7 @@ TEXTS = {
     "announcement": {"en": "New announcement", "ka": "ახალი განცხადება", "ru": "Новое объявление"},
     "exercise": {"en": "New exercise", "ka": "ახალი დავალება", "ru": "Новое задание"},
     "comment": {"en": "New comment", "ka": "ახალი კომენტარი", "ru": "Новый комментарий"},
+    "reply": {"en": "New reply", "ka": "ახალი პასუხი", "ru": "Новый ответ"},
     "exam": {"en": "New exam", "ka": "ახალი გამოცდა", "ru": "Новый экзамен"},
     "mark": {"en": "New mark", "ka": "ახალი ნიშანი", "ru": "Новая оценка"},
     "present": {"en": "Attended the lesson", "ka": "გამოცხადდა გაკვეთილზე", "ru": "Присутствовал(а) на уроке"},
@@ -51,13 +52,25 @@ def notify_users(user_ids: Iterable[int], build_message: MessageBuilder, data: d
 
 def send(notifications: Iterable[Notification]) -> None:
     """
-    Deliver several notifications using as few HTTP requests as possible.
-    Never raises: failures are logged so callers (usually request handlers) are unaffected.
+    Deliver several notifications using as few HTTP requests as possible, to phones and to the
+    Telegram of people who connected it. Never raises: failures are logged so callers (usually
+    request handlers) are unaffected.
     """
-    from .models import PushDevice
+    # Both channels read the recipients, so they can't be a one-shot iterator.
+    notifications = [Notification(set(n.user_ids), n.build_message, n.data) for n in notifications]
+    if settings.TELEGRAM_NOTIFICATIONS_ENABLED:
+        from . import telegram
 
-    if not settings.PUSH_NOTIFICATIONS_ENABLED:
-        return
+        try:
+            telegram.notify(notifications)
+        except Exception:
+            logger.exception("Couldn't forward notifications to Telegram")
+    if settings.PUSH_NOTIFICATIONS_ENABLED:
+        _send_to_phones(notifications)
+
+
+def _send_to_phones(notifications: list[Notification]) -> None:
+    from .models import PushDevice
 
     notifications = [(set(n.user_ids), n) for n in notifications]
     all_user_ids = set().union(*(ids for ids, _ in notifications)) if notifications else set()

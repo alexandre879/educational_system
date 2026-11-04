@@ -1,16 +1,12 @@
 msgid ""
 msgstr ""
-"Content-Type: text/plain; charset=UTF-8\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-07 22:41+0400\n"
 "Language: ka\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 
-msgid "BlueWeb Administration"
-msgstr "BlueWeb ადმინისტრაცია"
-
-msgid "BlueWeb Admin"
-msgstr "BlueWeb ადმინი"
-
-msgid "Welcome to BlueWeb Control Panel"
-msgstr "მოგესალმებით BlueWeb მართვის პანელში"
+msgid "Dashboard"
+msgstr "მთავარი პანელი"
 
 msgid "Personal info"
 msgstr "პირადი ინფორმაცია"
@@ -21,17 +17,219 @@ msgstr "ნებართვები"
 msgid "Important dates"
 msgstr "მნიშვნელოვანი თარიღები"
 
+msgid "Role"
+msgstr "როლი"
+
+msgid "Outstanding Token"
+msgstr "აქტიური ტოკენი"
+
+msgid "Outstanding Tokens"
+msgstr "აქტიური ტოკენები"
+
+msgid "Blacklisted Token"
+msgstr "შავ სიაში დამატებული ტოკენი"
+
+msgid "Blacklisted Tokens"
+msgstr "შავ სიაში დამატებული ტოკენები"
+
+msgid "Name"
+msgstr "სახელი"
+
+msgid "Category"
+msgstr "კატეგორია"
+
 msgid "Text"
 msgstr "ტექსტი"
+
+msgid "Created by"
+msgstr "შემქმნელი"
+
+msgid "Title"
+msgstr "სათაური"
+
+msgid "Questions"
+msgstr "კითხვები"
+
+msgid "Question category"
+msgstr "კითხვის კატეგორია"
+
+msgid "Student"
+msgstr "მოსწავლე"
+
+msgid "Exam"
+msgstr "გამოცდა"
+
+msgid "Status"
+msgstr "სტატუსი"
+
+msgid "Finished"
+msgstr "დასრულებულია"
+
+msgid "Time ran out"
+msgstr "დრო ამოიწურა"
+
+msgid "In progress"
+msgstr "მიმდინარეობს"
+
+msgid "Not started"
+msgstr "არ დაწყებულა"
+
+msgid "Question"
+msgstr "კითხვა"
+
+msgid "Answer option"
+msgstr "პასუხის ვარიანტი"
+
+msgid "Author"
+msgstr "ავტორი"
 
 msgid "Grade"
 msgstr "კლასი"
 
-msgid "Grades"
-msgstr "კლასები"
+msgid "Subject"
+msgstr "საგანი"
 
-msgid "Name"
-msgstr "სახელი"
+msgid "Comments"
+msgstr "კომენტარები"
+
+msgid "Content"
+msgstr "შინაარსი"
+
+msgid "Teacher"
+msgstr "მასწავლებელი"
+
+msgid "Marked by"
+msgstr "მონიშნულია"
+
+msgid "Is present"
+msgstr "დასწრებულია"
+
+msgid "Present"
+msgstr "დაესწრო"
+
+msgid "Absent"
+msgstr "არ დაესწრო"
+
+msgid "Parent"
+msgstr "მშობელი"
+
+msgid "Done"
+msgstr "შესრულდა"
+
+msgid "User"
+msgstr "მომხმარებელი"
+
+msgid "Mark"
+msgstr "ნიშანი"
+
+msgid "Development"
+msgstr "სატესტო გარემო"
+
+msgid "Production"
+msgstr "სამუშაო გარემო"
+
+msgid "People"
+msgstr "ადამიანები"
+
+msgid "School"
+msgstr "სკოლა"
+
+msgid "Daily work"
+msgstr "ყოველდღიური სამუშაო"
+
+msgid "Exams"
+msgstr "გამოცდები"
+
+msgid "Communication"
+msgstr "კომუნიკაცია"
+
+msgid "Security"
+msgstr "უსაფრთხოება"
+
+msgid "Students"
+msgstr "მოსწავლეები"
+
+msgid "Teachers"
+msgstr "მასწავლებლები"
+
+msgid "Parents"
+msgstr "მშობლები"
+
+msgid "Marks given"
+msgstr "დაწერილი ნიშნები"
+
+#, python-format
+msgid "Average %(avg).1f"
+msgstr "საშუალო %(avg).1f"
+
+msgid "Attendance"
+msgstr "დასწრება"
+
+#, python-format
+msgid "%(present)d of %(total)d lessons"
+msgstr "%(present)d / %(total)d გაკვეთილი"
+
+msgid "Homework done"
+msgstr "შესრულებული დავალებები"
+
+#, python-format
+msgid "%(count)d assignments"
+msgstr "%(count)d დავალება"
+
+msgid "Exam results"
+msgstr "გამოცდების შედეგები"
+
+#, python-format
+msgid "%(count)d finished"
+msgstr "დასრულდა: %(count)d"
+
+msgid "Present, %"
+msgstr "დასწრება, %"
+
+msgid "Marks"
+msgstr "ნიშნები"
+
+msgid "Date"
+msgstr "თარიღი"
+
+msgid "Add user"
+msgstr "მომხმარებლის დამატება"
+
+msgid "New announcement"
+msgstr "ახალი განცხადება"
+
+msgid "New exam"
+msgstr "ახალი გამოცდა"
+
+msgid "Last 7 days"
+msgstr "ბოლო 7 დღე"
+
+msgid "Attendance, last 14 days"
+msgstr "დასწრება, ბოლო 14 დღე"
+
+msgid "Marks given, last 30 days"
+msgstr "ნიშნები, ბოლო 30 დღე"
+
+msgid "Latest marks"
+msgstr "ბოლო ნიშნები"
+
+msgid "Latest announcements"
+msgstr "ბოლო განცხადებები"
+
+msgid "Password"
+msgstr "პაროლი"
+
+msgid "Password confirmation"
+msgstr "პაროლის დადასტურება"
+
+msgid "Passwords don't match"
+msgstr "პაროლები არ ემთხვევა"
+
+msgid "Passwords are stored encrypted, so nobody can read them."
+msgstr "პაროლები დაშიფრულად ინახება, ამიტომ მათი წაკითხვა არავის შეუძლია."
+
+msgid "Set a new password"
+msgstr "ახალი პაროლის დაყენება"
 
 msgid "Grade category"
 msgstr "კლასის კატეგორია"
@@ -39,38 +237,41 @@ msgstr "კლასის კატეგორია"
 msgid "Grade categories"
 msgstr "კლასის კატეგორიები"
 
-msgid "Category"
-msgstr "კატეგორია"
+msgid "Grades"
+msgstr "კლასები"
 
-msgid "Subject"
-msgstr "საგანი"
+msgid "Fixed language"
+msgstr "ფიქსირებული ენა"
+
+msgid "Follow website locale"
+msgstr "საიტის ენის მიხედვით"
+
+msgid "Georgian"
+msgstr "ქართული"
+
+msgid "English"
+msgstr "ინგლისური"
+
+msgid "Russian"
+msgstr "რუსული"
+
+msgid "Content mode"
+msgstr "კონტენტის რეჟიმი"
 
 msgid "Subjects"
 msgstr "საგნები"
 
-msgid "Student"
-msgstr "მოსწავლე"
-
-msgid "Teacher"
-msgstr "მასწავლებელი"
+msgid "Fixed language is required for fixed mode."
+msgstr "ფიქსირებული რეჟიმისთვის ენის მითითება აუცილებელია."
 
 msgid "Admin"
 msgstr "ადმინისტრატორი"
 
-msgid "Parent"
-msgstr "მშობელი"
-
 msgid "Email"
 msgstr "ელფოსტა"
 
-msgid "Password"
-msgstr "პაროლი"
-
 msgid "Chat ID"
 msgstr "ჩატის ID"
-
-msgid "Role"
-msgstr "როლი"
 
 msgid "Points"
 msgstr "ქულები"
@@ -81,11 +282,29 @@ msgstr "საგნები რომელსაც ასწავლის"
 msgid "Profile picture"
 msgstr "პროფილის სურათი"
 
-msgid "User"
-msgstr "მომხმარებელი"
-
 msgid "Users"
 msgstr "მომხმარებლები"
+
+msgid "Push token"
+msgstr "Push ტოკენი"
+
+msgid "Platform"
+msgstr "პლატფორმა"
+
+msgid "Language"
+msgstr "ენა"
+
+msgid "Created at"
+msgstr "შექმნის თარიღი"
+
+msgid "Updated at"
+msgstr "განახლების თარიღი"
+
+msgid "Push device"
+msgstr "Push მოწყობილობა"
+
+msgid "Push devices"
+msgstr "Push მოწყობილობები"
 
 msgid "Parent student link"
 msgstr "მშობელი-მოსწავლის კავშირი"
@@ -96,26 +315,11 @@ msgstr "მშობელი-მოსწავლის კავშირე�
 msgid "User subject points"
 msgstr "მომხმარებლის საგნის ქულები"
 
-msgid "Title"
-msgstr "სათაური"
-
 msgid "Duration in minutes"
 msgstr "ხანგრძლივობა წუთებში"
 
-msgid "Exam"
-msgstr "გამოცდა"
-
-msgid "Exams"
-msgstr "გამოცდები"
-
-msgid "Question category"
-msgstr "კითხვის კატეგორია"
-
-msgid "Question"
-msgstr "კითხვა"
-
-msgid "Questions"
-msgstr "კითხვები"
+msgid "Scheduled for"
+msgstr "დაგეგმილი თარიღი"
 
 msgid "Is correct"
 msgstr "სწორია"
@@ -134,9 +338,6 @@ msgstr "მიმდინარე ქულა"
 
 msgid "Started"
 msgstr "დაწყებულია"
-
-msgid "Finished"
-msgstr "დასრულებულია"
 
 msgid "Started at"
 msgstr "დაწყების დრო"
@@ -162,9 +363,6 @@ msgstr "მომხმარებლის გამოცდის სეს�
 msgid "Session"
 msgstr "სესია"
 
-msgid "Answer option"
-msgstr "პასუხის ვარიანტი"
-
 msgid "User answer"
 msgstr "მომხმარებლის პასუხი"
 
@@ -180,8 +378,26 @@ msgstr "განცხადებები"
 msgid "Comment"
 msgstr "კომენტარი"
 
-msgid "Comments"
-msgstr "კომენტარები"
+msgid "Mon"
+msgstr "ორშ"
+
+msgid "Tue"
+msgstr "სამ"
+
+msgid "Wed"
+msgstr "ოთხ"
+
+msgid "Thu"
+msgstr "ხუთ"
+
+msgid "Fri"
+msgstr "პარ"
+
+msgid "Sat"
+msgstr "შაბ"
+
+msgid "Sun"
+msgstr "კვი"
 
 msgid "Weekday"
 msgstr "კვირის დღე"
@@ -201,17 +417,17 @@ msgstr "კვირის გაკვეთილი"
 msgid "Weekly lessons"
 msgstr "კვირის გაკვეთილები"
 
+msgid "end_time must be after start_time."
+msgstr "დასრულების დრო დაწყების დროის შემდეგ უნდა იყოს."
+
+msgid "Subject must belong to the selected grade."
+msgstr "საგანი არჩეულ კლასს უნდა ეკუთვნოდეს."
+
+msgid "This time overlaps an existing lesson for this grade/day."
+msgstr "ეს დრო ემთხვევა ამ კლასის იმავე დღის სხვა გაკვეთილს."
+
 msgid "Lesson"
 msgstr "გაკვეთილი"
-
-msgid "Date"
-msgstr "თარიღი"
-
-msgid "Is present"
-msgstr "დასწრებულია"
-
-msgid "Marked by"
-msgstr "მონიშნულია"
 
 msgid "Marked at"
 msgstr "მონიშვნის დრო"
@@ -231,6 +447,18 @@ msgstr "ყოველდღიური დავალება"
 msgid "Daily exercises"
 msgstr "ყოველდღიური დავალებები"
 
+msgid "Exercise"
+msgstr "დავალება"
+
+msgid "Completed at"
+msgstr "შესრულების დრო"
+
+msgid "Exercise completion"
+msgstr "დავალების შესრულება"
+
+msgid "Exercise completions"
+msgstr "დავალებების შესრულება"
+
 msgid "PDF file"
 msgstr "PDF ფაილი"
 
@@ -243,23 +471,36 @@ msgstr "საგნის წიგნი"
 msgid "Subject books"
 msgstr "საგნის წიგნები"
 
-msgid "Outstanding token"
-msgstr "აქტიური ტოკენი"
+msgid "School administration"
+msgstr "სკოლის ადმინისტრირება"
 
-msgid "Outstanding tokens"
-msgstr "აქტიური ტოკენები"
+msgid "Django site admin"
+msgstr "საიტის ადმინისტრირება"
 
-msgid "Blacklisted token"
-msgstr "შავ სიაში დამატებული ტოკენი"
+#, python-format
+msgid "Hello, %(name)s"
+msgstr "გამარჯობა, %(name)s"
 
-msgid "Blacklisted tokens"
-msgstr "შავ სიაში დამატებული ტოკენები"
+msgid "Here is how the school is doing."
+msgstr "აი, როგორ მიდის საქმე სკოლაში."
 
-msgid "English"
-msgstr "ინგლისური"
+msgid "Reply to"
+msgstr "პასუხი კომენტარზე"
 
-msgid "Georgian"
-msgstr "ქართული"
+msgid "Edited at"
+msgstr "რედაქტირების თარიღი"
 
-msgid "Russian"
-msgstr "რუსული"
+msgid "Deleted at"
+msgstr "წაშლის თარიღი"
+
+msgid "Emoji"
+msgstr "ემოჯი"
+
+msgid "Reaction"
+msgstr "რეაქცია"
+
+msgid "Reactions"
+msgstr "რეაქციები"
+
+msgid "(deleted)"
+msgstr "(წაშლილია)"

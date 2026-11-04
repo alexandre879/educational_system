@@ -135,11 +135,29 @@ export interface AnnouncementList {
   role: Role | null;
 }
 
+/** The emoji people can react with, in the order the server lists them. */
+export const REACTIONS = ["👍", "❤️", "😂", "😮", "🎉", "🙏"] as const;
+
+export interface CommentReaction {
+  emoji: string;
+  count: number;
+  mine: boolean;
+}
+
 export interface Comment {
   id: number;
+  /** The author's email. */
   user: string;
+  author: { id: number; name: string; role: Role | null; photo: string | null };
+  /** Empty once deleted. */
   comment: string;
   created_at: string;
+  edited_at: string | null;
+  deleted: boolean;
+  reply_to: { id: number; author: string; comment: string; deleted: boolean } | null;
+  reactions: CommentReaction[];
+  can_edit: boolean;
+  can_delete: boolean;
 }
 
 // ---------------------------------------------------------------------------

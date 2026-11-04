@@ -19,8 +19,8 @@
   border: 1px solid var(--border-medium);
 
   background: var(--surface-soft);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: var(--glass-filter);
+  -webkit-backdrop-filter: var(--glass-filter);
 
   box-shadow:
     var(--shadow-soft),
@@ -35,7 +35,7 @@
 }
 
 .shell:hover {
-  border-color: rgba(22, 119, 255, 0.16);
+  border-color: rgb(var(--primary-rgb) / 0.16);
   box-shadow:
     0 20px 44px rgba(0, 0, 0, 0.16),
     0 0 0 1px rgba(255, 255, 255, 0.03) inset;
@@ -51,8 +51,8 @@
   background: var(--surface);
   border-bottom: 1px solid var(--border-medium);
 
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: var(--glass-filter);
+  -webkit-backdrop-filter: var(--glass-filter);
   animation: fadeUp 240ms ease;
 }
 
@@ -67,9 +67,9 @@
   width: 44px;
   height: 44px;
   border-radius: 14px;
-  background: rgba(22, 119, 255, 0.14);
-  border: 1px solid rgba(22, 119, 255, 0.18);
-  box-shadow: 0 10px 24px rgba(22, 119, 255, 0.14);
+  background: rgb(var(--primary-rgb) / 0.14);
+  border: 1px solid rgb(var(--primary-rgb) / 0.18);
+  box-shadow: 0 10px 24px rgb(var(--primary-rgb) / 0.14);
   flex-shrink: 0;
   transition:
     transform 220ms ease,
@@ -79,8 +79,8 @@
 
 .titleWrap:hover .logoDot {
   transform: translateY(-2px) scale(1.02);
-  border-color: rgba(22, 119, 255, 0.28);
-  box-shadow: 0 16px 32px rgba(22, 119, 255, 0.18);
+  border-color: rgb(var(--primary-rgb) / 0.28);
+  box-shadow: 0 16px 32px rgb(var(--primary-rgb) / 0.18);
 }
 
 .title {
@@ -125,7 +125,7 @@
 .secondaryBtn:hover {
   transform: translateY(-2px);
   background: var(--surface-soft-hover);
-  border-color: rgba(22, 119, 255, 0.22);
+  border-color: rgb(var(--primary-rgb) / 0.22);
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12);
 }
 
@@ -182,18 +182,18 @@
 
 .bubble[data-role="assistant"]:hover {
   transform: translateY(-1px);
-  border-color: rgba(22, 119, 255, 0.12);
+  border-color: rgb(var(--primary-rgb) / 0.12);
   box-shadow: 0 10px 22px rgba(0, 0, 0, 0.08);
 }
 
 .bubble[data-role="user"] {
-  background: rgba(22, 119, 255, 0.16);
-  border-color: rgba(22, 119, 255, 0.28);
+  background: rgb(var(--primary-rgb) / 0.16);
+  border-color: rgb(var(--primary-rgb) / 0.28);
 }
 
 .bubble[data-role="user"]:hover {
   transform: translateY(-1px);
-  box-shadow: 0 10px 22px rgba(22, 119, 255, 0.1);
+  box-shadow: 0 10px 22px rgb(var(--primary-rgb) / 0.1);
 }
 
 .bubbleRole {
@@ -251,8 +251,8 @@
   background: var(--surface);
   border-top: 1px solid var(--border-medium);
 
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: var(--glass-filter);
+  -webkit-backdrop-filter: var(--glass-filter);
   animation: fadeUp 240ms ease;
 }
 
@@ -323,7 +323,7 @@
   cursor: pointer;
 
   box-shadow:
-    0 12px 30px rgba(22, 119, 255, 0.20),
+    0 12px 30px rgb(var(--primary-rgb) / 0.20),
     0 2px 0 rgba(255, 255, 255, 0.06) inset;
 
   transition:
@@ -337,7 +337,7 @@
   transform: translateY(-2px);
   filter: brightness(1.03);
   box-shadow:
-    0 16px 36px rgba(22, 119, 255, 0.22),
+    0 16px 36px rgb(var(--primary-rgb) / 0.22),
     0 2px 0 rgba(255, 255, 255, 0.06) inset;
 }
 

@@ -6,6 +6,7 @@ import { addDays, isoWeekday, parseISODate, toISODate, weekdayName } from "@/lib
 import { radius, spacing, useTheme } from "@/theme";
 
 import { AppText } from "./AppText";
+import { GlassBackdrop, useLiquidGlass } from "./Glass";
 import { Icon } from "./Icon";
 
 interface DateStripProps {
@@ -18,6 +19,7 @@ interface DateStripProps {
 export function DateStrip({ value, onChange }: DateStripProps) {
   const { t } = useI18n();
   const { colors } = useTheme();
+  const glass = useLiquidGlass();
   const selected = parseISODate(value);
   const monday = addDays(selected, 1 - isoWeekday(selected));
   const today = toISODate(new Date());
@@ -29,7 +31,15 @@ export function DateStrip({ value, onChange }: DateStripProps) {
   };
 
   return (
-    <View style={[styles.wrapper, { backgroundColor: colors.surface, borderColor: colors.border, boxShadow: colors.shadow }]}>
+    <View
+      style={[
+        styles.wrapper,
+        glass
+          ? { borderColor: colors.border }
+          : { backgroundColor: colors.surface, borderColor: colors.border, boxShadow: colors.shadow },
+      ]}
+    >
+      <GlassBackdrop radius={radius.lg} />
       <Pressable accessibilityRole="button" onPress={() => pick(toISODate(addDays(selected, -7)))} hitSlop={8} style={styles.arrow}>
         <Icon name="chevronLeft" size={16} color={colors.textMuted} />
       </Pressable>

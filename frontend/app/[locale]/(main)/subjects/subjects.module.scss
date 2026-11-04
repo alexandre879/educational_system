@@ -90,7 +90,7 @@
   &:hover {
     transform: translateY(-2px);
     background: var(--surface-soft-hover);
-    border-color: rgba(22, 119, 255, 0.25);
+    border-color: rgb(var(--primary-rgb) / 0.25);
     box-shadow: 0 12px 24px rgba(0, 0, 0, 0.14);
   }
 
@@ -114,7 +114,7 @@
 }
 
 .pdfFrameWrap:hover {
-  border-color: rgba(22, 119, 255, 0.2);
+  border-color: rgb(var(--primary-rgb) / 0.2);
   box-shadow: 0 14px 30px rgba(0, 0, 0, 0.12);
 }
 
@@ -182,8 +182,8 @@
   border-radius: 14px;
   display: grid;
   place-items: center;
-  background: rgba(22, 119, 255, 0.14);
-  border: 1px solid rgba(22, 119, 255, 0.18);
+  background: rgb(var(--primary-rgb) / 0.14);
+  border: 1px solid rgb(var(--primary-rgb) / 0.18);
   color: var(--primary-blue);
   flex-shrink: 0;
   transition:
@@ -194,7 +194,7 @@
 
 .titleRow:hover .headerIcon {
   transform: translateY(-2px) scale(1.02);
-  border-color: rgba(22, 119, 255, 0.28);
+  border-color: rgb(var(--primary-rgb) / 0.28);
   box-shadow: 0 18px 42px rgba(0, 0, 0, 0.24);
 }
 
@@ -249,8 +249,8 @@
 
   :global(.ant-input:focus),
   :global(.ant-input-focused) {
-    border-color: rgba(22, 119, 255, 0.35) !important;
-    box-shadow: 0 0 0 3px rgba(22, 119, 255, 0.12) !important;
+    border-color: rgb(var(--primary-rgb) / 0.35) !important;
+    box-shadow: 0 0 0 3px rgb(var(--primary-rgb) / 0.12) !important;
   }
 
   :global(.ant-input::placeholder) {
@@ -278,8 +278,8 @@
     background: var(--surface) !important;
     color: var(--text-primary) !important;
 
-    backdrop-filter: blur(10px) !important;
-    -webkit-backdrop-filter: blur(10px) !important;
+    backdrop-filter: var(--glass-filter) !important;
+    -webkit-backdrop-filter: var(--glass-filter) !important;
 
     box-shadow: 0 12px 34px rgba(0, 0, 0, 0.25) !important;
     transition:
@@ -292,7 +292,7 @@
 
   &:hover :global(.ant-select-selector) {
     transform: translateY(-2px);
-    border-color: rgba(22, 119, 255, 0.22) !important;
+    border-color: rgb(var(--primary-rgb) / 0.22) !important;
     background: var(--surface-soft-hover) !important;
     box-shadow: 0 16px 40px rgba(0, 0, 0, 0.28) !important;
   }
@@ -323,8 +323,8 @@
   border: 1px solid var(--border-medium) !important;
   border-radius: 14px !important;
 
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: var(--glass-filter);
+  -webkit-backdrop-filter: var(--glass-filter);
 
   box-shadow: var(--shadow-soft) !important;
   padding: 6px !important;
@@ -345,7 +345,7 @@
   }
 
   :global(.ant-select-item-option-selected) {
-    background: rgba(22, 119, 255, 0.14) !important;
+    background: rgb(var(--primary-rgb) / 0.14) !important;
     color: var(--text-strong) !important;
     font-weight: 600;
   }
@@ -390,10 +390,10 @@
 
 .card:hover {
   transform: translateY(-3px);
-  border-color: rgba(22, 119, 255, 0.5);
+  border-color: rgb(var(--primary-rgb) / 0.5);
   box-shadow:
-    0 16px 30px -20px rgba(22, 119, 255, 0.55),
-    inset 0 0 0 1px rgba(22, 119, 255, 0.15);
+    0 16px 30px -20px rgb(var(--primary-rgb) / 0.55),
+    inset 0 0 0 1px rgb(var(--primary-rgb) / 0.15);
   background: var(--surface-soft-hover);
 }
 
@@ -470,8 +470,8 @@
 }
 
 .categoryPill[data-cat="STEM"] {
-  border-color: rgba(22, 119, 255, 0.22);
-  background: rgba(22, 119, 255, 0.08);
+  border-color: rgb(var(--primary-rgb) / 0.22);
+  background: rgb(var(--primary-rgb) / 0.08);
   color: var(--text-primary);
 }
 
@@ -777,7 +777,7 @@
   &:hover {
     transform: translateY(-2px);
     background: var(--surface-soft-hover);
-    border-color: rgba(22, 119, 255, 0.25);
+    border-color: rgb(var(--primary-rgb) / 0.25);
     box-shadow: 0 12px 24px rgba(0, 0, 0, 0.14);
   }
 
@@ -801,7 +801,7 @@
 }
 
 .pdfFrameWrap:hover {
-  border-color: rgba(22, 119, 255, 0.2);
+  border-color: rgb(var(--primary-rgb) / 0.2);
   box-shadow: 0 14px 30px rgba(0, 0, 0, 0.12);
 }
 
@@ -869,8 +869,8 @@
   border-radius: 14px;
   display: grid;
   place-items: center;
-  background: rgba(22, 119, 255, 0.14);
-  border: 1px solid rgba(22, 119, 255, 0.18);
+  background: rgb(var(--primary-rgb) / 0.14);
+  border: 1px solid rgb(var(--primary-rgb) / 0.18);
   color: var(--primary-blue);
   flex-shrink: 0;
   transition:
@@ -881,7 +881,7 @@
 
 .titleRow:hover .headerIcon {
   transform: translateY(-2px) scale(1.02);
-  border-color: rgba(22, 119, 255, 0.28);
+  border-color: rgb(var(--primary-rgb) / 0.28);
   box-shadow: 0 18px 42px rgba(0, 0, 0, 0.24);
 }
 
@@ -936,8 +936,8 @@
 
   :global(.ant-input:focus),
   :global(.ant-input-focused) {
-    border-color: rgba(22, 119, 255, 0.35) !important;
-    box-shadow: 0 0 0 3px rgba(22, 119, 255, 0.12) !important;
+    border-color: rgb(var(--primary-rgb) / 0.35) !important;
+    box-shadow: 0 0 0 3px rgb(var(--primary-rgb) / 0.12) !important;
   }
 
   :global(.ant-input::placeholder) {
@@ -972,8 +972,8 @@
   background: var(--surface);
   color: var(--text-primary);
 
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: var(--glass-filter);
+  -webkit-backdrop-filter: var(--glass-filter);
 
   cursor: pointer;
 
@@ -1023,8 +1023,8 @@
   border: 1px solid var(--border-medium);
   border-radius: 14px;
 
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: var(--glass-filter);
+  -webkit-backdrop-filter: var(--glass-filter);
 
   box-shadow: var(--shadow-soft);
   padding: 6px;
@@ -1059,7 +1059,7 @@
 }
 
 .categoryDropdownItemActive {
-  background: rgba(22, 119, 255, 0.14);
+  background: rgb(var(--primary-rgb) / 0.14);
   color: var(--text-strong);
   font-weight: 600;
 }
@@ -1099,10 +1099,10 @@
 
 .card:hover {
   transform: translateY(-3px);
-  border-color: rgba(22, 119, 255, 0.5);
+  border-color: rgb(var(--primary-rgb) / 0.5);
   box-shadow:
-    0 16px 30px -20px rgba(22, 119, 255, 0.55),
-    inset 0 0 0 1px rgba(22, 119, 255, 0.15);
+    0 16px 30px -20px rgb(var(--primary-rgb) / 0.55),
+    inset 0 0 0 1px rgb(var(--primary-rgb) / 0.15);
   background: var(--surface-soft-hover);
 }
 
@@ -1179,8 +1179,8 @@
 }
 
 .categoryPill[data-cat="STEM"] {
-  border-color: rgba(22, 119, 255, 0.22);
-  background: rgba(22, 119, 255, 0.08);
+  border-color: rgb(var(--primary-rgb) / 0.22);
+  background: rgb(var(--primary-rgb) / 0.08);
   color: var(--text-primary);
 }
 

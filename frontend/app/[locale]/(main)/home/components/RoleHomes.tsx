@@ -25,7 +25,7 @@ import { getLocalizedValue } from "@/lib/localized";
 import { mediaUrl } from "@/lib/media";
 import { fullName, subjectColor, withAlpha } from "@/lib/subjects";
 import type { Dashboard, DashboardAnnouncement } from "@/lib/types";
-import { Pill, SectionHeader, SubjectBadge } from "../../components/ui/Parts";
+import { CountUp, Pill, SectionHeader, SubjectBadge } from "../../components/ui/Parts";
 import ui from "../../components/ui/ui.module.scss";
 
 type QuickLinkSpec = { href: string; label: string; icon: ReactNode; color: string };
@@ -48,11 +48,14 @@ export function QuickLinks({ links }: { links: QuickLinkSpec[] }) {
 function StatTile({ icon, label, value, color }: { icon: ReactNode; label: string; value: number | string; color: string }) {
   return (
     <div className={ui.card} style={{ flexDirection: "row", alignItems: "center" }}>
-      <span className={ui.quickIcon} style={{ background: withAlpha(color, 0.14), color, width: 44, height: 44 }}>
+      <span
+        className={ui.quickIcon}
+        style={{ background: withAlpha(color, 0.16), color, width: 46, height: 46, boxShadow: `0 10px 24px -10px ${color}` }}
+      >
         {icon}
       </span>
       <div>
-        <div className={ui.statValue}>{value}</div>
+        <div className={ui.statValue}>{typeof value === "number" ? <CountUp value={value} /> : value}</div>
         <div className={ui.statLabel}>{label}</div>
       </div>
     </div>

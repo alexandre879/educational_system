@@ -50,7 +50,8 @@ if DATABASE_URL:
         "default": dj_database_url.parse(DATABASE_URL, conn_max_age=600, ssl_require=True)
     }
 
-if not DEBUG:
+# DJANGO_FORCE_HTTPS=0 lets a production build run over plain HTTP (e.g. a local Kubernetes cluster).
+if not DEBUG and env_bool("DJANGO_FORCE_HTTPS", default=True):
     SECURE_SSL_REDIRECT = True
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True

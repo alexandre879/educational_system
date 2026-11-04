@@ -20,6 +20,7 @@ Django==5.2.6
 whitenoise
 django-cors-headers==4.9.0
 django-storages==1.14.6
+django-unfold==0.108.0
 djangorestframework==3.16.1
 djangorestframework_simplejwt==5.5.1
 h11==0.16.0

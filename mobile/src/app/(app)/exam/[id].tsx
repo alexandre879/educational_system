@@ -19,7 +19,7 @@ import { useI18n } from "@/i18n";
 import { formatCountdown } from "@/lib/dates";
 import { confirmAction, showMessage } from "@/lib/dialogs";
 import { localize } from "@/lib/localize";
-import { radius, spacing, useTheme } from "@/theme";
+import { radius, spacing, useBackdropStyle, useTheme } from "@/theme";
 
 const OPTION_LETTERS: Record<string, string[]> = {
   en: "ABCDEFGHIJ".split(""),
@@ -32,6 +32,7 @@ export default function ExamScreen() {
   const examId = Number(id);
   const { t } = useI18n();
   const { colors } = useTheme();
+  const backdrop = useBackdropStyle();
   const queryClient = useQueryClient();
 
   const [state, setState] = useState<ExamState | null>(null);
@@ -175,7 +176,7 @@ export default function ExamScreen() {
   };
 
   return (
-    <SafeAreaView style={[styles.safe, { backgroundColor: colors.background }]}>
+    <SafeAreaView style={[styles.safe, backdrop]}>
       <View style={styles.topBar}>
         <Pressable
           accessibilityRole="button"

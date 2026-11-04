@@ -8,6 +8,7 @@ import type { Announcement, Me } from "@/api/types";
 import { AppText } from "@/components/AppText";
 import { Avatar } from "@/components/Avatar";
 import { Card } from "@/components/Card";
+import { Glass } from "@/components/Glass";
 import { Hero } from "@/components/Hero";
 import { Icon, type IconName } from "@/components/Icon";
 import { Skeleton } from "@/components/Skeleton";
@@ -54,25 +55,37 @@ export function HomeHero({ me, children, badges }: { me: Me; children?: ReactNod
 
 export function HeroChip({ label }: { label: string }) {
   return (
-    <View style={styles.heroChip}>
+    <Glass
+      radius={radius.pill}
+      variant="clear"
+      tint="rgba(255, 255, 255, 0.14)"
+      style={styles.heroChip}
+      fallbackStyle={styles.heroGlassFallback}
+    >
       <AppText variant="caption" style={styles.heroChipText}>
         {label}
       </AppText>
-    </View>
+    </Glass>
   );
 }
 
-/** A number with its label, laid out on the hero's gradient. */
+/** A number with its label on a small pane of glass over the hero's gradient. */
 export function HeroStat({ value, label }: { value: number | string; label: string }) {
   return (
-    <View style={styles.heroStat}>
+    <Glass
+      radius={radius.md}
+      variant="clear"
+      tint="rgba(255, 255, 255, 0.1)"
+      style={styles.heroStat}
+      fallbackStyle={styles.heroGlassFallback}
+    >
       <AppText variant="heading" style={styles.heroText}>
         {value}
       </AppText>
       <AppText variant="caption" style={styles.heroMuted} numberOfLines={2}>
         {label}
       </AppText>
-    </View>
+    </Glass>
   );
 }
 
@@ -245,17 +258,20 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.md,
     paddingVertical: 5,
     borderRadius: radius.pill,
-    backgroundColor: "rgba(255, 255, 255, 0.18)",
   },
   heroChipText: { color: "#FFFFFF", fontWeight: "700" },
+  // Translucent white where native Liquid Glass isn't available.
+  heroGlassFallback: {
+    backgroundColor: "rgba(255, 255, 255, 0.16)",
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: "rgba(255, 255, 255, 0.28)",
+  },
   heroStats: {
     flexDirection: "row",
+    gap: spacing.sm,
     marginTop: spacing.xs,
-    paddingTop: spacing.md,
-    borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: "rgba(255, 255, 255, 0.25)",
   },
-  heroStat: { flex: 1, gap: 2 },
+  heroStat: { flex: 1, gap: 2, paddingVertical: spacing.sm, paddingHorizontal: spacing.md },
   statGrid: { flexDirection: "row", flexWrap: "wrap", gap: spacing.md },
   tile: { flexGrow: 1, flexBasis: "30%", gap: 6, padding: spacing.md },
   tileIcon: { width: 36, height: 36, borderRadius: 12, alignItems: "center", justifyContent: "center" },

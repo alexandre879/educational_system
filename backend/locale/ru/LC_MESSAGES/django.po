@@ -1,16 +1,12 @@
 msgid ""
 msgstr ""
-"Content-Type: text/plain; charset=UTF-8\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-07 22:41+0400\n"
 "Language: ru\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 
-msgid "BlueWeb Administration"
-msgstr "Администрация BlueWeb"
-
-msgid "BlueWeb Admin"
-msgstr "Админ BlueWeb"
-
-msgid "Welcome to BlueWeb Control Panel"
-msgstr "Добро пожаловать в панель управления BlueWeb"
+msgid "Dashboard"
+msgstr "Панель"
 
 msgid "Personal info"
 msgstr "Личная информация"
@@ -21,17 +17,220 @@ msgstr "Разрешения"
 msgid "Important dates"
 msgstr "Важные даты"
 
+msgid "Role"
+msgstr "Роль"
+
+msgid "Outstanding Token"
+msgstr "Активный токен"
+
+msgid "Outstanding Tokens"
+msgstr "Активные токены"
+
+msgid "Blacklisted Token"
+msgstr "Токен в чёрном списке"
+
+msgid "Blacklisted Tokens"
+msgstr "Токены в чёрном списке"
+
+msgid "Name"
+msgstr "Имя"
+
+msgid "Category"
+msgstr "Категория"
+
 msgid "Text"
 msgstr "Текст"
+
+msgid "Created by"
+msgstr "Создал"
+
+msgid "Title"
+msgstr "Заголовок"
+
+msgid "Questions"
+msgstr "Вопросы"
+
+msgid "Question category"
+msgstr "Категория вопроса"
+
+msgid "Student"
+msgstr "Ученик"
+
+msgid "Exam"
+msgstr "Экзамен"
+
+msgid "Status"
+msgstr "Статус"
+
+msgid "Finished"
+msgstr "Завершён"
+
+msgid "Time ran out"
+msgstr "Время вышло"
+
+msgid "In progress"
+msgstr "В процессе"
+
+msgid "Not started"
+msgstr "Не начат"
+
+msgid "Question"
+msgstr "Вопрос"
+
+msgid "Answer option"
+msgstr "Вариант ответа"
+
+msgid "Author"
+msgstr "Автор"
 
 msgid "Grade"
 msgstr "Класс"
 
-msgid "Grades"
-msgstr "Классы"
+msgid "Subject"
+msgstr "Предмет"
 
-msgid "Name"
-msgstr "Имя"
+msgid "Comments"
+msgstr "Комментарии"
+
+msgid "Content"
+msgstr "Содержание"
+
+msgid "Teacher"
+msgstr "Учитель"
+
+msgid "Marked by"
+msgstr "Отмечено"
+
+msgid "Is present"
+msgstr "Присутствует"
+
+msgid "Present"
+msgstr "Присутствовал(а)"
+
+msgid "Absent"
+msgstr "Отсутствовал(а)"
+
+msgid "Parent"
+msgstr "Родитель"
+
+msgid "Done"
+msgstr "Выполнили"
+
+msgid "User"
+msgstr "Пользователь"
+
+msgid "Mark"
+msgstr "Оценка"
+
+msgid "Development"
+msgstr "Тестовая среда"
+
+msgid "Production"
+msgstr "Рабочая среда"
+
+msgid "People"
+msgstr "Люди"
+
+msgid "School"
+msgstr "Школа"
+
+msgid "Daily work"
+msgstr "Ежедневная работа"
+
+msgid "Exams"
+msgstr "Экзамены"
+
+msgid "Communication"
+msgstr "Общение"
+
+msgid "Security"
+msgstr "Безопасность"
+
+msgid "Students"
+msgstr "Ученики"
+
+msgid "Teachers"
+msgstr "Учителя"
+
+msgid "Parents"
+msgstr "Родители"
+
+msgid "Marks given"
+msgstr "Выставлено оценок"
+
+#, python-format
+msgid "Average %(avg).1f"
+msgstr "Средняя %(avg).1f"
+
+msgid "Attendance"
+msgstr "Посещаемость"
+
+#, python-format
+msgid "%(present)d of %(total)d lessons"
+msgstr "%(present)d из %(total)d уроков"
+
+msgid "Homework done"
+msgstr "Выполнено заданий"
+
+#, python-format
+msgid "%(count)d assignments"
+msgstr "Заданий: %(count)d"
+
+msgid "Exam results"
+msgstr "Результаты экзаменов"
+
+#, python-format
+msgid "%(count)d finished"
+msgstr "Завершено: %(count)d"
+
+msgid "Present, %"
+msgstr "Присутствие, %"
+
+msgid "Marks"
+msgstr "Оценки"
+
+msgid "Date"
+msgstr "Дата"
+
+msgid "Add user"
+msgstr "Добавить пользователя"
+
+msgid "New announcement"
+msgstr "Новое объявление"
+
+msgid "New exam"
+msgstr "Новый экзамен"
+
+msgid "Last 7 days"
+msgstr "Последние 7 дней"
+
+msgid "Attendance, last 14 days"
+msgstr "Посещаемость за 14 дней"
+
+msgid "Marks given, last 30 days"
+msgstr "Оценки за 30 дней"
+
+msgid "Latest marks"
+msgstr "Последние оценки"
+
+msgid "Latest announcements"
+msgstr "Последние объявления"
+
+msgid "Password"
+msgstr "Пароль"
+
+msgid "Password confirmation"
+msgstr "Подтверждение пароля"
+
+msgid "Passwords don't match"
+msgstr "Пароли не совпадают"
+
+msgid "Passwords are stored encrypted, so nobody can read them."
+msgstr ""
+"Пароли хранятся в зашифрованном виде, поэтому их никто не может прочитать."
+
+msgid "Set a new password"
+msgstr "Задать новый пароль"
 
 msgid "Grade category"
 msgstr "Категория класса"
@@ -39,38 +238,41 @@ msgstr "Категория класса"
 msgid "Grade categories"
 msgstr "Категории классов"
 
-msgid "Category"
-msgstr "Категория"
+msgid "Grades"
+msgstr "Классы"
 
-msgid "Subject"
-msgstr "Предмет"
+msgid "Fixed language"
+msgstr "Фиксированный язык"
+
+msgid "Follow website locale"
+msgstr "Как язык сайта"
+
+msgid "Georgian"
+msgstr "Грузинский"
+
+msgid "English"
+msgstr "Английский"
+
+msgid "Russian"
+msgstr "Русский"
+
+msgid "Content mode"
+msgstr "Режим контента"
 
 msgid "Subjects"
 msgstr "Предметы"
 
-msgid "Student"
-msgstr "Ученик"
-
-msgid "Teacher"
-msgstr "Учитель"
+msgid "Fixed language is required for fixed mode."
+msgstr "Для фиксированного режима нужно указать язык."
 
 msgid "Admin"
 msgstr "Администратор"
 
-msgid "Parent"
-msgstr "Родитель"
-
 msgid "Email"
 msgstr "Email"
 
-msgid "Password"
-msgstr "Пароль"
-
 msgid "Chat ID"
 msgstr "Chat ID"
-
-msgid "Role"
-msgstr "Роль"
 
 msgid "Points"
 msgstr "Баллы"
@@ -81,11 +283,29 @@ msgstr "Преподаваемые предметы"
 msgid "Profile picture"
 msgstr "Фото профиля"
 
-msgid "User"
-msgstr "Пользователь"
-
 msgid "Users"
 msgstr "Пользователи"
+
+msgid "Push token"
+msgstr "Push-токен"
+
+msgid "Platform"
+msgstr "Платформа"
+
+msgid "Language"
+msgstr "Язык"
+
+msgid "Created at"
+msgstr "Создано"
+
+msgid "Updated at"
+msgstr "Обновлено"
+
+msgid "Push device"
+msgstr "Push-устройство"
+
+msgid "Push devices"
+msgstr "Push-устройства"
 
 msgid "Parent student link"
 msgstr "Связь родителя и ученика"
@@ -96,26 +316,11 @@ msgstr "Связи родителя и ученика"
 msgid "User subject points"
 msgstr "Баллы пользователя по предмету"
 
-msgid "Title"
-msgstr "Заголовок"
-
 msgid "Duration in minutes"
 msgstr "Длительность в минутах"
 
-msgid "Exam"
-msgstr "Экзамен"
-
-msgid "Exams"
-msgstr "Экзамены"
-
-msgid "Question category"
-msgstr "Категория вопроса"
-
-msgid "Question"
-msgstr "Вопрос"
-
-msgid "Questions"
-msgstr "Вопросы"
+msgid "Scheduled for"
+msgstr "Запланировано на"
 
 msgid "Is correct"
 msgstr "Правильный"
@@ -134,9 +339,6 @@ msgstr "Текущий результат"
 
 msgid "Started"
 msgstr "Начат"
-
-msgid "Finished"
-msgstr "Завершён"
 
 msgid "Started at"
 msgstr "Начало"
@@ -162,9 +364,6 @@ msgstr "Сессии экзамена пользователя"
 msgid "Session"
 msgstr "Сессия"
 
-msgid "Answer option"
-msgstr "Вариант ответа"
-
 msgid "User answer"
 msgstr "Ответ пользователя"
 
@@ -180,8 +379,26 @@ msgstr "Объявления"
 msgid "Comment"
 msgstr "Комментарий"
 
-msgid "Comments"
-msgstr "Комментарии"
+msgid "Mon"
+msgstr "Пн"
+
+msgid "Tue"
+msgstr "Вт"
+
+msgid "Wed"
+msgstr "Ср"
+
+msgid "Thu"
+msgstr "Чт"
+
+msgid "Fri"
+msgstr "Пт"
+
+msgid "Sat"
+msgstr "Сб"
+
+msgid "Sun"
+msgstr "Вс"
 
 msgid "Weekday"
 msgstr "День недели"
@@ -201,17 +418,17 @@ msgstr "Недельный урок"
 msgid "Weekly lessons"
 msgstr "Недельные уроки"
 
+msgid "end_time must be after start_time."
+msgstr "Время окончания должно быть позже времени начала."
+
+msgid "Subject must belong to the selected grade."
+msgstr "Предмет должен относиться к выбранному классу."
+
+msgid "This time overlaps an existing lesson for this grade/day."
+msgstr "Это время пересекается с другим уроком этого класса в этот день."
+
 msgid "Lesson"
 msgstr "Урок"
-
-msgid "Date"
-msgstr "Дата"
-
-msgid "Is present"
-msgstr "Присутствует"
-
-msgid "Marked by"
-msgstr "Отмечено"
 
 msgid "Marked at"
 msgstr "Отмечено в"
@@ -231,6 +448,18 @@ msgstr "Ежедневное задание"
 msgid "Daily exercises"
 msgstr "Ежедневные задания"
 
+msgid "Exercise"
+msgstr "Задание"
+
+msgid "Completed at"
+msgstr "Выполнено"
+
+msgid "Exercise completion"
+msgstr "Выполнение задания"
+
+msgid "Exercise completions"
+msgstr "Выполнения заданий"
+
 msgid "PDF file"
 msgstr "PDF файл"
 
@@ -243,23 +472,36 @@ msgstr "Книга предмета"
 msgid "Subject books"
 msgstr "Книги предметов"
 
-msgid "Outstanding token"
-msgstr "Активный токен"
+msgid "School administration"
+msgstr "Администрирование школы"
 
-msgid "Outstanding tokens"
-msgstr "Активные токены"
+msgid "Django site admin"
+msgstr "Администрирование сайта"
 
-msgid "Blacklisted token"
-msgstr "Токен в чёрном списке"
+#, python-format
+msgid "Hello, %(name)s"
+msgstr "Здравствуйте, %(name)s"
 
-msgid "Blacklisted tokens"
-msgstr "Токены в чёрном списке"
+msgid "Here is how the school is doing."
+msgstr "Вот как идут дела в школе."
 
-msgid "English"
-msgstr "Английский"
+msgid "Reply to"
+msgstr "Ответ на"
 
-msgid "Georgian"
-msgstr "Грузинский"
+msgid "Edited at"
+msgstr "Изменено"
 
-msgid "Russian"
-msgstr "Русский"
+msgid "Deleted at"
+msgstr "Удалено"
+
+msgid "Emoji"
+msgstr "Эмодзи"
+
+msgid "Reaction"
+msgstr "Реакция"
+
+msgid "Reactions"
+msgstr "Реакции"
+
+msgid "(deleted)"
+msgstr "(удалено)"

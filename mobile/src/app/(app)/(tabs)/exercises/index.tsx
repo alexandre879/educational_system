@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import * as Haptics from "expo-haptics";
-import { router, Stack, useLocalSearchParams } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import { useState } from "react";
 import { Pressable, StyleSheet, View } from "react-native";
 
@@ -12,7 +12,7 @@ import { Card } from "@/components/Card";
 import { ProgressBar } from "@/components/Controls";
 import { DateStrip } from "@/components/DateStrip";
 import { Icon } from "@/components/Icon";
-import { Screen } from "@/components/Screen";
+import { Screen, TitleAction } from "@/components/Screen";
 import { actionErrorMessage, EmptyState, ErrorState, LoadingState } from "@/components/States";
 import { SubjectBadge } from "@/components/Subject";
 import { useToast } from "@/components/Toast";
@@ -25,7 +25,6 @@ const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
 
 export default function ExercisesScreen() {
   const { t } = useI18n();
-  const { colors } = useTheme();
   const user = useCurrentUser();
   const params = useLocalSearchParams<{ date?: string }>();
 
@@ -70,46 +69,35 @@ export default function ExercisesScreen() {
   });
 
   return (
-    <>
-      {user.role === "teacher" ? (
-        <Stack.Screen
-          options={{
-            headerRight: () => (
-              <Pressable
-                accessibilityRole="button"
-                accessibilityLabel={t("exercises.add")}
-                onPress={() => router.push("/exercises/new")}
-                hitSlop={12}
-                style={[styles.addButton, { backgroundColor: colors.primary }]}
-              >
-                <Icon name="add" size={18} color={colors.onPrimary} />
-              </Pressable>
-            ),
-          }}
-        />
-      ) : null}
+    <Screen
+      title={t("exercises.title")}
+      actions={
+        user.role === "teacher" ? (
+          <TitleAction icon="add" label={t("exercises.add")} onPress={() => router.push("/exercises/new")} />
+        ) : undefined
+      }
+      onRefresh={refetch}
+      refreshing={isRefetching}
+    >
+      <DateStrip value={date} onChange={setDate} />
 
-      <Screen onRefresh={refetch} refreshing={isRefetching}>
-        <DateStrip value={date} onChange={setDate} />
-
-        {isPending ? (
-          <LoadingState />
-        ) : error ? (
-          <ErrorState error={error} onRetry={refetch} />
-        ) : data.items.length === 0 ? (
-          <EmptyState icon="exercises" title={t("exercises.empty")} />
-        ) : (
-          data.items.map((exercise) => (
-            <ExerciseCard
-              key={exercise.id}
-              exercise={exercise}
-              role={user.role}
-              onToggle={() => toggle.mutate({ id: exercise.id, done: !exercise.completed })}
-            />
-          ))
-        )}
-      </Screen>
-    </>
+      {isPending ? (
+        <LoadingState />
+      ) : error ? (
+        <ErrorState error={error} onRetry={refetch} />
+      ) : data.items.length === 0 ? (
+        <EmptyState icon="exercises" title={t("exercises.empty")} />
+      ) : (
+        data.items.map((exercise) => (
+          <ExerciseCard
+            key={exercise.id}
+            exercise={exercise}
+            role={user.role}
+            onToggle={() => toggle.mutate({ id: exercise.id, done: !exercise.completed })}
+          />
+        ))
+      )}
+    </Screen>
   );
 }
 
@@ -208,7 +196,6 @@ function ExerciseCard({ exercise, role, onToggle }: { exercise: Exercise; role: 
 
 const styles = StyleSheet.create({
   flex: { flex: 1 },
-  addButton: { width: 32, height: 32, borderRadius: 16, alignItems: "center", justifyContent: "center" },
   card: { flexDirection: "row", padding: 0, overflow: "hidden", gap: 0 },
   stripe: { width: 5 },
   cardBody: { flex: 1, padding: spacing.lg, gap: spacing.sm },

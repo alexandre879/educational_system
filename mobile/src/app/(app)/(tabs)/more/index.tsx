@@ -36,7 +36,7 @@ export default function MoreScreen() {
   };
 
   return (
-    <Screen>
+    <Screen title={t("more.title")}>
       <Pressable accessibilityRole="button" accessibilityLabel={t("profile.title")} onPress={() => router.push("/more/profile")}>
         {({ pressed }) => (
           <Hero style={pressed && styles.pressed}>

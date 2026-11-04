@@ -1,3 +1,5 @@
+import type { LocalizedValue } from "@/lib/localized";
+import type { UserMeData } from "../profile/interface";
 
 export interface User {
     first_name: string;
@@ -9,9 +11,8 @@ export interface Announcement {
     id: number;
     title: string;
     content: string;
-    subject: string;
-    grade: {id: number, name: string, category_name: string};
-    user: string;
+    subject: { id: number; name: LocalizedValue } | null;
+    grade: { id: number; name: string; category_name: LocalizedValue };
     created_at: string;
     created_by: {id: number, email: string, name: string};
     len_comments: number;
@@ -57,10 +58,27 @@ export interface Categories {
 }
 
 
+/** The emoji people can react with, in the order the server lists them. */
+export const REACTIONS = ["👍", "❤️", "😂", "😮", "🎉", "🙏"] as const;
+
+export interface CommentReaction {
+    emoji: string;
+    count: number;
+    mine: boolean;
+}
+
 export interface Comment {
     id: number;
-    picture: string | null
-    user: string
+    /** The author's email. */
+    user: string;
+    author: { id: number; name: string; role: UserMeData["role"] | null; photo: string | null };
+    /** Empty once deleted. */
     comment: string;
     created_at: string;
+    edited_at: string | null;
+    deleted: boolean;
+    reply_to: { id: number; author: string; comment: string; deleted: boolean } | null;
+    reactions: CommentReaction[];
+    can_edit: boolean;
+    can_delete: boolean;
 }

@@ -1,0 +1,91 @@
+{% extends "admin/base.html" %}
+{% load i18n unfold %}
+
+{# The admin home: a school overview (figures come from api.admin_ui.dashboard_callback). #}
+
+{% block title %}{% if subtitle %}{{ subtitle }} | {% endif %}{{ title }} | {{ site_title|default:_('Django site admin') }}{% endblock %}
+
+{% block branding %}
+    {% include "unfold/helpers/site_branding.html" %}
+{% endblock %}
+
+{% block content %}
+<div class="flex flex-col gap-8">
+    <div class="flex flex-col gap-4 md:flex-row md:items-center">
+        <div class="grow">
+            {% component "unfold/components/title.html" %}
+                {% blocktrans with name=greeting_name %}Hello, {{ name }}{% endblocktrans %}
+            {% endcomponent %}
+            {% component "unfold/components/text.html" with class="text-subtle mt-1" %}
+                {% trans "Here is how the school is doing." %}
+            {% endcomponent %}
+        </div>
+
+        {% if quick_actions %}
+            <div class="flex flex-wrap gap-2">
+                {% for action in quick_actions %}
+                    {% component "unfold/components/button.html" with href=action.link icon=action.icon %}
+                        {{ action.title }}
+                    {% endcomponent %}
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+
+    <div class="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-6">
+        {% for item in headcount %}
+            {% component "unfold/components/card.html" with href=item.link size="md" %}
+                <div class="flex items-center gap-3">
+                    <span class="material-symbols-outlined bg-primary-100 text-primary-700 rounded-default p-2 dark:bg-primary-500/20 dark:text-primary-400">{{ item.icon }}</span>
+                    <div class="min-w-0">
+                        <div class="font-semibold text-2xl text-important leading-none">{{ item.value }}</div>
+                        <div class="text-subtle text-sm truncate mt-1">{{ item.title }}</div>
+                    </div>
+                </div>
+            {% endcomponent %}
+        {% endfor %}
+    </div>
+
+    <div class="flex flex-col gap-4">
+        <h2 class="font-semibold text-important text-lg">{{ dashboard_titles.week }}</h2>
+
+        <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+            {% for stat in this_week %}
+                {% component "unfold/components/card.html" with href=stat.link %}
+                    <div class="flex items-center justify-between gap-3 mb-4">
+                        <span class="text-subtle text-sm">{{ stat.title }}</span>
+                        <span class="material-symbols-outlined text-primary-600 dark:text-primary-500">{{ stat.icon }}</span>
+                    </div>
+                    <div class="font-semibold text-3xl text-important leading-none mb-4">{{ stat.value }}</div>
+                    {% if stat.progress is not None %}
+                        {% component "unfold/components/progress.html" with value=stat.progress %}{% endcomponent %}
+                    {% endif %}
+                    <div class="text-subtle text-xs mt-2">{{ stat.detail }}</div>
+                {% endcomponent %}
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="grid gap-6 lg:grid-cols-2">
+        {% component "unfold/components/card.html" with title=dashboard_titles.attendance_chart %}
+            {% component "unfold/components/chart/bar.html" with data=attendance_chart height=260 %}{% endcomponent %}
+        {% endcomponent %}
+
+        {% component "unfold/components/card.html" with title=dashboard_titles.marks_chart %}
+            {% component "unfold/components/chart/bar.html" with data=marks_chart height=260 %}{% endcomponent %}
+        {% endcomponent %}
+    </div>
+
+    <div class="grid gap-6 lg:grid-cols-2">
+        {% component "unfold/components/card.html" with title=dashboard_titles.latest_marks %}
+            {% component "unfold/components/table.html" with table=latest_marks card_included=1 striped=1 %}{% endcomponent %}
+        {% endcomponent %}
+
+        {% component "unfold/components/card.html" with title=dashboard_titles.latest_announcements %}
+            {% component "unfold/components/table.html" with table=latest_announcements card_included=1 striped=1 %}{% endcomponent %}
+        {% endcomponent %}
+    </div>
+
+    {% include "unfold/helpers/history.html" %}
+</div>
+{% endblock %}
