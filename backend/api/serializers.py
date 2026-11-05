@@ -27,6 +27,11 @@ class VerifyOtpSerializer(serializers.Serializer):
     otp = serializers.CharField(max_length=6, trim_whitespace=True)
 
 
+class SpectatorLoginSerializer(serializers.Serializer):
+    # Who to view the site as; left out, the first one that's set up (student first).
+    role = serializers.ChoiceField(choices=[str(role) for role in User.SPECTATOR_VIEW_ROLES], required=False)
+
+
 class OptionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Option

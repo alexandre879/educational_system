@@ -1,0 +1,110 @@
+@use "../../../../styles/liquid" as lg;
+
+// ---------------------------------------------------------------- spectator bar
+
+.bar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px 16px;
+  margin: 0 auto 18px;
+  padding: 10px 10px 10px 16px;
+  border-radius: 20px;
+  color: var(--text-primary);
+  background: var(--glass-sheen), var(--surface-2);
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-sat));
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-sat));
+  box-shadow:
+    var(--glass-rim),
+    0 18px 40px -24px rgb(0 0 0 / 0.5);
+  animation: barIn 520ms var(--ease-spring) both;
+}
+
+@keyframes barIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-strong);
+  font-size: 14px;
+  font-weight: 800;
+
+  svg {
+    flex-shrink: 0;
+    color: var(--primary-blue);
+  }
+}
+
+.readOnly {
+  padding: 2px 9px;
+  border-radius: 999px;
+  color: var(--primary-blue);
+  background: color-mix(in srgb, var(--primary-blue) 14%, transparent);
+  font-size: 11.5px;
+  font-weight: 700;
+}
+
+.switcher {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1 1 320px;
+  min-width: 0;
+
+  > [role="radiogroup"] {
+    flex: 1;
+    max-width: 380px;
+  }
+}
+
+.viewingAs {
+  color: var(--text-secondary);
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.exit {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+  padding: 8px 12px;
+  border: 1px solid var(--border-medium);
+  border-radius: 12px;
+  color: var(--text-secondary);
+  background: transparent;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    color var(--dur-fast) ease,
+    border-color var(--dur-fast) ease;
+
+  &:hover {
+    color: var(--text-strong);
+    border-color: var(--text-muted);
+  }
+
+  @include lg.press(0.96);
+}
+
+@media (max-width: 640px) {
+  .bar {
+    padding: 10px 12px;
+  }
+
+  .switcher {
+    flex-basis: 100%;
+    order: 3;
+
+    > [role="radiogroup"] {
+      max-width: none;
+    }
+  }
+}

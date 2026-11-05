@@ -118,6 +118,10 @@ class User(AbstractUser):
         TEACHER = "teacher", _("Teacher")
         ADMIN = "admin", _("Admin")
         PARENT = "parent", _("Parent")
+        SPECTATOR = "spectator", _("Spectator")
+
+    # The roles a spectator can look at the site as (one linked account per role).
+    SPECTATOR_VIEW_ROLES = (Role.STUDENT, Role.TEACHER, Role.PARENT)
 
     email = models.CharField(_("Email"), max_length=255, unique=True)
     password = models.CharField(_("Password"), max_length=255, default=None, null=True)
@@ -147,6 +151,16 @@ class User(AbstractUser):
         blank=True,
         null=True,
     )
+    # Only for spectator accounts: visitors see the site read-only as one of these people.
+    spectator_views = models.ManyToManyField(
+        "self",
+        verbose_name=_("Spectators view the site as"),
+        help_text=_("Pick one student, one teacher and one parent. Spectators see what they see, read-only."),
+        symmetrical=False,
+        related_name="spectated_by",
+        limit_choices_to={"role__in": SPECTATOR_VIEW_ROLES},
+        blank=True,
+    )
 
     username = None
     USERNAME_FIELD = "email"
@@ -157,6 +171,15 @@ class User(AbstractUser):
     class Meta:
         verbose_name = _("User")
         verbose_name_plural = _("Users")
+        constraints = [
+            # Every visitor shares the one spectator account (each with their own session).
+            models.UniqueConstraint(
+                fields=["role"],
+                condition=models.Q(role="spectator"),
+                name="single_spectator_account",
+                violation_error_message=_("There can only be one spectator account; every visitor shares it."),
+            ),
+        ]
 
     def __str__(self):
         if self.role == self.Role.STUDENT:

@@ -380,6 +380,18 @@ export const en = {
     announcements: "Announcements",
     exercises: "Homework",
   },
+  spectator: {
+    signIn: "View as spectator",
+    or: "or",
+    signInHint: "No account? Look around as a student, teacher or parent. Nothing can be changed.",
+    unavailable: "Spectator mode isn't available right now.",
+    badge: "Spectator mode",
+    readOnly: "Read-only",
+    viewingAs: "Viewing as",
+    exit: "Exit",
+    switchFailed: "Couldn't switch the view. Try again.",
+    blocked: "Spectators can only look around: changes are turned off.",
+  },
   offline: {
     banner: "Offline · showing saved data",
   },

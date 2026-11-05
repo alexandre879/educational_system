@@ -6,6 +6,7 @@ import { Screen } from "@/components/Screen";
 import { ErrorState, LoadingState } from "@/components/States";
 import { AdminHome, ParentHome, TeacherHome } from "@/features/home/OtherHomes";
 import { StudentHome } from "@/features/home/StudentHome";
+import { SpectatorCard } from "@/features/spectator/SpectatorCard";
 
 export default function HomeScreen() {
   const user = useCurrentUser();
@@ -16,6 +17,7 @@ export default function HomeScreen() {
 
   return (
     <Screen onRefresh={refetch} refreshing={isRefetching} headerless>
+      {user.spectator ? <SpectatorCard info={user.spectator} /> : null}
       {isPending ? (
         <LoadingState />
       ) : error || !data ? (

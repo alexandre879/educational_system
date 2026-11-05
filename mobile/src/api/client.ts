@@ -85,6 +85,15 @@ export function errorStatus(error: unknown): number | undefined {
   return isAxiosError(error) ? error.response?.status : undefined;
 }
 
+/** The server refused a change because this is a read-only spectator session. */
+export function isSpectatorBlocked(error: unknown): boolean {
+  return (
+    isAxiosError(error) &&
+    error.response?.status === 403 &&
+    (error.response.data as { code?: string } | undefined)?.code === "spectator_read_only"
+  );
+}
+
 /** The request never got an HTTP response (offline, DNS, timeout, server down). */
 export function isNetworkError(error: unknown): boolean {
   return isAxiosError(error) && !error.response;

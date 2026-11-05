@@ -4,10 +4,12 @@ from io import BytesIO, StringIO
 from unittest import mock
 
 from django.core.cache import cache
+from django.core.exceptions import ValidationError
 from django.core.management import call_command
 from django.core.management.base import CommandError
+from django.db import IntegrityError, transaction
 from django.test import override_settings
-from django.utils import timezone
+from django.utils import timezone, translation
 from PIL import Image
 from rest_framework.test import APITestCase
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -167,6 +169,121 @@ class TokenTests(BaseAPITestCase):
         self.client.force_authenticate(None)
         response = self.client.post("/api/auth/refresh/", {"refresh": refresh}, format="json")
         self.assertEqual(response.status_code, 401)
+
+
+class SpectatorTests(BaseAPITestCase):
+    def setUp(self):
+        super().setUp()
+        self.spectator = User.objects.create_user(email="spectator@school.edu", role=User.Role.SPECTATOR)
+        self.spectator.spectator_views.add(self.student, self.teacher, self.parent)
+
+    def login(self, role=None):
+        self.client.credentials()
+        response = self.client.post("/api/spectator/login/", {"role": role} if role else {}, format="json")
+        if response.status_code == 200:
+            self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {response.data['access']}")
+        return response
+
+    def test_views_the_site_as_the_linked_student_by_default(self):
+        self.assertEqual(self.login().status_code, 200)
+
+        me = self.client.get("/api/user/me/").data
+        self.assertEqual(me["id"], self.student.id)
+        self.assertEqual(me["spectator"], {"viewing_as": "student", "roles": ["student", "teacher", "parent"]})
+        self.assertEqual(self.client.get("/api/home/").data["me"]["id"], self.student.id)
+
+    def test_switching_to_another_role(self):
+        self.assertEqual(self.login("teacher").status_code, 200)
+        self.assertEqual(self.client.get("/api/home/").data["me"]["role"], "teacher")
+
+        self.assertEqual(self.login("parent").status_code, 200)
+        self.assertEqual(self.client.get("/api/user/me/").data["id"], self.parent.id)
+
+    def test_changes_are_refused(self):
+        self.login()
+        attempts = [
+            ("post", "/api/exams/1/start_or_resume/", {}),
+            ("post", "/api/comments/create/", {"announcement": 1, "text": "hi"}),
+            ("patch", "/api/update/profile/", {"first_name": "Hacked"}),
+            ("post", "/api/aisupport/", {"message": "hi"}),
+            ("post", "/api/push/register/", {"token": "ExponentPushToken[x]", "platform": "ios"}),
+        ]
+        for method, url, payload in attempts:
+            with self.subTest(url=url):
+                response = getattr(self.client, method)(url, payload, format="json")
+                self.assertEqual(response.status_code, 403)
+                self.assertEqual(response.data["code"], "spectator_read_only")
+
+        self.student.refresh_from_db()
+        self.assertEqual(self.student.first_name, "Nino")
+        self.assertFalse(PushDevice.objects.exists())
+
+    def test_refresh_keeps_the_view_and_logout_works(self):
+        refresh = self.login("teacher").data["refresh"]
+
+        response = self.client.post("/api/auth/refresh/", {"refresh": refresh}, format="json")
+        self.assertEqual(response.status_code, 200)
+        self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {response.data['access']}")
+        self.assertEqual(self.client.get("/api/user/me/").data["id"], self.teacher.id)
+
+        rotated = response.data["refresh"]
+        self.assertEqual(self.client.post("/api/user/logout/", {"refresh": rotated}, format="json").status_code, 200)
+        self.client.credentials()
+        self.assertEqual(self.client.post("/api/auth/refresh/", {"refresh": rotated}, format="json").status_code, 401)
+
+    def test_only_linked_roles_are_offered(self):
+        self.spectator.spectator_views.remove(self.parent)
+
+        self.assertEqual(self.login("parent").status_code, 400)
+        self.login()
+        self.assertEqual(self.client.get("/api/user/me/").data["spectator"]["roles"], ["student", "teacher"])
+
+    def test_turning_spectator_mode_off(self):
+        self.login()
+        self.spectator.spectator_views.remove(self.student)
+        self.assertEqual(self.client.get("/api/user/me/").status_code, 401)
+
+        self.spectator.is_active = False
+        self.spectator.save()
+        self.assertEqual(self.login().status_code, 404)
+
+    def test_not_set_up(self):
+        self.spectator.spectator_views.clear()
+        self.assertEqual(self.login().status_code, 404)
+
+    def test_view_as_claim_is_ignored_for_normal_accounts(self):
+        refresh = RefreshToken.for_user(self.student)
+        refresh["view_as"] = self.teacher.id
+        self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {refresh.access_token}")
+
+        me = self.client.get("/api/user/me/").data
+        self.assertEqual(me["id"], self.student.id)
+        self.assertNotIn("spectator", me)
+
+    def test_there_is_only_one_spectator_account(self):
+        second = User(email="spectator2@school.edu", role=User.Role.SPECTATOR)
+        # What the admin form runs, so it shows a message instead of crashing.
+        with translation.override("en"), self.assertRaisesMessage(ValidationError, "only be one spectator account"):
+            second.validate_constraints()
+
+        with self.assertRaises(IntegrityError), transaction.atomic():
+            User.objects.create_user(email="spectator2@school.edu", role=User.Role.SPECTATOR)
+
+    def test_setup_command(self):
+        self.spectator.delete()
+        out = StringIO()
+
+        call_command("setup_spectator", student=self.student.email, parent=self.parent.email, stdout=out)
+
+        spectator = User.objects.get(role=User.Role.SPECTATOR)
+        self.assertEqual(set(spectator.spectator_views.all()), {self.student, self.parent})
+        self.assertIn("Created the spectator account", out.getvalue())
+
+        call_command("setup_spectator", student=self.other_student.email, stdout=StringIO())
+        self.assertEqual(set(spectator.spectator_views.all()), {self.other_student, self.parent})
+
+        with self.assertRaises(CommandError):
+            call_command("setup_spectator", teacher=self.student.email, stdout=StringIO())
 
 
 class PermissionTests(BaseAPITestCase):

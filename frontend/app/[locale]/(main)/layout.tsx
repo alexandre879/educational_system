@@ -46,6 +46,7 @@ import {
 } from "./components/shell/HeaderBits";
 import MobileDock from "./components/shell/MobileDock";
 import ShortcutsHelp from "./components/shell/ShortcutsHelp";
+import SpectatorBar from "./components/shell/SpectatorBar";
 import StudyDock from "./components/shell/StudyDock";
 import { buildNavItems, isActivePath, profileItem } from "./components/shell/navItems";
 import { isMac, useHotkeys } from "./components/shell/useHotkeys";
@@ -378,6 +379,7 @@ export default function MainLayout({ children }: { children: ReactNode }) {
           </header>
 
           <main id="app-scroll" className={styles.childrenPassingContainer}>
+            {userMe?.spectator ? <SpectatorBar info={userMe.spectator} locale={locale} onExit={handleLogout} /> : null}
             <div key={pathname} className="lg-route">
               <MeContext.Provider value={userMe}>{children}</MeContext.Provider>
             </div>

@@ -56,6 +56,7 @@ export const ICONS = {
   copy: { ios: "doc.on.doc", android: "content_copy" },
   arrowDown: { ios: "arrow.down", android: "arrow_downward" },
   blocked: { ios: "nosign", android: "block" },
+  eye: { ios: "eye.fill", android: "visibility" },
 } as const;
 
 export type IconName = keyof typeof ICONS;

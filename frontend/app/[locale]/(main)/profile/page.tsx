@@ -21,7 +21,9 @@ function getAxiosDetail(err: unknown): string | null {
   const data = resp.data;
   if (!data || typeof data !== "object") return null;
 
-  const detail = (data as Record<string, unknown>).detail;
+  // Spectator refusals are already explained by the spectator bar.
+  const { detail, code } = data as Record<string, unknown>;
+  if (code === "spectator_read_only") return null;
   return typeof detail === "string" ? detail : null;
 }
 

@@ -121,6 +121,14 @@ class UserAdmin(BaseUserAdmin, BaseAdmin):
                 "user_permissions",
             )
         }),
+        (_("Spectator mode"), {
+            "classes": ("collapse",),
+            "description": _(
+                "Only for accounts with the Spectator role: visitors press “View as spectator” on the "
+                "login page and see the site as these people, without being able to change anything."
+            ),
+            "fields": ("spectator_views",),
+        }),
         (_("Important dates"), {
             "fields": ("last_login",),
         }),
@@ -148,7 +156,7 @@ class UserAdmin(BaseUserAdmin, BaseAdmin):
 
     search_fields = ("email", "first_name", "last_name")
     ordering = ("email",)
-    filter_horizontal = ("groups", "user_permissions", "subjects_taught")
+    filter_horizontal = ("groups", "user_permissions", "subjects_taught", "spectator_views")
     list_select_related = ("grade_in",)
 
     def get_list_display(self, request):
