@@ -38,6 +38,8 @@ export default function AssistantScreen() {
   const { t } = useI18n();
   const { colors } = useTheme();
   const headerHeight = useHeaderHeight();
+  // On iOS the header is transparent and this view starts at the top of the screen.
+  const keyboardOffset = Platform.OS === "ios" ? 0 : headerHeight;
   const insets = useSafeAreaInsets();
   const scrollRef = useRef<ScrollView>(null);
 
@@ -102,12 +104,13 @@ export default function AssistantScreen() {
         }}
       />
       <KeyboardAvoidingView
-        style={[styles.flex, { backgroundColor: colors.background }]}
+        style={styles.flex}
         behavior={Platform.OS === "ios" ? "padding" : undefined}
-        keyboardVerticalOffset={headerHeight}
+        keyboardVerticalOffset={keyboardOffset}
       >
         <ScrollView
           ref={scrollRef}
+          contentInsetAdjustmentBehavior="automatic"
           contentContainerStyle={[styles.messages, !messages.length && styles.welcomeContainer]}
           onContentSizeChange={() => {
             if (messages.length) scrollRef.current?.scrollToEnd({ animated: true });

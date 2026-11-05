@@ -1,211 +1,297 @@
+@use "../../styles/liquid" as lg;
+
+// The app shell: a floating glass sidebar and header over the aurora backdrop. Page content
+// scrolls underneath the header, so its glass visibly blurs (and in Chromium refracts) it.
+
+$gap: 12px;
+$header-height: 64px;
+
 .layoutMainContainer {
   display: flex;
+  gap: $gap;
   width: 100%;
   max-width: 100%;
   height: 100vh;
   height: 100dvh;
+  padding: $gap;
   overflow: hidden;
-
-  background:
-    radial-gradient(1200px 600px at 20% 10%, rgba(22, 119, 255, 0.14), transparent 60%),
-    radial-gradient(900px 500px at 80% 20%, rgba(139, 92, 246, 0.1), transparent 55%),
-    var(--bg);
-  background-repeat: no-repeat;
-  background-size: cover;
 }
+
+// ---------------------------------------------------------------- sidebar
 
 .navBar {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  width: 210px;
-  min-width: 210px;
-  z-index: 1000;
-
-  background: var(--surface-soft);
-  border-right: 1px solid var(--border-medium);
-
-  padding: 16px 10px;
-  position: relative;
-  left: 0;
-
+  gap: 10px;
+  flex-shrink: 0;
+  width: 248px;
   height: 100%;
-  overflow-y: auto;
-  overflow-x: hidden;
-
+  padding: 14px 12px 12px;
+  border-radius: 28px;
+  z-index: 1000;
+  color: var(--text-primary);
   transition:
-    left 0.3s ease,
-    background 160ms ease,
-    border-color 160ms ease;
-
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-
-  box-shadow: 10px 0 40px rgba(0, 0, 0, 0.35);
+    width var(--dur-slow) var(--ease-spring),
+    transform var(--dur-slow) var(--ease-spring);
 }
 
-.navBarOpen {
-  left: 0;
+.brandRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 4px 4px 14px;
+  border-bottom: 1px solid var(--border-medium);
 }
 
-.schoolIcon {
-  /* The app icon: a white cap on the brand gradient. */
-  box-sizing: content-box;
-  font-size: 22px;
-  padding: 10px;
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  text-decoration: none;
+  color: var(--text-strong);
+}
+
+.brandMark {
+  position: relative;
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
   border-radius: 14px;
   color: #fff;
   background: var(--brand-gradient);
-  box-shadow: var(--brand-shadow);
-  flex-shrink: 0;
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.35),
+    inset 0 -8px 16px rgb(0 0 0 / 0.15),
+    var(--brand-shadow);
+  transition: transform var(--dur-slow) var(--ease-spring);
+
+  .brand:hover & {
+    transform: rotate(-8deg) scale(1.06);
+  }
 }
 
-.mainLogoContainer {
-  height: 10dvh;
-  min-height: 74px;
-  display: flex;
-  justify-content: center;
-  align-items: flex-end;
-  gap: 10px;
-
-  color: var(--text-primary);
-  font-weight: 900;
-  letter-spacing: 0.35px;
-  font-size: 1.15rem;
-
-  padding: 0 0 26px 0;
-
-  border-bottom: 1px solid var(--border-soft, var(--border-medium));
-}
-
-.middleWrapper {
-  height: 100%;
-  min-height: 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  gap: 18px;
-  padding-top: 10px;
-}
-
-.redirectionCaptions {
-  text-decoration: none;
-  color: inherit;
+.brandName {
   font-size: 16px;
-  display: block;
+  font-weight: 850;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.pageRedirectionWrapper {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-
-  padding: 12px 14px;
-  border-radius: 12px;
-
+.collapseButton {
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--text-muted);
   cursor: pointer;
-  color: var(--text-primary);
-
   transition:
-    background 160ms ease,
-    transform 160ms ease,
-    border-color 160ms ease,
-    color 160ms ease;
-  border: 1px solid transparent;
+    background var(--dur-fast) ease,
+    color var(--dur-fast) ease;
 
   &:hover {
     background: var(--hover-soft);
-    transform: translateY(-1px);
-    border-color: var(--border-medium);
-  }
-
-  &:active {
-    transform: translateY(0);
+    color: var(--text-strong);
   }
 }
 
-.navIcon {
-  color: var(--primary-blue);
-  flex-shrink: 0;
-  width: 17px;
-  height: 17px;
+.navList {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 4px 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }
 
-.MenuCommandSection {
+// Positioned by layout.tsx (top/bottom), so it can stretch between items.
+.navIndicator {
+  position: absolute;
+  left: 0;
+  right: 0;
+  z-index: 0;
+  border-radius: 15px;
+  opacity: 0;
+  pointer-events: none;
+  background: var(--brand-gradient);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.32),
+    inset 0 -6px 14px rgb(0 0 0 / 0.12),
+    0 8px 20px -8px rgb(var(--primary-rgb) / 0.75);
+
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 1px 1px 50% 1px;
+    border-radius: 14px 14px 40% 40% / 14px 14px 12px 12px;
+    background: linear-gradient(180deg, rgb(255 255 255 / 0.22), rgb(255 255 255 / 0));
+  }
+}
+
+.navLink {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 44px;
+  padding: 0 14px;
+  border-radius: 15px;
+  text-decoration: none;
+  color: var(--text-secondary);
   font-size: 14.5px;
-  letter-spacing: 0.25px;
+  font-weight: 650;
+  transition:
+    background var(--dur-fast) ease,
+    color var(--dur-fast) ease;
+
+  &:hover {
+    background: var(--hover-soft);
+    color: var(--text-strong);
+  }
+
+  &:hover .navIcon {
+    transform: scale(1.12);
+  }
+
+  &:focus-visible {
+    outline-offset: -2px;
+  }
 }
 
-.activeLink {
-  .pageRedirectionWrapper {
-    color: #fff;
-    background: var(--brand-gradient);
-    border: 1px solid transparent;
-    box-shadow: var(--brand-shadow);
+.navLinkActive {
+  color: #fff;
 
-    &:hover {
-      background: var(--brand-gradient);
-      border-color: transparent;
-    }
+  &:hover {
+    background: transparent;
+    color: #fff;
   }
 
   .navIcon {
     color: #fff;
   }
-
-  .MenuCommandSection {
-    font-weight: 800;
-  }
 }
 
-.bottomControls {
-  width: 100%;
+.navIcon {
+  flex-shrink: 0;
+  color: var(--primary-blue);
+  transition:
+    transform var(--dur-med) var(--ease-spring),
+    color var(--dur-fast) ease;
+}
+
+.navLabel {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sidebarFooter {
   display: flex;
-  flex-direction: row-reverse;
-  align-items: center;
-  gap: 14px;
+  flex-direction: column;
+  gap: 10px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border-medium);
 }
 
-.themeToggle {
-  width: 48px;
-  min-width: 48px;
-  height: 48px;
-  border: 1px solid var(--border-medium);
-  border-radius: 14px;
-  background: var(--surface-2);
-  color: var(--text-strong);
+.footerButtons {
+  display: flex;
+  gap: 8px;
+}
 
+.footerButton {
+  flex: 1;
+  height: 42px;
   display: grid;
   place-items: center;
-
+  border: none;
+  border-radius: 13px;
+  background: var(--surface-muted);
+  color: var(--text-secondary);
   cursor: pointer;
-  font-size: 18px;
-
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.06);
   transition:
-    transform 160ms ease,
-    background 160ms ease,
-    border-color 160ms ease,
-    color 160ms ease,
-    box-shadow 160ms ease;
+    background var(--dur-fast) ease,
+    color var(--dur-fast) ease,
+    transform var(--dur-med) var(--ease-spring);
 
   &:hover {
-    transform: translateY(-1px);
-    background: var(--surface-soft-hover);
-    border-color: var(--primary-ring);
+    background: var(--primary-muted);
     color: var(--primary-blue);
-    box-shadow: 0 14px 30px rgba(22, 119, 255, 0.12);
+    transform: translateY(-1px);
   }
 
-  &:active {
-    transform: translateY(0);
+  @include lg.press(0.92);
+}
+
+.languageSlot {
+  min-width: 0;
+}
+
+// Icon-only rail (desktop). The attribute is set before paint by the boot script.
+@media (min-width: 1025px) {
+  :global(html[data-sidebar="collapsed"]) {
+    .navBar {
+      width: 80px;
+    }
+
+    .brandRow {
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .brand {
+      gap: 0;
+    }
+
+    .brandName,
+    .navLabel,
+    .languageSlot {
+      display: none;
+    }
+
+    // Let the glass tooltips (data-tip) float outside the rail.
+    .navList {
+      overflow: visible;
+    }
+
+    .navLink {
+      justify-content: center;
+      padding: 0;
+    }
+
+    .footerButtons {
+      flex-direction: column;
+    }
+
+    .footerButton {
+      flex: none;
+      width: 100%;
+    }
   }
 }
 
+// ---------------------------------------------------------------- header
+
 .headerAndMainWrapper {
+  position: relative;
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -214,389 +300,259 @@
 }
 
 .headerSection {
-  position: relative;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
   display: flex;
   align-items: center;
-  width: 100%;
-  height: 10dvh;
-  min-height: 74px;
-  padding: 0 20px;
-  z-index: 1000;
-
-  background: var(--surface-soft);
+  gap: 12px;
+  height: $header-height;
+  padding: 0 12px 0 14px;
+  border-radius: 22px;
   color: var(--text-primary);
-  font-weight: 500;
 
-  border-bottom: 1px solid var(--border-medium);
+  background: var(--glass-sheen), var(--glass-chrome);
+  backdrop-filter: var(--glass-filter);
+  -webkit-backdrop-filter: var(--glass-filter);
+  box-shadow:
+    var(--glass-rim),
+    0 14px 40px -14px rgb(0 0 0 / 0.5);
 
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+  // Clearer glass with refraction where supported: content bends as it slides under the edge.
+  :global(html.lg-refract) & {
+    backdrop-filter: var(--lg-lens, ) blur(calc(var(--glass-blur) * 0.55)) saturate(var(--glass-sat)) brightness(1.03);
+  }
 }
 
-.burgerIcon {
-  cursor: pointer;
-  font-size: 24px;
-  color: var(--text-primary);
+.burgerButton {
   display: none;
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  place-items: center;
+  border: none;
+  border-radius: 12px;
+  background: var(--surface-muted);
+  color: var(--text-primary);
+  cursor: pointer;
+
+  @include lg.press(0.92);
+}
+
+.crumb {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  font-size: 15.5px;
+  font-weight: 750;
+  color: var(--text-strong);
   transition:
-    transform 160ms ease,
-    opacity 160ms ease,
-    color 160ms ease;
+    opacity var(--dur-med) ease,
+    transform var(--dur-slow) var(--ease-spring);
+
+  &[data-visible="false"] {
+    opacity: 0;
+    transform: translateY(10px);
+    pointer-events: none;
+  }
+}
+
+.crumbIcon {
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 11px;
+  color: var(--primary-blue);
+  background: var(--primary-muted);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.1);
+}
+
+.crumbLabel {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.headerSpacer {
+  flex: 1;
+}
+
+.searchPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  width: clamp(220px, 26vw, 340px);
+  height: 42px;
+  padding: 0 8px 0 14px;
+  border: none;
+  border-radius: 999px;
+  background: var(--surface-muted);
+  box-shadow:
+    inset 0 0 0 1px var(--border-medium),
+    inset 0 1px 2px rgb(0 0 0 / 0.08);
+  color: var(--text-muted);
+  font-size: 14px;
+  cursor: pointer;
+  transition:
+    box-shadow var(--dur-fast) ease,
+    background var(--dur-fast) ease,
+    transform var(--dur-med) var(--ease-spring);
 
   &:hover {
-    transform: translateY(-1px);
-    opacity: 0.95;
-  }
-}
-
-.myProfileOuterWrapper {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  min-width: 0;
-}
-
-.myProfileWrapper {
-  width: fit-content;
-  max-width: 100%;
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-  gap: 18px;
-}
-
-.searchBarComponent {
-  margin-bottom: 0;
-  display: flex;
-  align-items: center;
-  min-width: 0;
-  margin-bottom: 15px;
-}
-
-.searchInput {
-  width: 340px;
-  display: block;
-  min-width: 0;
-
-  :global(.ant-select) {
-    width: 100%;
-  }
-
-  :global(.ant-select-selector) {
-    padding: 0 !important;
-    border: none !important;
-    background: transparent !important;
-    box-shadow: none !important;
-  }
-
-  :global(.ant-input-affix-wrapper) {
-    width: 100% !important;
-    height: 50px !important;
-    padding: 0 14px !important;
-
-    display: flex !important;
-    align-items: center !important;
-
-    background: var(--surface) !important;
-    color: var(--text-primary) !important;
-
-    border: 1px solid var(--border-medium) !important;
-    border-radius: 16px !important;
-    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.2) !important;
-
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-
-    transition:
-      border-color 160ms ease,
-      box-shadow 160ms ease,
-      background 160ms ease,
-      transform 160ms ease !important;
-  }
-
-  :global(.ant-input-affix-wrapper:hover) {
-    border-color: var(--border-strong) !important;
-    background: var(--surface-soft) !important;
-  }
-
-  :global(.ant-input-affix-wrapper:focus-within),
-  :global(.ant-input-affix-wrapper-focused) {
-    border-color: var(--primary-ring) !important;
+    background: var(--hover-soft);
     box-shadow:
       inset 0 0 0 1px var(--primary-ring),
-      0 12px 28px rgba(0, 0, 0, 0.24) !important;
-    background: var(--surface-soft-hover) !important;
-  }
-
-  :global(.ant-input) {
-    height: 100% !important;
-    font-size: 14px;
-    border: none !important;
-    background: transparent !important;
-    color: var(--text-primary) !important;
-    box-shadow: none !important;
-    outline: none !important;
-  }
-
-  :global(.ant-input:focus) {
-    box-shadow: none !important;
-    outline: none !important;
-  }
-
-  :global(.ant-input::placeholder) {
-    color: var(--placeholder);
-  }
-
-  :global(.ant-input-clear-icon) {
+      0 0 0 4px var(--primary-ring-soft);
     color: var(--text-secondary);
-    transition: color 160ms ease, transform 160ms ease;
   }
 
-  :global(.ant-input-clear-icon:hover) {
-    color: var(--text-primary);
-    transform: scale(1.05);
-  }
+  @include lg.press(0.98);
 }
 
-.searchDropdown {
-  background: var(--surface-soft) !important;
-  border: 1px solid var(--border-medium) !important;
-  border-radius: 14px !important;
-  padding: 6px !important;
-
-  backdrop-filter: blur(12px) !important;
-  -webkit-backdrop-filter: blur(12px) !important;
-
-  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.3) !important;
-  margin-top: 8px !important;
-
-  :global(.ant-select-item) {
-    min-height: 42px;
-    display: flex;
-    align-items: center;
-    background-color: transparent !important;
-    color: var(--text-primary) !important;
-    border-radius: 10px;
-    padding: 10px 12px !important;
-    transition:
-      background-color 0.15s ease,
-      transform 0.15s ease,
-      color 0.15s ease;
-  }
-
-  :global(.ant-select-item-option-active) {
-    background-color: var(--hover-soft) !important;
-    transform: translateX(2px);
-  }
-
-  :global(.ant-select-item-option-selected) {
-    background-color: rgba(22, 119, 255, 0.14) !important;
-    color: var(--text-primary) !important;
-  }
-
-  :global(.ant-select-item-option-content) {
-    color: var(--text-primary) !important;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  :global(.ant-empty) {
-    margin: 8px 0 !important;
-  }
-
-  :global(.ant-empty-description) {
-    color: var(--text-secondary) !important;
-  }
+.searchText {
+  flex: 1;
+  min-width: 0;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.userAndDropOutLineWrapper {
-  display: flex;
-  align-items: center;
-  gap: 10px;
+.searchKeys {
+  display: inline-flex;
+  gap: 3px;
+}
 
-  background: var(--surface);
-  border: 1px solid var(--border-medium);
-
-  padding: 8px 10px;
-  border-radius: 16px;
-
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-
-  box-shadow: 0 12px 34px rgba(0, 0, 0, 0.25);
+.avatarButton {
+  flex-shrink: 0;
+  padding: 2px;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+  box-shadow: 0 0 0 1.5px var(--border-strong);
   transition:
-    transform 160ms ease,
-    border-color 160ms ease,
-    background 160ms ease;
+    box-shadow var(--dur-med) ease,
+    transform var(--dur-med) var(--ease-spring);
 
   &:hover {
-    transform: translateY(-1px);
-    border-color: rgba(22, 119, 255, 0.22);
-    background: var(--surface-soft-hover);
+    box-shadow:
+      0 0 0 2px rgb(var(--primary-rgb) / 0.8),
+      0 6px 18px -4px rgb(var(--primary-rgb) / 0.6);
+    transform: scale(1.04);
   }
 
-  &:active {
-    transform: translateY(0);
-  }
-}
-
-.outerWrapperProfile {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-}
-
-.profilePictureWrapper {
-  border-radius: 50%;
-  overflow: hidden;
-
-  border: 1px solid var(--border-strong);
-  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.35);
+  @include lg.press(0.94);
 }
 
 .avatar {
   display: block;
 }
 
+// ---------------------------------------------------------------- content
+
 .childrenPassingContainer {
   flex: 1;
   min-height: 0;
   min-width: 0;
-
   color: var(--text-primary);
   overflow-y: auto;
   overflow-x: hidden;
-  padding: 24px;
-
-  background:
-    radial-gradient(1100px 520px at 25% 5%, rgba(22, 119, 255, 0.08), transparent 60%),
-    var(--bg);
+  padding: calc(#{$header-height} + 24px) 12px 32px;
+  scroll-padding-top: calc(#{$header-height} + 16px);
 }
 
 .overlay {
   display: none;
-  position: fixed;
-  inset: 0;
-  background-color: rgba(0, 0, 0, 0.45);
-  z-index: 8000;
-  backdrop-filter: blur(2px);
-  -webkit-backdrop-filter: blur(2px);
 }
 
+// ---------------------------------------------------------------- tablet & phone
+
 @media (max-width: 1024px) {
-  .myProfileOuterWrapper {
-    justify-content: start;
-  }
-
-  .headerSection {
-    flex-direction: row-reverse;
-    justify-content: space-between;
-  }
-
-  .myProfileWrapper {
-    flex-direction: row-reverse;
-    justify-content: start;
-  }
-
-  .outerWrapperProfile {
-    flex-direction: row-reverse;
-  }
-
-  .navBar {
+  // Doubled up to beat the global .lg-chrome's `position: relative` regardless of CSS order.
+  .layoutMainContainer .navBar {
     position: fixed;
-    top: 0;
-    left: -250px;
-    height: 100dvh;
-    z-index: 9000;
+    top: $gap;
+    bottom: $gap;
+    left: $gap;
+    height: auto;
+    width: min(290px, calc(100vw - 48px));
+    // Above the phone dock (9400) and the study orb (9500), like a sheet over a tab bar.
+    z-index: 9700;
+    transform: translateX(calc(-100% - 2 * #{$gap}));
+    box-shadow:
+      var(--glass-rim),
+      0 30px 80px -10px rgb(0 0 0 / 0.6);
   }
 
-  .navBarOpen {
-    left: 0;
+  .layoutMainContainer .navBarOpen {
+    transform: translateX(0);
   }
 
-  .burgerIcon {
-    display: block;
+  .collapseButton {
+    display: none;
+  }
+
+  .burgerButton {
+    display: grid;
   }
 
   .overlay {
     display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 9600;
+    background: rgb(2 4 10 / 0.36);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    animation: fadeIn 240ms ease both;
   }
+}
 
-  .searchInput {
-    width: 280px;
-
-    :global(.ant-input-affix-wrapper) {
-      height: 48px !important;
-    }
-
-    :global(.ant-input) {
-      font-size: 13px;
-    }
+@keyframes fadeIn {
+  from {
+    opacity: 0;
   }
 }
 
 @media (max-width: 768px) {
-  .navBar {
-    width: 220px;
-    min-width: 220px;
-  }
-
-  .myProfileOuterWrapper {
-    height: 100%;
-    justify-content: start;
+  .layoutMainContainer {
+    padding: 8px;
   }
 
   .headerSection {
-    justify-content: flex-end;
-    padding: 0 12px;
+    height: 58px;
+    gap: 8px;
+    padding: 0 8px;
+    border-radius: 20px;
   }
 
-  .myProfileWrapper {
-    gap: 10px;
+  .crumb {
+    font-size: 15px;
   }
 
-  .searchInput {
-    width: 240px;
+  .crumbIcon {
+    display: none;
+  }
 
-    :global(.ant-input-affix-wrapper) {
-      height: 46px !important;
-    }
+  .searchPill {
+    width: 42px;
+    padding: 0;
+    justify-content: center;
+    flex-shrink: 0;
+  }
 
-    :global(.ant-input) {
-      font-size: 12.5px;
-    }
+  .searchText,
+  .searchKeys {
+    display: none;
   }
 
   .childrenPassingContainer {
-    padding: 16px;
-  }
-}
-
-@media (max-width: 480px) {
-  .searchInput {
-    width: 200px;
-
-    :global(.ant-input-affix-wrapper) {
-      height: 44px !important;
-    }
-
-    :global(.ant-input) {
-      font-size: 12px;
-    }
-  }
-
-  .themeToggle {
-    width: 44px;
-    min-width: 44px;
-    height: 44px;
-    font-size: 16px;
-  }
-
-  .userAndDropOutLineWrapper {
-    padding: 6px 8px;
+    padding: calc(58px + 18px) 6px calc(104px + env(safe-area-inset-bottom));
   }
 }

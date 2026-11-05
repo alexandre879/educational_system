@@ -10,6 +10,8 @@ from api.views import (
     AttendanceHistoryView,
     AvailableExamsView,
     CalendarView,
+    CommentDetailView,
+    CommentReactView,
     CreateCommentView,
     DailyExercisesView,
     ExamHistoryView,
@@ -67,6 +69,8 @@ urlpatterns = [
     path("announcements/<int:announcement_id>/", AnnouncementDetailView.as_view(), name="announcements-detail"),
     path("comments/create/", CreateCommentView.as_view(), name="comments-create"),
     path("comments/", ListCommentsView.as_view(), name="comments-list"),
+    path("comments/<int:comment_id>/", CommentDetailView.as_view(), name="comments-detail"),
+    path("comments/<int:comment_id>/react/", CommentReactView.as_view(), name="comments-react"),
 
     path(
         "leader-board/list/<int:subject_pk>/<int:grade_pk>/<int:category_pk>/",

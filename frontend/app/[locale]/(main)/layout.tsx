@@ -1,24 +1,24 @@
 "use client";
 
-import React, { ReactNode, useEffect, useRef, useState } from "react";
+import { ReactNode, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import {
-  FaBars,
-  FaHome,
-  FaTrophy,
-  FaFileAlt,
-  FaBookOpen,
-  FaGraduationCap,
-  FaBullhorn,
-  FaAtom,
-  FaClipboardCheck,
-  FaClipboardList,
-  FaCalendarAlt,
-  FaCalendarCheck,
-  FaStar,
-} from "react-icons/fa";
-import { MoonOutlined, SunOutlined } from "@ant-design/icons";
-import { AutoComplete, ConfigProvider, Dropdown, Input, Modal, Space, theme as antdTheme } from "antd";
-import type { DefaultOptionType } from "antd/es/select";
+  GraduationCap,
+  Keyboard,
+  Languages,
+  LogOut,
+  Menu,
+  Moon,
+  Palette,
+  PanelLeftClose,
+  PanelLeftOpen,
+  Pause,
+  Search,
+  Sun,
+  Timer,
+  UserRound,
+} from "lucide-react";
+import { ConfigProvider, Dropdown, Modal, theme as antdTheme } from "antd";
+import type { MenuProps } from "antd";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { AxiosError, AxiosResponse } from "axios";
@@ -28,60 +28,58 @@ import { useTranslations } from "next-intl";
 import styles from "./MainLayout.module.scss";
 import api from "@/interceptors";
 import { clearTokens, getRefreshToken } from "@/lib/auth";
+import { ACCENTS, resolvedTheme, setAppearance, toggleTheme, useAppearance } from "@/lib/appearance";
+import { focusTimer, useFocusTimer } from "@/lib/focusTimer";
+import { useLiquidLens } from "@/lib/liquidLens";
 import { UserMeData } from "./profile/interface";
-import {
-  ReturnedAnnouncementData,
-  ReturnedExamData,
-  ReturnedExerciseData,
-  ReturnedSubjectData,
-  SearchKind,
-} from "./interface";
-import { getDropdownItems } from "./utils";
-import LanguageSwitcher from "../components/LanguageSwitcher/LanguageSwitcher";
-import { getLocalizedValue } from "@/lib/localized";
+import LanguageSwitcher, { LANGUAGE_OPTIONS, pathForLocale } from "../components/LanguageSwitcher/LanguageSwitcher";
 import { MeContext } from "./components/MeContext";
+import AppearancePanel from "./components/shell/AppearancePanel";
+import CommandPalette, { type PaletteAction } from "./components/shell/CommandPalette";
+import {
+  BackToTop,
+  ConnectionPill,
+  FocusChip,
+  HeaderClock,
+  ScrollProgress,
+  useAppScrolled,
+} from "./components/shell/HeaderBits";
+import MobileDock from "./components/shell/MobileDock";
+import ShortcutsHelp from "./components/shell/ShortcutsHelp";
+import StudyDock from "./components/shell/StudyDock";
+import { buildNavItems, isActivePath, profileItem } from "./components/shell/navItems";
+import { isMac, useHotkeys } from "./components/shell/useHotkeys";
 
-type SearchAutoOption = DefaultOptionType & {
-  kind: SearchKind;
-  id: number;
-};
-
-const THEME_KEY = "theme";
-
-function getTitleFromAnnouncement(
-  a: ReturnedAnnouncementData,
-  locale: string
-): string {
-  const title = getLocalizedValue(a.title, locale);
-  if (title) return title;
-
-  return getLocalizedValue(a.content, locale);
-}
-
-function shorten(text: string, max = 60): string {
-  if (!text) return "";
-  return text.length > max ? `${text.slice(0, max)}...` : text;
-}
+type Panel = "palette" | "appearance" | "shortcuts" | null;
 
 export default function MainLayout({ children }: { children: ReactNode }) {
   const t = useTranslations("Layout");
+  const tg = useTranslations("Glass");
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [userMe, setUserMe] = useState<UserMeData | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [theme, setTheme] = useState<"dark" | "light">("dark");
+  const [panel, setPanel] = useState<Panel>(null);
+  const [studyOpen, setStudyOpen] = useState(false);
+  const [mod, setMod] = useState("Ctrl");
 
-  const [options, setOptions] = useState<SearchAutoOption[]>([]);
-  const [searchValue, setSearchValue] = useState("");
-
-  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const lastQueryRef = useRef("");
+  const appearance = useAppearance();
+  const focus = useFocusTimer();
+  const theme = resolvedTheme(appearance);
+  const collapsed = appearance.sidebarCollapsed;
 
   const pathname = usePathname();
   const router = useRouter();
 
+  const headerRef = useRef<HTMLElement>(null);
+  const navListRef = useRef<HTMLDivElement>(null);
+  const indicatorRef = useRef<HTMLSpanElement>(null);
+
   const locale = (pathname?.split("/")[1] || "en").trim();
   const cleanPath = pathname?.replace(`/${locale}`, "") || "/";
+
+  // Real refraction along the header's edges (Chromium); elsewhere it's frosted glass.
+  useLiquidLens(headerRef, { bezel: 14, scale: 34 });
 
   useEffect(() => {
     setSidebarOpen(false);
@@ -93,38 +91,24 @@ export default function MainLayout({ children }: { children: ReactNode }) {
   }, [pathname]);
 
   useEffect(() => {
-    try {
-      const savedTheme =
-        (window.localStorage.getItem(THEME_KEY) as "dark" | "light" | null) || "dark";
-
-      setTheme(savedTheme);
-      document.documentElement.setAttribute("data-theme", savedTheme);
-    } catch {
-      // ignore
-    }
+    if (isMac()) setMod("⌘");
   }, []);
 
-  useEffect(() => {
-    return () => {
-      if (debounceRef.current) clearTimeout(debounceRef.current);
-    };
-  }, []);
-
-  const handleThemeToggle = () => {
-    const nextTheme = theme === "dark" ? "light" : "dark";
-    setTheme(nextTheme);
-
-    try {
-      window.localStorage.setItem(THEME_KEY, nextTheme);
-    } catch {
-      // ignore
-    }
-
-    document.documentElement.setAttribute("data-theme", nextTheme);
-  };
+  const role = userMe?.role;
+  const tNav = useCallback((key: string) => tg(key), [tg]);
+  const navItems = useMemo(() => buildNavItems(role, locale, tNav), [role, locale, tNav]);
+  const profile = useMemo(() => profileItem(locale, tNav), [locale, tNav]);
+  const current = [...navItems, profile].find((item) => isActivePath(pathname ?? "", item.href, locale)) ?? null;
+  const dockItems = navItems.filter((item) => item.dock);
+  const examInProgress = /^\/exam\/[^/]+\/start/.test(cleanPath);
+  // Like an iOS large title: the page names itself, and the header takes over once that scrolls away.
+  const showCrumb = useAppScrolled(56, pathname ?? "");
 
   const toggleSidebar = () => setSidebarOpen((prev) => !prev);
-  const showModal = () => setIsModalOpen(true);
+  const toggleCollapsed = useCallback(
+    () => setAppearance({ sidebarCollapsed: !appearance.sidebarCollapsed }),
+    [appearance.sidebarCollapsed]
+  );
 
   const handleLogout = async () => {
     try {
@@ -143,342 +127,282 @@ export default function MainLayout({ children }: { children: ReactNode }) {
   };
 
   const onDropdownClick = ({ key }: { key: string }) => {
-    if (key === "logout") showModal();
+    if (key === "logout") setIsModalOpen(true);
     if (key === "profile") router.push(`/${locale}/profile`);
+    if (key === "appearance") setPanel("appearance");
   };
 
-  const isActive = (href: string) => {
-    const cleanHref = href.replace(`/${locale}`, "") || "/";
-
-    if (cleanHref === "/home") {
-      return cleanPath === "/home" || cleanPath === "/";
-    }
-
-    return cleanPath === cleanHref || cleanPath.startsWith(cleanHref + "/");
-  };
-
-  const role = userMe?.role;
-  const isStaff = role === "teacher" || role === "admin";
-
-  const navItems = [
-    {
-      href: `/${locale}/home`,
-      label: t("nav.home"),
-      icon: <FaHome className={styles.navIcon} />,
-    },
-    {
-      href: `/${locale}/announcement`,
-      label: t("nav.announcement"),
-      icon: <FaBullhorn className={styles.navIcon} />,
-    },
-    {
-      href: `/${locale}/leader-board`,
-      label: t("nav.leaderboard"),
-      icon: <FaTrophy className={styles.navIcon} />,
-    },
-    ...(isStaff
-      ? [
-          {
-            href: `/${locale}/attendance`,
-            label: t("nav.attendance"),
-            icon: <FaClipboardCheck className={styles.navIcon} />,
-          },
-        ]
-      : []),
-    ...(role === "teacher"
-      ? [
-          {
-            href: `/${locale}/gradebook`,
-            label: t("nav.gradebook"),
-            icon: <FaClipboardList className={styles.navIcon} />,
-          },
-        ]
-      : []),
-    ...(role === "student" || role === "parent"
-      ? [
-          {
-            href: `/${locale}/marks`,
-            label: t("nav.marks"),
-            icon: <FaStar className={styles.navIcon} />,
-          },
-        ]
-      : []),
-    ...(role && role !== "admin"
-      ? [
-          {
-            href: `/${locale}/calendar`,
-            label: t("nav.calendar"),
-            icon: <FaCalendarCheck className={styles.navIcon} />,
-          },
-        ]
-      : []),
-    {
-      href: `/${locale}/subjects`,
-      label: t("nav.subjects"),
-      icon: <FaAtom className={styles.navIcon} />,
-    },
-    {
-      href: `/${locale}/exercise`,
-      label: t("nav.exercises"),
-      icon: <FaBookOpen className={styles.navIcon} />,
-    },
-    {
-      href: `/${locale}/exam`,
-      label: t("nav.exams"),
-      icon: <FaFileAlt className={styles.navIcon} />,
-    },
-    ...(userMe && !isStaff
-      ? [
-          {
-            href: `/${locale}/schedule`,
-            label: t("nav.schedule"),
-            icon: <FaCalendarAlt className={styles.navIcon} />,
-          },
-        ]
-      : []),
+  const accountMenu: MenuProps["items"] = [
+    { key: "profile", label: tg("nav.profile"), icon: <UserRound size={15} /> },
+    { key: "appearance", label: tg("header.appearance"), icon: <Palette size={15} /> },
+    { type: "divider" },
+    { key: "logout", danger: true, label: tg("palette.logout"), icon: <LogOut size={15} /> },
   ];
 
-  const fetchSearch = async (q: string) => {
-    const trimmed = q.trim();
+  // The selection lens slides between sidebar items. Its leading edge moves first and the
+  // trailing edge follows, so it stretches toward the new item like a drop of liquid.
+  useLayoutEffect(() => {
+    const list = navListRef.current;
+    const indicator = indicatorRef.current;
+    if (!list || !indicator) return;
 
-    if (!trimmed) {
-      setOptions([]);
-      lastQueryRef.current = "";
-      return;
-    }
+    const place = (animate: boolean) => {
+      const active = list.querySelector<HTMLElement>('[aria-current="page"]');
+      if (!active) {
+        indicator.style.opacity = "0";
+        return;
+      }
+      const top = active.offsetTop;
+      const bottom = list.clientHeight - (top + active.offsetHeight);
+      const previous = Number(indicator.dataset.top ?? -1);
+      const lead = "380ms var(--ease-spring)";
+      const follow = "620ms var(--ease-spring) 50ms";
 
-    if (lastQueryRef.current === trimmed) return;
-    lastQueryRef.current = trimmed;
+      indicator.style.transition =
+        animate && previous >= 0
+          ? top > previous
+            ? `bottom ${lead}, top ${follow}, opacity 200ms ease`
+            : `top ${lead}, bottom ${follow}, opacity 200ms ease`
+          : "opacity 200ms ease";
+      indicator.style.top = `${top}px`;
+      indicator.style.bottom = `${bottom}px`;
+      indicator.style.opacity = "1";
+      indicator.dataset.top = String(top);
+    };
 
-    try {
-      const res = await api.get("/search/", { params: { q: trimmed } });
+    place(true);
+    let height = list.clientHeight;
+    const observer = new ResizeObserver(() => {
+      if (list.clientHeight === height) return;
+      height = list.clientHeight;
+      place(false);
+    });
+    observer.observe(list);
+    return () => observer.disconnect();
+  }, [pathname, navItems, collapsed]);
 
-      const subjects: SearchAutoOption[] = (res.data?.subjects ?? []).map(
-        (s: ReturnedSubjectData) => {
-          const subjectName = getLocalizedValue(s.name, locale);
+  const closePanel = useCallback(() => setPanel(null), []);
+  const goTo = useCallback((href: string) => router.push(href), [router]);
 
-          return {
-            value: `subject:${s.pk}`,
-            label: `📚 ${t("search.subject")}: ${shorten(subjectName) || t("search.untitled")}`,
-            kind: "subject",
-            id: s.pk,
-          };
-        }
-      );
+  useHotkeys({
+    palette: () => setPanel((open) => (open === "palette" ? null : "palette")),
+    help: () => setPanel("shortcuts"),
+    theme: toggleTheme,
+    study: () => setStudyOpen((open) => !open),
+    sidebar: toggleCollapsed,
+    go: (key) => {
+      const target = [...navItems, profile].find((item) => item.hotkey === key);
+      if (target) goTo(target.href);
+      return Boolean(target);
+    },
+  });
 
-      const exams: SearchAutoOption[] = (res.data?.exams ?? []).map(
-        (e: ReturnedExamData) => {
-          const examTitle = getLocalizedValue(e.title, locale);
+  const paletteActions: PaletteAction[] = [
+    {
+      id: "theme",
+      label: theme === "dark" ? tg("header.toLight") : tg("header.toDark"),
+      Icon: theme === "dark" ? Sun : Moon,
+      run: toggleTheme,
+      shortcut: ["⇧", "T"],
+    },
+    { id: "appearance", label: tg("palette.appearance"), Icon: Palette, run: () => setPanel("appearance") },
+    focus.running
+      ? { id: "focus", label: tg("palette.focusPause"), Icon: Pause, run: focusTimer.pause }
+      : {
+          id: "focus",
+          label: tg("palette.focusStart"),
+          Icon: Timer,
+          run: () => {
+            focusTimer.start();
+            setStudyOpen(true);
+          },
+          keywords: "pomodoro timer",
+        },
+    { id: "study", label: tg("palette.openStudy"), Icon: Timer, run: () => setStudyOpen(true), shortcut: ["⇧", "F"] },
+    {
+      id: "sidebar",
+      label: collapsed ? tg("header.expand") : tg("header.collapse"),
+      Icon: collapsed ? PanelLeftOpen : PanelLeftClose,
+      run: toggleCollapsed,
+      shortcut: ["["],
+    },
+    { id: "shortcuts", label: tg("palette.shortcuts"), Icon: Keyboard, run: () => setPanel("shortcuts"), shortcut: ["?"] },
+    ...LANGUAGE_OPTIONS.filter((option) => option.value !== locale).map((option) => ({
+      id: `lang-${option.value}`,
+      label: tg("palette.language", { name: option.label }),
+      Icon: Languages,
+      run: () => router.push(pathForLocale(pathname ?? "/", option.value)),
+      keywords: "language locale",
+    })),
+    { id: "profile", label: tg("nav.profile"), Icon: UserRound, run: () => goTo(profile.href) },
+    { id: "logout", label: tg("palette.logout"), Icon: LogOut, run: () => setIsModalOpen(true) },
+  ];
 
-          return {
-            value: `exam:${e.pk}`,
-            label: `📝 ${t("search.exam")}: ${shorten(examTitle) || t("search.untitled")}`,
-            kind: "exam",
-            id: e.pk,
-          };
-        }
-      );
-
-      const announcements: SearchAutoOption[] = (res.data?.announcements ?? []).map(
-        (a: ReturnedAnnouncementData) => {
-          const title = getTitleFromAnnouncement(a, locale);
-
-          return {
-            value: `announcement:${a.pk}`,
-            label: `📣 ${t("search.announcement")}: ${shorten(title) || t("search.untitled")}`,
-            kind: "announcement",
-            id: a.pk,
-          };
-        }
-      );
-
-      const exercises: SearchAutoOption[] = (res.data?.exercises ?? []).map(
-        (e: ReturnedExerciseData) => {
-          const title = getLocalizedValue(e.title, locale);
-
-          return {
-            value: `exercise:${e.id}`,
-            label: `📘 ${t("search.exercise")}: ${shorten(title) || t("search.untitled")}`,
-            kind: "exercise",
-            id: e.subject__id ?? e.id,
-          };
-        }
-      );
-
-      setOptions([...subjects, ...exams, ...announcements, ...exercises]);
-    } catch {
-      setOptions([]);
-    }
-  };
-
-  const handleSearch = (value: string) => {
-    setSearchValue(value);
-
-    if (debounceRef.current) clearTimeout(debounceRef.current);
-
-    debounceRef.current = setTimeout(() => {
-      fetchSearch(value);
-    }, 250);
-  };
-
-  const handleSelect = (_value: string, option: SearchAutoOption) => {
-    const { kind, id } = option;
-
-    switch (kind) {
-      case "subject":
-        router.push(`/${locale}/subjects?openSubject=${id}`);
-        break;
-      case "exam":
-        router.push(`/${locale}/exam?openExam=${id}`);
-        break;
-      case "announcement":
-        router.push(`/${locale}/announcement?openAnnouncement=${id}`);
-        break;
-      case "exercise":
-        router.push(`/${locale}/exercise?openSubject=${id}`);
-        break;
-      default:
-        break;
-    }
-
-    setOptions([]);
-    setSearchValue("");
-    lastQueryRef.current = "";
-  };
-
-  const handleChange = (value: string) => {
-    setSearchValue(value);
-
-    if (!value.trim()) {
-      setOptions([]);
-      lastQueryRef.current = "";
-      if (debounceRef.current) clearTimeout(debounceRef.current);
-    }
-  };
-
-  const handleBlur = () => {
-    setTimeout(() => setOptions([]), 150);
-  };
-
-  const handleEnterSearch = (value: string) => {
-    fetchSearch(value);
-  };
+  const primary = ACCENTS[appearance.accent][theme];
+  const antdConfig = useMemo(
+    () => ({
+      // Same brand color and rounded controls as the mobile app, on translucent surfaces.
+      algorithm: theme === "dark" ? antdTheme.darkAlgorithm : antdTheme.defaultAlgorithm,
+      token:
+        theme === "dark"
+          ? {
+              colorPrimary: primary,
+              borderRadius: 12,
+              colorBgContainer: "rgba(255, 255, 255, 0.045)",
+              colorBgElevated: "rgba(22, 27, 40, 0.8)",
+            }
+          : {
+              colorPrimary: primary,
+              borderRadius: 12,
+              colorBgContainer: "rgba(255, 255, 255, 0.62)",
+              colorBgElevated: "rgba(255, 255, 255, 0.84)",
+            },
+    }),
+    [theme, primary]
+  );
 
   return (
-    <ConfigProvider
-      theme={{
-        // Same brand blue, rounded controls and dark surfaces as the mobile app.
-        algorithm: theme === "dark" ? antdTheme.darkAlgorithm : antdTheme.defaultAlgorithm,
-        token:
-          theme === "dark"
-            ? { colorPrimary: "#4c8dff", borderRadius: 12, colorBgContainer: "#12161f", colorBgElevated: "#1b2130" }
-            : { colorPrimary: "#1677ff", borderRadius: 12 },
-      }}
-    >
+    <ConfigProvider theme={antdConfig}>
       <div className={styles.layoutMainContainer}>
-        <nav className={`${styles.navBar} ${sidebarOpen ? styles.navBarOpen : ""}`}>
-          <div className={styles.mainLogoContainer}>
-            <FaGraduationCap className={styles.schoolIcon} />
-            <span>{t("school")}</span>
+        <nav className={`${styles.navBar} ${sidebarOpen ? styles.navBarOpen : ""} lg-chrome lg-rim`}>
+          <div className={styles.brandRow}>
+            <Link href={`/${locale}/home`} className={styles.brand}>
+              <span className={styles.brandMark}>
+                <GraduationCap size={22} strokeWidth={2.2} />
+              </span>
+              <span className={styles.brandName}>{t("school")}</span>
+            </Link>
+            <button
+              type="button"
+              className={styles.collapseButton}
+              onClick={toggleCollapsed}
+              aria-label={collapsed ? tg("header.expand") : tg("header.collapse")}
+              title={collapsed ? tg("header.expand") : tg("header.collapse")}
+            >
+              {collapsed ? <PanelLeftOpen size={18} /> : <PanelLeftClose size={18} />}
+            </button>
           </div>
 
-          <div className={styles.middleWrapper}>
-            <div>
-              {navItems.map((item) => (
+          <div className={styles.navList} ref={navListRef}>
+            <span className={styles.navIndicator} ref={indicatorRef} aria-hidden="true" />
+            {navItems.map((item) => {
+              const active = isActivePath(pathname ?? "", item.href, locale);
+              return (
                 <Link
-                  key={item.href}
+                  key={item.key}
                   href={item.href}
-                  className={`${styles.redirectionCaptions} ${
-                    isActive(item.href) ? styles.activeLink : ""
-                  }`}
-                  aria-current={isActive(item.href) ? "page" : undefined}
+                  className={`${styles.navLink} ${active ? styles.navLinkActive : ""}`}
+                  aria-current={active ? "page" : undefined}
+                  data-tip={collapsed ? item.label : undefined}
                 >
-                  <div className={styles.pageRedirectionWrapper}>
-                    {item.icon}
-                    <span className={styles.MenuCommandSection}>{item.label}</span>
-                  </div>
+                  <item.Icon className={styles.navIcon} size={19} strokeWidth={active ? 2.3 : 2} />
+                  <span className={styles.navLabel}>{item.label}</span>
                 </Link>
-              ))}
+              );
+            })}
+          </div>
+
+          <div className={styles.sidebarFooter}>
+            <div className={styles.footerButtons}>
+              <button
+                type="button"
+                className={styles.footerButton}
+                onClick={toggleTheme}
+                aria-label={theme === "dark" ? tg("header.toLight") : tg("header.toDark")}
+                data-tip={collapsed ? (theme === "dark" ? tg("header.toLight") : tg("header.toDark")) : undefined}
+              >
+                {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
+              </button>
+              <button
+                type="button"
+                className={styles.footerButton}
+                onClick={() => setPanel("appearance")}
+                aria-label={tg("header.appearance")}
+                data-tip={collapsed ? tg("header.appearance") : undefined}
+              >
+                <Palette size={18} />
+              </button>
+              <button
+                type="button"
+                className={styles.footerButton}
+                onClick={() => setPanel("shortcuts")}
+                aria-label={tg("palette.shortcuts")}
+                data-tip={collapsed ? tg("palette.shortcuts") : undefined}
+              >
+                <Keyboard size={18} />
+              </button>
             </div>
 
-            <div style={{ width: "100%" }}>
-              <div className={styles.bottomControls}>
-                <button
-                  type="button"
-                  className={styles.themeToggle}
-                  onClick={handleThemeToggle}
-                  aria-label={theme === "dark" ? "Switch to light theme" : "Switch to dark theme"}
-                  title={theme === "dark" ? "Light mode" : "Dark mode"}
-                >
-                  {theme === "dark" ? <SunOutlined /> : <MoonOutlined />}
-                </button>
-
-                <LanguageSwitcher variant="sidebar" />
-              </div>
+            <div className={styles.languageSlot}>
+              <LanguageSwitcher variant="sidebar" />
             </div>
           </div>
         </nav>
 
         <div className={styles.headerAndMainWrapper}>
-          <header className={styles.headerSection}>
-            <FaBars className={styles.burgerIcon} onClick={toggleSidebar} />
+          <header ref={headerRef} className={`${styles.headerSection} lg-rim`}>
+            <button type="button" className={styles.burgerButton} onClick={toggleSidebar} aria-label={tg("header.menu")}>
+              <Menu size={20} />
+            </button>
 
-            <div className={styles.myProfileOuterWrapper}>
-              <div className={styles.myProfileWrapper}>
-                <div className={styles.searchBarComponent}>
-                  <AutoComplete
-                    options={options}
-                    value={searchValue}
-                    onSearch={handleSearch}
-                    onSelect={handleSelect}
-                    onChange={handleChange}
-                    filterOption={false}
-                    popupMatchSelectWidth
-                    classNames={{ popup: { root: styles.searchDropdown } }}
-                    className={styles.searchInput}
-                  >
-                    <Input
-                      placeholder={t("search.placeholder")}
-                      allowClear
-                      onPressEnter={(e) =>
-                        handleEnterSearch((e.target as HTMLInputElement).value)
-                      }
-                      onBlur={handleBlur}
-                    />
-                  </AutoComplete>
-                </div>
-
-                <Dropdown
-                  trigger={["click"]}
-                  menu={{ items: getDropdownItems(t), onClick: onDropdownClick }}
-                  placement="bottomRight"
-                >
-                  <a onClick={(e) => e.preventDefault()}>
-                    <Space>
-                      <div className={styles.outerWrapperProfile}>
-                        <div className={styles.userAndDropOutLineWrapper}>
-                          <div className={styles.profilePictureWrapper}>
-                            <Avatar
-                              src={userMe?.profilePic ?? undefined}
-                              className={styles.avatar}
-                              sx={{ width: 40, height: 40 }}
-                            />
-                          </div>
-                        </div>
-                      </div>
-                    </Space>
-                  </a>
-                </Dropdown>
+            {current ? (
+              <div className={styles.crumb} data-visible={showCrumb} aria-hidden={!showCrumb}>
+                <span className={styles.crumbIcon}>
+                  <current.Icon size={17} />
+                </span>
+                <span className={styles.crumbLabel}>{current.label}</span>
               </div>
-            </div>
+            ) : null}
+
+            <div className={styles.headerSpacer} />
+
+            <button type="button" className={styles.searchPill} onClick={() => setPanel("palette")} aria-label={tg("header.search")}>
+              <Search size={16} />
+              <span className={styles.searchText}>{tg("header.search")}</span>
+              <span className={styles.searchKeys}>
+                <kbd>{mod}</kbd>
+                <kbd>K</kbd>
+              </span>
+            </button>
+
+            <FocusChip onClick={() => setStudyOpen(true)} />
+            <HeaderClock />
+
+            <Dropdown trigger={["click"]} menu={{ items: accountMenu, onClick: onDropdownClick }} placement="bottomRight">
+              <button type="button" className={styles.avatarButton} aria-label={tg("nav.profile")}>
+                <Avatar src={userMe?.profilePic ?? undefined} className={styles.avatar} sx={{ width: 38, height: 38 }} />
+              </button>
+            </Dropdown>
+
+            <ScrollProgress watch={pathname ?? ""} />
           </header>
 
           <main id="app-scroll" className={styles.childrenPassingContainer}>
-            <MeContext.Provider value={userMe}>{children}</MeContext.Provider>
+            <div key={pathname} className="lg-route">
+              <MeContext.Provider value={userMe}>{children}</MeContext.Provider>
+            </div>
           </main>
+
+          <BackToTop />
         </div>
 
         {sidebarOpen && <div className={styles.overlay} onClick={toggleSidebar} />}
+
+        <MobileDock
+          items={dockItems}
+          activeKey={current?.key ?? null}
+          moreActive={sidebarOpen || (current !== null && !current.dock)}
+          moreLabel={tg("header.more")}
+          onMore={() => setSidebarOpen(true)}
+          label={tg("header.menu")}
+        />
+
+        <StudyDock open={studyOpen} onOpenChange={setStudyOpen} hidden={examInProgress} />
+        <ConnectionPill />
+
+        <CommandPalette open={panel === "palette"} onClose={closePanel} navItems={[...navItems, profile]} actions={paletteActions} />
+        <AppearancePanel open={panel === "appearance"} onClose={closePanel} />
+        <ShortcutsHelp open={panel === "shortcuts"} onClose={closePanel} navItems={[...navItems, profile]} />
 
         <Modal
           title={t("logout.title")}

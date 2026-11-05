@@ -5,6 +5,7 @@ from .models import (
     MAX_MARK,
     MIN_MARK,
     Announcement,
+    CommentReaction,
     Grade,
     GradeCategory,
     Option,
@@ -115,7 +116,7 @@ class AnnouncementSerializer(serializers.ModelSerializer):
     def get_len_comments(self, obj: Announcement):
         # Views annotate `comments_count` to avoid one COUNT query per announcement.
         count = getattr(obj, "comments_count", None)
-        return count if count is not None else obj.comments.count()
+        return count if count is not None else obj.comments.filter(deleted_at__isnull=True).count()
 
 
 class AnnouncementValidatorSerializer(serializers.ModelSerializer):
@@ -171,6 +172,15 @@ class UserAnswerSerializer(serializers.Serializer):
 class CommentsCreateSerializer(serializers.Serializer):
     comment = serializers.CharField(max_length=5000)
     announcement = serializers.IntegerField()
+    reply_to = serializers.IntegerField(required=False, allow_null=True)
+
+
+class CommentEditSerializer(serializers.Serializer):
+    comment = serializers.CharField(max_length=5000)
+
+
+class CommentReactionSerializer(serializers.Serializer):
+    emoji = serializers.ChoiceField(choices=CommentReaction.EMOJIS)
 
 
 class UpdateProfileSerializer(serializers.ModelSerializer):

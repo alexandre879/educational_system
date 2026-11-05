@@ -163,8 +163,28 @@ export async function fetchComments(announcementId: number): Promise<Comment[]> 
   return data;
 }
 
-export async function addComment(announcementId: number, comment: string): Promise<Comment> {
-  const { data } = await api.post<Comment>("/comments/create/", { announcement: announcementId, comment });
+export async function addComment(announcementId: number, comment: string, replyTo?: number): Promise<Comment> {
+  const { data } = await api.post<Comment>("/comments/create/", {
+    announcement: announcementId,
+    comment,
+    reply_to: replyTo ?? null,
+  });
+  return data;
+}
+
+export async function editComment(commentId: number, comment: string): Promise<Comment> {
+  const { data } = await api.patch<Comment>(`/comments/${commentId}/`, { comment });
+  return data;
+}
+
+export async function deleteComment(commentId: number): Promise<Comment> {
+  const { data } = await api.delete<Comment>(`/comments/${commentId}/`);
+  return data;
+}
+
+/** Reacting again with the same emoji takes the reaction back. */
+export async function reactToComment(commentId: number, emoji: string): Promise<Comment> {
+  const { data } = await api.post<Comment>(`/comments/${commentId}/react/`, { emoji });
   return data;
 }
 

@@ -1,0 +1,422 @@
+// Dialogs (command palette, appearance, shortcuts) and the segmented control they share.
+
+// ---------------------------------------------------------------- dialog
+
+.layer {
+  position: fixed;
+  inset: 0;
+  z-index: 12000;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: max(10vh, 24px) 16px 16px;
+
+  &[data-position="center"] {
+    align-items: center;
+    padding-top: 16px;
+  }
+
+  &[data-state="closed"] {
+    pointer-events: none;
+  }
+}
+
+.scrim {
+  position: absolute;
+  inset: 0;
+  background: rgb(4 6 12 / 0.34);
+  backdrop-filter: blur(6px) saturate(120%);
+  -webkit-backdrop-filter: blur(6px) saturate(120%);
+  animation: scrimIn 260ms ease both;
+
+  .layer[data-state="closed"] & {
+    animation: scrimOut 200ms ease both;
+  }
+
+  :global(html[data-theme="light"]) & {
+    background: rgb(148 163 184 / 0.26);
+  }
+}
+
+.dialog {
+  position: relative;
+  isolation: isolate;
+  width: min(580px, 100%);
+  max-height: min(78vh, 720px);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: 26px;
+  color: var(--text-primary);
+
+  background: var(--glass-sheen), var(--surface-2);
+  backdrop-filter: blur(calc(var(--glass-blur) + 8px)) saturate(var(--glass-sat));
+  -webkit-backdrop-filter: blur(calc(var(--glass-blur) + 8px)) saturate(var(--glass-sat));
+  box-shadow:
+    var(--glass-rim),
+    0 30px 80px -20px rgb(0 0 0 / 0.6),
+    0 0 0 1px rgb(var(--fg-rgb) / 0.04);
+
+  transform-origin: 50% 0;
+  animation: dialogIn 520ms var(--ease-spring) both;
+
+  .layer[data-state="closed"] & {
+    animation: dialogOut 180ms ease both;
+  }
+
+  .layer[data-position="center"] & {
+    transform-origin: 50% 50%;
+  }
+}
+
+@keyframes scrimIn {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes scrimOut {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes dialogIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.94);
+  }
+}
+
+@keyframes dialogOut {
+  to {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.97);
+  }
+}
+
+.dialogHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 22px 22px 6px;
+}
+
+.dialogTitle {
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: var(--text-strong);
+}
+
+.dialogSubtitle {
+  margin-top: 4px;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.dialogBody {
+  padding: 12px 22px 22px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.closeButton {
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  border: none;
+  border-radius: 50%;
+  background: var(--surface-muted);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition:
+    background var(--dur-fast) ease,
+    color var(--dur-fast) ease,
+    transform var(--dur-med) var(--ease-spring);
+
+  &:hover {
+    background: rgb(var(--fg-rgb) / 0.1);
+    color: var(--text-strong);
+    transform: rotate(90deg);
+  }
+}
+
+// ---------------------------------------------------------------- segmented control
+
+.segmented {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(var(--n), minmax(0, 1fr));
+  padding: 4px;
+  border-radius: 14px;
+  background: var(--surface-muted);
+  box-shadow: inset 0 1px 2px rgb(0 0 0 / 0.12);
+}
+
+.segmentThumb {
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  left: 4px;
+  width: calc((100% - 8px) / var(--n));
+  border-radius: 10px;
+  transform: translateX(calc(var(--i) * 100%));
+  transition: transform 520ms var(--ease-spring);
+  background: var(--glass-sheen), var(--surface-soft-hover);
+  box-shadow:
+    var(--glass-rim),
+    0 4px 14px -4px rgb(0 0 0 / 0.35);
+
+  :global(html[data-theme="light"]) & {
+    background: #fff;
+    box-shadow:
+      0 1px 2px rgb(16 24 40 / 0.1),
+      0 4px 12px -4px rgb(16 24 40 / 0.18);
+  }
+}
+
+.segment {
+  position: relative;
+  z-index: 1;
+  min-width: 0;
+  min-height: 36px;
+  padding: 0 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: color var(--dur-fast) ease;
+
+  &:hover {
+    color: var(--text-primary);
+  }
+
+  svg {
+    flex-shrink: 0;
+  }
+}
+
+.segmentActive {
+  color: var(--text-strong);
+}
+
+// ---------------------------------------------------------------- appearance
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.sectionLabel {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.swatches {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 10px;
+
+  @media (max-width: 460px) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.swatch {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 4px 8px;
+  border: none;
+  border-radius: 16px;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 11.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    background var(--dur-fast) ease,
+    color var(--dur-fast) ease;
+
+  &:hover {
+    background: var(--hover-soft);
+    color: var(--text-primary);
+  }
+}
+
+.swatchActive {
+  color: var(--text-strong);
+  background: var(--hover-soft);
+}
+
+.swatchDot {
+  position: relative;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.45),
+    inset 0 -6px 10px rgb(0 0 0 / 0.18),
+    0 6px 16px -4px rgb(0 0 0 / 0.4);
+  transition: transform var(--dur-med) var(--ease-spring);
+
+  .swatch:hover & {
+    transform: scale(1.08);
+  }
+
+  // Specular highlight, so the swatch reads as a glass bead.
+  &::before {
+    content: "";
+    position: absolute;
+    top: 5px;
+    left: 8px;
+    width: 14px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgb(255 255 255 / 0.55);
+    filter: blur(1.5px);
+  }
+
+  .swatchActive & {
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.45),
+      0 0 0 3px var(--bg),
+      0 0 0 5px rgb(var(--primary-rgb)),
+      0 8px 22px -4px rgb(var(--primary-rgb) / 0.6);
+  }
+}
+
+.languages {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.languageButton {
+  min-height: 42px;
+  padding: 0 10px;
+  border-radius: 12px;
+  border: 1px solid var(--border-medium);
+  background: var(--surface-muted);
+  color: var(--text-primary);
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+  transition:
+    border-color var(--dur-fast) ease,
+    background var(--dur-fast) ease,
+    transform var(--dur-med) var(--ease-spring);
+
+  &:hover {
+    border-color: var(--primary-ring);
+  }
+
+  &:active {
+    transform: scale(0.97);
+  }
+}
+
+.languageActive {
+  border-color: rgb(var(--primary-rgb) / 0.6);
+  background: var(--primary-muted);
+  color: var(--text-strong);
+}
+
+.dialogFooter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 22px;
+  border-top: 1px solid var(--border-medium);
+}
+
+.textButton {
+  border: none;
+  background: none;
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+
+  &:hover {
+    color: var(--text-primary);
+  }
+}
+
+.primaryButton {
+  min-height: 40px;
+  padding: 0 20px;
+  border: none;
+  border-radius: 999px;
+  background: var(--brand-gradient);
+  color: #fff;
+  font-weight: 800;
+  font-size: 14px;
+  cursor: pointer;
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.3),
+    var(--brand-shadow);
+  transition: transform var(--dur-med) var(--ease-spring);
+
+  &:hover {
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: scale(0.96);
+  }
+}
+
+// ---------------------------------------------------------------- shortcuts
+
+.shortcutGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px 24px;
+
+  @media (max-width: 560px) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.shortcutRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border-medium);
+  font-size: 13.5px;
+  color: var(--text-primary);
+}
+
+.keys {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+  font-size: 11px;
+  color: var(--text-muted);
+}

@@ -26,12 +26,13 @@ from rest_framework_simplejwt.exceptions import TokenError
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from api import push
-from api.telegram import tg_send
+from api.telegram import send_login_code
 
 from .models import (
     MAX_MARK,
     Announcement,
     Comment,
+    CommentReaction,
     DailyExercise,
     Exam,
     ExerciseCompletion,
@@ -50,11 +51,14 @@ from .models import (
     UserExamSession,
     UserSubjectPoints,
     WeeklyLesson,
+    visible_comment_count,
 )
 from .serializers import (
     AISupportSerializer,
     AnnouncementSerializer,
     AnnouncementValidatorSerializer,
+    CommentEditSerializer,
+    CommentReactionSerializer,
     CommentsCreateSerializer,
     LeaderBoardSerializer,
     MarkCreateSerializer,
@@ -203,13 +207,77 @@ def visible_announcements(user: User) -> QuerySet[Announcement]:
     return qs
 
 
-def comment_payload(comment: Comment) -> dict[str, Any]:
+def visible_comments(user: User) -> QuerySet[Comment]:
+    return (
+        Comment.objects
+        .filter(announcement__in=visible_announcements(user))
+        .select_related("user", "reply_to__user", "announcement")
+    )
+
+
+def can_moderate(user: User, announcement: Announcement) -> bool:
+    """The announcement's author and admins may remove anyone's comment under it."""
+    return announcement.created_by_id == user.id or user.role == User.Role.ADMIN or user.is_staff
+
+
+def comment_reactions(comment_ids) -> dict[int, list[tuple[str, int]]]:
+    """(emoji, user id) pairs per comment."""
+    grouped: dict[int, list[tuple[str, int]]] = defaultdict(list)
+    for comment_id, emoji, user_id in CommentReaction.objects.filter(comment_id__in=comment_ids).values_list(
+        "comment_id", "emoji", "user_id"
+    ):
+        grouped[comment_id].append((emoji, user_id))
+    return grouped
+
+
+def comment_payload(comment: Comment, request: Request, reactions=()) -> dict[str, Any]:
+    """A comment as the apps show it. Deleted comments keep their place but lose their text."""
+    viewer: User = request.user
+    mine = comment.user_id == viewer.id
+    reply = comment.reply_to
+    photo = comment.user.profilePic
+
+    reacted: dict[str, list[int]] = defaultdict(list)
+    for emoji, user_id in reactions:
+        reacted[emoji].append(user_id)
+
     return {
         "id": comment.pk,
+        # Kept for app versions that tell their own comments apart by email.
         "user": comment.user.email,
-        "comment": comment.content,
+        "author": {
+            "id": comment.user_id,
+            "name": display_name(comment.user),
+            "role": comment.user.role,
+            "photo": request.build_absolute_uri(photo.url) if photo else None,
+        },
+        "comment": "" if comment.is_deleted else comment.content,
         "created_at": comment.created_at,
+        "edited_at": comment.edited_at,
+        "deleted": comment.is_deleted,
+        "reply_to": (
+            {
+                "id": reply.pk,
+                "author": display_name(reply.user),
+                "comment": "" if reply.is_deleted else reply.content[:200],
+                "deleted": reply.is_deleted,
+            }
+            if reply
+            else None
+        ),
+        # In a fixed order, so chips don't jump around as counts change.
+        "reactions": [
+            {"emoji": emoji, "count": len(reacted[emoji]), "mine": viewer.id in reacted[emoji]}
+            for emoji in CommentReaction.EMOJIS
+            if reacted.get(emoji)
+        ],
+        "can_edit": mine and not comment.is_deleted,
+        "can_delete": not comment.is_deleted and (mine or can_moderate(viewer, comment.announcement)),
     }
+
+
+def single_comment_payload(comment: Comment, request: Request) -> dict[str, Any]:
+    return comment_payload(comment, request, comment_reactions([comment.pk])[comment.pk])
 
 
 def exercise_payload(
@@ -415,7 +483,8 @@ class RequestOtpView(APIView):
 
         otp = f"{secrets.randbelow(1_000_000):06d}"
 
-        if not tg_send(user.chat_id, otp):
+        # In the bot's language for this person, else the one the app is in.
+        if not send_login_code(user.chat_id, otp, user.telegram_language or request.LANGUAGE_CODE):
             cache.delete(_otp_cooldown_key(email))
             return Response(
                 {"error": "Couldn't deliver the code via Telegram. Please try again."},
@@ -826,7 +895,7 @@ class AnnouncementCreateView(APIView):
         announcement = (
             Announcement.objects
             .select_related("grade__category", "subject", "created_by")
-            .annotate(comments_count=Count("comments"))
+            .annotate(comments_count=visible_comment_count())
             .get(pk=new_announcement.pk)
         )
 
@@ -841,7 +910,7 @@ class AnnouncementListView(APIView):
         qs = (
             visible_announcements(user)
             .select_related("grade__category", "subject", "created_by")
-            .annotate(comments_count=Count("comments"))
+            .annotate(comments_count=visible_comment_count())
             .order_by("-created_at")
         )
 
@@ -903,7 +972,7 @@ class AnnouncementDetailView(APIView):
         announcement = get_object_or_404(
             visible_announcements(request.user)
             .select_related("grade__category", "subject", "created_by")
-            .annotate(comments_count=Count("comments")),
+            .annotate(comments_count=visible_comment_count()),
             pk=announcement_id,
         )
         return Response(AnnouncementSerializer(announcement).data, status=status.HTTP_200_OK)
@@ -919,27 +988,48 @@ class CreateCommentView(APIView):
             pk=serializer.validated_data["announcement"],
         )
 
+        reply_to = None
+        reply_to_id = serializer.validated_data.get("reply_to")
+        if reply_to_id is not None:
+            reply_to = (
+                announcement.comments.select_related("user")
+                .filter(pk=reply_to_id, deleted_at__isnull=True)
+                .first()
+            )
+            if reply_to is None:
+                return Response(
+                    {"detail": "The comment you're replying to isn't available."},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
         comment = Comment.objects.create(
             content=serializer.validated_data["comment"],
             announcement=announcement,
             user=request.user,
+            reply_to=reply_to,
         )
 
-        author_id = announcement.created_by_id
-        if author_id != request.user.id:
-            commenter = request.user.get_full_name() or request.user.email
-            transaction.on_commit(
-                lambda: push.notify_users(
-                    [author_id],
-                    lambda lang: (
-                        f"{push.text('comment', lang)}: {announcement.title}",
-                        f"{commenter}: {comment.content[:200]}",
-                    ),
-                    {"type": "announcement", "id": announcement.pk},
-                )
+        # The person replied to hears about it as a reply; the announcement's author as a comment
+        # (unless they're the one replied to). Nobody is notified about their own message.
+        commenter = display_name(request.user)
+        data = {"type": "announcement", "id": announcement.pk, "comment": comment.pk}
+
+        def build(key: str):
+            return lambda lang: (
+                f"{push.text(key, lang)}: {announcement.title}",
+                f"{commenter}: {comment.content[:200]}",
             )
 
-        return Response(comment_payload(comment), status=status.HTTP_201_CREATED)
+        notifications = []
+        replied_id = reply_to.user_id if reply_to and reply_to.user_id != request.user.id else None
+        if replied_id:
+            notifications.append(push.Notification([replied_id], build("reply"), data))
+        if announcement.created_by_id not in (request.user.id, replied_id):
+            notifications.append(push.Notification([announcement.created_by_id], build("comment"), data))
+        if notifications:
+            transaction.on_commit(lambda: push.send(notifications))
+
+        return Response(comment_payload(comment, request), status=status.HTTP_201_CREATED)
 
 
 class ListCommentsView(APIView):
@@ -950,8 +1040,71 @@ class ListCommentsView(APIView):
 
         announcement = get_object_or_404(visible_announcements(request.user), pk=int(announcement_id))
 
-        comments = announcement.comments.select_related("user").order_by("created_at", "id")
-        return Response([comment_payload(c) for c in comments], status=status.HTTP_200_OK)
+        comments = list(announcement.comments.select_related("user", "reply_to__user").order_by("created_at", "id"))
+        reactions = comment_reactions([c.pk for c in comments])
+        return Response(
+            [comment_payload(c, request, reactions.get(c.pk, ())) for c in comments],
+            status=status.HTTP_200_OK,
+        )
+
+
+class CommentDetailView(APIView):
+    """
+    PATCH /comments/<id>/ — edit your own comment.
+    DELETE /comments/<id>/ — delete it; the announcement's author and admins can delete any comment.
+    Both return the updated comment.
+    """
+
+    def get_comment(self, request: Request, comment_id: int) -> Comment:
+        return get_object_or_404(visible_comments(request.user), pk=comment_id, deleted_at__isnull=True)
+
+    def patch(self, request: Request, comment_id: int) -> Response:
+        comment = self.get_comment(request, comment_id)
+        if comment.user_id != request.user.id:
+            return Response({"detail": "You can only edit your own comments."}, status=status.HTTP_403_FORBIDDEN)
+
+        serializer = CommentEditSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        text = serializer.validated_data["comment"]
+        if text != comment.content:
+            comment.content = text
+            comment.edited_at = timezone.now()
+            comment.save(update_fields=["content", "edited_at"])
+
+        return Response(single_comment_payload(comment, request), status=status.HTTP_200_OK)
+
+    def delete(self, request: Request, comment_id: int) -> Response:
+        comment = self.get_comment(request, comment_id)
+        if comment.user_id != request.user.id and not can_moderate(request.user, comment.announcement):
+            return Response({"detail": "You can't delete this comment."}, status=status.HTTP_403_FORBIDDEN)
+
+        with transaction.atomic():
+            comment.content = ""
+            comment.deleted_at = timezone.now()
+            comment.save(update_fields=["content", "deleted_at"])
+            comment.reactions.all().delete()
+
+        return Response(single_comment_payload(comment, request), status=status.HTTP_200_OK)
+
+
+class CommentReactView(APIView):
+    """POST /comments/<id>/react/ {emoji} — react; the same emoji again takes the reaction back."""
+
+    def post(self, request: Request, comment_id: int) -> Response:
+        comment = get_object_or_404(visible_comments(request.user), pk=comment_id, deleted_at__isnull=True)
+
+        serializer = CommentReactionSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        emoji = serializer.validated_data["emoji"]
+
+        existing = CommentReaction.objects.filter(comment=comment, user=request.user).first()
+        if existing and existing.emoji == emoji:
+            existing.delete()
+        else:
+            CommentReaction.objects.update_or_create(comment=comment, user=request.user, defaults={"emoji": emoji})
+
+        return Response(single_comment_payload(comment, request), status=status.HTTP_200_OK)
 
 
 # ---------------------------------------------------------------------------
@@ -1288,21 +1441,6 @@ class TeacherTodayLessonsAttendanceView(APIView):
         )
 
 
-def _attendance_message(student_name: str, lesson: WeeklyLesson, day, is_present: bool) -> str:
-    # Parents receive these in Georgian.
-    subject_name = get_localized_json_value(lesson.subject.name, "ka")
-    header = "✅ დასწრების დადასტურება" if is_present else "🚨 დასწრების შეტყობინება"
-    status_line = "სტატუსი: 🎉 გამოცხადდა" if is_present else "სტატუსი: ❌ არ გამოცხადდა"
-    return (
-        f"{header}\n\n"
-        f"👤 {student_name}\n"
-        f"📚 {subject_name}\n"
-        f"🕒 {lesson.start_time.strftime('%H:%M')}–{lesson.end_time.strftime('%H:%M')}\n"
-        f"📅 {day}\n\n"
-        f"{status_line}"
-    )
-
-
 class TeacherMarkAttendanceView(APIView):
     @transaction.atomic
     def post(self, request: Request) -> Response:
@@ -1367,22 +1505,10 @@ class TeacherMarkAttendanceView(APIView):
             )
             marked[sid] = is_present
 
+        # Parents hear about it in the app and, if they connected it, in Telegram.
         def notify_parents():
             if not marked:
                 return
-
-            links = (
-                ParentStudent.objects
-                .filter(student_id__in=marked.keys(), parent__chat_id__isnull=False)
-                .exclude(parent__chat_id="")
-                .select_related("parent", "student")
-            )
-
-            for link in links:
-                student = link.student
-                student_name = f"{student.first_name} {student.last_name}".strip() or student.email
-                text = _attendance_message(student_name, lesson, day, marked[student.id])
-                tg_send(link.parent.chat_id, text)
 
             lesson_time = f"{lesson.start_time.strftime('%H:%M')}–{lesson.end_time.strftime('%H:%M')}"
             notifications = []
@@ -1397,7 +1523,7 @@ class TeacherMarkAttendanceView(APIView):
                             f"{name} · {get_localized_json_value(lesson.subject.name, lang)}",
                             f"{push.text('present' if present else 'absent', lang)} ({lesson_time})",
                         ),
-                        {"type": "attendance", "student_id": student.id, "date": str(day)},
+                        {"type": "attendance", "student_id": student.id, "date": str(day), "present": is_present},
                     )
                 )
             push.send(notifications)
@@ -2288,7 +2414,7 @@ class HomeDashboardView(APIView):
         announcements = (
             Announcement.objects
             .select_related("grade__category", "subject", "created_by")
-            .annotate(comments_count=Count("comments"))
+            .annotate(comments_count=visible_comment_count())
             .order_by("-created_at")
         )
 

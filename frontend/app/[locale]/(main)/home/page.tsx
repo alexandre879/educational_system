@@ -9,12 +9,22 @@ import styles from "./home.module.scss";
 import {
   Avatar,
   Chip,
-  CircularProgress,
   Typography,
   useMediaQuery,
 } from "@mui/material";
 import { Modal } from "antd";
 import { FaHome } from "react-icons/fa";
+import {
+  ChevronRight,
+  GraduationCap,
+  LibraryBig,
+  Lightbulb,
+  NotebookPen,
+  ScrollText,
+  Timer,
+  Trophy,
+  type LucideIcon,
+} from "lucide-react";
 
 import {
   Chart as ChartJS,
@@ -36,6 +46,8 @@ import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { getLocalizedValue } from "@/lib/localized";
 import { AdminHome, ParentHome, TeacherHome } from "./components/RoleHomes";
+import { CountUp, Loading } from "../components/ui/Parts";
+import { formatTime as formatClockTime, isoWeekday, weekdayName } from "@/lib/dates";
 
 ChartJS.register(
   CategoryScale,
@@ -85,7 +97,7 @@ function getCssVar(name: string, fallback: string) {
       .getPropertyValue(name)
       .trim() || fallback
   );
-}
+} 
 
 function readChartTheme() {
   return {
@@ -96,11 +108,73 @@ function readChartTheme() {
   };
 }
 
+/** The current time, ticking each minute; null until mounted so SSR and the client agree. */
+function useClock() {
+  const [now, setNow] = useState<Date | null>(null);
+
+  useEffect(() => {
+    let id: ReturnType<typeof setTimeout>;
+    const tick = () => {
+      setNow(new Date());
+      id = setTimeout(tick, 60_000 - (Date.now() % 60_000) + 50);
+    };
+    tick();
+    return () => clearTimeout(id);
+  }, []);
+
+  return now;
+}
+
+function StatCard({
+  label,
+  value,
+  decimals = 0,
+  Icon,
+  color,
+  href,
+  onClick,
+}: {
+  label: string;
+  value: number | null;
+  decimals?: number;
+  Icon: LucideIcon;
+  color: string;
+  href?: string;
+  onClick?: () => void;
+}) {
+  const body = (
+    <>
+      <span className={styles.cardIcon} style={{ color, background: `${color}22`, boxShadow: `0 10px 26px -10px ${color}` }}>
+        <Icon size={20} />
+      </span>
+      <Typography className={styles.cardLabel}>{label}</Typography>
+      <Typography className={styles.cardValue}>{value == null ? "—" : <CountUp value={value} decimals={decimals} />}</Typography>
+      <span className={styles.cardGlow} style={{ background: color }} aria-hidden="true" />
+    </>
+  );
+
+  if (href) {
+    return (
+      <Link href={href} className={`${styles.card} ${styles.cardClickable}`} style={{ textDecoration: "none", color: "inherit" }}>
+        {body}
+      </Link>
+    );
+  }
+  return (
+    <div className={`${styles.card} ${onClick ? styles.cardClickable : ""}`} onClick={onClick}>
+      {body}
+    </div>
+  );
+}
+
 export default function Home() {
   const t = useTranslations("Home");
   const tApp = useTranslations("App");
+  const tGlass = useTranslations("Glass.home");
   const router = useRouter();
   const pathname = usePathname();
+  const now = useClock();
+  const [tipOffset, setTipOffset] = useState(0);
 
   const isPhone = useMediaQuery("(max-width:600px)");
   const isTablet = useMediaQuery("(max-width:900px)");
@@ -542,11 +616,9 @@ export default function Home() {
 
   if (loading) {
     return (
-      <div className={styles.page}>
-        <div className={styles.center}>
-          <CircularProgress />
-          <Typography sx={{ mt: 2 }}>{t("loading")}</Typography>
-        </div>
+      <div className={styles.page} aria-label={t("loading")}>
+        <div className={styles.heroSkeleton} />
+        <Loading />
       </div>
     );
   }
@@ -571,53 +643,95 @@ export default function Home() {
     </div>
   );
 
+  // A greeting for the time of day, today's date, and a rotating tip about the app.
+  const firstName = data.me.first_name?.trim() || fullName;
+  const hour = now?.getHours() ?? 12;
+  const greeting = !now
+    ? `${t("welcome")}, ${fullName}`
+    : tApp(hour < 12 ? "home.goodMorning" : hour < 18 ? "home.goodAfternoon" : "home.goodEvening", { name: firstName });
+  const tips = tGlass.raw("tips") as string[];
+  const dayOfYear = now ? Math.floor((now.getTime() - new Date(now.getFullYear(), 0, 0).getTime()) / 86_400_000) : 0;
+  const tip = tips[(dayOfYear + tipOffset) % tips.length];
+
   const profileHeader = (
     <div className={styles.header}>
-      <div className={styles.profile}>
-        <Avatar
-          src={data.me.profilePic ?? undefined}
-          className={styles.avatar}
-          sx={{ width: 60, height: 60 }}
-        />
-        <div className={styles.profileText}>
-          <Typography className={styles.title}>
-            {t("welcome")}, <u>{fullName}</u> 👋
-          </Typography>
-
-          <div className={styles.subRow}>
-            <span className={styles.preCaptions}>{t("role")}:</span>
-            <Chip
-              size="small"
-              label={data.me.role ? t(`role_${data.me.role}`) : t("roleFallback")}
-              sx={{ backgroundColor: "rgba(255, 255, 255, 0.2)", color: "#fff", fontWeight: 700 }}
-            />
-
-            {data.me.grade_in && (
-              <>
-                <span className={styles.preCaptions}>{t("grade")}:</span>
-                <Chip
-                  size="small"
-                  variant="outlined"
-                  label={gradeText}
-                  sx={{ borderColor: "rgba(255, 255, 255, 0.6)", color: "#fff", fontWeight: 700 }}
-                />
-              </>
-            )}
-
-            <span className={styles.preCaptions}>{t("email")}:</span>
-            <Typography className={styles.muted}>
-              <u>{data.me.email}</u>
+      <div className={styles.heroTop}>
+        <div className={styles.profile}>
+          <Avatar
+            src={data.me.profilePic ?? undefined}
+            className={styles.avatar}
+            sx={{ width: 60, height: 60 }}
+          />
+          <div className={styles.profileText}>
+            {now ? (
+              <span className={styles.heroDate}>
+                {weekdayName(isoWeekday(now), tApp)}, {now.getDate()} {tApp(`dates.monthsLong.m${now.getMonth() + 1}`)}
+              </span>
+            ) : null}
+            <Typography className={styles.title}>
+              {greeting} 👋
             </Typography>
 
-            {data.streak ? (
+            <div className={styles.subRow}>
+              <span className={styles.preCaptions}>{t("role")}:</span>
               <Chip
                 size="small"
-                label={`🔥 ${tApp("home.streak", { count: data.streak })}`}
-                sx={{ backgroundColor: "rgba(255, 255, 255, 0.2)", color: "#fff", fontWeight: 800 }}
+                label={data.me.role ? t(`role_${data.me.role}`) : t("roleFallback")}
+                sx={{ backgroundColor: "rgba(255, 255, 255, 0.2)", color: "#fff", fontWeight: 700 }}
               />
-            ) : null}
+
+              {data.me.grade_in && (
+                <>
+                  <span className={styles.preCaptions}>{t("grade")}:</span>
+                  <Chip
+                    size="small"
+                    variant="outlined"
+                    label={gradeText}
+                    sx={{ borderColor: "rgba(255, 255, 255, 0.6)", color: "#fff", fontWeight: 700 }}
+                  />
+                </>
+              )}
+
+              <span className={styles.preCaptions}>{t("email")}:</span>
+              <Typography className={styles.muted}>
+                <u>{data.me.email}</u>
+              </Typography>
+
+              {data.streak ? (
+                <Chip
+                  size="small"
+                  label={`🔥 ${tApp("home.streak", { count: data.streak })}`}
+                  sx={{ backgroundColor: "rgba(255, 255, 255, 0.2)", color: "#fff", fontWeight: 800 }}
+                />
+              ) : null}
+            </div>
           </div>
         </div>
+
+        {now ? (
+          <div className={styles.heroClock} aria-hidden="true">
+            <span className={styles.heroTime}>{formatClockTime(now)}</span>
+            <span className={styles.heroToday}>{tGlass("today")}</span>
+          </div>
+        ) : null}
+      </div>
+
+      <div className={styles.tip}>
+        <span className={styles.tipIcon}>
+          <Lightbulb size={16} />
+        </span>
+        <span className={styles.tipText}>
+          <b>{tGlass("tipTitle")}</b> · {tip}
+        </span>
+        <button
+          type="button"
+          className={styles.tipNext}
+          onClick={() => setTipOffset((offset) => offset + 1)}
+          aria-label={tGlass("nextTip")}
+          title={tGlass("nextTip")}
+        >
+          <ChevronRight size={16} />
+        </button>
       </div>
     </div>
   );
@@ -641,45 +755,38 @@ export default function Home() {
       {pageTitle}
       {profileHeader}
 
-      <div className={styles.grid3}>
-        <div className={styles.card}>
-          <Typography className={styles.cardLabel}>{t("totalPoints")}</Typography>
-          <Typography className={styles.cardValue}>{data.me.points ?? 0}</Typography>
-        </div>
-
-        <div className={styles.card}>
-          <Typography className={styles.cardLabel}>{t("subjects")}</Typography>
-          <Typography className={styles.cardValue}>{subjects.length}</Typography>
-        </div>
-
-        <div
-          className={`${styles.card} ${styles.cardClickable}`}
+      <div className={`${styles.grid3} ${styles.statGrid}`}>
+        <StatCard label={t("totalPoints")} value={data.me.points ?? 0} Icon={Trophy} color="#F59E0B" />
+        <StatCard label={t("subjects")} value={subjects.length} Icon={LibraryBig} color="#8B5CF6" />
+        <StatCard
+          label={t("activeExams")}
+          value={derived.activeSessions.length}
+          Icon={Timer}
+          color="#F97316"
           onClick={onActiveExamClick}
-        >
-          <Typography className={styles.cardLabel}>{t("activeExams")}</Typography>
-          <Typography className={styles.cardValue}>
-            {derived.activeSessions.length}
-          </Typography>
-        </div>
-      </div>
-
-      <div className={styles.grid3}>
-        <Link href={`/${locale}/marks`} className={`${styles.card} ${styles.cardClickable}`} style={statLink}>
-          <Typography className={styles.cardLabel}>{tApp("home.averageMark")}</Typography>
-          <Typography className={styles.cardValue}>
-            {data.average_mark == null ? "—" : data.average_mark.toFixed(1)}
-          </Typography>
-        </Link>
-
-        <Link href={`/${locale}/exercise`} className={`${styles.card} ${styles.cardClickable}`} style={statLink}>
-          <Typography className={styles.cardLabel}>{tApp("home.pendingHomework")}</Typography>
-          <Typography className={styles.cardValue}>{data.pending_homework ?? 0}</Typography>
-        </Link>
-
-        <Link href={`/${locale}/exam?tab=results`} className={`${styles.card} ${styles.cardClickable}`} style={statLink}>
-          <Typography className={styles.cardLabel}>{tApp("home.results")}</Typography>
-          <Typography className={styles.cardValue}>{derived.progressMetrics.finished}</Typography>
-        </Link>
+        />
+        <StatCard
+          label={tApp("home.averageMark")}
+          value={data.average_mark ?? null}
+          decimals={1}
+          Icon={GraduationCap}
+          color="#22C55E"
+          href={`/${locale}/marks`}
+        />
+        <StatCard
+          label={tApp("home.pendingHomework")}
+          value={data.pending_homework ?? 0}
+          Icon={NotebookPen}
+          color="#14B8A6"
+          href={`/${locale}/exercise`}
+        />
+        <StatCard
+          label={tApp("home.results")}
+          value={derived.progressMetrics.finished}
+          Icon={ScrollText}
+          color="#3B82F6"
+          href={`/${locale}/exam?tab=results`}
+        />
       </div>
 
       <div className={styles.grid2}>

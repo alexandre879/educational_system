@@ -31,7 +31,7 @@ export function usePushRegistration(): void {
   }, [userId, language]);
 }
 
-type NotificationData = { type?: string; id?: number; date?: string };
+type NotificationData = { type?: string; id?: number; date?: string; comment?: number };
 
 /** Opens the relevant screen when the user taps a notification (also on cold start). */
 export function useNotificationRouting(): void {
@@ -48,7 +48,13 @@ export function useNotificationRouting(): void {
 
     switch (data.type) {
       case "announcement":
-        if (data.id) router.push({ pathname: "/announcements/[id]", params: { id: String(data.id) } });
+        if (data.id) {
+          router.push({
+            pathname: "/announcements/[id]",
+            // Comment and reply notifications open the thread at that message.
+            params: data.comment ? { id: String(data.id), comment: String(data.comment) } : { id: String(data.id) },
+          });
+        }
         break;
       case "exercise":
         router.push({ pathname: "/exercises", params: data.date ? { date: data.date } : {} });

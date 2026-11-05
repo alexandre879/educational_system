@@ -1,3 +1,4 @@
+import json
 from datetime import date, time, timedelta
 from io import BytesIO, StringIO
 from unittest import mock
@@ -35,6 +36,7 @@ from api.utils import normalize_image_to_square
 from api.views import homework_streak
 
 
+@override_settings(TELEGRAM_BOT_TOKEN="")
 class BaseAPITestCase(APITestCase):
     @classmethod
     def setUpTestData(cls):
@@ -80,7 +82,7 @@ class BaseAPITestCase(APITestCase):
 # Auth
 # ---------------------------------------------------------------------------
 
-@mock.patch("api.views.tg_send", return_value=True)
+@mock.patch("api.views.send_login_code", return_value=True)
 class OtpLoginTests(BaseAPITestCase):
     def request_otp(self, email="student@school.edu"):
         return self.client.post("/api/otp/request/", {"email": email}, format="json")
@@ -88,34 +90,34 @@ class OtpLoginTests(BaseAPITestCase):
     def verify(self, otp, email="student@school.edu"):
         return self.client.post("/api/otp/verify/", {"email": email, "otp": otp}, format="json")
 
-    def test_request_sends_six_digit_code_via_telegram(self, tg_send):
+    def test_request_sends_six_digit_code_via_telegram(self, send_code):
         response = self.request_otp()
 
         self.assertEqual(response.status_code, 200)
-        chat_id, otp = tg_send.call_args.args
+        chat_id, otp, _language = send_code.call_args.args
         self.assertEqual(chat_id, "111")
         self.assertRegex(otp, r"^\d{6}$")
 
-    def test_unknown_email_and_unlinked_user(self, tg_send):
+    def test_unknown_email_and_unlinked_user(self, send_code):
         self.assertEqual(self.request_otp("nobody@school.edu").status_code, 404)
         self.assertEqual(self.request_otp("teacher@school.edu").status_code, 400)
-        tg_send.assert_not_called()
+        send_code.assert_not_called()
 
-    def test_resend_is_rate_limited(self, tg_send):
+    def test_resend_is_rate_limited(self, send_code):
         self.assertEqual(self.request_otp().status_code, 200)
         self.assertEqual(self.request_otp().status_code, 429)
-        self.assertEqual(tg_send.call_count, 1)
+        self.assertEqual(send_code.call_count, 1)
 
-    def test_telegram_failure_returns_502_and_allows_retry(self, tg_send):
-        tg_send.return_value = False
+    def test_telegram_failure_returns_502_and_allows_retry(self, send_code):
+        send_code.return_value = False
         self.assertEqual(self.request_otp().status_code, 502)
 
-        tg_send.return_value = True
+        send_code.return_value = True
         self.assertEqual(self.request_otp().status_code, 200)
 
-    def test_verify_issues_tokens_once(self, tg_send):
+    def test_verify_issues_tokens_once(self, send_code):
         self.request_otp()
-        otp = tg_send.call_args.args[1]
+        otp = send_code.call_args.args[1]
 
         response = self.verify(otp)
         self.assertEqual(response.status_code, 200)
@@ -125,9 +127,9 @@ class OtpLoginTests(BaseAPITestCase):
         # The code is single-use.
         self.assertEqual(self.verify(otp).status_code, 400)
 
-    def test_wrong_code_attempts_are_limited(self, tg_send):
+    def test_wrong_code_attempts_are_limited(self, send_code):
         self.request_otp()
-        otp = tg_send.call_args.args[1]
+        otp = send_code.call_args.args[1]
         wrong = "000000" if otp != "000000" else "111111"
 
         for _ in range(5):
@@ -137,7 +139,7 @@ class OtpLoginTests(BaseAPITestCase):
         # After lockout even the right code no longer works.
         self.assertEqual(self.verify(otp).status_code, 400)
 
-    def test_stale_authorization_header_does_not_block_login(self, tg_send):
+    def test_stale_authorization_header_does_not_block_login(self, send_code):
         self.client.credentials(HTTP_AUTHORIZATION="Bearer not-a-real-token")
         self.assertEqual(self.request_otp().status_code, 200)
 
@@ -390,6 +392,127 @@ class AnnouncementTests(BaseAPITestCase):
         self.assertEqual(mismatched.status_code, 400)
 
 
+class CommentThreadTests(BaseAPITestCase):
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+        cls.announcement = Announcement.objects.create(
+            title="Trip", content="Friday", grade=cls.grade, subject=cls.math, created_by=cls.teacher
+        )
+        cls.classmate = User.objects.create_user(
+            email="classmate@school.edu", first_name="Luka", role=User.Role.STUDENT, grade_in=cls.grade
+        )
+
+    def post(self, text, **extra):
+        return self.client.post(
+            "/api/comments/create/", {"comment": text, "announcement": self.announcement.pk, **extra}, format="json"
+        )
+
+    def listed(self):
+        return {c["id"]: c for c in self.client.get(f"/api/comments/?announcement={self.announcement.pk}").data}
+
+    def test_reply_quotes_the_original(self):
+        self.client.force_authenticate(self.student)
+        original = self.post("When do we leave?").data
+
+        self.client.force_authenticate(self.teacher)
+        reply = self.post("At 9", reply_to=original["id"])
+        self.assertEqual(reply.status_code, 201)
+        self.assertEqual(
+            reply.data["reply_to"],
+            {"id": original["id"], "author": "Nino Beridze", "comment": "When do we leave?", "deleted": False},
+        )
+        self.assertEqual(reply.data["author"]["name"], "Giorgi")
+        self.assertEqual(self.listed()[reply.data["id"]]["reply_to"]["id"], original["id"])
+
+    def test_reply_must_be_in_the_same_thread(self):
+        other = Announcement.objects.create(title="Other", content="...", grade=self.grade, created_by=self.teacher)
+        elsewhere = Comment.objects.create(announcement=other, user=self.teacher, content="Hi")
+
+        self.client.force_authenticate(self.student)
+        self.assertEqual(self.post("Re", reply_to=elsewhere.pk).status_code, 400)
+        self.assertEqual(self.post("Re", reply_to=999999).status_code, 400)
+
+    def test_edit_own_comment_only(self):
+        self.client.force_authenticate(self.student)
+        comment = self.post("Helo").data
+        self.assertTrue(comment["can_edit"])
+        self.assertIsNone(comment["edited_at"])
+
+        edited = self.client.patch(f"/api/comments/{comment['id']}/", {"comment": "Hello"}, format="json")
+        self.assertEqual(edited.status_code, 200)
+        self.assertEqual(edited.data["comment"], "Hello")
+        self.assertIsNotNone(edited.data["edited_at"])
+
+        self.client.force_authenticate(self.classmate)
+        self.assertFalse(self.listed()[comment["id"]]["can_edit"])
+        denied = self.client.patch(f"/api/comments/{comment['id']}/", {"comment": "Hacked"}, format="json")
+        self.assertEqual(denied.status_code, 403)
+        self.assertEqual(Comment.objects.get(pk=comment["id"]).content, "Hello")
+
+    def test_delete_leaves_a_placeholder(self):
+        self.client.force_authenticate(self.student)
+        original = self.post("Secret").data
+        self.client.force_authenticate(self.classmate)
+        reply = self.post("Nice", reply_to=original["id"]).data
+
+        self.assertEqual(self.client.delete(f"/api/comments/{original['id']}/").status_code, 403)
+
+        self.client.force_authenticate(self.student)
+        deleted = self.client.delete(f"/api/comments/{original['id']}/")
+        self.assertEqual(deleted.status_code, 200)
+        self.assertTrue(deleted.data["deleted"])
+        self.assertEqual(deleted.data["comment"], "")
+
+        listed = self.listed()
+        self.assertTrue(listed[original["id"]]["deleted"])
+        self.assertEqual(listed[reply["id"]]["reply_to"], {"id": original["id"], "author": "Nino Beridze", "comment": "", "deleted": True})
+        # Deleted comments don't count, can't be edited again, and can't be replied to.
+        self.assertEqual(self.client.get(f"/api/announcements/{self.announcement.pk}/").data["len_comments"], 1)
+        self.assertEqual(self.client.patch(f"/api/comments/{original['id']}/", {"comment": "x"}, format="json").status_code, 404)
+        self.assertEqual(self.post("Re", reply_to=original["id"]).status_code, 400)
+
+    def test_announcement_author_can_delete_any_comment(self):
+        self.client.force_authenticate(self.student)
+        comment = self.post("Spam").data
+        self.assertTrue(comment["can_delete"])
+
+        self.client.force_authenticate(self.teacher)
+        self.assertTrue(self.listed()[comment["id"]]["can_delete"])
+        self.assertEqual(self.client.delete(f"/api/comments/{comment['id']}/").status_code, 200)
+
+    def test_reactions_toggle_and_replace(self):
+        self.client.force_authenticate(self.teacher)
+        comment = self.post("Bring lunch").data
+
+        def react(emoji):
+            return self.client.post(f"/api/comments/{comment['id']}/react/", {"emoji": emoji}, format="json")
+
+        self.client.force_authenticate(self.student)
+        self.assertEqual(react("👍").data["reactions"], [{"emoji": "👍", "count": 1, "mine": True}])
+        self.client.force_authenticate(self.classmate)
+        self.assertEqual(react("👍").data["reactions"], [{"emoji": "👍", "count": 2, "mine": True}])
+
+        # Another emoji replaces the classmate's reaction; the same one again removes it.
+        self.assertEqual(
+            react("❤️").data["reactions"],
+            [{"emoji": "👍", "count": 1, "mine": False}, {"emoji": "❤️", "count": 1, "mine": True}],
+        )
+        self.assertEqual(react("❤️").data["reactions"], [{"emoji": "👍", "count": 1, "mine": False}])
+
+        self.assertEqual(react("💩").status_code, 400)
+
+    def test_comments_of_other_grades_are_hidden(self):
+        self.client.force_authenticate(self.teacher)
+        comment = self.post("Hi").data
+
+        self.client.force_authenticate(self.other_student)
+        self.assertEqual(
+            self.client.post(f"/api/comments/{comment['id']}/react/", {"emoji": "👍"}, format="json").status_code, 404
+        )
+        self.assertEqual(self.client.delete(f"/api/comments/{comment['id']}/").status_code, 404)
+
+
 # ---------------------------------------------------------------------------
 # Profile
 # ---------------------------------------------------------------------------
@@ -490,9 +613,8 @@ class ScheduleTests(BaseAPITestCase):
         self.assertEqual(self.client.get("/api/schedule/grade-weekday/?weekday=1").status_code, 403)
 
 
-@mock.patch("api.views.tg_send", return_value=True)
 class AttendanceTests(BaseAPITestCase):
-    def test_marking_attendance_notifies_parents_with_readable_subject(self, tg_send):
+    def test_marking_attendance_records_it(self):
         today = timezone.localdate()
         lesson = WeeklyLesson.objects.create(
             grade=self.grade, subject=self.math, teacher=self.teacher,
@@ -519,12 +641,7 @@ class AttendanceTests(BaseAPITestCase):
         self.assertEqual(response.data["present_count"], 0)
         self.assertFalse(LessonAttendance.objects.get(student=self.student).is_present)
 
-        chat_id, text = tg_send.call_args.args
-        self.assertEqual(chat_id, "999")
-        self.assertIn("მათემატიკა", text)
-        self.assertNotIn("{", text)
-
-    def test_attendance_must_be_a_list(self, tg_send):
+    def test_attendance_must_be_a_list(self):
         self.client.force_authenticate(self.teacher)
         response = self.client.post(
             "/api/teacher/attendance/mark/",
@@ -578,6 +695,69 @@ class AdminTests(BaseAPITestCase):
         response = self.client.get("/en/admin/api/subject/", {"q": "Math"})
 
         self.assertEqual(response.status_code, 200)
+
+    def make_school_data(self):
+        today = timezone.localdate()
+        exam = Exam.objects.create(title={"en": "Quiz"}, subject=self.math, grade=self.grade, duration=10)
+        question = Question.objects.create(exam=exam, text={"en": "2 + 2"}, points=2)
+        Option.objects.create(question=question, title={"en": "4"}, is_correct=True)
+        UserExamSession.objects.create(user=self.student, exam=exam, finished=True, score_so_far=2, submitted_at=timezone.now())
+        announcement = Announcement.objects.create(
+            title="Trip", content="Friday", grade=self.grade, subject=self.math, created_by=self.teacher
+        )
+        Comment.objects.create(announcement=announcement, user=self.student, content="Thanks!")
+        Mark.objects.create(student=self.student, subject=self.math, teacher=self.teacher, value=9, date=today)
+        lesson = WeeklyLesson.objects.create(
+            grade=self.grade, subject=self.math, teacher=self.teacher,
+            weekday=today.isoweekday(), start_time=time(9, 0), end_time=time(9, 45),
+        )
+        LessonAttendance.objects.create(lesson=lesson, date=today, student=self.student, is_present=True)
+        exercise = DailyExercise.objects.create(grade=self.grade, subject=self.math, date=today, title="Read")
+        ExerciseCompletion.objects.create(exercise=exercise, student=self.student)
+
+    def test_dashboard_shows_the_school_overview(self):
+        self.make_school_data()
+        self.client.force_login(User.objects.create_superuser("admin@school.edu", "pass12345"))
+
+        response = self.client.get("/en/admin/")
+
+        self.assertEqual(response.status_code, 200)
+        week = {str(stat["title"]): stat for stat in response.context["this_week"]}
+        self.assertEqual(week["Marks given"]["value"], 1)
+        self.assertEqual(week["Attendance"]["value"], "100%")
+        self.assertEqual(week["Homework done"]["value"], "100%")  # 1 student in the class, 1 tick
+        self.assertEqual(week["Exam results"]["value"], "100%")
+        self.assertContains(response, "Trip")
+
+        # Charts use the badge colours: a fully attended day is green, and so is a 9.
+        attendance = json.loads(response.context["attendance_chart"])["datasets"][0]
+        self.assertEqual(attendance["backgroundColor"], ["#22c55e"])
+        marks = json.loads(response.context["marks_chart"])["datasets"][0]
+        self.assertEqual(marks["backgroundColor"][9 - 1], "#22c55e")
+        self.assertEqual(marks["backgroundColor"][3 - 1], "#ef4444")
+
+    def test_every_admin_page_renders(self):
+        """The list, add form and an existing object's form of every registered model."""
+        from django.contrib import admin
+        from django.test import RequestFactory
+        from django.urls import reverse
+
+        self.make_school_data()
+        superuser = User.objects.create_superuser("admin@school.edu", "pass12345")
+        self.client.force_login(superuser)
+        request = RequestFactory().get("/")
+        request.user = superuser
+
+        for model, model_admin in admin.site._registry.items():
+            opts = model._meta
+            with self.subTest(model=opts.label):
+                prefix = f"admin:{opts.app_label}_{opts.model_name}"
+                self.assertEqual(self.client.get(reverse(f"{prefix}_changelist")).status_code, 200)
+                if model_admin.has_add_permission(request):
+                    self.assertEqual(self.client.get(reverse(f"{prefix}_add")).status_code, 200)
+                obj = model._default_manager.first()
+                if obj is not None:
+                    self.assertEqual(self.client.get(reverse(f"{prefix}_change", args=[obj.pk])).status_code, 200)
 
 
 # ---------------------------------------------------------------------------
@@ -663,6 +843,47 @@ class PushTriggerTests(BaseAPITestCase):
         self.assertEqual([m["to"] for m in messages], ["ExponentPushToken[teacher]"])
         self.assertIn("Nino Beridze: Yay", messages[0]["body"])
 
+    def test_reply_notifies_the_person_replied_to(self, post):
+        announcement = Announcement.objects.create(
+            title="Trip", content="Friday", grade=self.grade, subject=self.math, created_by=self.teacher
+        )
+        question = Comment.objects.create(announcement=announcement, user=self.parent, content="Which bus?")
+
+        self.client.force_authenticate(self.student)
+        with self.captureOnCommitCallbacks(execute=True):
+            response = self.client.post(
+                "/api/comments/create/",
+                {"comment": "The blue one", "announcement": announcement.pk, "reply_to": question.pk},
+                format="json",
+            )
+
+        messages = {m["to"]: m for m in self.sent_messages(post)}
+        self.assertEqual(set(messages), {"ExponentPushToken[parent]", "ExponentPushToken[teacher]"})
+        self.assertEqual(messages["ExponentPushToken[parent]"]["title"], "ახალი პასუხი: Trip")
+        self.assertEqual(messages["ExponentPushToken[teacher]"]["title"], "Новый комментарий: Trip")
+        self.assertEqual(
+            messages["ExponentPushToken[parent]"]["data"],
+            {"type": "announcement", "id": announcement.pk, "comment": response.data["id"]},
+        )
+
+    def test_reply_to_the_author_notifies_them_once(self, post):
+        announcement = Announcement.objects.create(
+            title="Trip", content="Friday", grade=self.grade, subject=self.math, created_by=self.teacher
+        )
+        note = Comment.objects.create(announcement=announcement, user=self.teacher, content="Bring water")
+
+        self.client.force_authenticate(self.student)
+        with self.captureOnCommitCallbacks(execute=True):
+            self.client.post(
+                "/api/comments/create/",
+                {"comment": "OK", "announcement": announcement.pk, "reply_to": note.pk},
+                format="json",
+            )
+
+        messages = self.sent_messages(post)
+        self.assertEqual([m["to"] for m in messages], ["ExponentPushToken[teacher]"])
+        self.assertEqual(messages[0]["title"], "Новый ответ: Trip")
+
     def test_exercise_notifies_grade(self, post):
         self.client.force_authenticate(self.teacher)
         with self.captureOnCommitCallbacks(execute=True):
@@ -677,8 +898,7 @@ class PushTriggerTests(BaseAPITestCase):
         self.assertEqual(messages["ExponentPushToken[student]"]["title"], "New exercise · Math")
         self.assertEqual(messages["ExponentPushToken[parent]"]["title"], "ახალი დავალება · მათემატიკა")
 
-    @mock.patch("api.views.tg_send", return_value=True)
-    def test_attendance_notifies_parents_in_one_request(self, tg_send, post):
+    def test_attendance_notifies_parents_in_one_request(self, post):
         today = timezone.localdate()
         lesson = WeeklyLesson.objects.create(
             grade=self.grade, subject=self.math, teacher=self.teacher,
@@ -1109,3 +1329,270 @@ class SeedDemoTests(BaseAPITestCase):
     def test_refuses_production(self):
         with self.assertRaises(CommandError):
             call_command("seed_demo")
+
+
+# ---------------------------------------------------------------------------
+# Telegram: login codes, forwarded notifications and the bot's screens
+# ---------------------------------------------------------------------------
+
+PREMIUM = {"🔐": "1001", "⏳": "1002", "🔑": "1003", "📣": "1004", "🌐": "1005", "👋": "1006"}
+
+
+def telegram_ok(*args, **kwargs):
+    return mock.Mock(ok=True, status_code=200, json=lambda: {"ok": True})
+
+
+@override_settings(TELEGRAM_BOT_TOKEN="test-token", PUSH_NOTIFICATIONS_ENABLED=False, WEBSITE_URL="https://school.example")
+@mock.patch("api.telegram.run_in_background", side_effect=lambda job: job())
+@mock.patch("api.telegram.premium_ids", return_value=PREMIUM)
+@mock.patch("api.telegram.requests.post", side_effect=telegram_ok)
+class TelegramDeliveryTests(BaseAPITestCase):
+    def sent(self, post):
+        return [call.kwargs["json"] for call in post.call_args_list]
+
+    def test_login_code_has_premium_emoji_and_a_copy_button(self, post, *_):
+        from api.telegram import send_login_code
+
+        self.assertTrue(send_login_code("42", "123456", "en"))
+        [message] = self.sent(post)
+        self.assertEqual(message["chat_id"], "42")
+        self.assertEqual(message["parse_mode"], "HTML")
+        self.assertIn("<code>123456</code>", message["text"])
+        self.assertIn('<tg-emoji emoji-id="1001">🔐</tg-emoji>', message["text"])
+        self.assertIn("Your login code", message["text"])
+        self.assertEqual(
+            message["reply_markup"]["inline_keyboard"],
+            [[{"text": "Copy code", "icon_custom_emoji_id": "1003", "style": "primary", "copy_text": {"text": "123456"}}]],
+        )
+
+    def test_refused_premium_emoji_are_sent_plain(self, post, *_):
+        from api.telegram import send_login_code
+
+        post.side_effect = [
+            mock.Mock(ok=False, status_code=400, text="Bad Request"),
+            mock.Mock(ok=True, status_code=200),
+        ]
+        self.assertTrue(send_login_code("42", "123456", "ka"))
+        plain = self.sent(post)[1]
+        self.assertNotIn("tg-emoji", plain["text"])
+        self.assertIn("🔐", plain["text"])
+        self.assertEqual(plain["reply_markup"]["inline_keyboard"][0][0]["text"], "🔑 კოდის კოპირება")
+
+    def test_notifications_reach_connected_people_in_their_language(self, post, *_):
+        User.objects.filter(pk=self.parent.pk).update(telegram_language="en")
+        self.client.force_authenticate(self.teacher)
+        with self.captureOnCommitCallbacks(execute=True):
+            self.client.post(
+                "/api/announcements/create/",
+                {"title": "Trip <3", "content": "Friday", "subject_id": self.math.pk,
+                 "grade_id": self.grade.pk, "category_id": self.category.pk},
+                format="json",
+            )
+
+        messages = {m["chat_id"]: m for m in self.sent(post)}
+        self.assertEqual(set(messages), {"111", "999"})
+        self.assertIn("ახალი განცხადება: Trip &lt;3", messages["111"]["text"])
+        self.assertIn("New announcement: Trip &lt;3", messages["999"]["text"])
+        self.assertIn('<tg-emoji emoji-id="1004">📣</tg-emoji>', messages["999"]["text"])
+        button = messages["999"]["reply_markup"]["inline_keyboard"][0][0]
+        self.assertEqual(button["url"], "https://school.example/en/announcement")
+
+    def test_turned_off_notifications_are_not_forwarded(self, post, *_):
+        User.objects.filter(pk=self.parent.pk).update(telegram_notifications=False)
+        from api import push
+
+        push.notify_users([self.student.pk, self.parent.pk, self.teacher.pk], lambda lang: ("Hi", "There"))
+        self.assertEqual([m["chat_id"] for m in self.sent(post)], ["111"])
+
+    def test_attendance_reaches_parents(self, post, *_):
+        today = timezone.localdate()
+        lesson = WeeklyLesson.objects.create(
+            grade=self.grade, subject=self.math, teacher=self.teacher,
+            weekday=today.isoweekday(), start_time=time(10, 0), end_time=time(10, 45),
+        )
+        self.client.force_authenticate(self.teacher)
+        with self.captureOnCommitCallbacks(execute=True):
+            self.client.post(
+                "/api/teacher/attendance/mark/",
+                {"lesson_id": lesson.pk, "date": str(today),
+                 "attendance": [{"student_id": self.student.pk, "is_present": False}]},
+                format="json",
+            )
+
+        [message] = self.sent(post)
+        self.assertEqual(message["chat_id"], "999")
+        self.assertIn("🚨", message["text"])
+        self.assertIn("Nino Beridze · მათემატიკა", message["text"])
+        self.assertIn("არ გამოცხადდა", message["text"])
+
+    def test_otp_request_sends_the_code_in_the_bots_language(self, post, *_):
+        User.objects.filter(pk=self.student.pk).update(telegram_language="ru")
+        response = self.client.post("/api/otp/request/", {"email": "student@school.edu"}, format="json")
+
+        self.assertEqual(response.status_code, 200)
+        [message] = self.sent(post)
+        self.assertIn("Ваш код для входа", message["text"])
+
+
+class BotScreenTests(BaseAPITestCase):
+    def ctx(self, lang="en", ids=None, child_id=None):
+        from api.bot.screens import Ctx
+
+        return Ctx(lang, ids or {}, child_id)
+
+    def callbacks(self, screen):
+        return [button.get("callback_data") for row in screen.buttons for button in row]
+
+    def test_premium_emoji_and_buttons(self):
+        from api.bot.emoji import strip_premium
+
+        ctx = self.ctx(ids={"👋": "77"})
+        self.assertEqual(ctx.e("👋"), '<tg-emoji emoji-id="77">👋</tg-emoji>')
+        self.assertEqual(ctx.e("🎓"), "🎓")
+        self.assertEqual(strip_premium(f"{ctx.e('👋')} Hi"), "👋 Hi")
+        self.assertEqual(
+            ctx.button("Hello", emoji="👋", data="home", style="primary"),
+            {"text": "Hello", "icon_custom_emoji_id": "77", "style": "primary", "callback_data": "home"},
+        )
+        self.assertEqual(ctx.button("Week", emoji="📈", data="week"), {"text": "📈 Week", "callback_data": "week"})
+
+    def test_linking_by_email(self):
+        from api.bot.screens import link_account
+
+        self.assertEqual(link_account(555, "not an email", "en").status, "invalid")
+        self.assertEqual(link_account(555, "nobody@school.edu", "en").status, "unknown")
+        self.assertEqual(link_account(555, "student@school.edu", "en").status, "taken")
+
+        outcome = link_account(555, " Teacher@School.edu ", "ru")
+        self.assertEqual(outcome.status, "linked")
+        self.teacher.refresh_from_db()
+        self.assertEqual((self.teacher.chat_id, self.teacher.telegram_language), ("555", "ru"))
+        self.assertEqual(link_account(555, "teacher@school.edu", "en").status, "already")
+
+    def test_link_screens(self):
+        from api.bot.screens import LinkOutcome, link_result
+
+        retry = link_result(self.ctx(), LinkOutcome("unknown"))
+        self.assertIn("couldn't find this email", retry.text)
+        self.assertEqual(self.callbacks(retry), ["cancel"])
+
+        done = link_result(self.ctx(), LinkOutcome("linked", self.student))
+        self.assertIn("Nino Beridze", done.text)
+        self.assertEqual(done.effect, "5046509860389126442")
+
+    def test_student_home_and_menu(self):
+        from api.bot.screens import home
+
+        Mark.objects.create(student=self.student, subject=self.math, teacher=self.teacher, value=9)
+        screen = home(self.ctx(), self.student)
+        self.assertIn("Nino!", screen.text)
+        self.assertIn("Student · 7 A", screen.text)
+        self.assertIn("Average mark: <b>9.0</b>", screen.text)
+        self.assertIn("day:0", self.callbacks(screen))
+        self.assertIn("marks", self.callbacks(screen))
+
+    def test_teacher_menu_has_no_marks_or_attendance(self):
+        from api.bot.screens import home, marks
+
+        callbacks = self.callbacks(home(self.ctx(), self.teacher))
+        self.assertNotIn("marks", callbacks)
+        self.assertNotIn("att", callbacks)
+        self.assertIn("isn't available", marks(self.ctx(), self.teacher).text)
+
+    def test_day_shows_lessons_homework_and_exams(self):
+        from api.bot.screens import day
+
+        tomorrow = timezone.localdate() + timedelta(days=1)
+        WeeklyLesson.objects.create(
+            grade=self.grade, subject=self.math, teacher=self.teacher, weekday=tomorrow.isoweekday(),
+            start_time=time(9, 0), end_time=time(9, 45), room="12",
+        )
+        DailyExercise.objects.create(
+            grade=self.grade, subject=self.math, teacher=self.teacher, date=timezone.localdate(),
+            due_date=tomorrow, title="Page <12>",
+        )
+        Exam.objects.create(title={"en": "Quiz"}, subject=self.math, grade=self.grade, duration=30, scheduled_for=tomorrow)
+
+        screen = day(self.ctx(), self.student, 1)
+        self.assertIn("Tomorrow", screen.text)
+        self.assertIn("<code>09:00</code> Math", screen.text)
+        self.assertIn("room 12", screen.text)
+        self.assertIn("Page &lt;12&gt;", screen.text)
+        self.assertIn("Quiz · Math · ⏳ 30 min", screen.text)
+        self.assertEqual(self.callbacks(screen)[:3], ["day:0", "day:0", "day:2"])
+
+    def test_homework_can_be_ticked_off(self):
+        from api.bot.screens import complete_homework, homework
+
+        task = DailyExercise.objects.create(
+            grade=self.grade, subject=self.math, teacher=self.teacher, date=timezone.localdate(),
+            due_date=timezone.localdate() + timedelta(days=2), title="Essay",
+        )
+        before = homework(self.ctx(), self.student)
+        self.assertIn(f"hw:{task.pk}", self.callbacks(before))
+        self.assertIn("0 of 1 done", before.text)
+
+        self.assertEqual(complete_homework(self.student, task.pk, "en"), "✅ Done! Nice work.")
+        self.assertTrue(ExerciseCompletion.objects.filter(exercise=task, student=self.student).exists())
+
+        after = homework(self.ctx(), self.student)
+        self.assertIn("<s>Essay</s>", after.text)
+        self.assertNotIn(f"hw:{task.pk}", self.callbacks(after))
+        self.assertEqual(complete_homework(self.parent, task.pk, "en"), "This isn't available for your account.")
+
+    def test_parent_sees_the_childs_marks_and_attendance(self):
+        from api.bot.screens import attendance, home, marks
+
+        Mark.objects.create(student=self.student, subject=self.math, teacher=self.teacher, value=4, comment="Try again")
+        lesson = WeeklyLesson.objects.create(
+            grade=self.grade, subject=self.math, teacher=self.teacher,
+            weekday=timezone.localdate().isoweekday(), start_time=time(10, 0), end_time=time(10, 45),
+        )
+        LessonAttendance.objects.create(lesson=lesson, student=self.student, date=timezone.localdate(), is_present=False)
+
+        self.assertIn("Nino Beridze", home(self.ctx(), self.parent).text)
+
+        marks_screen = marks(self.ctx(), self.parent)
+        self.assertIn("Marks</b> · Nino", marks_screen.text)
+        self.assertIn("🔴 <b>4</b> · Math", marks_screen.text)
+        self.assertIn("Try again", marks_screen.text)
+
+        attendance_screen = attendance(self.ctx(lang="ka"), self.parent)
+        self.assertIn("გააცდინა: <b>1</b>", attendance_screen.text)
+        self.assertIn("მათემატიკა", attendance_screen.text)
+
+    def test_news_escapes_html(self):
+        from api.bot.screens import news
+
+        Announcement.objects.create(title="<b>Trip</b>", content="Bring & share", grade=self.grade, created_by=self.teacher)
+        screen = news(self.ctx(), self.student)
+        self.assertIn("&lt;b&gt;Trip&lt;/b&gt;", screen.text)
+        self.assertIn("Bring &amp; share", screen.text)
+
+    def test_accounts_in_one_chat(self):
+        from api.bot.screens import active_account, accounts_for_chat, profile
+
+        User.objects.filter(pk=self.parent.pk).update(chat_id="111")
+        accounts = accounts_for_chat("111")
+        self.assertEqual([a.pk for a in accounts], [self.parent.pk, self.student.pk])
+        self.assertEqual(active_account("111", None).pk, self.parent.pk)
+        self.assertEqual(active_account("111", self.student.pk).pk, self.student.pk)
+        self.assertIn(f"account:{self.student.pk}", self.callbacks(profile(self.ctx(), self.parent, accounts)))
+
+    def test_language_comes_first(self):
+        from api.bot.screens import language_picker, welcome
+
+        picker = language_picker(self.ctx())
+        for prompt in ("აირჩიეთ ენა", "Choose your language", "Выберите язык"):
+            self.assertIn(prompt, picker.text)
+        self.assertEqual(self.callbacks(picker), ["lang:ka:start", "lang:en:start", "lang:ru:start"])
+        self.assertIn("language", self.callbacks(welcome(self.ctx())))
+
+    def test_every_language_is_complete(self):
+        from api.bot.texts import COMMANDS, TEXTS
+
+        english = set(TEXTS["en"])
+        for language, texts in TEXTS.items():
+            self.assertEqual(set(texts), english, language)
+            for command in COMMANDS:
+                self.assertTrue(texts[f"cmd_{command}"], f"{language}: /{command}")

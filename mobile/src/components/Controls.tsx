@@ -5,6 +5,7 @@ import { Pressable, ScrollView, StyleSheet, View } from "react-native";
 import { radius, spacing, useTheme, withAlpha } from "@/theme";
 
 import { AppText } from "./AppText";
+import { GlassBackdrop, useLiquidGlass } from "./Glass";
 import { Icon, type IconName } from "./Icon";
 
 function tick() {
@@ -19,6 +20,7 @@ interface ChipProps {
 
 export function Chip({ label, selected, onPress }: ChipProps) {
   const { colors } = useTheme();
+  const glass = useLiquidGlass();
   return (
     <Pressable
       accessibilityRole="button"
@@ -30,11 +32,12 @@ export function Chip({ label, selected, onPress }: ChipProps) {
       style={[
         styles.chip,
         {
-          backgroundColor: selected ? colors.primary : colors.surface,
+          backgroundColor: selected ? colors.primary : glass ? "transparent" : colors.surface,
           borderColor: selected ? colors.primary : colors.border,
         },
       ]}
     >
+      {!selected ? <GlassBackdrop radius={radius.pill} /> : null}
       <AppText variant="caption" style={{ color: selected ? colors.onPrimary : colors.text, fontWeight: "600" }}>
         {label}
       </AppText>
@@ -58,9 +61,17 @@ interface SegmentedControlProps<T extends string | number> {
 }
 
 export function SegmentedControl<T extends string | number>({ options, value, onChange }: SegmentedControlProps<T>) {
-  const { colors } = useTheme();
+  const { colors, scheme } = useTheme();
+  const glass = useLiquidGlass();
+  const selectedBackground = !glass
+    ? colors.surface
+    : scheme === "dark"
+      ? "rgba(255, 255, 255, 0.16)"
+      : "rgba(255, 255, 255, 0.85)";
+
   return (
-    <View style={[styles.segmented, { backgroundColor: colors.surfaceMuted }]}>
+    <View style={[styles.segmented, { backgroundColor: glass ? "transparent" : colors.surfaceMuted }]}>
+      <GlassBackdrop radius={radius.md} />
       {options.map((option) => {
         const selected = option.value === value;
         return (
@@ -72,7 +83,7 @@ export function SegmentedControl<T extends string | number>({ options, value, on
               tick();
               onChange(option.value);
             }}
-            style={[styles.segment, selected && { backgroundColor: colors.surface }]}
+            style={[styles.segment, selected && { backgroundColor: selectedBackground }]}
           >
             <AppText
               variant="caption"
@@ -143,10 +154,19 @@ export function ListRow({ icon, iconColor, title, subtitle, right, onPress, dest
 /** Groups ListRows into one rounded card with separators. */
 export function ListGroup({ children }: { children: ReactNode }) {
   const { colors } = useTheme();
+  const glass = useLiquidGlass();
   const rows = Children.toArray(children).filter(Boolean);
 
   return (
-    <View style={[styles.group, { backgroundColor: colors.surface, borderColor: colors.border, boxShadow: colors.shadow }]}>
+    <View
+      style={[
+        styles.group,
+        glass
+          ? { borderColor: colors.border }
+          : { backgroundColor: colors.surface, borderColor: colors.border, boxShadow: colors.shadow },
+      ]}
+    >
+      <GlassBackdrop radius={radius.lg} />
       {rows.map((row, index) => (
         <Fragment key={index}>
           {index > 0 ? <View style={[styles.separator, { backgroundColor: colors.border }]} /> : null}

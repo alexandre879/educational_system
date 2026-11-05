@@ -1,3 +1,5 @@
+@use "../../../styles/liquid" as lg;
+
 .page {
   width: 100%;
   max-width: 1200px;
@@ -61,11 +63,11 @@
   display: grid;
   place-items: center;
 
-  background: rgba(22, 119, 255, 0.14);
-  border: 1px solid rgba(22, 119, 255, 0.18);
+  background: rgb(var(--primary-rgb) / 0.14);
+  border: 1px solid rgb(var(--primary-rgb) / 0.18);
 
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: var(--glass-filter);
+  -webkit-backdrop-filter: var(--glass-filter);
 
   box-shadow: 0 14px 36px rgba(0, 0, 0, 0.25);
   flex-shrink: 0;
@@ -78,7 +80,7 @@
 
 .WrapperOfMainCaptionAndIcon:hover .headerIcon {
   transform: translateY(-2px) scale(1.02);
-  border-color: rgba(22, 119, 255, 0.28);
+  border-color: rgb(var(--primary-rgb) / 0.28);
   box-shadow: 0 18px 42px rgba(0, 0, 0, 0.28);
 }
 
@@ -100,67 +102,72 @@
 .card,
 .listItem,
 .row {
-  border-radius: 18px;
-  border: 1px solid var(--border-medium);
-
-  background: var(--surface);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-
-  box-shadow:
-    var(--shadow-soft),
-    0 0 0 1px rgba(255, 255, 255, 0.03) inset;
+  @include lg.surface(20px);
 
   transition:
     border-color 180ms ease,
     background 180ms ease,
-    transform 180ms ease,
+    transform var(--dur-slow) var(--ease-spring),
     box-shadow 180ms ease;
 }
 
 .header {
-  /* Same gradient hero as the mobile app's home screen. */
+  /* Same gradient hero as the mobile app's home screen, finished like a sheet of tinted glass. */
   position: relative;
   overflow: hidden;
-  padding: 26px 24px;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 26px 24px 18px;
+  border: none;
   border-radius: var(--radius-xl);
   background: var(--brand-gradient);
-  box-shadow: var(--brand-shadow);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.32),
+    inset 0 -30px 60px rgb(0 0 0 / 0.14),
+    var(--brand-shadow);
   opacity: 0;
   animation: fadeUp 360ms ease forwards;
   animation-delay: 100ms;
 
+  // Two glass bubbles drifting in the gradient.
   &::before,
   &::after {
     content: "";
     position: absolute;
+    z-index: -1;
     border-radius: 50%;
-    background: rgba(255, 255, 255, 0.1);
     pointer-events: none;
+    background: radial-gradient(circle at 32% 30%, rgb(255 255 255 / 0.32), rgb(255 255 255 / 0.05) 62%);
+    box-shadow:
+      inset 0 0 0 1px rgb(255 255 255 / 0.22),
+      inset -10px -16px 30px rgb(255 255 255 / 0.06);
   }
 
   &::before {
-    width: 280px;
-    height: 280px;
-    top: -120px;
+    width: 300px;
+    height: 300px;
+    top: -130px;
     right: -70px;
+    animation: bubble 14s ease-in-out infinite alternate;
   }
 
   &::after {
     width: 150px;
     height: 150px;
     bottom: -70px;
-    right: 120px;
-    background: rgba(255, 255, 255, 0.07);
+    right: 150px;
+    animation: bubble 11s ease-in-out -4s infinite alternate-reverse;
   }
 
-  .profile {
-    position: relative;
-    z-index: 1;
-  }
-
+  // !important: MUI's Typography styles are injected after the CSS modules.
   .title {
     color: #fff;
+    font-size: clamp(21px, 2.4vw, 28px) !important;
+    font-weight: 800 !important;
+    letter-spacing: -0.015em !important;
+    line-height: 1.2 !important;
   }
 
   .muted,
@@ -169,13 +176,137 @@
   }
 
   .avatar {
-    border: 3px solid rgba(255, 255, 255, 0.45);
-    box-shadow: none;
+    border: 3px solid rgba(255, 255, 255, 0.5);
+    box-shadow: 0 10px 30px -6px rgb(0 0 0 / 0.35);
+  }
+
+  &:hover {
+    border-color: transparent;
+  }
+}
+
+@keyframes bubble {
+  to {
+    transform: translate(-24px, 18px) scale(1.08);
+  }
+}
+
+.heroTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.heroDate {
+  font-size: 12.5px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgb(255 255 255 / 0.78);
+}
+
+.heroClock {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  flex-shrink: 0;
+  color: #fff;
+}
+
+.heroTime {
+  font-size: clamp(34px, 4.4vw, 52px);
+  font-weight: 250;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  font-variant-numeric: tabular-nums;
+  text-shadow: 0 6px 30px rgb(0 0 0 / 0.2);
+}
+
+.heroToday {
+  margin-top: 4px;
+  font-size: 12px;
+  font-weight: 700;
+  color: rgb(255 255 255 / 0.75);
+}
+
+// The tip strip sits on the hero as a lighter pane of glass.
+.tip {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 8px 8px 10px;
+  border-radius: 16px;
+  color: #fff;
+  font-size: 13.5px;
+  background: linear-gradient(180deg, rgb(255 255 255 / 0.2), rgb(255 255 255 / 0.1));
+  border: 1px solid rgb(255 255 255 / 0.2);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.3);
+  backdrop-filter: blur(12px) saturate(140%);
+  -webkit-backdrop-filter: blur(12px) saturate(140%);
+}
+
+.tipIcon {
+  width: 30px;
+  height: 30px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  color: #fde68a;
+  background: rgb(0 0 0 / 0.14);
+}
+
+.tipText {
+  flex: 1;
+  min-width: 0;
+  line-height: 1.4;
+
+  b {
+    font-weight: 800;
+  }
+}
+
+.tipNext {
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  border: none;
+  border-radius: 50%;
+  color: #fff;
+  background: rgb(255 255 255 / 0.16);
+  cursor: pointer;
+  transition:
+    background 160ms ease,
+    transform var(--dur-med) var(--ease-spring);
+
+  &:hover {
+    background: rgb(255 255 255 / 0.28);
+    transform: translateX(2px);
+  }
+
+  @include lg.press(0.9);
+}
+
+.heroSkeleton {
+  height: 190px;
+  border-radius: var(--radius-xl);
+  background: var(--brand-gradient);
+  opacity: 0.35;
+  animation: breathe 1.6s ease-in-out infinite;
+}
+
+@keyframes breathe {
+  50% {
+    opacity: 0.55;
   }
 }
 
 .card {
-  padding: 16px;
+  @include lg.spotlight;
+  padding: 16px 18px;
   min-width: 0;
   cursor: default;
   contain: layout paint;
@@ -185,17 +316,63 @@
 
 .cardClickable {
   cursor: pointer;
+
+  @include lg.press(0.98);
+}
+
+// The stat cards' icon bead and the faint colored glow in their corner.
+.cardIcon {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  border-radius: 14px;
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.18);
+  transition: transform var(--dur-slow) var(--ease-spring);
+
+  .card:hover & {
+    transform: scale(1.1) rotate(-8deg);
+  }
+}
+
+.cardGlow {
+  position: absolute;
+  right: -40px;
+  bottom: -60px;
+  z-index: -1;
+  width: 160px;
+  height: 160px;
+  border-radius: 50%;
+  opacity: 0.16;
+  filter: blur(40px);
+  pointer-events: none;
+  transition: opacity var(--dur-med) ease;
+
+  .card:hover & {
+    opacity: 0.3;
+  }
 }
 
 .header:hover,
 .card:hover,
 .listItem:hover,
 .row:hover {
-  border-color: rgba(22, 119, 255, 0.22);
-  transform: translateY(-2px);
+  border-color: rgb(var(--primary-rgb) / 0.28);
+  transform: translateY(-3px);
   box-shadow:
-    0 18px 40px rgba(0, 0, 0, 0.2),
-    0 0 0 1px rgba(255, 255, 255, 0.03) inset;
+    var(--glass-rim),
+    0 22px 50px -18px rgba(0, 0, 0, 0.5);
+}
+
+.header:hover {
+  transform: none;
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.32),
+    inset 0 -30px 60px rgb(0 0 0 / 0.14),
+    var(--brand-shadow);
 }
 
 .profile {
@@ -209,14 +386,14 @@
 .avatar {
   width: 64px !important;
   height: 64px !important;
-  border: 2px solid rgba(22, 119, 255, 0.75);
-  box-shadow: 0 14px 30px rgba(22, 119, 255, 0.18);
+  border: 2px solid rgb(var(--primary-rgb) / 0.75);
+  box-shadow: 0 14px 30px rgb(var(--primary-rgb) / 0.18);
   transition: transform 220ms ease, box-shadow 220ms ease;
 }
 
 .profile:hover .avatar {
   transform: scale(1.03);
-  box-shadow: 0 18px 36px rgba(22, 119, 255, 0.22);
+  box-shadow: 0 18px 36px rgb(var(--primary-rgb) / 0.22);
 }
 
 .profileText {
@@ -286,14 +463,26 @@
   animation-delay: 300ms;
 }
 
+.grid3 > *:nth-child(5) {
+  animation-delay: 360ms;
+}
+
+.grid3 > *:nth-child(6) {
+  animation-delay: 420ms;
+}
+
 .cardLabel {
-  color: var(--text-strong);
-  font-size: 0.9rem;
+  color: var(--text-secondary);
+  font-size: 0.9rem !important;
+  font-weight: 700 !important;
+  padding-right: 54px;
 }
 
 .cardValue {
-  font-size: 2rem;
-  font-weight: 1000;
+  font-size: 2.2rem !important;
+  font-weight: 900 !important;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
   margin-top: 6px;
 
   background: linear-gradient(135deg, var(--primary-blue), var(--primary-blue-hover));
@@ -469,7 +658,7 @@
 .activeExamsList:hover {
   transform: translateY(-2px);
   filter: brightness(1.03);
-  box-shadow: 0 14px 30px rgba(22, 119, 255, 0.22);
+  box-shadow: 0 14px 30px rgb(var(--primary-rgb) / 0.22);
 }
 
 .activeExamsList:active {
@@ -533,13 +722,49 @@
   }
 
   .header {
-    padding: 14px;
-    border-radius: 14px;
+    padding: 18px 16px 14px;
+    border-radius: 22px;
+  }
+
+  .heroClock {
+    display: none;
+  }
+
+  // Stat cards stay two-up on phones (charts in .grid3 still go full width).
+  .grid3.statGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .statGrid .cardIcon {
+    top: 12px;
+    right: 12px;
+    width: 34px;
+    height: 34px;
+    border-radius: 11px;
+
+    svg {
+      width: 17px;
+      height: 17px;
+    }
+  }
+
+  .statGrid .cardLabel {
+    padding-right: 38px;
+    font-size: 0.8rem !important;
+  }
+
+  .statGrid .cardValue {
+    font-size: 1.75rem !important;
+  }
+
+  .tip {
+    font-size: 12.5px;
   }
 
   .card {
     padding: 12px;
-    border-radius: 14px;
+    border-radius: 18px;
   }
 
   .grid3 {

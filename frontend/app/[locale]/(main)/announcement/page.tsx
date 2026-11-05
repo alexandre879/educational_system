@@ -3,7 +3,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import styles from "./announcement.module.scss";
 import api from "@/interceptors";
-import { Button, Dropdown, Form, Input, List, Select, Pagination, Modal } from "antd";
+import { Button, Dropdown, Form, Input, Select, Pagination, Modal } from "antd";
 import TextArea from "antd/es/input/TextArea";
 import {
   Announcement,
@@ -11,8 +11,8 @@ import {
   CreateAnnouncementData,
   Grades,
   Categories,
-  Comment,
 } from "./interface";
+import AnnouncementThread from "./components/AnnouncementThread";
 import { FiInbox } from "react-icons/fi";
 import { CommentOutlined } from "@ant-design/icons";
 import { FaBullhorn } from "react-icons/fa";
@@ -107,32 +107,6 @@ const AnnouncementCard = React.memo(function AnnouncementCard({
   );
 });
 
-type CommentRowProps = {
-  author: string;
-  body: string;
-  date: string;
-};
-
-const CommentRow = React.memo(function CommentRow({
-  author,
-  body,
-  date,
-}: CommentRowProps) {
-  return (
-    <List.Item className={styles.commentItem}>
-      <div className={styles.outerWrapper}>
-        <div className={styles.innerCommentItemSectionWrapper}>
-          <div>
-            <u className={styles.insideCommentsAuthorStyle}>{author}</u>
-          </div>
-          <span className={styles.commentsDateTimeStyle}>{date}</span>
-        </div>
-        <span className={styles.commentStyle}>{body}</span>
-      </div>
-    </List.Item>
-  );
-});
-
 export default function AnnouncementPage() {
   const t = useTranslations("Announcement");
   const pathname = usePathname();
@@ -156,12 +130,8 @@ export default function AnnouncementPage() {
   const [selectedAnnouncement, setSelectedAnnouncement] = useState<Announcement | null>(null);
   const selectedAnnouncementId = selectedAnnouncement?.id ?? null;
 
-  const [comments, setComments] = useState<Comment[]>([]);
-  const commentsCacheRef = useRef<Record<number, Comment[]>>({});
-
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [announcementForm] = Form.useForm();
-  const [commentForm] = Form.useForm();
 
   const PAGE_SIZE = 10;
   const [page, setPage] = useState(1);
@@ -288,105 +258,43 @@ export default function AnnouncementPage() {
     [displayName, locale]
   );
 
-  const getCommentText = useCallback((c: Comment): string => {
-    const obj = getRecord(c);
-    if (!obj) return "";
-
-    const comment = getString(obj.comment);
-    if (comment) return comment;
-
-    const content = getString(obj.content);
-    if (content) return content;
-
-    return "";
-  }, []);
-
-  const fetchComments = useCallback(async (id: number, force = false) => {
-    if (!force && commentsCacheRef.current[id]) {
-      setComments(commentsCacheRef.current[id]);
-      return;
-    }
-
-    try {
-      const res = await api.get<Comment[]>("comments/", {
-        params: { announcement: id },
-      });
-
-      commentsCacheRef.current[id] = res.data;
-      setComments(res.data);
-    } catch (error) {
-      console.log(error);
-      setComments([]);
-    }
-  }, []);
-
   const clearSelectedAnnouncement = useCallback(() => {
     setSelectedAnnouncement(null);
-    setComments([]);
     replaceAnnouncementQuery(null);
   }, [replaceAnnouncementQuery]);
 
-  const onCommentSend = async (values: { comment: string }) => {
-    if (!values.comment || !selectedAnnouncementId) return;
-
-    try {
-      const res = await api.post<Comment>("comments/create/", {
-        comment: values.comment,
-        announcement: selectedAnnouncementId,
-      });
-
-      setComments((prev) => {
-        const next = [...prev, res.data];
-        commentsCacheRef.current[selectedAnnouncementId] = next;
-        return next;
-      });
-
-      setAnnouncements((prev) =>
-        prev.map((item) =>
-          item.id === selectedAnnouncementId
-            ? { ...item, len_comments: item.len_comments + 1 }
-            : item
-        )
-      );
-
-      setSelectedAnnouncement((prev) =>
-        prev && prev.id === selectedAnnouncementId
-          ? { ...prev, len_comments: prev.len_comments + 1 }
-          : prev
-      );
-
-      commentForm.resetFields();
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  // The open thread reports its comment count so the list's counters stay current.
+  const handleCommentCountChange = useCallback((id: number, count: number) => {
+    setAnnouncements((prev) =>
+      prev.some((item) => item.id === id && item.len_comments !== count)
+        ? prev.map((item) => (item.id === id ? { ...item, len_comments: count } : item))
+        : prev
+    );
+  }, []);
 
   const selectAnnouncement = useCallback(
-    async (item: Announcement, syncUrl = true) => {
+    (item: Announcement, syncUrl = true) => {
       if (syncUrl) {
         replaceAnnouncementQuery(item.id);
       }
 
       if (selectedAnnouncementId === item.id) {
         scrollThreadIntoViewOnMobile();
-        return;
+      } else {
+        // Scrolled into view by the effect below once the thread has rendered.
+        setSelectedAnnouncement(item);
       }
-
-      setSelectedAnnouncement(item);
-      await fetchComments(item.id);
-      scrollThreadIntoViewOnMobile();
     },
-    [
-      fetchComments,
-      replaceAnnouncementQuery,
-      scrollThreadIntoViewOnMobile,
-      selectedAnnouncementId,
-    ]
+    [replaceAnnouncementQuery, scrollThreadIntoViewOnMobile, selectedAnnouncementId]
   );
+
+  useEffect(() => {
+    if (selectedAnnouncementId) scrollThreadIntoViewOnMobile();
+  }, [selectedAnnouncementId, scrollThreadIntoViewOnMobile]);
 
   const handleSelectAnnouncement = useCallback(
     (item: Announcement) => {
-      void selectAnnouncement(item, true);
+      selectAnnouncement(item, true);
     },
     [selectAnnouncement]
   );
@@ -426,8 +334,6 @@ export default function AnnouncementPage() {
 
       setAnnouncements((prev) => [res.data, ...prev]);
       setSelectedAnnouncement(res.data);
-      setComments([]);
-      commentsCacheRef.current[res.data.id] = [];
       setPage(1);
       replaceAnnouncementQuery(res.data.id);
       scrollListToTop();
@@ -475,7 +381,6 @@ export default function AnnouncementPage() {
   useEffect(() => {
     if (openAnnouncementId == null) {
       setSelectedAnnouncement(null);
-      setComments([]);
       return;
     }
 
@@ -484,7 +389,7 @@ export default function AnnouncementPage() {
 
     if (selectedAnnouncementId === found.id) return;
 
-    void selectAnnouncement(found, false);
+    selectAnnouncement(found, false);
   }, [openAnnouncementId, announcements, selectedAnnouncementId, selectAnnouncement]);
 
   useEffect(() => {
@@ -534,15 +439,6 @@ export default function AnnouncementPage() {
     )})`;
   }, [selectedSubjectId, subjects, t, locale]);
 
-  const sortedComments = useMemo(() => {
-    return comments
-      .slice()
-      .sort(
-        (a, b) =>
-          new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-      );
-  }, [comments]);
-
   const subjectMenuItems = useMemo(
     () => [
       {
@@ -587,15 +483,6 @@ export default function AnnouncementPage() {
     getGradeLabel,
   ]);
 
-  const commentViewModels = useMemo(() => {
-    return sortedComments.map((item) => ({
-      item,
-      author: displayName((item as unknown as MaybeRecord).user),
-      body: getCommentText(item),
-      date: new Date(item.created_at).toLocaleString(),
-    }));
-  }, [sortedComments, displayName, getCommentText]);
-
   return (
     <div className={styles.dropDownWrapper}>
       <div className={styles.ButtonDropdownWrapper}>
@@ -621,7 +508,7 @@ export default function AnnouncementPage() {
               </div>
             )}
             menu={{ items: subjectMenuItems }}
-            placement="bottomCenter"
+            placement="bottom"
             trigger={["click"]}
             arrow={{ pointAtCenter: true }}
             getPopupContainer={(triggerNode) =>
@@ -739,80 +626,12 @@ export default function AnnouncementPage() {
 
         <div ref={rightPaneRef} className={styles.rightPane}>
           {selectedAnnouncement ? (
-            <div className={styles.threadCard}>
-              <div className={styles.threadHeader}>
-                <div style={{ display: "flex", justifyContent: "space-between", gap: 12 }}>
-                  <h2 className={styles.threadTitle}>
-                    {displayName(selectedAnnouncement.title)}
-                  </h2>
-
-                  <Button onClick={clearSelectedAnnouncement}>{t("cancel")}</Button>
-                </div>
-
-                <div className={styles.threadMeta}>
-                  <span className={styles.metaItem}>
-                    <strong>{t("author")}:</strong> {getCreatedByEmail(selectedAnnouncement)}
-                  </span>
-                  <span className={styles.metaItem}>
-                    <strong>{t("subject")}:</strong> {displayName(selectedAnnouncement.subject)}
-                  </span>
-                  <span className={styles.metaItem}>
-                    <strong>{t("grade")}:</strong> {getGradeLabel(selectedAnnouncement)}
-                  </span>
-                </div>
-              </div>
-
-              <div className={styles.threadContent}>
-                {displayName(selectedAnnouncement.content)}
-              </div>
-
-              <div className={styles.threadCommentsBlock}>
-                <List
-                  size="small"
-                  bordered
-                  dataSource={commentViewModels}
-                  className={styles.commentsList}
-                  renderItem={(vm) => (
-                    <CommentRow
-                      key={vm.item.id}
-                      author={vm.author}
-                      body={vm.body}
-                      date={vm.date}
-                    />
-                  )}
-                  locale={{
-                    emptyText: (
-                      <span style={{ color: "rgb(77, 77, 77)", fontWeight: 700 }}>
-                        {t("noCommentsYet")}
-                      </span>
-                    ),
-                  }}
-                />
-              </div>
-
-              <div className={styles.replyComposer}>
-                <Form
-                  form={commentForm}
-                  layout="inline"
-                  onFinish={onCommentSend}
-                  style={{ width: "100%" }}
-                >
-                  <Form.Item
-                    name="comment"
-                    style={{ flex: 1 }}
-                    rules={[{ required: true, message: t("validationTypeSomething") }]}
-                  >
-                    <Input placeholder={t("commentPlaceholder")} />
-                  </Form.Item>
-
-                  <Form.Item>
-                    <Button type="primary" htmlType="submit">
-                      {t("send")}
-                    </Button>
-                  </Form.Item>
-                </Form>
-              </div>
-            </div>
+            <AnnouncementThread
+              key={selectedAnnouncement.id}
+              announcement={selectedAnnouncement}
+              onClose={clearSelectedAnnouncement}
+              onCountChange={handleCommentCountChange}
+            />
           ) : (
             <div className={styles.threadEmpty}>
               <FiInbox size={42} />

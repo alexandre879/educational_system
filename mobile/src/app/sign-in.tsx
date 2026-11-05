@@ -15,7 +15,7 @@ import { OtpInput } from "@/components/OtpInput";
 import { TextField } from "@/components/TextField";
 import { SUPPORTED_LANGUAGES } from "@/config";
 import { LANGUAGE_NAMES, useI18n, type Translate } from "@/i18n";
-import { radius, spacing, useTheme } from "@/theme";
+import { radius, spacing, useBackdropStyle, useTheme } from "@/theme";
 
 const LAST_EMAIL_KEY = "auth.lastEmail";
 // Matches the server's default OTP_RATE_LIMIT.
@@ -50,6 +50,7 @@ function verifyErrorMessage(error: unknown, t: Translate): string {
 export default function SignInScreen() {
   const { t, language, setLanguage } = useI18n();
   const { colors } = useTheme();
+  const backdrop = useBackdropStyle();
   const { signIn } = useAuth();
   const insets = useSafeAreaInsets();
 
@@ -120,7 +121,7 @@ export default function SignInScreen() {
   };
 
   return (
-    <View style={[styles.flex, { backgroundColor: colors.background }]}>
+    <View style={[styles.flex, backdrop]}>
       <LinearGradient
         colors={colors.gradient}
         start={{ x: 0, y: 0 }}

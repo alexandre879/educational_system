@@ -1,0 +1,42 @@
+// Liquid Glass building blocks for CSS modules. Colors and strength come from the
+// tokens in app/globals.css, so these follow the theme, accent and glass level.
+
+@mixin surface($radius: 20px) {
+  background: var(--glass-sheen), var(--surface);
+  backdrop-filter: var(--glass-filter);
+  -webkit-backdrop-filter: var(--glass-filter);
+  border: 1px solid var(--glass-edge);
+  border-radius: $radius;
+  box-shadow: var(--shadow-soft);
+}
+
+// A soft glare that follows the pointer across the surface. GlassRuntime writes
+// --mx/--my on any element that declares --lg-spot. Uses ::after.
+@mixin spotlight($size: 320px) {
+  --lg-spot: 1;
+  position: relative;
+  isolation: isolate;
+
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    opacity: 0;
+    background: radial-gradient($size circle at var(--mx, 50%) var(--my, 50%), var(--spot), transparent 70%);
+    transition: opacity 360ms ease;
+  }
+
+  &:hover::after {
+    opacity: 1;
+  }
+}
+
+// Springy press feedback, like tapping glass.
+@mixin press($scale: 0.97) {
+  &:active:not(:disabled) {
+    transform: scale($scale);
+    transition-duration: 90ms;
+  }
+}

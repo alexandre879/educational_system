@@ -21,7 +21,7 @@
   }
 
   :global(.ant-dropdown-menu-item-selected) {
-    background: rgba(22, 119, 255, 0.14) !important;
+    background: rgb(var(--primary-rgb) / 0.14) !important;
     color: var(--text-strong) !important;
   }
 }
@@ -30,8 +30,8 @@
   background: var(--surface-soft);
   border: 1px solid var(--border-medium);
   border-radius: 14px;
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: var(--glass-filter);
+  -webkit-backdrop-filter: var(--glass-filter);
   box-shadow: var(--shadow-soft);
   overflow: hidden;
   animation: dropdownFadeIn 180ms ease;
@@ -82,8 +82,8 @@
   border: 1px solid var(--border-medium) !important;
   background: var(--surface) !important;
   color: var(--text-primary) !important;
-  backdrop-filter: blur(10px) !important;
-  -webkit-backdrop-filter: blur(10px) !important;
+  backdrop-filter: var(--glass-filter) !important;
+  -webkit-backdrop-filter: var(--glass-filter) !important;
   box-shadow: 0 12px 34px rgba(0, 0, 0, 0.25) !important;
   transition:
     transform 180ms ease,
@@ -94,7 +94,7 @@
 
   &:hover {
     transform: translateY(-2px);
-    border-color: rgba(22, 119, 255, 0.22) !important;
+    border-color: rgb(var(--primary-rgb) / 0.22) !important;
     background: var(--surface-soft-hover) !important;
     box-shadow: 0 16px 40px rgba(0, 0, 0, 0.28) !important;
   }
@@ -138,10 +138,10 @@
   border-radius: 14px;
   display: grid;
   place-items: center;
-  background: rgba(22, 119, 255, 0.14);
-  border: 1px solid rgba(22, 119, 255, 0.18);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  background: rgb(var(--primary-rgb) / 0.14);
+  border: 1px solid rgb(var(--primary-rgb) / 0.18);
+  backdrop-filter: var(--glass-filter);
+  -webkit-backdrop-filter: var(--glass-filter);
   box-shadow: 0 14px 36px rgba(0, 0, 0, 0.25);
   flex-shrink: 0;
   transition:
@@ -153,7 +153,7 @@
 .WrapperOfMainCaptionAndIcon:hover .headerIcon {
   transform: translateY(-2px) scale(1.02);
   box-shadow: 0 18px 42px rgba(0, 0, 0, 0.3);
-  border-color: rgba(22, 119, 255, 0.3);
+  border-color: rgb(var(--primary-rgb) / 0.3);
 }
 
 .WrapperOfMainCaptionAndIcon:hover .navIcon {
@@ -182,8 +182,8 @@
   border-radius: 18px;
   border: 1px solid var(--border-medium);
   background: var(--surface-soft);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: var(--glass-filter);
+  -webkit-backdrop-filter: var(--glass-filter);
   box-shadow: var(--shadow-soft);
   color: var(--text-secondary);
   animation: softPopIn 260ms ease;
@@ -202,8 +202,8 @@
   border-radius: 18px;
   border: 1px solid var(--border-medium);
   background: var(--surface-soft);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: var(--glass-filter);
+  -webkit-backdrop-filter: var(--glass-filter);
   box-shadow:
     var(--shadow-soft),
     0 0 0 1px rgba(255, 255, 255, 0.03) inset;
@@ -218,7 +218,7 @@
 .announcementCard:not(.activeAnnouncementCard):hover {
   cursor: pointer;
   transform: translateY(-3px);
-  border-color: rgba(22, 119, 255, 0.24);
+  border-color: rgb(var(--primary-rgb) / 0.24);
   background: var(--surface-soft-hover);
   box-shadow:
     0 18px 44px rgba(0, 0, 0, 0.26),
@@ -303,8 +303,8 @@
   gap: 6px;
   background: var(--surface);
   border: 1px solid var(--border-medium);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: var(--glass-filter);
+  -webkit-backdrop-filter: var(--glass-filter);
   color: var(--text-strong);
   padding: 4px 8px;
   border-radius: 10px;
@@ -318,7 +318,7 @@
 
 .announcementCard:not(.activeAnnouncementCard):hover .commentsWrapper {
   transform: translateY(-1px);
-  border-color: rgba(22, 119, 255, 0.2);
+  border-color: rgb(var(--primary-rgb) / 0.2);
 }
 
 .commentsCountStyle {
@@ -370,83 +370,13 @@
   }
 }
 
-.commentsList {
-  max-height: 260px;
-  overflow-y: auto;
-  overflow-x: hidden;
-  margin-bottom: 16px;
-  padding-right: 6px;
-  overscroll-behavior: contain;
-
-  :global(.ant-list-item) {
-    border-color: var(--border-soft, var(--border-medium)) !important;
-    transition: background 180ms ease;
-  }
-
-  :global(.ant-list-item:hover) {
-    background: rgba(255, 255, 255, 0.02);
-  }
-}
-
-.commentItem {
-  width: 100% !important;
-  display: flex !important;
-  flex-direction: column !important;
-  justify-content: flex-start !important;
-  gap: 6px !important;
-  animation: fadeUp 220ms ease;
-}
-
-.outerWrapper {
-  width: 100% !important;
-  display: flex !important;
-  gap: 6px;
-  flex-direction: column !important;
-  justify-content: flex-start !important;
-
-  span {
-    color: var(--text-secondary);
-    font-size: 13px;
-    word-break: break-word;
-  }
-}
-
-.innerCommentItemSectionWrapper {
-  width: 100% !important;
-  align-items: center !important;
-  display: flex !important;
-  justify-content: space-between !important;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
-.insideCommentsAuthorStyle {
-  color: var(--primary-blue);
-  font-weight: 800;
-  transition: opacity 180ms ease;
-}
-
-.insideCommentsAuthorStyle:hover {
-  opacity: 0.85;
-}
-
-.commentsDateTimeStyle {
-  color: var(--text-bold-grey) !important;
-  white-space: nowrap;
-  font-size: 12px;
-}
-
-.commentStyle {
-  color: var(--text-primary) !important;
-}
-
 .glassModal {
   :global(.ant-modal-content) {
     background: var(--surface-soft) !important;
     border: 1px solid var(--border-medium) !important;
     border-radius: 18px !important;
-    backdrop-filter: blur(14px) !important;
-    -webkit-backdrop-filter: blur(14px) !important;
+    backdrop-filter: var(--glass-filter) !important;
+    -webkit-backdrop-filter: var(--glass-filter) !important;
     box-shadow: var(--shadow-soft) !important;
     color: var(--text-primary) !important;
     animation: modalPop 220ms ease;
@@ -491,8 +421,8 @@
   :global(.ant-input:focus),
   :global(textarea.ant-input:focus),
   :global(.ant-select-focused .ant-select-selector) {
-    border-color: rgba(22, 119, 255, 0.38) !important;
-    box-shadow: 0 0 0 3px rgba(22, 119, 255, 0.12) !important;
+    border-color: rgb(var(--primary-rgb) / 0.38) !important;
+    box-shadow: 0 0 0 3px rgb(var(--primary-rgb) / 0.12) !important;
   }
 
   :global(.ant-input::placeholder) {
@@ -555,8 +485,8 @@
   border-radius: 16px;
   border: 1px solid var(--border-medium);
   background: var(--surface-soft);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: var(--glass-filter);
+  -webkit-backdrop-filter: var(--glass-filter);
   box-shadow:
     var(--shadow-soft),
     0 0 0 1px rgba(255, 255, 255, 0.03) inset;
@@ -569,7 +499,7 @@
 
 .leftPane .announcementCard:not(.activeAnnouncementCard):hover {
   transform: translateY(-2px);
-  border-color: rgba(22, 119, 255, 0.25);
+  border-color: rgb(var(--primary-rgb) / 0.25);
   background: var(--surface-soft-hover);
   cursor: pointer;
 }
@@ -603,11 +533,11 @@
 
 .activeAnnouncementCard {
   transform: none !important;
-  border-color: rgba(22, 119, 255, 0.34) !important;
+  border-color: rgb(var(--primary-rgb) / 0.34) !important;
   background: var(--surface-soft-hover) !important;
   box-shadow:
-    0 14px 34px rgba(22, 119, 255, 0.1),
-    0 0 0 1px rgba(22, 119, 255, 0.14) inset !important;
+    0 14px 34px rgb(var(--primary-rgb) / 0.1),
+    0 0 0 1px rgb(var(--primary-rgb) / 0.14) inset !important;
   animation: activeCardGlow 220ms ease;
 }
 
@@ -616,8 +546,8 @@
   border-radius: 18px;
   border: 1px solid var(--border-medium);
   background: var(--surface-soft);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: var(--glass-filter);
+  -webkit-backdrop-filter: var(--glass-filter);
   box-shadow: var(--shadow-soft);
   animation: fadeUp 240ms ease;
 
@@ -643,8 +573,8 @@
   :global(.ant-input:focus),
   :global(textarea.ant-input:focus),
   :global(.ant-select-focused .ant-select-selector) {
-    border-color: rgba(22, 119, 255, 0.38) !important;
-    box-shadow: 0 0 0 3px rgba(22, 119, 255, 0.12) !important;
+    border-color: rgb(var(--primary-rgb) / 0.38) !important;
+    box-shadow: 0 0 0 3px rgb(var(--primary-rgb) / 0.12) !important;
   }
 
   :global(.ant-input::placeholder),
@@ -668,89 +598,6 @@
   margin-top: 8px;
 }
 
-.threadCard {
-  border-radius: 18px;
-  border: 1px solid var(--border-medium);
-  background: var(--surface-soft);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  box-shadow:
-    var(--shadow-soft),
-    0 0 0 1px rgba(255, 255, 255, 0.03) inset;
-  overflow: hidden;
-  animation: threadReveal 260ms ease;
-}
-
-.threadHeader {
-  padding: 18px 18px 12px;
-  border-bottom: 1px solid var(--border-soft, var(--border-medium));
-}
-
-.threadTitle {
-  margin: 0 0 10px;
-  font-size: clamp(17px, 1.7vw, 21px);
-  font-weight: 900;
-  color: var(--text-strong);
-  word-break: break-word;
-}
-
-.threadMeta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  font-size: clamp(12px, 1.15vw, 13px);
-  color: var(--text-secondary);
-}
-
-.threadContent {
-  padding: 16px 18px;
-  color: var(--text-primary);
-  line-height: 1.65;
-  border-bottom: 1px solid var(--border-soft, var(--border-medium));
-  word-break: break-word;
-}
-
-.threadCommentsBlock {
-  padding: 16px 18px 10px;
-}
-
-.replyComposer {
-  padding: 0 18px 18px;
-
-  :global(.ant-form-item) {
-    margin-bottom: 0 !important;
-  }
-
-  :global(.ant-input) {
-    background: var(--surface) !important;
-    border: 1px solid var(--border-medium) !important;
-    color: var(--text-primary) !important;
-    border-radius: 12px !important;
-    box-shadow: none !important;
-    transition:
-      border-color 180ms ease,
-      box-shadow 180ms ease,
-      background 180ms ease !important;
-  }
-
-  :global(.ant-input:focus) {
-    border-color: rgba(22, 119, 255, 0.38) !important;
-    box-shadow: 0 0 0 3px rgba(22, 119, 255, 0.12) !important;
-  }
-
-  :global(.ant-input::placeholder) {
-    color: var(--text-muted) !important;
-  }
-
-  :global(.ant-btn) {
-    transition: transform 180ms ease, box-shadow 180ms ease;
-  }
-
-  :global(.ant-btn:hover) {
-    transform: translateY(-1px);
-  }
-}
-
 .threadEmpty {
   min-height: 420px;
   display: flex;
@@ -761,8 +608,8 @@
   border-radius: 18px;
   border: 1px solid var(--border-medium);
   background: var(--surface-soft);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: var(--glass-filter);
+  -webkit-backdrop-filter: var(--glass-filter);
   box-shadow: var(--shadow-soft);
   color: var(--text-secondary);
   animation: softPopIn 240ms ease;
@@ -788,7 +635,7 @@
 
 .sectionHeader:hover {
   transform: translateY(-1px);
-  border-color: rgba(22, 119, 255, 0.22);
+  border-color: rgb(var(--primary-rgb) / 0.22);
   background: var(--surface-soft-hover);
   box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
 }
@@ -879,27 +726,16 @@
   }
 }
 
-@keyframes threadReveal {
-  from {
-    opacity: 0;
-    transform: translateY(12px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
 @keyframes activeCardGlow {
   0% {
     box-shadow:
-      0 0 0 rgba(22, 119, 255, 0),
-      0 0 0 1px rgba(22, 119, 255, 0.02) inset;
+      0 0 0 rgb(var(--primary-rgb) / 0),
+      0 0 0 1px rgb(var(--primary-rgb) / 0.02) inset;
   }
   100% {
     box-shadow:
-      0 14px 34px rgba(22, 119, 255, 0.1),
-      0 0 0 1px rgba(22, 119, 255, 0.14) inset;
+      0 14px 34px rgb(var(--primary-rgb) / 0.1),
+      0 0 0 1px rgb(var(--primary-rgb) / 0.14) inset;
   }
 }
 
@@ -948,8 +784,7 @@
     width: 100%;
   }
 
-  .announcementCard,
-  .threadCard {
+  .announcementCard {
     width: 100%;
     box-sizing: border-box;
   }
@@ -965,9 +800,6 @@
     border-radius: 16px;
   }
 
-  .commentsList {
-    max-height: 220px;
-  }
 }
 
 @media (max-width: 600px) {
@@ -984,9 +816,5 @@
 @media (max-width: 480px) {
   .announcementDate {
     white-space: normal;
-  }
-
-  .commentsList {
-    max-height: 200px;
   }
 }

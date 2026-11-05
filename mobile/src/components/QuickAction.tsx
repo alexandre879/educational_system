@@ -4,6 +4,7 @@ import { Pressable, StyleSheet, View } from "react-native";
 import { radius, spacing, useTheme, withAlpha } from "@/theme";
 
 import { AppText } from "./AppText";
+import { GlassBackdrop, useLiquidGlass } from "./Glass";
 import { Icon, type IconName } from "./Icon";
 
 interface QuickActionProps {
@@ -16,6 +17,7 @@ interface QuickActionProps {
 /** Square shortcut tile with a tinted icon, shown in a row on the home screen. */
 export function QuickAction({ icon, label, color, onPress }: QuickActionProps) {
   const { colors } = useTheme();
+  const glass = useLiquidGlass();
   return (
     <Pressable
       accessibilityRole="button"
@@ -23,10 +25,13 @@ export function QuickAction({ icon, label, color, onPress }: QuickActionProps) {
       onPress={onPress}
       style={({ pressed }) => [
         styles.tile,
-        { backgroundColor: colors.surface, borderColor: colors.border, boxShadow: colors.shadow },
+        glass
+          ? { borderColor: colors.border }
+          : { backgroundColor: colors.surface, borderColor: colors.border, boxShadow: colors.shadow },
         pressed && styles.pressed,
       ]}
     >
+      <GlassBackdrop radius={radius.lg} />
       <View style={[styles.iconWrap, { backgroundColor: withAlpha(color, 0.14) }]}>
         <Icon name={icon} size={22} color={color} />
       </View>

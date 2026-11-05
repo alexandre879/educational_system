@@ -9,7 +9,7 @@ export default function AnnouncementsStack() {
 
   return (
     <Stack screenOptions={screenOptions}>
-      <Stack.Screen name="index" options={{ title: t("announcements.title") }} />
+      <Stack.Screen name="index" options={{ title: t("announcements.title"), headerShown: false }} />
       <Stack.Screen name="[id]" options={{ title: "", headerLargeTitleEnabled: false }} />
       <Stack.Screen
         name="new"

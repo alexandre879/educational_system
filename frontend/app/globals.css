@@ -1,3 +1,13 @@
+/* ==========================================================================
+   Liquid Glass design system
+   --------------------------------------------------------------------------
+   Every surface in the app reads the tokens below, so the look is tuned here:
+   - data-theme   dark | light                 (set by lib/appearance.ts)
+   - data-accent  ocean | violet | rose | sunset | emerald | lagoon
+   - data-glass   clear | regular | frosted    (translucency + blur)
+   - data-backdrop aurora | mesh | minimal     (the ambient background)
+   - data-motion  reduced                      (animations off)
+   ========================================================================== */
 
 * {
   margin: 0;
@@ -6,22 +16,51 @@
   font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
 }
 
-
-:global(html, body) {
-  height: 100%;
-  background: black;
-  margin: 0;
+@property --lg-spot {
+  syntax: "*";
+  inherits: false;
 }
 
-
+@property --lg-angle {
+  syntax: "<angle>";
+  inherits: true;
+  initial-value: 135deg;
+}
 
 :root {
+  color-scheme: dark;
+
   /* Same palette as the mobile app (dark). */
-  --bg: #090b10;
-  --surface: rgba(18, 22, 31, 0.86);
-  --surface-2: rgba(18, 22, 31, 0.92);
-  --surface-soft: rgba(18, 22, 31, 0.8);
-  --surface-soft-hover: rgba(27, 33, 48, 0.88);
+  --bg: #06080f;
+  --fg-rgb: 242 244 248;
+
+  /* Glass tint and per-surface opacity (see data-glass below). */
+  --tint: 16 20 31;
+  --tint-hi: 36 44 64;
+  --a-surface: 0.46;
+  --a-surface-2: 0.58;
+  --a-soft: 0.38;
+  --a-hover: 0.62;
+  --a-chrome: 0.44;
+  --glass-blur: 24px;
+  --glass-sat: 175%;
+
+  --surface: rgb(var(--tint) / var(--a-surface));
+  --surface-2: rgb(var(--tint) / var(--a-surface-2));
+  --surface-soft: rgb(var(--tint) / var(--a-soft));
+  --surface-soft-hover: rgb(var(--tint-hi) / var(--a-hover));
+  --glass-chrome: rgb(var(--tint) / var(--a-chrome));
+  --glass-filter: blur(var(--glass-blur)) saturate(var(--glass-sat));
+  --glass-edge: rgb(255 255 255 / 0.1);
+
+  /* Specular rim: a bright top edge and a faint inner outline, like light on glass. */
+  --glass-rim:
+    inset 0 1px 0 0 rgb(255 255 255 / 0.13),
+    inset 0 -1px 0 0 rgb(255 255 255 / 0.03),
+    inset 0 0 0 1px rgb(255 255 255 / 0.035);
+  --glass-drop: 0 2px 6px -2px rgb(0 0 0 / 0.35), 0 18px 48px -12px rgb(0 0 0 / 0.55);
+  --glass-sheen: linear-gradient(180deg, rgb(255 255 255 / 0.07), rgb(255 255 255 / 0) 42%);
+  --spot: rgb(255 255 255 / 0.075);
 
   --text-primary: #f2f4f8;
   --text-strong: #ffffff;
@@ -30,27 +69,33 @@
   --placeholder: rgba(242, 244, 248, 0.35);
   --text-bold-grey: #a6afc0;
 
+  /* Accent (ocean); data-accent swaps these. */
+  --primary-rgb: 76 141 255;
   --primary-blue: #4c8dff;
   --primary-blue-hover: #6fa3ff;
-  --primary-muted: rgba(76, 141, 255, 0.16);
+  --primary-muted: rgb(var(--primary-rgb) / 0.16);
   --highlight-accent: #fbbf24;
+  --aurora-1: 37 99 235;
+  --aurora-2: 124 58 237;
+  --aurora-3: 6 182 212;
+  --aurora-4: 219 39 119;
 
   /* Brand gradient used for hero banners and the active navigation item. */
   --brand-gradient: linear-gradient(135deg, #1556d6 0%, #4b47e0 50%, #7344d9 100%);
-  --brand-shadow: 0 12px 32px rgba(22, 119, 255, 0.28);
+  --brand-shadow: 0 12px 32px rgb(var(--primary-rgb) / 0.28);
 
   --radius-md: 14px;
   --radius-lg: 20px;
   --radius-xl: 28px;
 
-  --border-medium: rgba(255, 255, 255, 0.07);
-  --border-strong: rgba(255, 255, 255, 0.12);
+  --border-medium: rgb(255 255 255 / 0.09);
+  --border-strong: rgb(255 255 255 / 0.15);
 
-  --shadow-soft: 0 18px 60px rgba(0, 0, 0, 0.35);
+  --shadow-soft: var(--glass-rim), var(--glass-drop);
 
-  --hover-soft: rgba(255, 255, 255, 0.06);
-  --primary-ring: rgba(22, 119, 255, 0.55);
-  --primary-ring-soft: rgba(22, 119, 255, 0.18);
+  --hover-soft: rgb(255 255 255 / 0.06);
+  --primary-ring: rgb(var(--primary-rgb) / 0.55);
+  --primary-ring-soft: rgb(var(--primary-rgb) / 0.18);
 
   --chart-axis-text: #b8b8b8;
   --chart-grid: rgba(255, 255, 255, 0.1);
@@ -61,7 +106,7 @@
   --success-border: rgba(14, 165, 233, 0.28);
 
   /* Status tones, as in the mobile app: marks, attendance, answers, homework. */
-  --surface-muted: #1b2130;
+  --surface-muted: rgb(255 255 255 / 0.055);
   --ok: #22c55e;
   --ok-muted: rgba(34, 197, 94, 0.16);
   --bad: #f87171;
@@ -70,58 +115,85 @@
   --warn-muted: rgba(251, 191, 36, 0.16);
   --accent: #a78bfa;
   --accent-muted: rgba(167, 139, 250, 0.16);
+
+  /* Motion: a soft spring for "liquid" movement, with a cubic fallback. */
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --dur-fast: 160ms;
+  --dur-med: 320ms;
+  --dur-slow: 560ms;
 }
 
-
+@supports (transition-timing-function: linear(0, 1)) {
+  :root {
+    --ease-spring: linear(
+      0, 0.009, 0.035 2.1%, 0.141, 0.281 6.7%, 0.723 12.9%, 0.938 16.7%, 1.017, 1.077, 1.121,
+      1.149 24.3%, 1.159, 1.163, 1.161, 1.154 29.9%, 1.129 32.8%, 1.051 39.6%, 1.017 43.1%, 0.991,
+      0.977 51%, 0.974 53.8%, 0.975 57.1%, 0.997 69.8%, 1.003 76.9%, 1
+    );
+  }
+}
 
 html[data-theme="light"] {
-  --bg: #f3f5fa;
+  color-scheme: light;
 
-  /* 🔥 SURFACES (add layering contrast) */
-  --surface: #ffffff;
-  --surface-2: #ffffff;
-  --surface-soft: #ffffff;
-  --surface-soft-hover: #f3f7fc;
-  --surface-bold: #e5e7eb; /* 🔥 FIX: better neutral */
+  --bg: #eef2fa;
+  --fg-rgb: 11 18 32;
 
-  /* 🔥 TEXT (slightly stronger contrast) */
+  --tint: 255 255 255;
+  --tint-hi: 255 255 255;
+  --a-surface: 0.58;
+  --a-surface-2: 0.72;
+  --a-soft: 0.5;
+  --a-hover: 0.84;
+  --a-chrome: 0.56;
+  --glass-sat: 190%;
+  --glass-edge: rgb(255 255 255 / 0.75);
+
+  --glass-rim:
+    inset 0 1px 0 0 rgb(255 255 255 / 0.95),
+    inset 0 0 0 1px rgb(255 255 255 / 0.5),
+    inset 0 -1px 0 0 rgb(15 23 42 / 0.04);
+  --glass-drop: 0 1px 2px rgb(16 24 40 / 0.06), 0 12px 32px -8px rgb(16 24 40 / 0.16);
+  --glass-sheen: linear-gradient(180deg, rgb(255 255 255 / 0.55), rgb(255 255 255 / 0) 46%);
+  --spot: rgb(var(--primary-rgb) / 0.09);
+
+  --surface-bold: #e5e7eb;
+
   --text-primary: #0b1220;
-  --text-strong: #020617; /* 🔥 darker for titles */
-  --text-secondary: #5b6577;
-  --text-muted: #97a0b2;
+  --text-strong: #020617;
+  --text-secondary: #4f5a6d;
+  --text-muted: #8a93a6;
   --text-bold-grey: #6b7280;
   --placeholder: rgba(100, 116, 139, 0.65);
 
-  /* BRAND */
+  --primary-rgb: 22 119 255;
   --primary-blue: #1677ff;
   --primary-blue-hover: #4096ff;
-  --primary-muted: rgba(22, 119, 255, 0.1);
+  --primary-muted: rgb(var(--primary-rgb) / 0.1);
   --highlight-accent: #d97706;
   --brand-gradient: linear-gradient(135deg, #1677ff 0%, #5b5cff 50%, #8b5cf6 100%);
+  --aurora-1: 96 165 250;
+  --aurora-2: 167 139 250;
+  --aurora-3: 103 232 249;
+  --aurora-4: 244 114 182;
 
-  /* 🔥 BORDERS (THIS IS THE MAIN FIX) */
-  --border-medium: rgba(15, 23, 42, 0.16);  /* ⬆ stronger */
-  --border-strong: rgba(15, 23, 42, 0.26);  /* ⬆ stronger */
+  --border-medium: rgb(15 23 42 / 0.11);
+  --border-strong: rgb(15 23 42 / 0.2);
 
-  /* 🔥 SHADOW (less blur, more structure) */
-  --shadow-soft: 0 1px 2px rgba(16, 24, 40, 0.05), 0 8px 24px rgba(16, 24, 40, 0.06);
+  --hover-soft: rgb(15 23 42 / 0.05);
+  --primary-ring: rgb(var(--primary-rgb) / 0.55);
+  --primary-ring-soft: rgb(var(--primary-rgb) / 0.12);
 
-  /* INTERACTION */
-  --hover-soft: rgba(15, 23, 42, 0.05);
-  --primary-ring: rgba(22, 119, 255, 0.55);
-  --primary-ring-soft: rgba(22, 119, 255, 0.1);
-
-  /* CHART */
   --chart-axis-text: #64748b;
   --chart-grid: rgba(15, 23, 42, 0.12);
   --chart-axis-border: rgba(15, 23, 42, 0.22);
 
-  /* SUCCESS */
   --success-text: #0369a1;
   --success-bg: rgba(14, 165, 233, 0.12);
   --success-border: rgba(14, 165, 233, 0.22);
 
-  --surface-muted: #edf0f7;
+  --surface-muted: rgb(15 23 42 / 0.05);
   --ok: #16a34a;
   --ok-muted: rgba(22, 163, 74, 0.12);
   --bad: #e5484d;
@@ -130,4 +202,577 @@ html[data-theme="light"] {
   --warn-muted: rgba(245, 158, 11, 0.14);
   --accent: #7c3aed;
   --accent-muted: rgba(124, 58, 237, 0.1);
+}
+
+/* ---------------------------------------------------------------- glass levels */
+
+html[data-glass="clear"] {
+  --a-surface: 0.26;
+  --a-surface-2: 0.36;
+  --a-soft: 0.2;
+  --a-hover: 0.42;
+  --a-chrome: 0.24;
+  --glass-blur: 14px;
+  --glass-sat: 200%;
+}
+
+html[data-glass="frosted"] {
+  --a-surface: 0.72;
+  --a-surface-2: 0.8;
+  --a-soft: 0.64;
+  --a-hover: 0.84;
+  --a-chrome: 0.72;
+  --glass-blur: 40px;
+}
+
+html[data-theme="light"][data-glass="clear"] {
+  --a-surface: 0.36;
+  --a-surface-2: 0.5;
+  --a-soft: 0.3;
+  --a-hover: 0.66;
+  --a-chrome: 0.34;
+}
+
+html[data-theme="light"][data-glass="frosted"] {
+  --a-surface: 0.8;
+  --a-surface-2: 0.88;
+  --a-soft: 0.74;
+  --a-hover: 0.92;
+  --a-chrome: 0.8;
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  :root {
+    --a-surface: 0.9;
+    --a-surface-2: 0.94;
+    --a-soft: 0.88;
+    --a-chrome: 0.92;
+  }
+}
+
+/* ---------------------------------------------------------------- accents */
+
+html[data-accent="violet"] {
+  --primary-rgb: 151 133 255;
+  --primary-blue: #9785ff;
+  --primary-blue-hover: #b1a4ff;
+  --brand-gradient: linear-gradient(135deg, #5b21b6 0%, #7c3aed 50%, #c026d3 100%);
+  --aurora-1: 124 58 237;
+  --aurora-2: 192 38 211;
+  --aurora-3: 79 70 229;
+  --aurora-4: 236 72 153;
+}
+
+html[data-accent="rose"] {
+  --primary-rgb: 255 107 154;
+  --primary-blue: #ff6b9a;
+  --primary-blue-hover: #ff8db1;
+  --brand-gradient: linear-gradient(135deg, #be123c 0%, #db2777 50%, #a21caf 100%);
+  --aurora-1: 225 29 72;
+  --aurora-2: 192 38 211;
+  --aurora-3: 249 115 22;
+  --aurora-4: 124 58 237;
+}
+
+html[data-accent="sunset"] {
+  --primary-rgb: 255 149 72;
+  --primary-blue: #ff9548;
+  --primary-blue-hover: #ffad70;
+  --brand-gradient: linear-gradient(135deg, #ea580c 0%, #e11d48 55%, #be185d 100%);
+  --aurora-1: 234 88 12;
+  --aurora-2: 225 29 72;
+  --aurora-3: 234 179 8;
+  --aurora-4: 147 51 234;
+}
+
+html[data-accent="emerald"] {
+  --primary-rgb: 52 211 153;
+  --primary-blue: #34d399;
+  --primary-blue-hover: #6ee7b7;
+  --brand-gradient: linear-gradient(135deg, #047857 0%, #0d9488 50%, #0e7490 100%);
+  --aurora-1: 5 150 105;
+  --aurora-2: 13 148 136;
+  --aurora-3: 132 204 22;
+  --aurora-4: 14 116 144;
+}
+
+html[data-accent="lagoon"] {
+  --primary-rgb: 34 211 238;
+  --primary-blue: #22d3ee;
+  --primary-blue-hover: #67e8f9;
+  --brand-gradient: linear-gradient(135deg, #0e7490 0%, #0369a1 50%, #4338ca 100%);
+  --aurora-1: 8 145 178;
+  --aurora-2: 79 70 229;
+  --aurora-3: 16 185 129;
+  --aurora-4: 59 130 246;
+}
+
+html[data-theme="light"][data-accent="violet"] {
+  --primary-rgb: 124 58 237;
+  --primary-blue: #7c3aed;
+  --primary-blue-hover: #8b5cf6;
+  --brand-gradient: linear-gradient(135deg, #7c3aed 0%, #a855f7 50%, #d946ef 100%);
+  --aurora-1: 167 139 250;
+  --aurora-2: 232 121 249;
+  --aurora-3: 129 140 248;
+  --aurora-4: 249 168 212;
+}
+
+html[data-theme="light"][data-accent="rose"] {
+  --primary-rgb: 219 39 119;
+  --primary-blue: #db2777;
+  --primary-blue-hover: #ec4899;
+  --brand-gradient: linear-gradient(135deg, #e11d48 0%, #ec4899 50%, #c026d3 100%);
+  --aurora-1: 251 113 133;
+  --aurora-2: 232 121 249;
+  --aurora-3: 253 186 116;
+  --aurora-4: 196 181 253;
+}
+
+html[data-theme="light"][data-accent="sunset"] {
+  --primary-rgb: 234 88 12;
+  --primary-blue: #ea580c;
+  --primary-blue-hover: #f97316;
+  --brand-gradient: linear-gradient(135deg, #f97316 0%, #ef4444 55%, #db2777 100%);
+  --aurora-1: 253 186 116;
+  --aurora-2: 252 165 165;
+  --aurora-3: 253 224 71;
+  --aurora-4: 216 180 254;
+}
+
+html[data-theme="light"][data-accent="emerald"] {
+  --primary-rgb: 5 150 105;
+  --primary-blue: #059669;
+  --primary-blue-hover: #10b981;
+  --brand-gradient: linear-gradient(135deg, #059669 0%, #0d9488 50%, #0891b2 100%);
+  --aurora-1: 110 231 183;
+  --aurora-2: 94 234 212;
+  --aurora-3: 190 242 100;
+  --aurora-4: 125 211 252;
+}
+
+html[data-theme="light"][data-accent="lagoon"] {
+  --primary-rgb: 8 145 178;
+  --primary-blue: #0891b2;
+  --primary-blue-hover: #06b6d4;
+  --brand-gradient: linear-gradient(135deg, #0891b2 0%, #0284c7 50%, #4f46e5 100%);
+  --aurora-1: 103 232 249;
+  --aurora-2: 165 180 252;
+  --aurora-3: 110 231 183;
+  --aurora-4: 147 197 253;
+}
+
+/* ---------------------------------------------------------------- page */
+
+html {
+  height: 100%;
+  background: var(--bg);
+  transition: background-color var(--dur-med) ease;
+}
+
+body {
+  height: 100%;
+  margin: 0;
+  background: transparent;
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: rgb(var(--primary-rgb) / 0.35);
+  color: var(--text-strong);
+}
+
+:focus-visible {
+  outline: 2px solid rgb(var(--primary-rgb) / 0.75);
+  outline-offset: 2px;
+}
+
+/* Thin, translucent scrollbars that sit on the glass instead of cutting through it. */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(var(--fg-rgb) / 0.18) transparent;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgb(var(--fg-rgb) / 0.16);
+  border: 3px solid transparent;
+  border-radius: 999px;
+  background-clip: padding-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgb(var(--fg-rgb) / 0.3);
+  background-clip: padding-box;
+}
+
+kbd {
+  display: inline-grid;
+  place-items: center;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  border-radius: 7px;
+  font: 600 11px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+  color: var(--text-secondary);
+  background: rgb(var(--fg-rgb) / 0.07);
+  box-shadow:
+    inset 0 -1px 0 rgb(var(--fg-rgb) / 0.12),
+    inset 0 0 0 1px rgb(var(--fg-rgb) / 0.08);
+}
+
+/* ---------------------------------------------------------------- ambient backdrop */
+
+.lg-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+  contain: strict;
+}
+
+.lg-blob {
+  position: absolute;
+  width: 70vmax;
+  height: 70vmax;
+  border-radius: 50%;
+  opacity: 0.55;
+  will-change: transform;
+}
+
+.lg-blob-1 {
+  top: -30vmax;
+  left: -20vmax;
+  background: radial-gradient(closest-side, rgb(var(--aurora-1) / 0.75), rgb(var(--aurora-1) / 0) 70%);
+  animation: lg-drift-a 38s ease-in-out infinite alternate;
+}
+
+.lg-blob-2 {
+  top: -25vmax;
+  right: -30vmax;
+  background: radial-gradient(closest-side, rgb(var(--aurora-2) / 0.6), rgb(var(--aurora-2) / 0) 70%);
+  animation: lg-drift-b 46s ease-in-out infinite alternate;
+}
+
+.lg-blob-3 {
+  bottom: -40vmax;
+  left: 10vmax;
+  background: radial-gradient(closest-side, rgb(var(--aurora-3) / 0.45), rgb(var(--aurora-3) / 0) 70%);
+  animation: lg-drift-c 52s ease-in-out infinite alternate;
+}
+
+.lg-blob-4 {
+  bottom: -35vmax;
+  right: -25vmax;
+  width: 55vmax;
+  height: 55vmax;
+  background: radial-gradient(closest-side, rgb(var(--aurora-4) / 0.38), rgb(var(--aurora-4) / 0) 70%);
+  animation: lg-drift-d 44s ease-in-out infinite alternate;
+}
+
+/* A soft light that drifts after the pointer (GlassRuntime sets --px/--py). */
+.lg-blob-pointer {
+  top: 0;
+  left: 0;
+  width: 46vmax;
+  height: 46vmax;
+  opacity: 0.32;
+  background: radial-gradient(closest-side, rgb(var(--primary-rgb) / 0.55), rgb(var(--primary-rgb) / 0) 72%);
+  transform: translate3d(calc(var(--px, 50vw) - 23vmax), calc(var(--py, 40vh) - 23vmax), 0);
+  transition: transform 1.6s var(--ease-out);
+}
+
+.lg-grain {
+  position: absolute;
+  inset: -50%;
+  opacity: 0.07;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 1.6 -0.4'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+}
+
+.lg-vignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(120% 90% at 50% 0%, transparent 40%, rgb(0 0 0 / 0.45) 100%);
+}
+
+html[data-theme="light"] .lg-blob {
+  opacity: 0.7;
+}
+
+html[data-theme="light"] .lg-blob-pointer {
+  opacity: 0.4;
+}
+
+html[data-theme="light"] .lg-grain {
+  opacity: 0.05;
+  mix-blend-mode: multiply;
+}
+
+html[data-theme="light"] .lg-vignette {
+  background: radial-gradient(120% 90% at 50% 0%, transparent 50%, rgb(148 163 184 / 0.25) 100%);
+}
+
+html[data-backdrop="mesh"] .lg-blob {
+  animation: none;
+}
+
+html[data-backdrop="minimal"] .lg-blob {
+  opacity: 0.16;
+  animation: none;
+}
+
+html[data-backdrop="minimal"] .lg-blob-pointer,
+html[data-backdrop="minimal"] .lg-grain {
+  display: none;
+}
+
+@keyframes lg-drift-a {
+  to {
+    transform: translate3d(18vw, 14vh, 0) scale(1.18);
+  }
+}
+
+@keyframes lg-drift-b {
+  to {
+    transform: translate3d(-16vw, 22vh, 0) scale(0.92);
+  }
+}
+
+@keyframes lg-drift-c {
+  to {
+    transform: translate3d(22vw, -18vh, 0) scale(1.12);
+  }
+}
+
+@keyframes lg-drift-d {
+  to {
+    transform: translate3d(-20vw, -12vh, 0) scale(1.2);
+  }
+}
+
+/* ---------------------------------------------------------------- glass primitives */
+
+/* A floating piece of chrome (sidebar, header, dock, sheets). */
+.lg-chrome {
+  position: relative;
+  isolation: isolate;
+  background: var(--glass-sheen), var(--glass-chrome);
+  backdrop-filter: var(--glass-filter);
+  -webkit-backdrop-filter: var(--glass-filter);
+  box-shadow: var(--glass-rim), var(--glass-drop);
+}
+
+/* Light that runs around the edge and turns with the pointer (--lg-angle). */
+.lg-rim::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  border-radius: inherit;
+  padding: 1px;
+  pointer-events: none;
+  background: conic-gradient(
+    from var(--lg-angle),
+    rgb(255 255 255 / 0.5),
+    rgb(255 255 255 / 0.06) 22%,
+    rgb(255 255 255 / 0.02) 48%,
+    rgb(255 255 255 / 0.22) 74%,
+    rgb(255 255 255 / 0.5)
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+}
+
+html[data-theme="light"] .lg-rim::before {
+  background: conic-gradient(
+    from var(--lg-angle),
+    rgb(255 255 255 / 1),
+    rgb(255 255 255 / 0.5) 22%,
+    rgb(15 23 42 / 0.06) 48%,
+    rgb(255 255 255 / 0.7) 74%,
+    rgb(255 255 255 / 1)
+  );
+}
+
+/* Content enters with a short blur-and-rise when the route changes. */
+.lg-route {
+  animation: lg-route-in 520ms var(--ease-out) both;
+}
+
+@keyframes lg-route-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.995);
+    filter: blur(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+}
+
+/* Glass tooltip for anything with data-tip (used by the collapsed sidebar). */
+[data-tip] {
+  position: relative;
+}
+
+[data-tip]:hover::after,
+[data-tip]:focus-visible::after {
+  content: attr(data-tip);
+  position: absolute;
+  left: calc(100% + 14px);
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 50;
+  padding: 7px 12px;
+  border-radius: 10px;
+  white-space: nowrap;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-strong);
+  background: var(--surface-2);
+  backdrop-filter: var(--glass-filter);
+  -webkit-backdrop-filter: var(--glass-filter);
+  box-shadow: var(--shadow-soft);
+  pointer-events: none;
+  animation: lg-tip-in 160ms var(--ease-out);
+}
+
+@keyframes lg-tip-in {
+  from {
+    opacity: 0;
+    transform: translate(-4px, -50%);
+  }
+}
+
+/* ---------------------------------------------------------------- Ant Design on glass */
+
+html .ant-modal .ant-modal-content,
+html .ant-dropdown .ant-dropdown-menu,
+html .ant-select-dropdown,
+html .ant-picker-dropdown .ant-picker-panel-container,
+html .ant-popover .ant-popover-inner,
+html .ant-message .ant-message-notice .ant-message-notice-content,
+html .ant-notification .ant-notification-notice,
+html .ant-drawer .ant-drawer-content,
+html .ant-tooltip .ant-tooltip-inner {
+  background: var(--glass-sheen), var(--surface-2);
+  backdrop-filter: var(--glass-filter);
+  -webkit-backdrop-filter: var(--glass-filter);
+  box-shadow: var(--glass-rim), var(--glass-drop);
+}
+
+html .ant-modal .ant-modal-content {
+  border-radius: 24px;
+  border: 1px solid var(--glass-edge);
+}
+
+html .ant-modal .ant-modal-header,
+html .ant-modal .ant-modal-footer {
+  background: transparent;
+}
+
+html .ant-modal-mask {
+  background: rgb(4 6 12 / 0.38) !important;
+  backdrop-filter: blur(8px) saturate(120%);
+  -webkit-backdrop-filter: blur(8px) saturate(120%);
+}
+
+html[data-theme="light"] .ant-modal-mask {
+  background: rgb(148 163 184 / 0.28) !important;
+}
+
+html .ant-dropdown .ant-dropdown-menu,
+html .ant-select-dropdown {
+  border-radius: 16px;
+  padding: 6px;
+}
+
+html .ant-dropdown .ant-dropdown-menu .ant-dropdown-menu-item {
+  border-radius: 10px;
+  padding: 9px 14px;
+  font-weight: 600;
+}
+
+html .ant-tooltip .ant-tooltip-inner {
+  color: var(--text-strong);
+  border-radius: 10px;
+}
+
+html .ant-tooltip .ant-tooltip-arrow {
+  display: none;
+}
+
+html .ant-message .ant-message-notice .ant-message-notice-content {
+  border-radius: 999px;
+  padding: 10px 18px;
+  color: var(--text-primary);
+}
+
+html .ant-card {
+  background: var(--surface);
+  backdrop-filter: var(--glass-filter);
+  -webkit-backdrop-filter: var(--glass-filter);
+  box-shadow: var(--shadow-soft);
+  border-color: var(--glass-edge);
+}
+
+html .ant-table,
+html .ant-table-container,
+html .ant-table-thead > tr > th,
+html .ant-table-tbody > tr > td {
+  background: transparent;
+}
+
+html .ant-table-thead > tr > th {
+  background: var(--surface-muted) !important;
+}
+
+html .ant-btn-primary:not(:disabled):not(.ant-btn-dangerous) {
+  background: var(--brand-gradient);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.25), var(--brand-shadow);
+  border: none;
+}
+
+html .ant-btn {
+  transition:
+    transform var(--dur-med) var(--ease-spring),
+    box-shadow var(--dur-fast) ease,
+    background var(--dur-fast) ease;
+}
+
+html .ant-btn:active:not(:disabled) {
+  transform: scale(0.96);
+}
+
+/* ---------------------------------------------------------------- reduced motion */
+
+html[data-motion="reduced"] *,
+html[data-motion="reduced"] *::before,
+html[data-motion="reduced"] *::after {
+  animation-duration: 1ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 1ms !important;
+  scroll-behavior: auto !important;
+}
+
+html[data-motion="reduced"] .lg-blob {
+  animation: none !important;
 }

@@ -122,6 +122,9 @@ class User(AbstractUser):
     email = models.CharField(_("Email"), max_length=255, unique=True)
     password = models.CharField(_("Password"), max_length=255, default=None, null=True)
     chat_id = models.CharField(_("Chat ID"), max_length=255, default=None, null=True)
+    # The school bot's language for this person ("" = Georgian) and whether it forwards notifications.
+    telegram_language = models.CharField(_("Telegram language"), max_length=8, blank=True, default="")
+    telegram_notifications = models.BooleanField(_("Telegram notifications"), default=True)
     role = models.CharField(_("Role"), max_length=255, choices=Role.choices, null=True, blank=True)
     grade_in = models.ForeignKey(
         Grade,
@@ -512,7 +515,18 @@ class Comment(models.Model):
         on_delete=models.CASCADE,
         related_name="comments",
     )
+    reply_to = models.ForeignKey(
+        "self",
+        verbose_name=_("Reply to"),
+        on_delete=models.SET_NULL,
+        related_name="replies",
+        null=True,
+        blank=True,
+    )
     created_at = models.DateTimeField(_("Created at"), auto_now_add=True, null=True, blank=True)
+    edited_at = models.DateTimeField(_("Edited at"), null=True, blank=True)
+    # Deleted messages stay as a placeholder so replies to them still make sense.
+    deleted_at = models.DateTimeField(_("Deleted at"), null=True, blank=True)
 
     class Meta:
         verbose_name = _("Comment")
@@ -520,6 +534,46 @@ class Comment(models.Model):
 
     def __str__(self):
         return f"comment of: {self.user.email}"
+
+    @property
+    def is_deleted(self) -> bool:
+        return self.deleted_at is not None
+
+
+def visible_comment_count() -> models.Count:
+    """Annotation for an announcement's number of comments, leaving out deleted ones."""
+    return models.Count("comments", filter=models.Q(comments__deleted_at__isnull=True))
+
+
+class CommentReaction(models.Model):
+    """One emoji per person on a comment; reacting again with another emoji replaces it."""
+
+    EMOJIS = ("👍", "❤️", "😂", "😮", "🎉", "🙏")
+
+    comment = models.ForeignKey(
+        Comment,
+        verbose_name=_("Comment"),
+        on_delete=models.CASCADE,
+        related_name="reactions",
+    )
+    user = models.ForeignKey(
+        User,
+        verbose_name=_("User"),
+        on_delete=models.CASCADE,
+        related_name="comment_reactions",
+    )
+    emoji = models.CharField(_("Emoji"), max_length=16, choices=[(emoji, emoji) for emoji in EMOJIS])
+    created_at = models.DateTimeField(_("Created at"), auto_now_add=True)
+
+    class Meta:
+        verbose_name = _("Reaction")
+        verbose_name_plural = _("Reactions")
+        constraints = [
+            models.UniqueConstraint(fields=["comment", "user"], name="unique_comment_reaction"),
+        ]
+
+    def __str__(self):
+        return f"{self.emoji} by {self.user.email}"
 
 
 class WeeklyLesson(models.Model):

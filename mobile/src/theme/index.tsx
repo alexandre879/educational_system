@@ -1,6 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
-import { Appearance, Platform, useColorScheme } from "react-native";
+import { Appearance, Platform, useColorScheme, type ViewStyle } from "react-native";
 
 // Brand: the web app's blue, extended with a violet accent for gradients.
 const light = {
@@ -122,6 +122,36 @@ export function useTheme(): ThemeContextValue {
   const context = useContext(ThemeContext);
   if (!context) throw new Error("useTheme must be used inside ThemeProvider");
   return context;
+}
+
+/**
+ * The page background: soft pools of the brand colors spread over the whole screen, for the
+ * glass surfaces to pick up. A CSS gradient that React Native draws natively, so it fills any
+ * screen size and stays put while content scrolls. The pools sit below the top edge, so there
+ * is no seam under the (solid) navigation header.
+ */
+export function backdropGradient(colors: Colors, scheme: "light" | "dark"): string {
+  const strength = scheme === "dark" ? 1 : 0.7;
+  const pool = (color: string, alpha: number, size: string, at: string) =>
+    `radial-gradient(${size} at ${at}, ${withAlpha(color, alpha * strength)} 0%, ${withAlpha(color, 0)} 90%)`;
+
+  return [
+    pool(colors.primary, 0.3, "95% 34%", "8% 30%"),
+    pool(colors.accent, 0.22, "85% 32%", "100% 58%"),
+    pool(colors.primary, 0.2, "110% 30%", "15% 100%"),
+  ].join(", ");
+}
+
+/** Background style for a full screen: the brand-color backdrop over the base color. */
+export function useBackdropStyle(): ViewStyle {
+  const { colors, scheme } = useTheme();
+  return useMemo(() => {
+    const gradient = backdropGradient(colors, scheme);
+    // react-native-web passes plain CSS through; native renders the experimental prop.
+    return Platform.OS === "web"
+      ? ({ backgroundColor: colors.background, backgroundImage: gradient } as ViewStyle)
+      : { backgroundColor: colors.background, experimental_backgroundImage: gradient };
+  }, [colors, scheme]);
 }
 
 export const spacing = { xs: 4, sm: 8, md: 12, lg: 16, xl: 24, xxl: 32 } as const;

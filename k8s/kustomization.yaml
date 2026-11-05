@@ -1,0 +1,12 @@
+# Apply with: kubectl apply -k k8s
+# The secrets (postgres-credentials, backend-env) are created by deploy.sh, not stored here.
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: education
+resources:
+  - namespace.yaml
+  - postgres.yaml
+  - backend.yaml
+  - telegram-bot.yaml
+  - frontend.yaml
+  - gateway.yaml

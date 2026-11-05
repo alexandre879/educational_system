@@ -1,0 +1,281 @@
+@use "../../../../styles/liquid" as lg;
+
+// ---------------------------------------------------------------- header bits
+
+.clock {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 0 4px;
+  white-space: nowrap;
+  font-size: 13px;
+  color: var(--text-secondary);
+
+  b {
+    font-size: 15px;
+    font-weight: 750;
+    font-variant-numeric: tabular-nums;
+    color: var(--text-strong);
+  }
+
+  @media (max-width: 1240px) {
+    display: none;
+  }
+}
+
+.focusChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 38px;
+  padding: 0 14px 0 12px;
+  border: none;
+  border-radius: 999px;
+  background: rgb(var(--primary-rgb) / 0.16);
+  box-shadow: inset 0 0 0 1px rgb(var(--primary-rgb) / 0.3);
+  color: var(--primary-blue);
+  font-size: 13.5px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+  transition: transform var(--dur-med) var(--ease-spring);
+
+  &:hover {
+    transform: scale(1.04);
+  }
+
+  @include lg.press(0.95);
+
+  @media (max-width: 768px) {
+    display: none;
+  }
+}
+
+.focusDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+  animation: pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgb(var(--primary-rgb) / 0.6);
+  }
+  50% {
+    box-shadow: 0 0 0 6px rgb(var(--primary-rgb) / 0);
+  }
+}
+
+.connection {
+  position: fixed;
+  top: 18px;
+  left: 50%;
+  z-index: 11000;
+  transform: translateX(-50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  max-width: calc(100vw - 32px);
+  padding: 10px 18px;
+  border-radius: 999px;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--text-strong);
+  background: var(--glass-sheen), var(--surface-2);
+  backdrop-filter: var(--glass-filter);
+  -webkit-backdrop-filter: var(--glass-filter);
+  box-shadow:
+    var(--glass-rim),
+    0 16px 40px -10px rgb(0 0 0 / 0.5);
+  animation: dropIn 520ms var(--ease-spring) both;
+
+  svg {
+    flex-shrink: 0;
+    color: var(--bad);
+  }
+
+  &[data-status="back"] svg {
+    color: var(--ok);
+  }
+}
+
+@keyframes dropIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -24px) scale(0.9);
+  }
+}
+
+.progress {
+  position: absolute;
+  left: 18px;
+  right: 18px;
+  bottom: 0;
+  height: 2px;
+  border-radius: 2px;
+  pointer-events: none;
+  background: linear-gradient(90deg, var(--primary-blue), var(--accent));
+  box-shadow: 0 0 10px rgb(var(--primary-rgb) / 0.7);
+  transform-origin: left center;
+  transform: scaleX(var(--p, 0));
+  opacity: min(1, calc(var(--p, 0) * 40));
+}
+
+.toTop {
+  position: absolute;
+  left: 50%;
+  bottom: 22px;
+  z-index: 50;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 38px;
+  padding: 0 16px;
+  border: none;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-strong);
+  cursor: pointer;
+  background: var(--glass-sheen), var(--glass-chrome);
+  backdrop-filter: var(--glass-filter);
+  -webkit-backdrop-filter: var(--glass-filter);
+  box-shadow:
+    var(--glass-rim),
+    0 12px 30px -8px rgb(0 0 0 / 0.45);
+
+  transform: translate(-50%, 90px) scale(0.8);
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    transform var(--dur-slow) var(--ease-spring),
+    opacity var(--dur-med) ease;
+
+  &[data-visible="true"] {
+    transform: translate(-50%, 0) scale(1);
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  &[data-visible="true"]:hover {
+    transform: translate(-50%, -2px) scale(1.04);
+  }
+
+  @media (max-width: 768px) {
+    bottom: calc(96px + env(safe-area-inset-bottom));
+  }
+}
+
+// ---------------------------------------------------------------- phone dock
+
+.dock {
+  display: none;
+
+  @media (max-width: 768px) {
+    position: fixed;
+    left: 50%;
+    bottom: calc(12px + env(safe-area-inset-bottom));
+    z-index: 9400;
+    transform: translateX(-50%);
+    width: min(440px, calc(100vw - 24px));
+    height: 68px;
+    padding: 6px;
+    display: grid;
+    grid-template-columns: repeat(var(--n), minmax(0, 1fr));
+    border-radius: 34px;
+    isolation: isolate;
+
+    background: var(--glass-sheen), var(--glass-chrome);
+    backdrop-filter: blur(calc(var(--glass-blur) * 0.6)) saturate(var(--glass-sat));
+    -webkit-backdrop-filter: blur(calc(var(--glass-blur) * 0.6)) saturate(var(--glass-sat));
+    box-shadow:
+      var(--glass-rim),
+      0 18px 44px -10px rgb(0 0 0 / 0.55);
+
+    :global(html.lg-refract) & {
+      backdrop-filter: var(--lg-lens, ) blur(calc(var(--glass-blur) * 0.4)) saturate(var(--glass-sat)) brightness(1.04);
+    }
+  }
+}
+
+.dockLens,
+.dockTrail {
+  position: absolute;
+  top: 6px;
+  bottom: 6px;
+  left: 6px;
+  z-index: -1;
+  width: calc((100% - 12px) / var(--n));
+  border-radius: 28px;
+  transform: translateX(calc(var(--i) * 100%));
+  opacity: 0;
+
+  &[data-visible="true"] {
+    opacity: 1;
+  }
+}
+
+.dockLens {
+  background: var(--glass-sheen), rgb(var(--primary-rgb) / 0.2);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.25),
+    inset 0 0 0 1px rgb(var(--primary-rgb) / 0.3),
+    0 6px 18px -6px rgb(var(--primary-rgb) / 0.6);
+  transition:
+    transform 480ms var(--ease-spring),
+    opacity var(--dur-med) ease;
+}
+
+.dockTrail {
+  background: rgb(var(--primary-rgb) / 0.12);
+  filter: blur(4px);
+  transition:
+    transform 760ms var(--ease-out),
+    opacity var(--dur-med) ease;
+}
+
+.dockItem {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  border: none;
+  border-radius: 28px;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 10.5px;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    color var(--dur-fast) ease,
+    transform var(--dur-med) var(--ease-spring);
+
+  span {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    padding: 0 2px;
+  }
+
+  svg {
+    transition: transform var(--dur-slow) var(--ease-spring);
+  }
+
+  @include lg.press(0.9);
+}
+
+.dockItemActive {
+  color: var(--primary-blue);
+
+  svg {
+    transform: translateY(-1px) scale(1.1);
+  }
+}

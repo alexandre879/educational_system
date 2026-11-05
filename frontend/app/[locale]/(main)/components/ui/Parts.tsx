@@ -1,6 +1,6 @@
 "use client";
 
-import type { ReactNode } from "react";
+import { type CSSProperties, type ReactNode, useEffect, useLayoutEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { FaArrowLeft } from "react-icons/fa";
 import { useTranslations } from "next-intl";
@@ -53,12 +53,51 @@ export function SectionHeader({ title, action }: { title: string; action?: React
   );
 }
 
+/** Shimmering glass placeholders; compact enough for a whole page or a single section. */
 export function Loading() {
   return (
-    <div className={ui.loading} role="status">
-      <div className={ui.spinner} />
+    <div className={ui.skeleton} role="status" aria-busy="true">
+      {[64, 64, 64].map((height, index) => (
+        <div
+          key={index}
+          className={ui.skeletonBlock}
+          style={{ height, opacity: 1 - index * 0.22, "--delay": `${index * 120}ms` } as CSSProperties}
+        />
+      ))}
     </div>
   );
+}
+
+/** A number that counts up to its value (eases out; instant with reduced motion). */
+export function CountUp({ value, decimals = 0, duration = 900 }: { value: number; decimals?: number; duration?: number }) {
+  const [shown, setShown] = useState(0);
+  const fromRef = useRef(0);
+
+  useEffect(() => {
+    const from = fromRef.current;
+    if (document.documentElement.dataset.motion === "reduced" || from === value) {
+      fromRef.current = value;
+      setShown(value);
+      return;
+    }
+
+    let frame = 0;
+    const start = performance.now();
+    const step = (now: number) => {
+      const progress = Math.min(1, (now - start) / duration);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      setShown(from + (value - from) * eased);
+      if (progress < 1) frame = requestAnimationFrame(step);
+      else fromRef.current = value;
+    };
+    frame = requestAnimationFrame(step);
+    return () => {
+      cancelAnimationFrame(frame);
+      fromRef.current = value;
+    };
+  }, [value, duration]);
+
+  return <>{shown.toFixed(decimals)}</>;
 }
 
 export function Empty({ title, message, action }: { title: string; message?: string; action?: ReactNode }) {
@@ -137,6 +176,32 @@ export function SubjectMark({ subjectId, label, size = 44 }: { subjectId: number
   );
 }
 
+/** Circle with a person's initials in a color derived from their name (no photo needed). */
+export function NameAvatar({ name, size = 36 }: { name: string; size?: number }) {
+  const words = name.replace(/@.*/, "").split(/[\s._-]+/).filter(Boolean);
+  const initials = (words.length > 1 ? words[0][0] + words[1][0] : (words[0] ?? "?").slice(0, 2)).toUpperCase();
+  let hash = 0;
+  for (const char of name) hash = (hash * 31 + char.charCodeAt(0)) | 0;
+  const color = subjectColor(hash);
+
+  return (
+    <span
+      className={ui.subjectMark}
+      aria-hidden
+      style={{
+        width: size,
+        height: size,
+        borderRadius: "50%",
+        background: withAlpha(color, 0.18),
+        color,
+        fontSize: size * 0.38,
+      }}
+    >
+      {initials}
+    </span>
+  );
+}
+
 export function ProgressBar({ value, color = "var(--primary-blue)" }: { value: number; color?: string }) {
   const percent = Math.round(Math.max(0, Math.min(1, value)) * 100);
   return (
@@ -155,8 +220,42 @@ export function Tabs<T extends string>({
   value: T;
   onChange: (value: T) => void;
 }) {
+  const listRef = useRef<HTMLDivElement>(null);
+  const thumbRef = useRef<HTMLSpanElement>(null);
+
+  // Slide the glass thumb under the selected tab (placed without animation the first time).
+  useLayoutEffect(() => {
+    const list = listRef.current;
+    const thumb = thumbRef.current;
+    if (!list || !thumb) return;
+
+    const place = () => {
+      const active = list.querySelector<HTMLElement>('[aria-selected="true"]');
+      if (!active) {
+        thumb.style.opacity = "0";
+        return;
+      }
+      const first = !thumb.dataset.ready;
+      if (first) thumb.style.transition = "none";
+      thumb.style.width = `${active.offsetWidth}px`;
+      thumb.style.transform = `translateX(${active.offsetLeft}px)`;
+      thumb.style.opacity = "1";
+      if (first) {
+        thumb.getBoundingClientRect();
+        thumb.style.transition = "";
+        thumb.dataset.ready = "1";
+      }
+    };
+
+    place();
+    const observer = new ResizeObserver(place);
+    observer.observe(list);
+    return () => observer.disconnect();
+  }, [value, options.length]);
+
   return (
-    <div className={ui.tabs} role="tablist">
+    <div ref={listRef} className={ui.tabs} role="tablist">
+      <span ref={thumbRef} className={ui.tabThumb} aria-hidden="true" />
       {options.map((option) => (
         <button
           key={option.value}

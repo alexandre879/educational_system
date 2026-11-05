@@ -14,11 +14,23 @@ function isLocale(value: string | undefined): value is Locale {
   return !!value && SUPPORTED.includes(value as Locale);
 }
 
-const OPTIONS: { value: Locale; label: string }[] = [
+export const LANGUAGE_OPTIONS: { value: Locale; label: string }[] = [
   { value: "ka", label: "🇬🇪 ქართული" },
   { value: "en", label: "🇬🇧 English" },
   { value: "ru", label: "🇷🇺 Русский" },
 ];
+const OPTIONS = LANGUAGE_OPTIONS;
+
+/** The same page in another language. */
+export function pathForLocale(pathname: string, nextLocale: string): string {
+  const parts = pathname.split("/").filter(Boolean);
+  if (parts.length === 0) return `/${nextLocale}`;
+  if (isLocale(parts[0])) {
+    parts[0] = nextLocale;
+    return `/${parts.join("/")}`;
+  }
+  return `/${nextLocale}/${parts.join("/")}`;
+}
 
 export default function LanguageSwitcher({ variant = "default" }: { variant?: "default" | "sidebar" }) {
   const styles = variant === "sidebar" ? sidebarStyles : defaultStyles;
@@ -56,20 +68,7 @@ export default function LanguageSwitcher({ variant = "default" }: { variant?: "d
   }, []);
 
   const setLang = (nextLocale: Locale) => {
-    const parts = pathname.split("/").filter(Boolean);
-
-    if (parts.length === 0) {
-      router.push(`/${nextLocale}`);
-      return;
-    }
-
-    if (isLocale(parts[0])) {
-      parts[0] = nextLocale;
-      router.push(`/${parts.join("/")}`);
-      return;
-    }
-
-    router.push(`/${nextLocale}/${parts.join("/")}`);
+    router.push(pathForLocale(pathname, nextLocale));
   };
 
   const handleSelect = (nextLocale: Locale) => {
