@@ -9,6 +9,7 @@ import {
   ArrowLeft,
   ArrowRight,
   CalendarDays,
+  Eye,
   GraduationCap,
   Mail,
   Moon,
@@ -22,6 +23,7 @@ import LanguageSwitcher from "../../components/LanguageSwitcher/LanguageSwitcher
 import { API_BASE_URL } from "@/interceptors";
 import { setTokens } from "@/lib/auth";
 import { resolvedTheme, toggleTheme, useAppearance } from "@/lib/appearance";
+import { startSpectating } from "@/lib/spectator";
 import OtpInput from "./OtpInput";
 
 const REMEMBER_EMAIL_KEY = "rememberedEmail";
@@ -33,6 +35,7 @@ const Login = () => {
   const t = useTranslations("Login");
   const tg = useTranslations("Glass");
   const tLayout = useTranslations("Layout");
+  const ts = useTranslations("Spectator");
 
   const [step, setStep] = useState<"email" | "otp">("email");
   const [email, setEmail] = useState("");
@@ -43,6 +46,7 @@ const Login = () => {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [spectating, setSpectating] = useState(false);
 
   const router = useRouter();
   const locale = useLocale();
@@ -142,6 +146,23 @@ const Login = () => {
   const onOtpFinish = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     verifyOtp(code.join(""));
+  };
+
+  // Visitors without an account look around read-only, no code needed.
+  const viewAsSpectator = async () => {
+    if (submitting || spectating) return;
+
+    try {
+      setSpectating(true);
+      setError(null);
+      setSuccess(null);
+      await startSpectating();
+      router.push(`/${locale}/home`);
+    } catch (err) {
+      setError(errorMessage(err, ts("loginFailed")));
+      setSpectating(false);
+      console.error(err);
+    }
   };
 
   const handleBackToEmail = () => {
@@ -246,12 +267,29 @@ const Login = () => {
               <label htmlFor="remember">{t("rememberMe")}</label>
             </div>
 
-            <button type="submit" className={styles.submitButton} disabled={submitting} data-loading={submitting}>
+            <button type="submit" className={styles.submitButton} disabled={submitting || spectating} data-loading={submitting}>
               {submitting ? <span className={styles.buttonSpinner} aria-hidden="true" /> : null}
               {t("sendOtp")}
               {!submitting ? <ArrowRight size={17} /> : null}
             </button>
           </form>
+        )}
+
+        {step === "email" && (
+          <div className={styles.spectator}>
+            <span className={styles.orDivider}>{ts("or")}</span>
+            <button
+              type="button"
+              className={styles.spectatorButton}
+              onClick={viewAsSpectator}
+              disabled={submitting || spectating}
+              data-loading={spectating}
+            >
+              {spectating ? <span className={styles.buttonSpinner} aria-hidden="true" /> : <Eye size={17} />}
+              {ts("loginButton")}
+            </button>
+            <p className={styles.spectatorHint}>{ts("loginHint")}</p>
+          </div>
         )}
 
         {step === "otp" && (

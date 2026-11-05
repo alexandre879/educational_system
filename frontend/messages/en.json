@@ -780,5 +780,22 @@
       "resend": "Resend code",
       "step": "Step {current} of {total}"
     }
+  },
+  "Spectator": {
+    "loginButton": "View as spectator",
+    "or": "or",
+    "loginHint": "No account? Look around as a student, teacher or parent. Nothing can be changed.",
+    "loginFailed": "Spectator mode isn't available right now.",
+    "badge": "Spectator mode",
+    "readOnly": "Read-only",
+    "viewingAs": "Viewing as",
+    "exit": "Exit",
+    "switchFailed": "Couldn't switch the view. Try again.",
+    "blocked": "Spectators can only look around: changes are turned off.",
+    "roles": {
+      "student": "Student",
+      "teacher": "Teacher",
+      "parent": "Parent"
+    }
   }
 }

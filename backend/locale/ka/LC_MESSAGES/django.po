@@ -504,3 +504,21 @@ msgstr "რეაქციები"
 
 msgid "(deleted)"
 msgstr "(წაშლილია)"
+
+msgid "Spectator"
+msgstr "დამთვალიერებელი"
+
+msgid "Spectators view the site as"
+msgstr "დამთვალიერებლები საიტს ხედავენ, როგორც"
+
+msgid "Pick one student, one teacher and one parent. Spectators see what they see, read-only."
+msgstr "აირჩიე ერთი მოსწავლე, ერთი მასწავლებელი და ერთი მშობელი. დამთვალიერებლები ხედავენ იმავეს, რასაც ისინი, ოღონდ ცვლილებების გარეშე."
+
+msgid "Spectator mode"
+msgstr "დამთვალიერებლის რეჟიმი"
+
+msgid "Only for accounts with the Spectator role: visitors press “View as spectator” on the login page and see the site as these people, without being able to change anything."
+msgstr "მხოლოდ დამთვალიერებლის როლის ანგარიშებისთვის: სტუმრები შესვლის გვერდზე აჭერენ „შესვლა დამთვალიერებლად“ და საიტს ამ ადამიანების თვალით ხედავენ, ვერაფრის შეცვლით."
+
+msgid "There can only be one spectator account; every visitor shares it."
+msgstr "დამთვალიერებლის ანგარიში მხოლოდ ერთი შეიძლება იყოს: მას ყველა სტუმარი იყენებს."

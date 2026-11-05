@@ -3,9 +3,9 @@ import { useQueryClient } from "@tanstack/react-query";
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 
 import { errorStatus, setSessionExpiredHandler } from "@/api/client";
-import { fetchMe, logout, unregisterPushDevice } from "@/api/endpoints";
+import { fetchMe, logout, spectatorLogin, unregisterPushDevice } from "@/api/endpoints";
 import * as session from "@/api/session";
-import type { Tokens, User } from "@/api/types";
+import type { SpectatorRole, Tokens, User } from "@/api/types";
 import { getPushToken } from "@/notifications/push";
 import { queryPersister } from "@/providers/queryPersistence";
 
@@ -21,6 +21,8 @@ interface AuthContextValue {
   user: User | null;
   signIn: (tokens: Tokens) => Promise<void>;
   signOut: () => Promise<void>;
+  /** Spectator mode: view the app as another role (a fresh read-only session, nothing cached carried over). */
+  switchSpectatorView: (role: SpectatorRole) => Promise<void>;
   /** Replace the cached profile, e.g. after editing it. */
   setUser: (user: User) => void;
   /** Last signed-in user; still set while signed-in screens unmount after sign-out. */
@@ -122,9 +124,34 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setState({ status: "signedIn", user });
   }, []);
 
+  const switchSpectatorView = useCallback(
+    async (role: SpectatorRole) => {
+      const previous = session.getRefreshToken();
+      const tokens = await spectatorLogin(role);
+      await session.saveTokens(tokens.access, tokens.refresh);
+      // Revoke the replaced session (best effort; spectators may still log out).
+      if (previous) logout(previous).catch(() => undefined);
+      // Every saved screen belongs to the previous person.
+      queryClient.clear();
+      await queryPersister.removeClient();
+      const user = await fetchMe();
+      cacheUser(user);
+      setState({ status: "signedIn", user });
+    },
+    [queryClient]
+  );
+
   const value = useMemo<AuthContextValue>(
-    () => ({ status: state.status, user: state.user, signIn, signOut, setUser, lastUser: state.user ?? lastUser }),
-    [state, signIn, signOut, setUser, lastUser]
+    () => ({
+      status: state.status,
+      user: state.user,
+      signIn,
+      signOut,
+      switchSpectatorView,
+      setUser,
+      lastUser: state.user ?? lastUser,
+    }),
+    [state, signIn, signOut, switchSpectatorView, setUser, lastUser]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

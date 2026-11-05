@@ -221,7 +221,8 @@ else:
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
-        "rest_framework_simplejwt.authentication.JWTAuthentication",
+        # JWTAuthentication, plus read-only spectator sessions (api/spectator.py).
+        "api.spectator.SpectatorAwareJWTAuthentication",
     ),
     # Endpoints are private unless a view explicitly opts out.
     "DEFAULT_PERMISSION_CLASSES": (
@@ -229,6 +230,8 @@ REST_FRAMEWORK = {
     ),
     "DEFAULT_THROTTLE_RATES": {
         "ai_support": os.getenv("AI_SUPPORT_RATE", "60/hour"),
+        # Per IP; switching the spectator view counts too.
+        "spectator": os.getenv("SPECTATOR_LOGIN_RATE", "120/hour"),
     },
 }
 

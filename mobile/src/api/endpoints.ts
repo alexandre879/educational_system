@@ -23,6 +23,7 @@ import type {
   MySubject,
   Schedule,
   SearchResults,
+  SpectatorRole,
   StudentMarks,
   SubjectBook,
   TeacherExam,
@@ -42,6 +43,12 @@ export async function requestOtp(email: string): Promise<void> {
 
 export async function verifyOtp(email: string, otp: string): Promise<Tokens> {
   const { data } = await api.post<Tokens>("/otp/verify/", { email, otp });
+  return data;
+}
+
+/** Read-only sign-in for visitors, viewing the app as `role` (default: the first one set up). */
+export async function spectatorLogin(role?: SpectatorRole): Promise<Tokens> {
+  const { data } = await api.post<Tokens>("/spectator/login/", role ? { role } : {});
   return data;
 }
 

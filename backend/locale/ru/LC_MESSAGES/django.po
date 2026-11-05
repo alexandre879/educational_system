@@ -505,3 +505,21 @@ msgstr "Реакции"
 
 msgid "(deleted)"
 msgstr "(удалено)"
+
+msgid "Spectator"
+msgstr "Наблюдатель"
+
+msgid "Spectators view the site as"
+msgstr "Наблюдатели видят сайт как"
+
+msgid "Pick one student, one teacher and one parent. Spectators see what they see, read-only."
+msgstr "Выберите одного ученика, одного учителя и одного родителя. Наблюдатели видят то же, что и они, без возможности что-либо изменить."
+
+msgid "Spectator mode"
+msgstr "Режим наблюдателя"
+
+msgid "Only for accounts with the Spectator role: visitors press “View as spectator” on the login page and see the site as these people, without being able to change anything."
+msgstr "Только для аккаунтов с ролью «Наблюдатель»: посетители нажимают «Войти как наблюдатель» на странице входа и видят сайт глазами этих людей, ничего не меняя."
+
+msgid "There can only be one spectator account; every visitor shares it."
+msgstr "Аккаунт наблюдателя может быть только один: им пользуются все посетители."

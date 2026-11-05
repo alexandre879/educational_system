@@ -14,9 +14,11 @@ export function usePushRegistration(): void {
   const { user } = useAuth();
   const { language } = useI18n();
   const userId = user?.id;
+  // Spectators look at someone else's account read-only; their phone must not get its notifications.
+  const spectating = Boolean(user?.spectator);
 
   useEffect(() => {
-    if (!userId) return;
+    if (!userId || spectating) return;
     let cancelled = false;
 
     registerForPushAsync()
@@ -28,7 +30,7 @@ export function usePushRegistration(): void {
     return () => {
       cancelled = true;
     };
-  }, [userId, language]);
+  }, [userId, spectating, language]);
 }
 
 type NotificationData = { type?: string; id?: number; date?: string; comment?: number };

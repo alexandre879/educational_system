@@ -542,6 +542,81 @@
   }
 }
 
+// ---------------------------------------------------------------- spectator
+
+.spectator {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 16px;
+  animation: stepIn 460ms var(--ease-out) both;
+}
+
+.orDivider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+
+  &::before,
+  &::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: var(--border-medium);
+  }
+}
+
+.spectatorButton {
+  width: 100%;
+  min-height: 46px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 0 16px;
+  border: 1px solid var(--border-medium);
+  border-radius: 15px;
+  color: var(--text-strong);
+  font-size: 14.5px;
+  font-weight: 700;
+  cursor: pointer;
+  background: var(--surface-2);
+  transition:
+    transform var(--dur-med) var(--ease-spring),
+    border-color var(--dur-fast) ease,
+    opacity var(--dur-fast) ease;
+
+  &:hover:not(:disabled) {
+    transform: translateY(-1px);
+    border-color: var(--primary-blue);
+  }
+
+  @include lg.press(0.97);
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: default;
+  }
+
+  .buttonSpinner {
+    border-color: var(--border-medium);
+    border-top-color: var(--primary-blue);
+  }
+}
+
+.spectatorHint {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--text-muted);
+  text-align: center;
+}
+
 // ---------------------------------------------------------------- messages
 
 .errorMessage,
