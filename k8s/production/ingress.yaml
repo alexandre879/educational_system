@@ -1,0 +1,32 @@
+# https://blueapp.store (and www): Traefik gets the certificate from Let's Encrypt and hands
+# the traffic to the gateway, which routes /back/* to Django and the rest to Next.js.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: blueapp
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+    traefik.ingress.kubernetes.io/router.tls: "true"
+    traefik.ingress.kubernetes.io/router.tls.certresolver: letsencrypt
+spec:
+  rules:
+    - host: blueapp.store
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: gateway
+                port:
+                  name: http
+    - host: www.blueapp.store
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: gateway
+                port:
+                  name: http

@@ -22,7 +22,7 @@ if "*" in ALLOWED_HOSTS:
 # IMPORTANT: must include scheme, and must be a list
 CSRF_TRUSTED_ORIGINS = env_list(
     "DJANGO_CSRF_TRUSTED_ORIGINS",
-    "https://educational-system-front-wh8sd.ondigitalocean.app",
+    "https://blueapp.store,https://www.blueapp.store",
 )
 
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")

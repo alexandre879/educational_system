@@ -28,7 +28,7 @@ import { useTranslations } from "next-intl";
 import styles from "./MainLayout.module.scss";
 import api from "@/interceptors";
 import { clearTokens, getRefreshToken } from "@/lib/auth";
-import { ACCENTS, resolvedTheme, setAppearance, toggleTheme, useAppearance } from "@/lib/appearance";
+import { ACCENTS, resolvedTheme, setAppearance, toggleTheme, useAppearance, useEffectiveAccent } from "@/lib/appearance";
 import { focusTimer, useFocusTimer } from "@/lib/focusTimer";
 import { useLiquidLens } from "@/lib/liquidLens";
 import { UserMeData } from "./profile/interface";
@@ -65,6 +65,8 @@ export default function MainLayout({ children }: { children: ReactNode }) {
   const [mod, setMod] = useState("Ctrl");
 
   const appearance = useAppearance();
+  // Follows automatic accent changes too.
+  const accent = useEffectiveAccent();
   const focus = useFocusTimer();
   const theme = resolvedTheme(appearance);
   const collapsed = appearance.sidebarCollapsed;
@@ -239,7 +241,7 @@ export default function MainLayout({ children }: { children: ReactNode }) {
     { id: "logout", label: tg("palette.logout"), Icon: LogOut, run: () => setIsModalOpen(true) },
   ];
 
-  const primary = ACCENTS[appearance.accent][theme];
+  const primary = ACCENTS[accent][theme];
   const antdConfig = useMemo(
     () => ({
       // Same brand color and rounded controls as the mobile app, on translucent surfaces.

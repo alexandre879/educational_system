@@ -1,0 +1,22 @@
+# Production on the DigitalOcean k3s server (https://blueapp.store). Applied by deploy.sh on the server:
+#   kubectl apply -k k8s/production
+# The base (../base) is the same system as the local kind cluster; this overlay sets the domain,
+# HTTPS, the Telegram bot and small memory limits, because it shares one 4 GB server with ppops.
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: education
+resources:
+  - ../base
+  - ingress.yaml
+patches:
+  - path: patches.yaml
+  # A plain ClusterIP Service: Traefik (the ingress) is the way in, not a node port.
+  - target:
+      kind: Service
+      name: gateway
+    patch: |-
+      - op: replace
+        path: /spec/type
+        value: ClusterIP
+      - op: remove
+        path: /spec/ports/0/nodePort

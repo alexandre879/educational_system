@@ -14,13 +14,13 @@
     "preview": {
       "distribution": "internal",
       "env": {
-        "EXPO_PUBLIC_API_URL": "https://educational-system-front-wh8sd.ondigitalocean.app/back/api"
+        "EXPO_PUBLIC_API_URL": "https://blueapp.store/back/api"
       }
     },
     "production": {
       "autoIncrement": true,
       "env": {
-        "EXPO_PUBLIC_API_URL": "https://educational-system-front-wh8sd.ondigitalocean.app/back/api"
+        "EXPO_PUBLIC_API_URL": "https://blueapp.store/back/api"
       }
     }
   },

@@ -10,7 +10,6 @@ import {
   Avatar,
   Chip,
   Typography,
-  useMediaQuery,
 } from "@mui/material";
 import { Modal } from "antd";
 import { FaHome } from "react-icons/fa";
@@ -26,40 +25,14 @@ import {
   type LucideIcon,
 } from "lucide-react";
 
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  BarElement,
-  ArcElement,
-  Tooltip,
-  Legend,
-  Filler,
-  type ChartOptions,
-} from "chart.js";
-import { Bar, Doughnut } from "react-chartjs-2";
-
 import { DashboardResponse } from "./interface";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { getLocalizedValue } from "@/lib/localized";
 import { AdminHome, ParentHome, TeacherHome } from "./components/RoleHomes";
 import { CountUp, Loading } from "../components/ui/Parts";
-import { formatTime as formatClockTime, isoWeekday, weekdayName } from "@/lib/dates";
-
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  BarElement,
-  ArcElement,
-  Tooltip,
-  Legend,
-  Filler
-);
+import { BarList, ColumnChart, ProgressRing, type ChartDatum } from "../components/charts/Charts";
+import { formatTime as formatClockTime, isoWeekday, weekdayName, type IsoWeekday } from "@/lib/dates";
 
 const WEEK_ORDER = [1, 2, 3, 4, 5, 6, 0] as const;
 
@@ -70,43 +43,11 @@ function formatTime(iso: string) {
   });
 }
 
-function formatDayShort(day: number, locale: string) {
-  const labels = {
-    en: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
-    ru: ["Вс", "Пн", "Вт", "Ср", "Чт", "Пт", "Сб"],
-    ka: ["კვ", "ორ", "სამ", "ოთხ", "ხუთ", "პარ", "შაბ"],
-  };
-
-  const current = labels[locale as "en" | "ru" | "ka"] || labels.en;
-  return current[day];
-}
-
 function getDayKey(iso?: string | null) {
   if (!iso) return null;
   return new Date(iso).getDay();
 }
 
-function clamp(n: number, min: number, max: number) {
-  return Math.max(min, Math.min(max, n));
-}
-
-function getCssVar(name: string, fallback: string) {
-  if (typeof window === "undefined") return fallback;
-  return (
-    getComputedStyle(document.documentElement)
-      .getPropertyValue(name)
-      .trim() || fallback
-  );
-} 
-
-function readChartTheme() {
-  return {
-    text: getCssVar("--chart-axis-text", "#b8b8b8"),
-    strongText: getCssVar("--text-primary", "#f0f0f0"),
-    grid: getCssVar("--chart-grid", "rgba(255,255,255,0.10)"),
-    border: getCssVar("--chart-axis-border", "rgba(255,255,255,0.18)"),
-  };
-}
 
 /** The current time, ticking each minute; null until mounted so SSR and the client agree. */
 function useClock() {
@@ -176,18 +117,13 @@ export default function Home() {
   const now = useClock();
   const [tipOffset, setTipOffset] = useState(0);
 
-  const isPhone = useMediaQuery("(max-width:600px)");
-  const isTablet = useMediaQuery("(max-width:900px)");
-
   const [data, setData] = useState<DashboardResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [isActiveExamModalOpen, setIsActiveExamModalOpen] = useState(false);
-  const [themeVersion, setThemeVersion] = useState(0);
-  const [chartTheme, setChartTheme] = useState(readChartTheme);
-  const [chartsReady, setChartsReady] = useState(false);
 
   const locale = pathname?.split("/")[1] || "en";
-  const chartHeight = isPhone ? 220 : isTablet ? 260 : 300;
+  const numberFormat = useMemo(() => new Intl.NumberFormat(locale), [locale]);
+  const formatNumber = useCallback((value: number) => numberFormat.format(value), [numberFormat]);
 
   useEffect(() => {
     let cancelled = false;
@@ -210,50 +146,6 @@ export default function Home() {
       cancelled = true;
     };
   }, []);
-
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-
-    // Charts read colors from CSS variables, so re-read them when the theme flips.
-    const observer = new MutationObserver(() => {
-      setChartTheme(readChartTheme());
-      setThemeVersion((prev) => prev + 1);
-    });
-
-    observer.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ["data-theme"],
-    });
-
-    return () => observer.disconnect();
-  }, []);
-
-  useEffect(() => {
-    if (loading || !data) {
-      setChartsReady(false);
-      return;
-    }
-
-    let raf1 = 0;
-    let raf2 = 0;
-    let timer: ReturnType<typeof setTimeout> | null = null;
-
-    setChartsReady(false);
-
-    raf1 = window.requestAnimationFrame(() => {
-      raf2 = window.requestAnimationFrame(() => {
-        timer = setTimeout(() => {
-          setChartsReady(true);
-        }, 80);
-      });
-    });
-
-    return () => {
-      window.cancelAnimationFrame(raf1);
-      window.cancelAnimationFrame(raf2);
-      if (timer) clearTimeout(timer);
-    };
-  }, [loading, data, themeVersion]);
 
   const sessions = useMemo(() => data?.sessions ?? [], [data]);
   const subjects = data?.subjects ?? [];
@@ -280,10 +172,14 @@ export default function Home() {
       (s) => s.is_active && s.ends_at && new Date(s.ends_at).getTime() > now
     );
 
-    const chartData = subjectPoints.map((x) => ({
-      name: getLocalizedValue(x.subject.name, locale) || t("unknown"),
-      points: x.points ?? 0,
-    }));
+    // Ranked bars: largest first.
+    const chartData: ChartDatum[] = subjectPoints
+      .map((x) => ({
+        key: String(x.subject.id),
+        label: getLocalizedValue(x.subject.name, locale) || t("unknown"),
+        value: x.points ?? 0,
+      }))
+      .sort((a, b) => b.value - a.value);
 
     const finishedSessions = sessions.filter((s) => s.finished);
     const total = sessions.length;
@@ -352,23 +248,27 @@ export default function Home() {
       }
     }
 
-    const weeklyActivityData = WEEK_ORDER.map((day) => ({
-      day: formatDayShort(day, locale),
-      sessions: weeklyMap.get(day) ?? 0,
-    }));
+    const weeklyActivityData: ChartDatum[] = WEEK_ORDER.map((day) => {
+      const iso = (day === 0 ? 7 : day) as IsoWeekday;
+      return {
+        key: String(iso),
+        label: weekdayName(iso, tApp, true),
+        name: weekdayName(iso, tApp),
+        value: weeklyMap.get(day) ?? 0,
+      };
+    });
+    const busiest = Math.max(0, ...weeklyActivityData.map((d) => d.value));
 
-    const avgScoreBySubjectData = Array.from(subjectScoreMap.entries())
-      .map(([name, v]) => ({
-        name,
-        avgScore: v.count === 0 ? 0 : Math.round(v.total / v.count),
-        attempts: v.count,
-      }))
-      .sort((a, b) => b.attempts - a.attempts)
-      .slice(0, 6);
+    // The six subjects with the most finished exams, ranked by their average score.
+    const avgScoreBySubjectData: ChartDatum[] = Array.from(subjectScoreMap.entries())
+      .sort((a, b) => b[1].count - a[1].count)
+      .slice(0, 6)
+      .map(([name, v]) => ({ key: name, label: name, value: v.count === 0 ? 0 : Math.round(v.total / v.count) }))
+      .sort((a, b) => b.value - a.value);
 
-    const topExamsData = Array.from(examAttemptsMap.entries())
-      .map(([name, attempts]) => ({ name, attempts }))
-      .sort((a, b) => b.attempts - a.attempts)
+    const topExamsData: ChartDatum[] = Array.from(examAttemptsMap.entries())
+      .map(([name, attempts]) => ({ key: name, label: name, value: attempts }))
+      .sort((a, b) => b.value - a.value)
       .slice(0, 6);
 
     return {
@@ -382,10 +282,11 @@ export default function Home() {
         delta,
       },
       weeklyActivityData,
+      busiest,
       avgScoreBySubjectData,
       topExamsData,
     };
-  }, [sessions, subjectPoints, t, locale]);
+  }, [sessions, subjectPoints, t, tApp, locale]);
 
   const onActiveExamClick = useCallback(() => {
     if (derived.activeSessions.length) {
@@ -399,220 +300,6 @@ export default function Home() {
     },
     [router, locale]
   );
-
-  const barOptions = useMemo<ChartOptions<"bar">>(
-    () => ({
-      responsive: true,
-      maintainAspectRatio: false,
-      resizeDelay: 180,
-      animation: {
-        duration: 1100,
-        easing: "easeOutQuart",
-        delay(context) {
-          return context.type === "data" ? context.dataIndex * 90 : 0;
-        },
-      },
-      transitions: {
-        active: {
-          animation: {
-            duration: 220,
-          },
-        },
-      },
-      interaction: {
-        mode: "index",
-        intersect: false,
-      },
-      plugins: {
-        legend: {
-          display: false,
-          labels: { color: chartTheme.strongText },
-        },
-        tooltip: {
-          enabled: true,
-          backgroundColor: "rgba(15, 23, 42, 0.92)",
-          titleColor: "#ffffff",
-          bodyColor: "#e5e7eb",
-          borderColor: chartTheme.border,
-          borderWidth: 1,
-          padding: 12,
-          cornerRadius: 12,
-          displayColors: true,
-        },
-      },
-      scales: {
-        x: {
-          ticks: {
-            color: chartTheme.text,
-            maxRotation: 0,
-            autoSkip: true,
-          },
-          grid: {
-            color: chartTheme.grid,
-            drawBorder: false,
-          },
-          border: {
-            color: chartTheme.border,
-          },
-        },
-        y: {
-          ticks: {
-            color: chartTheme.text,
-          },
-          grid: {
-            color: chartTheme.grid,
-            drawBorder: false,
-          },
-          border: {
-            color: chartTheme.border,
-          },
-        },
-      },
-    }),
-    [chartTheme]
-  );
-
-  const doughnutOptions = useMemo<ChartOptions<"doughnut">>(
-    () => ({
-      responsive: true,
-      maintainAspectRatio: false,
-      resizeDelay: 180,
-      animation: {
-        animateRotate: true,
-        animateScale: true,
-        duration: 1200,
-        easing: "easeOutExpo",
-      },
-      transitions: {
-        active: {
-          animation: {
-            duration: 220,
-          },
-        },
-      },
-      plugins: {
-        legend: {
-          display: false,
-          labels: { color: chartTheme.strongText },
-        },
-        tooltip: {
-          enabled: true,
-          backgroundColor: "rgba(15, 23, 42, 0.92)",
-          titleColor: "#ffffff",
-          bodyColor: "#e5e7eb",
-          borderColor: chartTheme.border,
-          borderWidth: 1,
-          padding: 12,
-          cornerRadius: 12,
-        },
-      },
-    }),
-    [chartTheme]
-  );
-
-  const pointsBySubjectBar = useMemo(
-    () => ({
-      labels: derived.chartData.map((d) => d.name),
-      datasets: [
-        {
-          label: t("pointsLabel"),
-          data: derived.chartData.map((d) => d.points),
-          backgroundColor: "rgba(59,130,246,0.70)",
-          borderColor: "rgba(96,165,250,1)",
-          borderWidth: 1.5,
-          borderRadius: 10,
-          hoverBackgroundColor: "rgba(59,130,246,0.88)",
-          hoverBorderColor: "rgba(96,165,250,1)",
-          hoverBorderWidth: 2,
-        },
-      ],
-    }),
-    [derived.chartData, t]
-  );
-
-  const weeklyActivityBar = useMemo(
-    () => ({
-      labels: derived.weeklyActivityData.map((d) => d.day),
-      datasets: [
-        {
-          label: t("sessionsLabel"),
-          data: derived.weeklyActivityData.map((d) => d.sessions),
-          backgroundColor: "rgba(96,165,250,0.55)",
-          borderColor: "rgba(96,165,250,0.95)",
-          borderWidth: 1.5,
-          borderRadius: 10,
-          hoverBackgroundColor: "rgba(96,165,250,0.78)",
-          hoverBorderColor: "rgba(96,165,250,1)",
-          hoverBorderWidth: 2,
-        },
-      ],
-    }),
-    [derived.weeklyActivityData, t]
-  );
-
-  const avgScoreBySubjectBar = useMemo(
-    () => ({
-      labels: derived.avgScoreBySubjectData.map((d) => d.name),
-      datasets: [
-        {
-          label: t("avgScoreLabel"),
-          data: derived.avgScoreBySubjectData.map((d) => d.avgScore),
-          backgroundColor: "rgba(243, 0, 194, 0.41)",
-          borderColor: "rgba(243, 0, 194, 0.88)",
-          borderWidth: 1.5,
-          borderRadius: 10,
-          hoverBackgroundColor: "rgba(243, 0, 194, 0.62)",
-          hoverBorderColor: "rgba(243, 0, 194, 1)",
-          hoverBorderWidth: 2,
-        },
-      ],
-    }),
-    [derived.avgScoreBySubjectData, t]
-  );
-
-  const topExamsBar = useMemo(
-    () => ({
-      labels: derived.topExamsData.map((d) => d.name),
-      datasets: [
-        {
-          label: t("attemptsLabel"),
-          data: derived.topExamsData.map((d) => d.attempts),
-          backgroundColor: "rgba(250,173,20,0.55)",
-          borderColor: "rgba(250,173,20,0.95)",
-          borderWidth: 1.5,
-          borderRadius: 10,
-          hoverBackgroundColor: "rgba(250,173,20,0.78)",
-          hoverBorderColor: "rgba(250,173,20,1)",
-          hoverBorderWidth: 2,
-        },
-      ],
-    }),
-    [derived.topExamsData, t]
-  );
-
-  const completionDoughnut = useMemo(() => {
-    const done = clamp(derived.progressMetrics.completionPct, 0, 100);
-
-    return {
-      labels: [t("done"), t("remaining")],
-      datasets: [
-        {
-          data: [done, 100 - done],
-          backgroundColor: [
-            "rgba(34,197,94,0.80)",
-            "rgba(148,163,184,0.20)",
-          ],
-          borderColor: [
-            "rgba(34,197,94,0.95)",
-            "rgba(148,163,184,0.55)",
-          ],
-          borderWidth: 2,
-          cutout: "72%",
-          hoverOffset: 8,
-        },
-      ],
-    };
-  }, [derived.progressMetrics.completionPct, t]);
 
   if (loading) {
     return (
@@ -792,55 +479,29 @@ export default function Home() {
       <div className={styles.grid2}>
         <div className={styles.card}>
           <Typography className={styles.sectionTitle}>{t("pointsBySubject")}</Typography>
-          <div className={styles.chartBox} style={{ height: chartHeight }}>
-            {derived.chartData.length === 0 ? (
-              <Typography className={styles.muted}>{t("noPointsYet")}</Typography>
-            ) : chartsReady ? (
-              <Bar
-                key={`points-${themeVersion}`}
-                data={pointsBySubjectBar}
-                options={barOptions}
-              />
-            ) : null}
-          </div>
+          {derived.chartData.length === 0 ? (
+            <Typography className={styles.muted}>{t("noPointsYet")}</Typography>
+          ) : (
+            <BarList title={t("pointsBySubject")} unit={t("pointsLabel")} data={derived.chartData} format={formatNumber} />
+          )}
         </div>
 
         <div className={styles.card}>
           <Typography className={styles.sectionTitle}>{t("progressOverview")}</Typography>
+          <ProgressRing
+            percent={derived.progressMetrics.completionPct}
+            label={t("completion")}
+            ariaLabel={`${t("progressOverview")}: ${derived.progressMetrics.completionPct}% ${t("completion")}`}
+          />
 
-          <div
-            className={styles.chartBox}
-            style={{ height: chartHeight, position: "relative" }}
-          >
-            {chartsReady ? (
-              <Doughnut
-                key={`progress-${themeVersion}`}
-                data={completionDoughnut}
-                options={doughnutOptions}
-              />
-            ) : null}
-
-            <div className={styles.gaugeCenter}>
-              <Typography className={styles.gaugePct}>
-                {derived.progressMetrics.completionPct}%
-              </Typography>
-              <Typography className={styles.gaugeSub}>
-                {t("completion")} •{" "}
-                {t("avgScoreText", { avg: derived.progressMetrics.avgScore })}
-              </Typography>
-
-              <Typography
-                className={styles.gaugeDelta}
-                style={{
-                  color:
-                    derived.progressMetrics.delta >= 0 ? "#22c55e" : "#ef4444",
-                }}
-              >
-                {derived.progressMetrics.delta >= 0
-                  ? t("deltaUp", { delta: derived.progressMetrics.delta })
-                  : t("deltaDown", { delta: derived.progressMetrics.delta })}
-              </Typography>
-            </div>
+          <div className={styles.ringStats}>
+            <span className={styles.ringStat}>{t("avgScoreText", { avg: derived.progressMetrics.avgScore })}</span>
+            {/* Status colour, always with its arrow and words. */}
+            <span className={styles.delta} data-direction={derived.progressMetrics.delta >= 0 ? "up" : "down"}>
+              {derived.progressMetrics.delta >= 0
+                ? t("deltaUp", { delta: derived.progressMetrics.delta })
+                : t("deltaDown", { delta: derived.progressMetrics.delta })}
+            </span>
           </div>
 
           <div className={styles.badgeRow}>
@@ -864,45 +525,46 @@ export default function Home() {
       <div className={styles.grid3}>
         <div className={styles.card}>
           <Typography className={styles.sectionTitle}>{t("topExamsAttempts")}</Typography>
-          <div className={styles.chartBox} style={{ height: chartHeight }}>
-            {derived.topExamsData.length === 0 ? (
-              <Typography className={styles.muted}>{t("noAttemptsYet")}</Typography>
-            ) : chartsReady ? (
-              <Bar
-                key={`top-exams-${themeVersion}`}
-                data={topExamsBar}
-                options={barOptions}
-              />
-            ) : null}
-          </div>
+          {derived.topExamsData.length === 0 ? (
+            <Typography className={styles.muted}>{t("noAttemptsYet")}</Typography>
+          ) : (
+            <BarList title={t("topExamsAttempts")} unit={t("attemptsLabel")} data={derived.topExamsData} format={formatNumber} />
+          )}
         </div>
 
         <div className={styles.card}>
           <Typography className={styles.sectionTitle}>{t("weeklyActivity")}</Typography>
-          <div className={styles.chartBox} style={{ height: chartHeight }}>
-            {chartsReady ? (
-              <Bar
-                key={`weekly-${themeVersion}`}
-                data={weeklyActivityBar}
-                options={barOptions}
-              />
-            ) : null}
-          </div>
+          {derived.busiest === 0 ? (
+            <Typography className={styles.muted}>{t("noSessionsYet")}</Typography>
+          ) : (
+            <ColumnChart
+              title={t("weeklyActivity")}
+              unit={t("sessionsLabel")}
+              data={derived.weeklyActivityData}
+              format={formatNumber}
+              emphasis={(d) => d.value === derived.busiest}
+              caption={t("busiestDay", {
+                day: derived.weeklyActivityData
+                  .filter((d) => d.value === derived.busiest)
+                  .map((d) => d.name)
+                  .join(", "),
+              })}
+            />
+          )}
         </div>
 
         <div className={styles.card}>
           <Typography className={styles.sectionTitle}>{t("avgScoreBySubject")}</Typography>
-          <div className={styles.chartBox} style={{ height: chartHeight }}>
-            {derived.avgScoreBySubjectData.length === 0 ? (
-              <Typography className={styles.muted}>{t("noFinishedYet")}</Typography>
-            ) : chartsReady ? (
-              <Bar
-                key={`avg-score-${themeVersion}`}
-                data={avgScoreBySubjectBar}
-                options={barOptions}
-              />
-            ) : null}
-          </div>
+          {derived.avgScoreBySubjectData.length === 0 ? (
+            <Typography className={styles.muted}>{t("noFinishedYet")}</Typography>
+          ) : (
+            <BarList
+              title={t("avgScoreBySubject")}
+              unit={t("pointsLabel")}
+              data={derived.avgScoreBySubjectData}
+              format={formatNumber}
+            />
+          )}
         </div>
       </div>
 

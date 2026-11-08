@@ -32,7 +32,7 @@ export function Avatar({ uri, name, size = 44 }: AvatarProps) {
 
   return (
     <View style={[styles.fallback, dimensions, { backgroundColor: colorFor(initials) }]}>
-      <AppText variant="bodyStrong" tone="onPrimary" style={{ fontSize: size * 0.38 }}>
+      <AppText variant="bodyStrong" tone="onGradient" style={{ fontSize: size * 0.38 }}>
         {initials}
       </AppText>
     </View>

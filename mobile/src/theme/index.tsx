@@ -1,6 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
-import { Appearance, Platform, useColorScheme, type ViewStyle } from "react-native";
+import { Appearance, AppState, Platform, useColorScheme, type ViewStyle } from "react-native";
 
 // Brand: the web app's blue, extended with a violet accent for gradients.
 const light = {
@@ -14,6 +14,8 @@ const light = {
   primary: "#1677FF",
   primaryMuted: "rgba(22, 119, 255, 0.10)",
   onPrimary: "#FFFFFF",
+  /** Text on the deep brand gradients and on avatar colours: always white. */
+  onGradient: "#FFFFFF",
   accent: "#7C3AED",
   success: "#16A34A",
   successMuted: "rgba(22, 163, 74, 0.12)",
@@ -40,6 +42,7 @@ const dark: Colors = {
   primary: "#4C8DFF",
   primaryMuted: "rgba(76, 141, 255, 0.16)",
   onPrimary: "#FFFFFF",
+  onGradient: "#FFFFFF",
   accent: "#A78BFA",
   success: "#22C55E",
   successMuted: "rgba(34, 197, 94, 0.16)",
@@ -50,6 +53,90 @@ const dark: Colors = {
   gradient: ["#1556D6", "#4B47E0", "#7344D9"] as const,
   shadow: "0px 0px 0px rgba(0, 0, 0, 0)",
 };
+
+// ---------------------------------------------------------------------------
+// Accent colours: the same six as the website (lib/appearance.ts and app/globals.css there).
+// ---------------------------------------------------------------------------
+
+export const ACCENT_ORDER = ["ocean", "violet", "rose", "sunset", "emerald", "lagoon"] as const;
+export type Accent = (typeof ACCENT_ORDER)[number];
+
+/** Minutes between automatic accent changes; 0 keeps the chosen accent. */
+export const ACCENT_CYCLES = [0, 10, 20, 30, 60] as const;
+export type AccentCycle = (typeof ACCENT_CYCLES)[number];
+
+type AccentColors = { primary: string; accent: string; gradient: readonly [string, string, string] };
+
+export const ACCENTS: Record<Accent, { light: AccentColors; dark: AccentColors }> = {
+  ocean: {
+    light: { primary: "#1677FF", accent: "#7C3AED", gradient: ["#1677FF", "#5B5CFF", "#8B5CF6"] },
+    dark: { primary: "#4C8DFF", accent: "#A78BFA", gradient: ["#1556D6", "#4B47E0", "#7344D9"] },
+  },
+  violet: {
+    light: { primary: "#7C3AED", accent: "#D946EF", gradient: ["#7C3AED", "#A855F7", "#D946EF"] },
+    dark: { primary: "#9785FF", accent: "#E879F9", gradient: ["#5B21B6", "#7C3AED", "#C026D3"] },
+  },
+  rose: {
+    light: { primary: "#DB2777", accent: "#C026D3", gradient: ["#E11D48", "#EC4899", "#C026D3"] },
+    dark: { primary: "#FF6B9A", accent: "#E879F9", gradient: ["#BE123C", "#DB2777", "#A21CAF"] },
+  },
+  sunset: {
+    light: { primary: "#EA580C", accent: "#DB2777", gradient: ["#F97316", "#EF4444", "#DB2777"] },
+    dark: { primary: "#FF9548", accent: "#FB7185", gradient: ["#EA580C", "#E11D48", "#BE185D"] },
+  },
+  emerald: {
+    light: { primary: "#059669", accent: "#0891B2", gradient: ["#059669", "#0D9488", "#0891B2"] },
+    dark: { primary: "#34D399", accent: "#22D3EE", gradient: ["#047857", "#0D9488", "#0E7490"] },
+  },
+  lagoon: {
+    light: { primary: "#0891B2", accent: "#4F46E5", gradient: ["#0891B2", "#0284C7", "#4F46E5"] },
+    dark: { primary: "#22D3EE", accent: "#818CF8", gradient: ["#0E7490", "#0369A1", "#4338CA"] },
+  },
+};
+
+/**
+ * The accent on screen at `now`. With automatic changes it is the chosen accent moved on one step
+ * per period since 1970, exactly as on the website, so both agree and changes land on the clock
+ * (every 20 minutes means at :00, :20 and :40).
+ */
+export function effectiveAccent(accent: Accent, cycle: AccentCycle, now = Date.now()): Accent {
+  if (!cycle) return accent;
+  const start = ACCENT_ORDER.indexOf(accent);
+  return ACCENT_ORDER[(start + Math.floor(now / (cycle * 60_000))) % ACCENT_ORDER.length];
+}
+
+/** When the automatic accent changes next (ms since 1970), or null when it's off. */
+export function nextAccentChange(cycle: AccentCycle, now = Date.now()): number | null {
+  if (!cycle) return null;
+  const period = cycle * 60_000;
+  return (Math.floor(now / period) + 1) * period;
+}
+
+function luminance(hex: string): number {
+  const [r, g, b] = [1, 3, 5].map((i) => {
+    const c = parseInt(hex.slice(i, i + 2), 16) / 255;
+    return c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
+  });
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+}
+
+/** White text on the accent when it reads at 3:1 or better, otherwise near-black (light dark-mode accents). */
+export function textOn(background: string): string {
+  const white = 1.05 / (luminance(background) + 0.05);
+  return white >= 3 ? "#FFFFFF" : "#0B1220";
+}
+
+function withAccent(base: Colors, accent: Accent, scheme: "light" | "dark"): Colors {
+  const palette = ACCENTS[accent][scheme];
+  return {
+    ...base,
+    primary: palette.primary,
+    primaryMuted: withAlpha(palette.primary, scheme === "dark" ? 0.16 : 0.1),
+    onPrimary: textOn(palette.primary),
+    accent: palette.accent,
+    gradient: palette.gradient,
+  };
+}
 
 // Each subject gets a stable color so it's recognisable across screens.
 const SUBJECT_COLORS = ["#1677FF", "#8B5CF6", "#EC4899", "#F97316", "#14B8A6", "#22C55E", "#EAB308", "#06B6D4"];
@@ -70,12 +157,22 @@ export function withAlpha(hex: string, opacity: number): string {
 export type ThemePreference = "system" | "light" | "dark";
 
 const STORAGE_KEY = "pref.theme";
+const ACCENT_KEY = "pref.accent";
+const ACCENT_CYCLE_KEY = "pref.accentCycle";
 
 interface ThemeContextValue {
   colors: Colors;
   scheme: "light" | "dark";
   preference: ThemePreference;
   setPreference: (preference: ThemePreference) => void;
+  /** The accent the user picked. */
+  accent: Accent;
+  /** The accent on screen now (differs from `accent` while it changes automatically). */
+  shownAccent: Accent;
+  accentCycle: AccentCycle;
+  /** Picking an accent by hand keeps it: automatic changes stop. */
+  setAccent: (accent: Accent) => void;
+  setAccentCycle: (cycle: AccentCycle) => void;
 }
 
 const ThemeContext = createContext<ThemeContextValue | null>(null);
@@ -89,6 +186,10 @@ function applyPreference(preference: ThemePreference) {
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const [preference, setPreferenceState] = useState<ThemePreference>("system");
+  const [accent, setAccentState] = useState<Accent>("ocean");
+  const [accentCycle, setAccentCycleState] = useState<AccentCycle>(0);
+  // Bumped when the automatic accent is due to change, or when the app comes back to the foreground.
+  const [now, setNow] = useState(() => Date.now());
   const systemScheme = useColorScheme();
   // Resolve from the preference directly: on web, Appearance.setColorScheme doesn't feed useColorScheme.
   const scheme = preference === "system" ? (systemScheme === "dark" ? "dark" : "light") : preference;
@@ -102,6 +203,45 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
         }
       })
       .catch(() => undefined);
+
+    AsyncStorage.multiGet([ACCENT_KEY, ACCENT_CYCLE_KEY])
+      .then(([[, storedAccent], [, storedCycle]]) => {
+        if (storedAccent && (ACCENT_ORDER as readonly string[]).includes(storedAccent)) setAccentState(storedAccent as Accent);
+        const cycle = Number(storedCycle);
+        if ((ACCENT_CYCLES as readonly number[]).includes(cycle)) setAccentCycleState(cycle as AccentCycle);
+      })
+      .catch(() => undefined);
+  }, []);
+
+  // One timer, set for the exact moment the accent changes next (not a polling interval).
+  useEffect(() => {
+    const next = nextAccentChange(accentCycle, now);
+    if (next == null) return;
+    const timer = setTimeout(() => setNow(Date.now()), next - Date.now() + 50);
+    return () => clearTimeout(timer);
+  }, [accentCycle, now]);
+
+  // Timers don't run in the background: catch up when the app is opened again.
+  useEffect(() => {
+    const subscription = AppState.addEventListener("change", (state) => {
+      if (state === "active") setNow(Date.now());
+    });
+    return () => subscription.remove();
+  }, []);
+
+  const setAccent = useCallback((next: Accent) => {
+    setAccentState(next);
+    setAccentCycleState(0);
+    AsyncStorage.multiSet([
+      [ACCENT_KEY, next],
+      [ACCENT_CYCLE_KEY, "0"],
+    ]).catch(() => undefined);
+  }, []);
+
+  const setAccentCycle = useCallback((cycle: AccentCycle) => {
+    setAccentCycleState(cycle);
+    setNow(Date.now());
+    AsyncStorage.setItem(ACCENT_CYCLE_KEY, String(cycle)).catch(() => undefined);
   }, []);
 
   const setPreference = useCallback((next: ThemePreference) => {
@@ -110,9 +250,20 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     AsyncStorage.setItem(STORAGE_KEY, next).catch(() => undefined);
   }, []);
 
+  const shownAccent = effectiveAccent(accent, accentCycle, now);
   const value = useMemo<ThemeContextValue>(
-    () => ({ colors: scheme === "dark" ? dark : light, scheme, preference, setPreference }),
-    [scheme, preference, setPreference]
+    () => ({
+      colors: withAccent(scheme === "dark" ? dark : light, shownAccent, scheme),
+      scheme,
+      preference,
+      setPreference,
+      accent,
+      shownAccent,
+      accentCycle,
+      setAccent,
+      setAccentCycle,
+    }),
+    [scheme, preference, setPreference, accent, shownAccent, accentCycle, setAccent, setAccentCycle]
   );
 
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;

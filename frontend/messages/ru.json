@@ -104,7 +104,8 @@
     "deltaDown": "▼ {delta} по сравнению с предыдущим",
     "finishedBadge": "Завершено: {finished}/{total}",
     "activeBadge": "Активно: {active}",
-    "modalActiveExamsTitle": "Активные экзамены"
+    "modalActiveExamsTitle": "Активные экзамены",
+    "busiestDay": "Самый активный день: {day}"
   },
   "Announcement": {
     "pageTitle": "Объявления",
@@ -702,7 +703,13 @@
       "motionReduced": "Сниженная",
       "language": "Язык",
       "reset": "Сбросить настройки",
-      "done": "Готово"
+      "done": "Готово",
+      "autoAccent": "Менять цвет автоматически",
+      "autoOff": "Выкл.",
+      "minutes": "{count} мин",
+      "hour": "1 ч",
+      "autoAccentHint": "Акцентный цвет может сам переходить по всем шести цветам, начиная с выбранного.",
+      "autoAccentNext": "Следующий цвет в {time}. Если выбрать цвет вручную, смена отключится."
     },
     "study": {
       "title": "Учебная панель",

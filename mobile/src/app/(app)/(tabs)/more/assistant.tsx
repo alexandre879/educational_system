@@ -156,7 +156,7 @@ export default function AssistantScreen() {
                   end={{ x: 1, y: 1 }}
                   style={StyleSheet.absoluteFill}
                 />
-                <AppText selectable tone="onPrimary">
+                <AppText selectable tone="onGradient">
                   {message.content}
                 </AppText>
               </View>

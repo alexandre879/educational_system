@@ -104,7 +104,8 @@
     "deltaDown": "▼ {delta} წინა პერიოდთან",
     "finishedBadge": "დასრულებული: {finished}/{total}",
     "activeBadge": "აქტიური: {active}",
-    "modalActiveExamsTitle": "აქტიური გამოცდები"
+    "modalActiveExamsTitle": "აქტიური გამოცდები",
+    "busiestDay": "ყველაზე აქტიური დღე: {day}"
   },
   "Announcement": {
     "pageTitle": "განცხადებები",
@@ -702,7 +703,13 @@
       "motionReduced": "შემცირებული",
       "language": "ენა",
       "reset": "საწყისი პარამეტრები",
-      "done": "მზადაა"
+      "done": "მზადაა",
+      "autoAccent": "ფერის ავტომატური ცვლა",
+      "autoOff": "გამორთ.",
+      "minutes": "{count} წთ",
+      "hour": "1 სთ",
+      "autoAccentHint": "აქცენტის ფერი შეიძლება თავისით შეიცვალოს ექვსივე ფერში, შენ მიერ არჩეულიდან დაწყებული.",
+      "autoAccentNext": "შემდეგი ფერი {time}-ზე. ფერის ხელით არჩევა ამას გამორთავს."
     },
     "study": {
       "title": "სასწავლო პანელი",

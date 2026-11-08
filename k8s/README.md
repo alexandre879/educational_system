@@ -1,6 +1,6 @@
 # Kubernetes
 
-Runs the whole system (Postgres, Django, Next.js, and the Telegram bot when turned on) on a local
+Production runs on DigitalOcean (see [Production](#production) below). This folder also runs the whole system (Postgres, Django, Next.js, and the Telegram bot when turned on) on a local
 [kind](https://kind.sigs.k8s.io/) cluster. It costs nothing because everything runs on your own computer through Docker Desktop.
 
 | Piece        | Kind                      | Notes                                                                 |
@@ -45,10 +45,36 @@ kc exec -i postgres-0 -- sh -c 'pg_restore -U "$POSTGRES_USER" -d "$POSTGRES_DB"
 kc scale deploy/telegram-bot --replicas=1
 ```
 
-## Moving to a real cluster
+## Production
 
-The manifests don't depend on kind. To deploy them on a hosted cluster:
+educational_system and ppops share one k3s server on DigitalOcean: `k3s-1`, 4 GB, 2 CPUs, Amsterdam,
+`209.38.108.180`, about $28.80/month including weekly backups. The firewall (`k3s-web`) only lets in ports
+22, 80 and 443.
 
-1. Push both images to a registry and change `image:` in `backend.yaml`, `telegram-bot.yaml` and `frontend.yaml`.
-2. In `backend.yaml`, set your domain in `DJANGO_ALLOWED_HOSTS`, `DJANGO_CSRF_TRUSTED_ORIGINS` and `CORS_ALLOWED_ORIGINS`, and set `DJANGO_FORCE_HTTPS: "1"` once the site is served over HTTPS.
-3. In `gateway.yaml`, change the Service to `type: LoadBalancer`.
+| Site                      | Address                                  |
+|---------------------------|------------------------------------------|
+| School website and API    | <https://blueapp.store>                  |
+| School admin              | <https://blueapp.store/back/admin/>      |
+| ppops website             | <https://newhousemodern.shop>             |
+| ppops admin platform      | <https://newhousemodern.shop/admin>       |
+
+`base/` is shared with the local kind cluster; `production/` only adds the domain, HTTPS, the Telegram bot and
+small memory limits. Traefik, built into k3s, gets the Let's Encrypt certificates and redirects http to https.
+
+```sh
+./k8s/production/deploy.sh                 # deploy the school (ppops: ./k8s/deploy.sh in its own repo)
+
+ssh -i ~/.ssh/digitalocean_ed25519 root@209.38.108.180    # then kubectl works on the server:
+kubectl get pods -A
+kubectl -n education logs deploy/backend -f
+```
+
+- A deploy uploads only the source and builds the images on the server, so it costs a few MB of upload, not a
+  gigabyte. Expect about 10 to 20 minutes when the website or its packages change.
+- `backend/.env` holds the S3, Telegram and DeepSeek keys. `deploy.sh` streams it into the `backend-env` secret, so
+  after changing a key in that file, run `deploy.sh` again.
+- `DJANGO_SECRET_KEY` and the database passwords were generated once, on the server. Don't delete those secrets:
+  `postgres-credentials`, `backend-production`, and ppops' `ppops-postgres` and `ppops-secrets`.
+- 2 GB is too small for both projects: the server swaps constantly and services crash. Don't size it back down.
+- The server was set up once with `production/server-setup.sh`, which is safe to run again.
+- Production is the one copy of the Telegram bot. Don't run `run_bot.py` elsewhere with the same `BOT_TOKEN`.

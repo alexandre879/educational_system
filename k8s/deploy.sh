@@ -22,7 +22,7 @@ docker build -t education-backend:local backend
 docker build -t education-frontend:local frontend
 kind load docker-image education-backend:local education-frontend:local --name "$CLUSTER"
 
-kubectl --context "kind-$CLUSTER" apply -f k8s/namespace.yaml
+kubectl --context "kind-$CLUSTER" apply -f k8s/base/namespace.yaml
 
 # Secrets come from local files and are never written into the manifests.
 if ! kc get secret postgres-credentials >/dev/null 2>&1; then

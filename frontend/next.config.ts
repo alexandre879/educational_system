@@ -16,7 +16,9 @@ const nextConfig: NextConfig = {
       }
     ],
   },
-  allowedDevOrigins: ["http://backend:3000"],
+  // Dev server only: hosts besides localhost that may load /_next/* resources. Phones and other
+  // computers open it by the local-network IP, which changes between Wi-Fi networks and hotspots.
+  allowedDevOrigins: ["backend", "*.local", "192.168.*.*", "10.*.*.*", "172.*.*.*"],
 };
 
 export default withNextIntl(nextConfig);

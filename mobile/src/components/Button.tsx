@@ -34,7 +34,7 @@ export function Button({ title, onPress, variant = "primary", icon, loading, dis
 
   const foreground = {
     primary: colors.onPrimary,
-    gradient: colors.onPrimary,
+    gradient: colors.onGradient,
     secondary: colors.primary,
     ghost: colors.primary,
     danger: colors.danger,
