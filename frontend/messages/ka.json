@@ -105,7 +105,9 @@
     "finishedBadge": "დასრულებული: {finished}/{total}",
     "activeBadge": "აქტიური: {active}",
     "modalActiveExamsTitle": "აქტიური გამოცდები",
-    "busiestDay": "ყველაზე აქტიური დღე: {day}"
+    "busiestDay": "ყველაზე აქტიური დღე: {day}",
+    "live": "მიმდინარე",
+    "timeLeft": "დარჩა {time}"
   },
   "Announcement": {
     "pageTitle": "განცხადებები",

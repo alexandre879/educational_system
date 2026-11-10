@@ -30,18 +30,12 @@ import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { getLocalizedValue } from "@/lib/localized";
 import { AdminHome, ParentHome, TeacherHome } from "./components/RoleHomes";
+import { ExamTimeline, LiveExams } from "./components/ExamActivity";
 import { CountUp, Loading } from "../components/ui/Parts";
 import { BarList, ColumnChart, ProgressRing, type ChartDatum } from "../components/charts/Charts";
 import { formatTime as formatClockTime, isoWeekday, weekdayName, type IsoWeekday } from "@/lib/dates";
 
 const WEEK_ORDER = [1, 2, 3, 4, 5, 6, 0] as const;
-
-function formatTime(iso: string) {
-  return new Date(iso).toLocaleTimeString([], {
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-}
 
 function getDayKey(iso?: string | null) {
   if (!iso) return null;
@@ -435,12 +429,13 @@ export default function Home() {
     );
   }
 
-  const statLink = { textDecoration: "none", color: "inherit" } as const;
-
   return (
     <div className={styles.page}>
       {pageTitle}
       {profileHeader}
+
+      {/* Only while an exam is running: a banner with a live countdown. */}
+      <LiveExams sessions={derived.activeSessions} locale={locale} />
 
       <div className={`${styles.grid3} ${styles.statGrid}`}>
         <StatCard label={t("totalPoints")} value={data.me.points ?? 0} Icon={Trophy} color="#F59E0B" />
@@ -568,128 +563,10 @@ export default function Home() {
         </div>
       </div>
 
-      <div
-        className={styles.grid2}
-        style={{ display: "flex", flexDirection: "column" }}
-      >
-        <div
-          className={styles.card}
-          style={{ display: "flex", flexDirection: "column", gap: "10px" }}
-        >
-          <Typography className={styles.sectionTitle}>
-            {t("activeExamSessions")}
-          </Typography>
-
-          {derived.activeSessions.length === 0 ? (
-            <Typography className={styles.muted}>{t("noActiveExams")}</Typography>
-          ) : (
-            <div className={styles.list}>
-              {derived.activeSessions.map((s) => {
-                const examTitle = getLocalizedValue(s.exam.title, locale);
-                const subjectName = getLocalizedValue(s.subject.name, locale);
-
-                return (
-                  <div
-                    key={s.id}
-                    className={styles.listItem}
-                    style={{ boxShadow: "none" }}
-                  >
-                    <div className={styles.listTop}>
-                      <Typography
-                        className={styles.listTitle}
-                        title={examTitle}
-                        sx={{ color: "var(--text-strong)" }}
-                      >
-                        {examTitle}
-                      </Typography>
-
-                      <Chip
-                        size="small"
-                        label={subjectName}
-                        sx={{
-                          backgroundColor: "#0B1220",
-                          color: "#faad14",
-                          border: "1px solid #1E293B",
-                        }}
-                      />
-                    </div>
-
-                    <Typography className={styles.muted}>
-                      {t("ends")}:{" "}
-                      <span style={{ color: "orange" }}>
-                        {s.ends_at ? formatTime(s.ends_at) : "—"}
-                      </span>{" "}
-                      • {t("score")}:{" "}
-                      <span style={{ color: "#22c55e" }}>{s.score_so_far}</span>
-                    </Typography>
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        </div>
-      </div>
-
-      <div
-        className={styles.card}
-        style={{ display: "flex", flexDirection: "column", gap: "10px" }}
-      >
-        <Typography className={styles.sectionTitle}>{t("recentExamSessions")}</Typography>
-
-        {sessions.length === 0 ? (
-          <Typography className={styles.muted}>{t("noSessionsYet")}</Typography>
-        ) : (
-          <div className={styles.table}>
-            {sessions.slice(0, 8).map((s) => {
-              const examTitle = getLocalizedValue(s.exam.title, locale);
-              const subjectName = getLocalizedValue(s.subject.name, locale);
-
-              const content = (
-                <>
-                  <Typography className={styles.rowMain} title={examTitle}>
-                    <u>{examTitle}</u>
-                  </Typography>
-
-                  <Typography className={styles.rowMeta}>
-                    {subjectName} •{" "}
-                    {s.finished ? (
-                      <span style={{ color: "var(--primary-blue)" }}>
-                        {t("finished")}
-                      </span>
-                    ) : (
-                      t("inProgress")
-                    )}{" "}
-                    • {t("score")}:{" "}
-                    <span style={{ color: "var(--primary-blue)" }}>
-                      {s.score_so_far}
-                    </span>
-                  </Typography>
-
-                  <Typography className={styles.rowTime}>
-                    {s.started_at ? formatTime(s.started_at) : "—"}
-                  </Typography>
-                </>
-              );
-
-              // Finished exams open the answer review.
-              return s.finished ? (
-                <Link
-                  key={s.id}
-                  href={`/${locale}/exam/review/${s.id}`}
-                  className={`${styles.row} ${styles.cardClickable}`}
-                  style={statLink}
-                >
-                  {content}
-                </Link>
-              ) : (
-                <div key={s.id} className={styles.row}>
-                  {content}
-                </div>
-              );
-            })}
-          </div>
-        )}
-      </div>
+      <ExamTimeline
+        sessions={sessions.filter((s) => !derived.activeSessions.includes(s)).slice(0, 8)}
+        locale={locale}
+      />
 
       <Modal
         title={t("modalActiveExamsTitle")}

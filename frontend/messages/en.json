@@ -105,7 +105,9 @@
     "finishedBadge": "Finished: {finished}/{total}",
     "activeBadge": "Active: {active}",
     "modalActiveExamsTitle": "Active Exams",
-    "busiestDay": "Busiest day: {day}"
+    "busiestDay": "Busiest day: {day}",
+    "live": "Live",
+    "timeLeft": "{time} left"
   },
   "Announcement": {
     "pageTitle": "Announcement",

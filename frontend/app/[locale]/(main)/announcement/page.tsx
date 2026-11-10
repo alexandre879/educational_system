@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import styles from "./announcement.module.scss";
 import api from "@/interceptors";
 import { Button, Dropdown, Form, Input, Select, Pagination, Modal } from "antd";
@@ -117,8 +117,35 @@ export default function AnnouncementPage() {
   const openAnnouncementParam = searchParams.get("openAnnouncement");
   const openAnnouncementId = openAnnouncementParam ? Number(openAnnouncementParam) : null;
 
+  const layoutRef = useRef<HTMLDivElement | null>(null);
   const leftPaneRef = useRef<HTMLDivElement | null>(null);
   const rightPaneRef = useRef<HTMLDivElement | null>(null);
+
+  // Size the two panes to exactly the space left in the scroll area below the title, so the page
+  // itself doesn't scroll. Re-measured when the window or the area above changes (the spectator
+  // bar appears after the profile loads).
+  useLayoutEffect(() => {
+    const layout = layoutRef.current;
+    const main = document.getElementById("app-scroll");
+    if (!layout || !main) return;
+    const measure = () => {
+      const top = layout.getBoundingClientRect().top - main.getBoundingClientRect().top + main.scrollTop;
+      const bottom = parseFloat(getComputedStyle(main).paddingBottom) || 0;
+      // Never squeeze below a usable size: a very short window scrolls the page instead.
+      const height = Math.max(420, Math.floor(main.clientHeight - top - bottom));
+      layout.style.setProperty("--pane-h", `${height}px`);
+    };
+    measure();
+    const resize = new ResizeObserver(measure);
+    resize.observe(main);
+    if (layout.parentElement) resize.observe(layout.parentElement);
+    const children = new MutationObserver(measure);
+    children.observe(main, { childList: true });
+    return () => {
+      resize.disconnect();
+      children.disconnect();
+    };
+  }, []);
 
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
   const [subjects, setSubjects] = useState<Subject[]>([]);
@@ -576,7 +603,7 @@ export default function AnnouncementPage() {
         </Form>
       </Modal>
 
-      <div className={styles.communicationLayout}>
+      <div ref={layoutRef} className={styles.communicationLayout}>
         <div ref={leftPaneRef} className={styles.leftPane}>
           <div className={styles.announcementList}>
             {sortedAnnouncements.length > 0 ? (

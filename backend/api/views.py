@@ -2463,12 +2463,16 @@ class HomeDashboardView(APIView):
 
             subjects = Subject.objects.filter(grade_id=user.grade_in_id)
             subject_points = UserSubjectPoints.objects.filter(user=user).select_related("subject")
-            sessions = (
+            sessions = list(
                 UserExamSession.objects
                 .filter(user=user)
                 .select_related("exam__subject", "exam__grade")
                 .order_by("-started_at")[:30]
             )
+            max_scores = {
+                exam_id: totals["max_score"]
+                for exam_id, totals in _exam_totals({session.exam_id for session in sessions}).items()
+            }
 
             data.update({
                 "subjects": SubjectSerializer(subjects, many=True).data,
@@ -2476,7 +2480,7 @@ class HomeDashboardView(APIView):
                 "announcements": AnnouncementSerializer(
                     announcements.filter(grade_id=user.grade_in_id)[:20], many=True
                 ).data,
-                "sessions": SessionMiniSerializer(sessions, many=True).data,
+                "sessions": SessionMiniSerializer(sessions, many=True, context={"max_scores": max_scores}).data,
                 "streak": homework_streak(user),
                 "pending_homework": pending_homework_count(user),
                 "average_mark": average(Mark.objects.filter(student=user).values_list("value", flat=True)),

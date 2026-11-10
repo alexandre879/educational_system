@@ -175,6 +175,15 @@ function ensureLoaded() {
   });
 }
 
+/**
+ * Put the appearance back on <html>. Switching language remounts the root layout, and React then
+ * resets <html>'s attributes, wiping data-theme, data-accent and the rest until the next reload.
+ */
+export function reapplyAppearance() {
+  ensureLoaded();
+  apply(current);
+}
+
 export function getAppearance(): Appearance {
   ensureLoaded();
   return current;

@@ -59,6 +59,8 @@ export const en = {
     more: "More",
   },
   home: {
+    live: "Live",
+    timeLeft: "{time} left",
     title: "Home",
     greeting: "Hi, {name}",
     totalPoints: "Total points",

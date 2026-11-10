@@ -105,7 +105,9 @@
     "finishedBadge": "Завершено: {finished}/{total}",
     "activeBadge": "Активно: {active}",
     "modalActiveExamsTitle": "Активные экзамены",
-    "busiestDay": "Самый активный день: {day}"
+    "busiestDay": "Самый активный день: {day}",
+    "live": "Идёт",
+    "timeLeft": "Осталось {time}"
   },
   "Announcement": {
     "pageTitle": "Объявления",

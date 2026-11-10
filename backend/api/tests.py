@@ -171,6 +171,23 @@ class TokenTests(BaseAPITestCase):
         self.assertEqual(response.status_code, 401)
 
 
+class DashboardSessionTests(BaseAPITestCase):
+    def test_sessions_carry_the_exams_maximum_score(self):
+        exam = Exam.objects.create(title={"en": "Quiz"}, subject=self.math, grade=self.grade, duration=10)
+        Question.objects.create(exam=exam, text={"en": "1"}, points=4)
+        Question.objects.create(exam=exam, text={"en": "2"}, points=6)
+        empty = Exam.objects.create(title={"en": "Empty"}, subject=self.math, grade=self.grade, duration=5)
+        UserExamSession.objects.create(user=self.student, exam=exam, finished=True, score_so_far=7, started_at=timezone.now())
+        UserExamSession.objects.create(user=self.student, exam=empty, finished=True, score_so_far=0, started_at=timezone.now())
+        self.client.force_authenticate(self.student)
+
+        sessions = {s["exam"]["id"]: s for s in self.client.get("/api/home/").data["sessions"]}
+
+        self.assertEqual(sessions[exam.id]["max_score"], 10)
+        self.assertEqual(sessions[exam.id]["score_so_far"], 7)
+        self.assertEqual(sessions[empty.id]["max_score"], 0)
+
+
 class SpectatorTests(BaseAPITestCase):
     def setUp(self):
         super().setUp()

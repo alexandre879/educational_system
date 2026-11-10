@@ -4,22 +4,19 @@ import { StyleSheet, View } from "react-native";
 
 import type { Dashboard } from "@/api/types";
 import { AppText } from "@/components/AppText";
-import { Button } from "@/components/Button";
 import { Card, SectionHeader } from "@/components/Card";
-import { Badge, ProgressBar } from "@/components/Controls";
-import { Icon } from "@/components/Icon";
+import { ProgressBar } from "@/components/Controls";
 import { QuickAction, QuickActionRow } from "@/components/QuickAction";
 import { SubjectMark } from "@/components/Subject";
 import { useI18n } from "@/i18n";
-import { formatRelative, formatTime } from "@/lib/dates";
 import { localize } from "@/lib/localize";
-import { spacing, subjectColor, useTheme, withAlpha } from "@/theme";
+import { spacing, subjectColor } from "@/theme";
 
+import { ExamTimeline, LiveExams } from "./ExamActivity";
 import { AnnouncementRows, HeroChip, HeroStat, HeroStats, HomeHero, TodayLessons } from "./HomeParts";
 
 export function StudentHome({ data }: { data: Dashboard }) {
   const { t, language } = useI18n();
-  const { colors } = useTheme();
   const sessions = data.sessions ?? [];
   // Captured once per mount; pull-to-refresh refetches the sessions themselves.
   const [now] = useState(() => Date.now());
@@ -27,7 +24,7 @@ export function StudentHome({ data }: { data: Dashboard }) {
   const activeSessions = sessions.filter(
     (s) => s.is_active && !s.finished && s.ends_at && new Date(s.ends_at).getTime() > now
   );
-  const recentSessions = sessions.filter((s) => !activeSessions.includes(s)).slice(0, 4);
+  const recentSessions = sessions.filter((s) => !activeSessions.includes(s)).slice(0, 8);
 
   const subjectPoints = (data.subjectPoints ?? [])
     .map((entry) => ({ id: entry.subject.id, name: localize(entry.subject.name, language), points: entry.points ?? 0 }))
@@ -68,28 +65,7 @@ export function StudentHome({ data }: { data: Dashboard }) {
         <QuickAction icon="assistant" label="AI" color="#EC4899" onPress={() => router.push("/more/assistant")} />
       </QuickActionRow>
 
-      {activeSessions.map((session) => (
-        <Card key={session.id} style={[styles.activeExam, { borderColor: colors.warning }]}>
-          <View style={styles.row}>
-            <View style={[styles.timerIcon, { backgroundColor: colors.warningMuted }]}>
-              <Icon name="timer" size={22} color={colors.warning} />
-            </View>
-            <View style={styles.flex}>
-              <AppText variant="subheading" numberOfLines={1}>
-                {localize(session.exam.title, language)}
-              </AppText>
-              <AppText variant="caption" tone="secondary">
-                {localize(session.subject.name, language)} · {t("home.endsAt", { time: formatTime(session.ends_at!) })}
-              </AppText>
-            </View>
-          </View>
-          <Button
-            title={t("home.continueExam")}
-            variant="gradient"
-            onPress={() => router.push({ pathname: "/exam/[id]", params: { id: String(session.exam.id) } })}
-          />
-        </Card>
-      ))}
+      <LiveExams sessions={activeSessions} />
 
       <SectionHeader title={t("home.todayLessons")} actionLabel={t("home.seeAll")} onAction={() => router.push("/more/schedule")} />
       <TodayLessons />
@@ -125,51 +101,19 @@ export function StudentHome({ data }: { data: Dashboard }) {
       />
       <AnnouncementRows items={(data.announcements ?? []).slice(0, 3)} />
 
-      <SectionHeader title={t("home.recentExams")} />
-      <Card style={styles.rowsCard}>
-        {recentSessions.length === 0 ? (
-          <AppText tone="secondary">{t("home.noSessionsYet")}</AppText>
-        ) : (
-          recentSessions.map((session, index) => (
-            <View
-              key={session.id}
-              style={[styles.sessionRow, index > 0 && { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: colors.border }]}
-            >
-              <View style={[styles.scoreBubble, { backgroundColor: withAlpha(subjectColor(session.subject.id), 0.14) }]}>
-                <AppText variant="bodyStrong" style={{ color: subjectColor(session.subject.id) }}>
-                  {session.score_so_far}
-                </AppText>
-              </View>
-              <View style={styles.flex}>
-                <AppText variant="bodyStrong" numberOfLines={1}>
-                  {localize(session.exam.title, language)}
-                </AppText>
-                <AppText variant="caption" tone="secondary" numberOfLines={1}>
-                  {localize(session.subject.name, language)}
-                  {session.started_at ? ` · ${formatRelative(session.started_at, t)}` : ""}
-                </AppText>
-              </View>
-              <Badge
-                label={session.finished ? t("home.finished") : t("home.inProgress")}
-                tone={session.finished ? "success" : "neutral"}
-              />
-            </View>
-          ))
-        )}
-      </Card>
+      <SectionHeader
+        title={t("home.recentExams")}
+        actionLabel={t("home.seeAll")}
+        onAction={() => router.push({ pathname: "/study", params: { tab: "results" } })}
+      />
+      <ExamTimeline sessions={recentSessions} />
     </>
   );
 }
 
 const styles = StyleSheet.create({
   flex: { flex: 1 },
-  row: { flexDirection: "row", alignItems: "center", gap: spacing.md },
-  activeExam: { borderWidth: 1.5, gap: spacing.md },
-  timerIcon: { width: 44, height: 44, borderRadius: 14, alignItems: "center", justifyContent: "center" },
   pointsCard: { gap: spacing.md },
   pointsRow: { flexDirection: "row", alignItems: "center", gap: spacing.md },
   pointsLabel: { flexDirection: "row", alignItems: "center", gap: spacing.sm, marginBottom: 6 },
-  rowsCard: { paddingVertical: spacing.xs, gap: 0 },
-  sessionRow: { flexDirection: "row", alignItems: "center", gap: spacing.md, paddingVertical: spacing.md },
-  scoreBubble: { width: 44, height: 44, borderRadius: 14, alignItems: "center", justifyContent: "center" },
 });

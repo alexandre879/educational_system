@@ -61,6 +61,8 @@ export const ru: Messages = {
     more: "Ещё",
   },
   home: {
+    live: "Идёт",
+    timeLeft: "Осталось {time}",
     title: "Главная",
     greeting: "Привет, {name}",
     totalPoints: "Всего баллов",

@@ -61,6 +61,8 @@ export const ka: Messages = {
     more: "მეტი",
   },
   home: {
+    live: "მიმდინარე",
+    timeLeft: "დარჩა {time}",
     title: "მთავარი",
     greeting: "გამარჯობა, {name}",
     totalPoints: "სულ ქულები",
