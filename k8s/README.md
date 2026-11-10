@@ -77,4 +77,22 @@ kubectl -n education logs deploy/backend -f
   `postgres-credentials`, `backend-production`, and ppops' `ppops-postgres` and `ppops-secrets`.
 - 2 GB is too small for both projects: the server swaps constantly and services crash. Don't size it back down.
 - The server was set up once with `production/server-setup.sh`, which is safe to run again.
+
+### Automatic deploys (CD)
+
+Every push to `main` runs CI (`.github/workflows/ci.yml`). When the backend, website and mobile jobs all
+pass, the `deploy` job connects to the server with the `DEPLOY_SSH_KEY` secret and asks it to deploy
+that commit.
+
+- **The deploy key is locked down.** On the server, `/root/.ssh/authorized_keys` restricts it to
+  `/usr/local/bin/blueapp-deploy` (`production/server-deploy.sh`), and that script only deploys commits
+  that are on `main`.
+- **The server fetches the code from GitHub itself.** No secrets pass through GitHub; the cluster keeps
+  the ones it has. To change `backend/.env` values, run `./k8s/production/deploy.sh` from your Mac.
+- **Deploys queue, they don't overlap.** If two pushes finish out of order, an older commit never
+  replaces a newer one.
+- **To change the server's script:** edit `production/server-deploy.sh` and copy it to the server:
+  `ssh -i ~/.ssh/digitalocean_ed25519 root@209.38.108.180 'cat > /usr/local/bin/blueapp-deploy' < k8s/production/server-deploy.sh`
+- **If the key leaks:** delete its line from the server's `authorized_keys`, make a new key, and update
+  the secret.
 - Production is the one copy of the Telegram bot. Don't run `run_bot.py` elsewhere with the same `BOT_TOKEN`.

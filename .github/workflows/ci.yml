@@ -1,4 +1,5 @@
-# Runs every test, type check, lint and build on pushes to main and on pull requests.
+# Runs every test, type check, lint and build on pushes to main and on pull requests,
+# then deploys main to https://blueapp.store once everything has passed (CD).
 name: CI
 
 on:
@@ -8,7 +9,8 @@ on:
 
 concurrency:
   group: ci-${{ github.ref }}
-  cancel-in-progress: true
+  # A newer push cancels an older run, except on main: never cut a deploy off half way.
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
 jobs:
   backend:
@@ -86,3 +88,33 @@ jobs:
         env:
           NEXT_TELEMETRY_DISABLED: "1"
           NEXT_PUBLIC_API_BASE_URL: https://example.com/api
+
+  deploy:
+    name: Deploy to blueapp.store
+    # Only after every check has passed, and only for main (a merge), never for pull requests.
+    needs: [backend, mobile, frontend]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    concurrency:
+      group: production-deploy
+      cancel-in-progress: false
+    steps:
+      - name: Deploy over SSH
+        env:
+          # A key that can only run k8s/production/server-deploy.sh on the server.
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          # The server's own key, so the connection can't be sent anywhere else.
+          KNOWN_HOST: "209.38.108.180 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPk/uoCvxpvtp/9KziearLkFI7HSpwV7QFGkyqY9JTtu"
+        run: |
+          if [ -z "$DEPLOY_SSH_KEY" ]; then
+            echo "::error::Automatic deploys are off: add the DEPLOY_SSH_KEY secret (Settings → Secrets and variables → Actions)."
+            exit 1
+          fi
+          mkdir -p ~/.ssh
+          printf '%s\n' "$DEPLOY_SSH_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          printf '%s\n' "$KNOWN_HOST" > ~/.ssh/known_hosts
+          # The server checks out this commit from GitHub, builds it and rolls it out.
+          ssh -i ~/.ssh/deploy_key -o BatchMode=yes -o IdentitiesOnly=yes -o ServerAliveInterval=30 \
+            root@209.38.108.180 "$GITHUB_SHA"
