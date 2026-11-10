@@ -3,7 +3,7 @@ import { StyleSheet, Text, type TextProps } from "react-native";
 import { useTheme, type Colors } from "@/theme";
 
 type Variant = "display" | "title" | "heading" | "subheading" | "body" | "bodyStrong" | "caption" | "label";
-type Tone = "text" | "secondary" | "muted" | "primary" | "danger" | "success" | "onPrimary";
+type Tone = "text" | "secondary" | "muted" | "primary" | "danger" | "success" | "onPrimary" | "onGradient";
 
 const TONE_TO_COLOR: Record<Tone, keyof Colors> = {
   text: "text",
@@ -13,6 +13,7 @@ const TONE_TO_COLOR: Record<Tone, keyof Colors> = {
   danger: "danger",
   success: "success",
   onPrimary: "onPrimary",
+  onGradient: "onGradient",
 };
 
 export interface AppTextProps extends TextProps {

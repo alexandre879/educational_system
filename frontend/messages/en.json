@@ -104,7 +104,10 @@
     "deltaDown": "▼ {delta} vs previous",
     "finishedBadge": "Finished: {finished}/{total}",
     "activeBadge": "Active: {active}",
-    "modalActiveExamsTitle": "Active Exams"
+    "modalActiveExamsTitle": "Active Exams",
+    "busiestDay": "Busiest day: {day}",
+    "live": "Live",
+    "timeLeft": "{time} left"
   },
   "Announcement": {
     "pageTitle": "Announcement",
@@ -702,7 +705,13 @@
       "motionReduced": "Reduced",
       "language": "Language",
       "reset": "Reset to default",
-      "done": "Done"
+      "done": "Done",
+      "autoAccent": "Change color automatically",
+      "autoOff": "Off",
+      "minutes": "{count} min",
+      "hour": "1 h",
+      "autoAccentHint": "The accent can cycle through all six colors on its own, starting from the one you picked.",
+      "autoAccentNext": "Next color at {time}. Picking a color yourself turns this off."
     },
     "study": {
       "title": "Study dock",
@@ -779,6 +788,23 @@
       "resendIn": "Resend code in {seconds}s",
       "resend": "Resend code",
       "step": "Step {current} of {total}"
+    }
+  },
+  "Spectator": {
+    "loginButton": "View as spectator",
+    "or": "or",
+    "loginHint": "No account? Look around as a student, teacher or parent. Nothing can be changed.",
+    "loginFailed": "Spectator mode isn't available right now.",
+    "badge": "Spectator mode",
+    "readOnly": "Read-only",
+    "viewingAs": "Viewing as",
+    "exit": "Exit",
+    "switchFailed": "Couldn't switch the view. Try again.",
+    "blocked": "Spectators can only look around: changes are turned off.",
+    "roles": {
+      "student": "Student",
+      "teacher": "Teacher",
+      "parent": "Parent"
     }
   }
 }

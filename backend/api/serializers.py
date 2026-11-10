@@ -1,4 +1,5 @@
 from django.utils import timezone
+from django.db.models import Sum
 from rest_framework import serializers
 
 from .models import (
@@ -25,6 +26,11 @@ class RequestOtpSerializer(serializers.Serializer):
 class VerifyOtpSerializer(serializers.Serializer):
     email = serializers.EmailField()
     otp = serializers.CharField(max_length=6, trim_whitespace=True)
+
+
+class SpectatorLoginSerializer(serializers.Serializer):
+    # Who to view the site as; left out, the first one that's set up (student first).
+    role = serializers.ChoiceField(choices=[str(role) for role in User.SPECTATOR_VIEW_ROLES], required=False)
 
 
 class OptionSerializer(serializers.ModelSerializer):
@@ -223,14 +229,23 @@ class SessionMiniSerializer(serializers.ModelSerializer):
     exam = serializers.SerializerMethodField()
     subject = serializers.SerializerMethodField()
     grade = serializers.SerializerMethodField()
+    # The most points the exam can give, so apps can show "6 / 10" instead of a bare score.
+    max_score = serializers.SerializerMethodField()
 
     class Meta:
         model = UserExamSession
         fields = [
             "id", "exam", "subject", "grade",
-            "score_so_far", "started", "finished",
+            "score_so_far", "max_score", "started", "finished",
             "started_at", "ends_at", "submitted_at", "is_active",
         ]
+
+    def get_max_score(self, obj):
+        # Callers pass the totals for all their sessions at once (one query, not one per row).
+        totals = self.context.get("max_scores")
+        if totals is not None:
+            return totals.get(obj.exam_id, 0)
+        return obj.exam.questions.aggregate(total=Sum("points"))["total"] or 0
 
     def get_exam(self, obj):
         return {"id": obj.exam_id, "title": obj.exam.title, "duration": obj.exam.duration}

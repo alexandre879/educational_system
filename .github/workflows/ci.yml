@@ -54,6 +54,10 @@ jobs:
         run: npx jest --ci
       - name: Expo config is valid
         run: npx expo-doctor
+        env:
+          # Expo ships SDK patch releases often; being one patch behind shouldn't fail CI.
+          # Update them now and then with `npx expo install --fix` in mobile/.
+          EXPO_DOCTOR_SKIP_DEPENDENCY_VERSION_CHECK: "1"
       - name: iOS and Android bundles build
         run: npx expo export --platform ios --platform android --output-dir "$RUNNER_TEMP/mobile-export"
         env:

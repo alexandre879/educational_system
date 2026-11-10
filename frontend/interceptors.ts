@@ -3,6 +3,9 @@ import { clearTokens, getAccessToken, getRefreshToken, setTokens } from "@/lib/a
 
 export const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "/back/api";
 
+/** Fired on `window` when the server refuses a change because this is a spectator session. */
+export const SPECTATOR_BLOCKED_EVENT = "spectator:blocked";
+
 const SUPPORTED_LOCALES = ["en", "ka", "ru"];
 const DEFAULT_LOCALE = "ka";
 
@@ -55,6 +58,12 @@ api.interceptors.response.use(
   (res) => res,
   async (error: AxiosError) => {
     const originalRequest = error.config as RetriableRequestConfig | undefined;
+
+    // Spectator sessions are read-only; the spectator bar explains why nothing was saved.
+    const body = error.response?.data as { code?: string } | undefined;
+    if (error.response?.status === 403 && body?.code === "spectator_read_only" && typeof window !== "undefined") {
+      window.dispatchEvent(new Event(SPECTATOR_BLOCKED_EVENT));
+    }
 
     if (error.response?.status !== 401 || !originalRequest || originalRequest._retry) {
       return Promise.reject(error);

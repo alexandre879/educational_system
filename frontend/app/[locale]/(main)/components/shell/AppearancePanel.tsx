@@ -8,13 +8,16 @@ import { Moon, Sun, SunMoon, X } from "lucide-react";
 import {
   ACCENTS,
   type Accent,
+  type AccentCycle,
   type Backdrop,
   type GlassLevel,
   type MotionPref,
   type ThemePref,
+  nextAccentChange,
   resetAppearance,
   setAppearance,
   useAppearance,
+  useEffectiveAccent,
 } from "@/lib/appearance";
 import { LANGUAGE_OPTIONS, pathForLocale } from "../../../components/LanguageSwitcher/LanguageSwitcher";
 import { GlassDialog } from "./GlassDialog";
@@ -34,6 +37,8 @@ function Section({ label, children }: { label: string; children: ReactNode }) {
 export default function AppearancePanel({ open, onClose }: { open: boolean; onClose: () => void }) {
   const t = useTranslations("Glass.appearance");
   const appearance = useAppearance();
+  // The accent on screen, which differs from the chosen one while it changes automatically.
+  const shownAccent = useEffectiveAccent();
   const locale = useLocale();
   const router = useRouter();
   const pathname = usePathname();
@@ -67,7 +72,7 @@ export default function AppearancePanel({ open, onClose }: { open: boolean; onCl
         <Section label={t("accent")}>
           <div className={styles.swatches} role="radiogroup" aria-label={t("accent")}>
             {(Object.keys(ACCENTS) as Accent[]).map((accent) => {
-              const active = appearance.accent === accent;
+              const active = shownAccent === accent;
               return (
                 <button
                   key={accent}
@@ -75,7 +80,8 @@ export default function AppearancePanel({ open, onClose }: { open: boolean; onCl
                   role="radio"
                   aria-checked={active}
                   className={`${styles.swatch} ${active ? styles.swatchActive : ""}`}
-                  onClick={() => setAppearance({ accent })}
+                  // Picking a colour by hand keeps it: automatic changes stop.
+                  onClick={() => setAppearance({ accent, accentCycle: 0 })}
                 >
                   <span className={styles.swatchDot} style={{ background: ACCENTS[accent].swatch }} />
                   {t(`accents.${accent}`)}
@@ -83,6 +89,30 @@ export default function AppearancePanel({ open, onClose }: { open: boolean; onCl
               );
             })}
           </div>
+        </Section>
+
+        <Section label={t("autoAccent")}>
+          <Segmented<string>
+            label={t("autoAccent")}
+            value={String(appearance.accentCycle)}
+            onChange={(value) => setAppearance({ accentCycle: Number(value) as AccentCycle })}
+            options={[
+              { value: "0", label: t("autoOff") },
+              { value: "10", label: t("minutes", { count: 10 }) },
+              { value: "20", label: t("minutes", { count: 20 }) },
+              { value: "30", label: t("minutes", { count: 30 }) },
+              { value: "60", label: t("hour") },
+            ]}
+          />
+          <span className={styles.sectionHint}>
+            {appearance.accentCycle
+              ? t("autoAccentNext", {
+                  time: new Intl.DateTimeFormat(locale, { hour: "2-digit", minute: "2-digit" }).format(
+                    nextAccentChange(appearance) ?? Date.now()
+                  ),
+                })
+              : t("autoAccentHint")}
+          </span>
         </Section>
 
         <Section label={t("glass")}>

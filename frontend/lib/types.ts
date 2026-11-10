@@ -35,6 +35,8 @@ export interface SessionMini {
   subject: SubjectRef;
   grade: { id: number; name: string };
   score_so_far: number;
+  /** The most points the exam can give (0 when it has no questions). */
+  max_score?: number;
   started: boolean | null;
   finished: boolean | null;
   started_at: string | null;

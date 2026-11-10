@@ -1,0 +1,366 @@
+// Home charts on liquid glass. Marks follow the dataviz rules: thin (<= 24px), 4px rounded
+// data-end and square at the baseline, hairline solid gridlines, text in text tokens (never the
+// series colour). The glass is in the chrome around the data: tracks, sheen, the tooltip.
+
+.chart {
+  position: relative;
+  border-radius: 14px;
+  outline: none;
+
+  &:focus-visible {
+    box-shadow: 0 0 0 2px rgb(var(--primary-rgb) / 0.55);
+  }
+}
+
+// Every chart has a table twin for screen readers.
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+// ---------------------------------------------------------------- ranked bars
+
+.barList {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.barRow {
+  display: grid;
+  gap: 7px;
+  margin: 0 -8px;
+  padding: 7px 8px;
+  border-radius: 12px;
+  transition: background var(--dur-fast) ease;
+
+  &[data-active="true"] {
+    background: rgb(var(--fg-rgb) / 0.055);
+  }
+}
+
+.barMeta {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  min-width: 0;
+}
+
+.barLabel {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+// Values line up in one column, so here (and only here) figures are tabular.
+.barValue {
+  color: var(--text-strong);
+  font-size: 0.92rem;
+  font-weight: 750;
+  font-variant-numeric: tabular-nums;
+}
+
+.barTrack {
+  position: relative;
+  height: 10px;
+  border-radius: 0 5px 5px 0;
+  background: var(--chart-track);
+}
+
+.barFill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: calc(var(--v) * 100%);
+  border-radius: 0 4px 4px 0;
+  background: linear-gradient(180deg, color-mix(in oklab, var(--chart-1) 70%, white) 0%, var(--chart-1) 60%);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.35),
+    0 6px 16px -8px var(--chart-1);
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition:
+    transform 900ms var(--ease-out) calc(var(--i) * 70ms),
+    filter var(--dur-fast) ease;
+
+  .chart[data-shown="true"] & {
+    transform: scaleX(1);
+  }
+
+  .barRow[data-active="true"] & {
+    filter: brightness(1.12) saturate(1.1);
+  }
+}
+
+// ---------------------------------------------------------------- columns
+
+.columns {
+  --plot-h: 168px;
+  --gutter: 30px;
+  display: grid;
+  gap: 8px;
+}
+
+.plot {
+  position: relative;
+  height: var(--plot-h);
+  // Headroom for the value printed on the tallest column's cap, clear of the card title.
+  margin-top: 26px;
+  margin-left: var(--gutter);
+}
+
+.gridline {
+  position: absolute;
+  right: 0;
+  left: 0;
+  height: 1px;
+  background: var(--chart-grid);
+}
+
+.tick {
+  position: absolute;
+  right: calc(100% + 8px);
+  bottom: 0;
+  color: var(--text-muted);
+  font-size: 0.72rem;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  transform: translateY(50%);
+}
+
+.cols {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-columns: repeat(var(--n), minmax(0, 1fr));
+}
+
+.col {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  border-radius: 10px;
+  transition: background var(--dur-fast) ease;
+
+  &[data-active="true"] {
+    background: rgb(var(--fg-rgb) / 0.05);
+  }
+}
+
+.colBar {
+  position: relative;
+  width: min(24px, 58%);
+  height: calc(var(--v) * 100%);
+  border-radius: 4px 4px 0 0;
+  background: var(--chart-context);
+  transform: scaleY(0);
+  transform-origin: center bottom;
+  transition:
+    transform 900ms var(--ease-out) calc(var(--i) * 60ms),
+    filter var(--dur-fast) ease;
+
+  .chart[data-shown="true"] & {
+    transform: scaleY(1);
+  }
+
+  .col[data-emphasis="true"] & {
+    background: linear-gradient(180deg, color-mix(in oklab, var(--chart-1) 70%, white) 0%, var(--chart-1) 55%);
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.35),
+      0 10px 24px -10px var(--chart-1);
+  }
+
+  .col[data-active="true"] & {
+    filter: brightness(1.15);
+  }
+}
+
+// The one value worth printing: the busiest day's, on its cap.
+.colValue {
+  position: absolute;
+  bottom: calc(100% + 5px);
+  left: 50%;
+  color: var(--text-strong);
+  font-size: 0.75rem;
+  font-weight: 750;
+  white-space: nowrap;
+  transform: translateX(-50%);
+}
+
+.xAxis {
+  display: grid;
+  grid-template-columns: repeat(var(--n), minmax(0, 1fr));
+  margin-left: var(--gutter);
+  border-top: 1px solid var(--chart-axis-border);
+  padding-top: 7px;
+}
+
+.xLabel {
+  overflow: hidden;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  &[data-emphasis="true"] {
+    color: var(--text-strong);
+    font-weight: 750;
+  }
+}
+
+.caption {
+  margin: 2px 0 0;
+  color: var(--text-secondary);
+  font-size: 0.82rem;
+}
+
+// ---------------------------------------------------------------- progress ring
+
+.ring {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: min(100%, 196px);
+  aspect-ratio: 1;
+  margin: 4px auto 0;
+}
+
+.ringSvg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  transform: rotate(-90deg);
+}
+
+// The unfilled part: a lighter step of the same hue, so the whole ring reads as one meter.
+.ringTrack {
+  fill: none;
+  stroke: color-mix(in srgb, var(--chart-1) 16%, transparent);
+}
+
+.ringFill {
+  fill: none;
+  stroke-linecap: round;
+  filter: drop-shadow(0 0 7px color-mix(in srgb, var(--chart-1) 55%, transparent));
+  transition: stroke-dashoffset 1300ms var(--ease-out);
+}
+
+.ringCenter {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  gap: 2px;
+  text-align: center;
+}
+
+// The hero figure: same sans, proportional figures.
+.ringValue {
+  color: var(--text-strong);
+  font-size: 2.6rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+
+.ringLabel {
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+// ---------------------------------------------------------------- glass tooltip
+
+.tooltip {
+  position: fixed;
+  z-index: 1200;
+  display: grid;
+  gap: 2px;
+  min-width: 120px;
+  max-width: 260px;
+  padding: 8px 12px;
+  border-radius: 12px;
+  color: var(--text-primary);
+  background: var(--glass-sheen), rgb(var(--tint) / 0.8);
+  backdrop-filter: var(--glass-filter);
+  -webkit-backdrop-filter: var(--glass-filter);
+  box-shadow:
+    var(--glass-rim),
+    var(--glass-drop);
+  pointer-events: none;
+  transform: translate(-50%, calc(-100% - 10px));
+  animation: tipIn 160ms var(--ease-out);
+
+  &[data-below="true"] {
+    transform: translate(-50%, 14px);
+  }
+}
+
+@keyframes tipIn {
+  from {
+    opacity: 0;
+  }
+}
+
+// The value leads; the category follows in secondary ink. A short line key, not a box.
+.tipValue {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-strong);
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.tipUnit {
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.tipKey {
+  flex: none;
+  width: 12px;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--chart-1);
+
+  &[data-context="true"] {
+    background: var(--chart-context);
+  }
+}
+
+.tipLabel {
+  overflow: hidden;
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .barFill,
+  .colBar {
+    transform: none;
+    transition: filter var(--dur-fast) ease;
+  }
+
+  .ringFill {
+    transition: none;
+  }
+
+  .tooltip {
+    animation: none;
+  }
+}

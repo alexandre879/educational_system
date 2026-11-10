@@ -441,7 +441,10 @@
   }
 }
 
+// --pane-h is the space left below the title, measured by the page (it depends on the header and
+// on whether the spectator bar shows); both panes take exactly that, so the page itself never scrolls.
 .communicationLayout {
+  --pane-h: calc(100dvh - 180px);
   display: grid;
   grid-template-columns: minmax(320px, 460px) minmax(0, 1fr);
   gap: 16px;
@@ -457,20 +460,28 @@
 }
 
 .leftPane {
-  height: calc(100dvh - 180px);
-  max-height: calc(100dvh - 180px);
+  height: var(--pane-h);
+  max-height: var(--pane-h);
   overflow-y: auto;
   overflow-x: hidden;
   padding-right: 6px;
   overscroll-behavior: contain;
-  scrollbar-gutter: stable;
+  // A long list still scrolls, but the bar is thin and only shows while the pointer is on the list.
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
   animation: fadeLeft 380ms ease;
+
+  &:hover,
+  &:focus-within {
+    scrollbar-color: rgb(var(--fg-rgb) / 0.22) transparent;
+  }
 }
 
 .rightPane {
   min-width: 0;
   animation: fadeRight 420ms ease;
-  padding: 5px;
+  // No vertical padding: the pane must be exactly --pane-h tall, like the list beside it.
+  padding: 0 5px;
 }
 
 .leftPane .announcementList {
@@ -599,6 +610,7 @@
 }
 
 .threadEmpty {
+  height: var(--pane-h);
   min-height: 420px;
   display: flex;
   flex-direction: column;
@@ -754,6 +766,7 @@
   }
 
   .threadEmpty {
+    height: auto;
     min-height: 240px;
   }
 

@@ -1,7 +1,8 @@
 import Constants from "expo-constants";
 import { useFocusEffect } from "expo-router";
+import { LinearGradient } from "expo-linear-gradient";
 import { useCallback, useState, type ReactNode } from "react";
-import { Linking, Platform, StyleSheet, Switch, View } from "react-native";
+import { Linking, Platform, Pressable, StyleSheet, Switch, View } from "react-native";
 
 import { registerPushDevice } from "@/api/endpoints";
 import { AppText } from "@/components/AppText";
@@ -14,13 +15,24 @@ import { SUPPORTED_LANGUAGES } from "@/config";
 import { LANGUAGE_NAMES, useI18n } from "@/i18n";
 import { getPushPermission, isPushSupported, registerForPushAsync } from "@/notifications/push";
 import { useAppLock } from "@/security/AppLock";
-import { radius, spacing, useTheme, withAlpha, type ThemePreference } from "@/theme";
+import { formatTime } from "@/lib/dates";
+import {
+  ACCENT_ORDER,
+  ACCENTS,
+  nextAccentChange,
+  radius,
+  spacing,
+  useTheme,
+  withAlpha,
+  type AccentCycle,
+  type ThemePreference,
+} from "@/theme";
 
 type PushStatus = "unsupported" | "granted" | "denied" | "undetermined";
 
 export default function SettingsScreen() {
   const { t, language, setLanguage } = useI18n();
-  const { colors, preference, setPreference } = useTheme();
+  const { colors, scheme, preference, setPreference, shownAccent, setAccent, accentCycle, setAccentCycle } = useTheme();
   const lock = useAppLock();
   const [pushStatus, setPushStatus] = useState<PushStatus>("undetermined");
 
@@ -53,6 +65,15 @@ export default function SettingsScreen() {
     { value: "dark", label: t("settings.themeDark") },
   ];
 
+  const cycleOptions: { value: AccentCycle; label: string }[] = [
+    { value: 0, label: t("settings.autoOff") },
+    { value: 10, label: t("settings.minutes", { count: 10 }) },
+    { value: 20, label: t("settings.minutes", { count: 20 }) },
+    { value: 30, label: t("settings.minutes", { count: 30 }) },
+    { value: 60, label: t("settings.hour") },
+  ];
+  const nextChange = nextAccentChange(accentCycle);
+
   const pushLabel =
     pushStatus === "granted"
       ? t("settings.notificationsOn")
@@ -74,6 +95,44 @@ export default function SettingsScreen() {
 
       <SettingCard icon="appearance" color="#8B5CF6" title={t("settings.appearance")}>
         <SegmentedControl options={themeOptions} value={preference} onChange={setPreference} />
+
+        <AppText variant="caption" tone="secondary" style={styles.subLabel}>
+          {t("settings.accent")}
+        </AppText>
+        <View style={styles.swatches} accessibilityRole="radiogroup">
+          {ACCENT_ORDER.map((accent) => {
+            const selected = shownAccent === accent;
+            return (
+              <Pressable
+                key={accent}
+                accessibilityRole="radio"
+                accessibilityState={{ checked: selected }}
+                onPress={() => setAccent(accent)}
+                style={[styles.swatch, selected && { backgroundColor: colors.surfaceMuted }]}
+              >
+                <LinearGradient
+                  colors={ACCENTS[accent][scheme].gradient}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 1 }}
+                  style={[styles.swatchDot, selected && { borderColor: colors.text }]}
+                />
+                <AppText variant="caption" numberOfLines={1} style={{ fontWeight: selected ? "700" : "500" }}>
+                  {t(`settings.accents.${accent}`)}
+                </AppText>
+              </Pressable>
+            );
+          })}
+        </View>
+
+        <AppText variant="caption" tone="secondary" style={styles.subLabel}>
+          {t("settings.autoAccent")}
+        </AppText>
+        <SegmentedControl options={cycleOptions} value={accentCycle} onChange={setAccentCycle} />
+        <AppText variant="caption" tone="muted">
+          {nextChange != null
+            ? t("settings.autoAccentNext", { time: formatTime(new Date(nextChange)) })
+            : t("settings.autoAccentHint")}
+        </AppText>
       </SettingCard>
 
       {Platform.OS !== "web" ? (
@@ -161,6 +220,18 @@ const styles = StyleSheet.create({
   flex: { flex: 1 },
   cardHeader: { flexDirection: "row", alignItems: "center", gap: spacing.md },
   switchRow: { flexDirection: "row", alignItems: "center", gap: spacing.md },
+  subLabel: { marginTop: spacing.xs, fontWeight: "600" },
+  swatches: { flexDirection: "row", flexWrap: "wrap", gap: spacing.xs },
+  swatch: {
+    width: "32%",
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing.sm,
+    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.sm,
+    borderRadius: radius.md,
+  },
+  swatchDot: { width: 24, height: 24, borderRadius: 12, borderWidth: 2, borderColor: "transparent" },
   iconTile: { width: 34, height: 34, borderRadius: radius.sm, alignItems: "center", justifyContent: "center" },
   footer: { marginTop: spacing.xl, alignItems: "center", gap: spacing.sm },
   logo: { width: 52, height: 52, borderRadius: radius.lg, alignItems: "center", justifyContent: "center" },

@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { ActivityIndicator, StyleSheet, View } from "react-native";
 
-import { errorStatus, isNetworkError } from "@/api/client";
+import { errorStatus, isNetworkError, isSpectatorBlocked } from "@/api/client";
 import { useI18n, type Translate } from "@/i18n";
 import { spacing, useTheme } from "@/theme";
 
@@ -13,6 +13,7 @@ import { SkeletonList } from "./Skeleton";
 
 export function errorMessage(error: unknown, t: Translate): string {
   if (isNetworkError(error)) return t("common.networkError");
+  if (isSpectatorBlocked(error)) return t("spectator.blocked");
   if (errorStatus(error) === 403) return t("common.forbidden");
   return t("common.genericError");
 }
@@ -20,6 +21,7 @@ export function errorMessage(error: unknown, t: Translate): string {
 /** For failed actions: connection/permission problems, otherwise the action's own message. */
 export function actionErrorMessage(error: unknown, t: Translate, fallback: string): string {
   if (isNetworkError(error)) return t("common.networkError");
+  if (isSpectatorBlocked(error)) return t("spectator.blocked");
   if (errorStatus(error) === 403) return t("common.forbidden");
   return fallback;
 }

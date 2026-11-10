@@ -3,6 +3,14 @@ export type Localized = string | Record<string, string> | null | undefined;
 
 export type Role = "student" | "teacher" | "admin" | "parent";
 
+export type SpectatorRole = "student" | "teacher" | "parent";
+
+/** Present only in spectator mode: whose view this is, and the roles the visitor can switch to. */
+export interface SpectatorInfo {
+  viewing_as: SpectatorRole;
+  roles: SpectatorRole[];
+}
+
 export interface User {
   id: number;
   first_name: string;
@@ -10,6 +18,7 @@ export interface User {
   email: string;
   profilePic: string | null;
   role: Role | null;
+  spectator?: SpectatorInfo;
 }
 
 export interface Tokens {
@@ -49,6 +58,8 @@ export interface SessionMini {
   subject: SubjectRef;
   grade: { id: number; name: string };
   score_so_far: number;
+  /** The most points the exam can give (0 when it has no questions). */
+  max_score?: number;
   started: boolean | null;
   finished: boolean | null;
   started_at: string | null;

@@ -1,0 +1,123 @@
+# Production values over the base manifests in ../
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: backend-config
+data:
+  DJANGO_FORCE_HTTPS: "1"
+  DJANGO_ALLOWED_HOSTS: blueapp.store,www.blueapp.store
+  DJANGO_CSRF_TRUSTED_ORIGINS: https://blueapp.store,https://www.blueapp.store
+  CORS_ALLOWED_ORIGINS: https://blueapp.store,https://www.blueapp.store
+  WEBSITE_URL: https://blueapp.store
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgres
+spec:
+  template:
+    spec:
+      containers:
+        - name: postgres
+          args: ["-c", "shared_buffers=32MB", "-c", "max_connections=40", "-c", "work_mem=2MB"]
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              memory: 256Mi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+spec:
+  template:
+    spec:
+      containers:
+        - name: backend
+          # One process with threads: far less memory than several gunicorn workers.
+          args:
+            - gunicorn
+            - configuration.wsgi:application
+            - --bind=0.0.0.0:8000
+            - --workers=1
+            - --threads=4
+            - --timeout=90
+          # backend-production (DJANGO_SECRET_KEY, created once by deploy.sh) wins over backend/.env.
+          envFrom:
+            - secretRef:
+                name: backend-env
+            - configMapRef:
+                name: backend-config
+            - secretRef:
+                name: backend-production
+          resources:
+            requests:
+              cpu: 50m
+              memory: 128Mi
+            limits:
+              memory: 384Mi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: telegram-bot
+spec:
+  # Production is the one copy of the bot that polls Telegram (login codes come from it).
+  replicas: 1
+  template:
+    spec:
+      containers:
+        - name: telegram-bot
+          envFrom:
+            - secretRef:
+                name: backend-env
+            - configMapRef:
+                name: backend-config
+            - secretRef:
+                name: backend-production
+          resources:
+            requests:
+              cpu: 20m
+              memory: 64Mi
+            limits:
+              memory: 256Mi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+spec:
+  template:
+    spec:
+      containers:
+        - name: frontend
+          env:
+            - name: NEXT_TELEMETRY_DISABLED
+              value: "1"
+            - name: NODE_OPTIONS
+              value: --max-old-space-size=256
+          resources:
+            requests:
+              cpu: 50m
+              memory: 128Mi
+            limits:
+              memory: 384Mi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gateway
+spec:
+  template:
+    spec:
+      containers:
+        - name: nginx
+          resources:
+            requests:
+              cpu: 10m
+              memory: 16Mi
+            limits:
+              memory: 64Mi

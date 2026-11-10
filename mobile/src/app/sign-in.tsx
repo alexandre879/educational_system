@@ -6,7 +6,7 @@ import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { errorStatus, isNetworkError } from "@/api/client";
-import { requestOtp, verifyOtp } from "@/api/endpoints";
+import { requestOtp, spectatorLogin, verifyOtp } from "@/api/endpoints";
 import { useAuth } from "@/auth/AuthProvider";
 import { AppText } from "@/components/AppText";
 import { Button } from "@/components/Button";
@@ -58,6 +58,7 @@ export default function SignInScreen() {
   const [email, setEmail] = useState("");
   const [code, setCode] = useState("");
   const [busy, setBusy] = useState(false);
+  const [spectating, setSpectating] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [resendIn, setResendIn] = useState(0);
   const codeInput = useRef<TextInput>(null);
@@ -111,6 +112,27 @@ export default function SignInScreen() {
       setError(verifyErrorMessage(verifyError, t));
       setCode("");
       setBusy(false);
+    }
+  };
+
+  // Visitors without an account look around read-only, no code needed.
+  const viewAsSpectator = async () => {
+    if (busy || spectating) return;
+
+    setSpectating(true);
+    setError(null);
+    try {
+      // Navigation to the app happens automatically once the session is set.
+      await signIn(await spectatorLogin());
+    } catch (spectatorError) {
+      setError(
+        isNetworkError(spectatorError)
+          ? t("common.networkError")
+          : errorStatus(spectatorError) === 429
+            ? t("auth.tooMany")
+            : t("spectator.unavailable")
+      );
+      setSpectating(false);
     }
   };
 
@@ -172,9 +194,35 @@ export default function SignInScreen() {
                   textContentType="emailAddress"
                   returnKeyType="send"
                   onSubmitEditing={sendCode}
-                  editable={!busy}
+                  editable={!busy && !spectating}
                 />
-                <Button title={t("auth.sendCode")} icon="telegram" variant="gradient" onPress={sendCode} loading={busy} />
+                <Button
+                  title={t("auth.sendCode")}
+                  icon="telegram"
+                  variant="gradient"
+                  onPress={sendCode}
+                  loading={busy}
+                  disabled={spectating}
+                />
+
+                <View style={styles.orRow}>
+                  <View style={[styles.orLine, { backgroundColor: colors.border }]} />
+                  <AppText variant="caption" tone="muted">
+                    {t("spectator.or")}
+                  </AppText>
+                  <View style={[styles.orLine, { backgroundColor: colors.border }]} />
+                </View>
+                <Button
+                  title={t("spectator.signIn")}
+                  icon="eye"
+                  variant="secondary"
+                  onPress={viewAsSpectator}
+                  loading={spectating}
+                  disabled={busy}
+                />
+                <AppText variant="caption" tone="secondary" center>
+                  {t("spectator.signInHint")}
+                </AppText>
               </>
             ) : (
               <>
@@ -287,6 +335,8 @@ const styles = StyleSheet.create({
     gap: spacing.lg,
   },
   links: { flexDirection: "row", justifyContent: "space-between" },
+  orRow: { flexDirection: "row", alignItems: "center", gap: spacing.md },
+  orLine: { flex: 1, height: StyleSheet.hairlineWidth },
   link: { fontWeight: "600" },
   error: {
     flexDirection: "row",

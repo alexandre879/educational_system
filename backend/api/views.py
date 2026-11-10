@@ -68,6 +68,7 @@ from .serializers import (
     RequestOtpSerializer,
     SearchQuerySerializer,
     SessionMiniSerializer,
+    SpectatorLoginSerializer,
     SubjectSerializer,
     TeacherExamCreateSerializer,
     UpdateProfileSerializer,
@@ -76,6 +77,7 @@ from .serializers import (
     UserSubjectPointsSerializer,
     VerifyOtpSerializer,
 )
+from .spectator import spectator_account, tokens_for, views_by_role
 from .translation import get_localized_json_value
 from .utils import parse_iso_date
 
@@ -543,7 +545,36 @@ class VerifyOtpView(APIView):
         )
 
 
+class SpectatorLoginView(APIView):
+    """Signs a visitor in read-only as the spectator account, viewing the site as a student, teacher or parent."""
+
+    permission_classes = [AllowAny]
+    # Switching views sends the current (spectator) token; it mustn't matter.
+    authentication_classes = []
+    throttle_classes = [ScopedRateThrottle]
+    throttle_scope = "spectator"
+
+    def post(self, request: Request) -> Response:
+        serializer = SpectatorLoginSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        spectator = spectator_account()
+        views = views_by_role(spectator) if spectator else {}
+        if not views:
+            return Response({"error": "Spectator access isn't set up."}, status=status.HTTP_404_NOT_FOUND)
+
+        role = serializer.validated_data.get("role") or next(iter(views))
+        target = views.get(role)
+        if target is None:
+            return Response({"error": "Spectators can't view the site as this role."}, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response(tokens_for(spectator, target), status=status.HTTP_200_OK)
+
+
 class LogoutView(APIView):
+    # Spectators are read-only, but may still revoke their own session.
+    spectator_write_allowed = True
+
     def post(self, request: Request) -> Response:
         refresh_token = request.data.get("refresh")
 
@@ -596,7 +627,12 @@ class PushDeviceUnregisterView(APIView):
 
 class UserMeView(APIView):
     def get(self, request: Request) -> Response:
-        return Response(UserSerializer(request.user).data)
+        data = UserSerializer(request.user).data
+        spectator = getattr(request.user, "spectating_from", None)
+        if spectator is not None:
+            # The apps show a read-only banner with a switch between these roles.
+            data["spectator"] = {"viewing_as": request.user.role, "roles": list(views_by_role(spectator))}
+        return Response(data)
 
 
 class UpdateProfileView(APIView):
@@ -2427,12 +2463,16 @@ class HomeDashboardView(APIView):
 
             subjects = Subject.objects.filter(grade_id=user.grade_in_id)
             subject_points = UserSubjectPoints.objects.filter(user=user).select_related("subject")
-            sessions = (
+            sessions = list(
                 UserExamSession.objects
                 .filter(user=user)
                 .select_related("exam__subject", "exam__grade")
                 .order_by("-started_at")[:30]
             )
+            max_scores = {
+                exam_id: totals["max_score"]
+                for exam_id, totals in _exam_totals({session.exam_id for session in sessions}).items()
+            }
 
             data.update({
                 "subjects": SubjectSerializer(subjects, many=True).data,
@@ -2440,7 +2480,7 @@ class HomeDashboardView(APIView):
                 "announcements": AnnouncementSerializer(
                     announcements.filter(grade_id=user.grade_in_id)[:20], many=True
                 ).data,
-                "sessions": SessionMiniSerializer(sessions, many=True).data,
+                "sessions": SessionMiniSerializer(sessions, many=True, context={"max_scores": max_scores}).data,
                 "streak": homework_streak(user),
                 "pending_homework": pending_homework_count(user),
                 "average_mark": average(Mark.objects.filter(student=user).values_list("value", flat=True)),

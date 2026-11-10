@@ -5,6 +5,7 @@ import { getMessages } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
 import { APPEARANCE_BOOT_SCRIPT } from "@/lib/appearanceBoot";
+import AppearanceSync from "./components/AppearanceSync";
 import AntdReact19Patch from "./components/AntdReact19Patch";
 import GlassRuntime from "./components/liquid/GlassRuntime";
 import LiquidBackdrop from "./components/liquid/LiquidBackdrop";
@@ -59,6 +60,7 @@ export default async function LocaleLayout({
         <script dangerouslySetInnerHTML={{ __html: APPEARANCE_BOOT_SCRIPT }} />
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
+        <AppearanceSync />
         <LiquidBackdrop />
         <GlassRuntime />
         <AntdReact19Patch />

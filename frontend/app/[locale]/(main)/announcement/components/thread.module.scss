@@ -6,7 +6,8 @@ $danger: #e5484d;
 .thread {
   display: flex;
   flex-direction: column;
-  height: calc(100dvh - 180px);
+  // Set by the announcement page to the space left below its title.
+  height: var(--pane-h, calc(100dvh - 180px));
   min-height: 420px;
   border-radius: 18px;
   border: 1px solid var(--border-medium);
