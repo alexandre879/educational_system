@@ -8,6 +8,10 @@
 # The code is fetched from GitHub here, so nothing secret goes through GitHub: the app's secrets
 # (backend-env, backend-production, postgres-credentials) are already in the cluster and are left
 # as they are. To change one of them, run k8s/production/deploy.sh from your Mac.
+#
+# It never applies the Kubernetes files from the repo, only builds the images and restarts the app.
+# A manifest can mount the server's disk into a pod, which would hand the whole server (and ppops on
+# it) to anyone who gets a change merged. Changes to k8s/ go out with k8s/production/deploy.sh.
 set -euo pipefail
 # A dropped connection (e.g. GitHub cancelling the job) must not stop a deploy half way.
 trap '' HUP
@@ -48,7 +52,6 @@ echo "Building $(git log -1 --format='%h %s')"
 docker build -q -t education-backend:local backend
 docker build -q -t education-frontend:local frontend
 
-kubectl apply -k k8s/production
 kubectl -n education rollout restart deploy/backend deploy/frontend deploy/telegram-bot
 kubectl -n education rollout status statefulset/postgres --timeout=300s
 kubectl -n education rollout status deploy/backend --timeout=600s

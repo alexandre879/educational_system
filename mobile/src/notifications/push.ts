@@ -61,3 +61,8 @@ export async function registerForPushAsync(): Promise<string | null> {
   currentToken = data;
   return data;
 }
+
+/** The red count on the app icon (cleared on sign-out). */
+export async function clearAppBadge(): Promise<void> {
+  await Notifications.setBadgeCountAsync(0).catch(() => undefined);
+}

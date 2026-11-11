@@ -13,6 +13,7 @@ import { Hero } from "@/components/Hero";
 import { Icon, type IconName } from "@/components/Icon";
 import { Skeleton } from "@/components/Skeleton";
 import { SubjectMark } from "@/components/Subject";
+import { NotificationBell } from "@/features/notifications/NotificationBell";
 import { useI18n } from "@/i18n";
 import { formatDay, formatRelative, greetingKey, isoWeekday, weekdayName } from "@/lib/dates";
 import { localize } from "@/lib/localize";
@@ -43,10 +44,13 @@ export function HomeHero({ me, children, badges }: { me: Me; children?: ReactNod
           <Avatar uri={me.profilePic} name={name} size={52} />
         </View>
       </View>
-      <View style={styles.chips}>
-        {me.role ? <HeroChip label={t(`roles.${me.role}`)} /> : null}
-        {grade ? <HeroChip label={`${t("common.grade")} ${grade}`} /> : null}
-        {badges}
+      <View style={styles.chipsRow}>
+        <View style={styles.chips}>
+          {me.role ? <HeroChip label={t(`roles.${me.role}`)} /> : null}
+          {grade ? <HeroChip label={`${t("common.grade")} ${grade}`} /> : null}
+          {badges}
+        </View>
+        <NotificationBell />
       </View>
       {children}
     </Hero>
@@ -253,7 +257,8 @@ const styles = StyleSheet.create({
   heroText: { color: "#FFFFFF" },
   heroMuted: { color: "rgba(255, 255, 255, 0.8)" },
   avatarRing: { padding: 3, borderRadius: 999, backgroundColor: "rgba(255, 255, 255, 0.35)" },
-  chips: { flexDirection: "row", flexWrap: "wrap", gap: spacing.xs },
+  chipsRow: { flexDirection: "row", alignItems: "center", gap: spacing.sm },
+  chips: { flex: 1, flexDirection: "row", flexWrap: "wrap", gap: spacing.xs },
   heroChip: {
     paddingHorizontal: spacing.md,
     paddingVertical: 5,

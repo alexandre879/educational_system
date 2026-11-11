@@ -6,7 +6,7 @@ import { errorStatus, setSessionExpiredHandler } from "@/api/client";
 import { fetchMe, logout, spectatorLogin, unregisterPushDevice } from "@/api/endpoints";
 import * as session from "@/api/session";
 import type { SpectatorRole, Tokens, User } from "@/api/types";
-import { getPushToken } from "@/notifications/push";
+import { clearAppBadge, getPushToken } from "@/notifications/push";
 import { queryPersister } from "@/providers/queryPersistence";
 
 const USER_CACHE_KEY = "auth.user";
@@ -57,6 +57,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signOutLocally = useCallback(async () => {
     await session.clearTokens();
     cacheUser(null);
+    void clearAppBadge();
     queryClient.clear();
     // Don't leave the previous user's saved screens on the phone.
     await queryPersister.removeClient();

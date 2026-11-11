@@ -37,6 +37,7 @@ from .models import (
     LessonAttendance,
     ParentStudent,
     PushDevice,
+    UserNotification,
     SubjectBook,
     visible_comment_count,
 )
@@ -648,6 +649,16 @@ class PushDeviceAdmin(WithIDAdmin):
     list_select_related = ("user",)
     autocomplete_fields = ("user",)
     owner = person_column("user", _("User"))
+
+
+@admin.register(UserNotification)
+class UserNotificationAdmin(WithIDAdmin):
+    list_display = ("recipient", "kind", "created_at", "read_at")
+    search_fields = ("user__email",)
+    list_filter = ("kind", "created_at")
+    list_select_related = ("user",)
+    autocomplete_fields = ("user",)
+    recipient = person_column("user", _("User"))
 
 
 @admin.register(ExerciseCompletion)

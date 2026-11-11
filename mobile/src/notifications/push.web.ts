@@ -16,3 +16,5 @@ export async function getPushPermission(): Promise<"denied"> {
 export async function registerForPushAsync(): Promise<string | null> {
   return null;
 }
+
+export async function clearAppBadge(): Promise<void> {}

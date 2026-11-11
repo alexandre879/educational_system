@@ -392,6 +392,14 @@ export const ru: Messages = {
     announcements: "Объявления",
     exercises: "Задания",
   },
+  notifications: {
+    title: "Уведомления",
+    unreadCount: "{count} непрочитанных",
+    unread: "Не прочитано",
+    markAll: "Прочитать все",
+    empty: "Новых уведомлений нет.",
+    emptyHint: "Здесь появятся новые оценки, задания, экзамены и объявления.",
+  },
   spectator: {
     signIn: "Войти как наблюдатель",
     or: "или",

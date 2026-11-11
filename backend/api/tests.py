@@ -31,9 +31,11 @@ from api.models import (
     Subject,
     User,
     UserExamSession,
+    UserNotification,
     UserSubjectPoints,
     WeeklyLesson,
 )
+from api import push
 from api.utils import normalize_image_to_square
 from api.views import homework_streak
 
@@ -169,6 +171,71 @@ class TokenTests(BaseAPITestCase):
         self.client.force_authenticate(None)
         response = self.client.post("/api/auth/refresh/", {"refresh": refresh}, format="json")
         self.assertEqual(response.status_code, 401)
+
+
+@override_settings(PUSH_NOTIFICATIONS_ENABLED=False, TELEGRAM_NOTIFICATIONS_ENABLED=False)
+class NotificationInboxTests(BaseAPITestCase):
+    def send(self, user_ids, kind="announcement", **data):
+        texts = {"en": ("New announcement", "Trip"), "ka": ("ახალი განცხადება", "ექსკურსია"), "ru": ("Новое объявление", "Поездка")}
+        push.notify_users(user_ids, lambda lang: texts[lang], {"type": kind, **data})
+
+    def test_every_notification_lands_in_the_inbox_in_every_language(self):
+        self.send([self.student.pk, self.parent.pk], id=7)
+        self.client.force_authenticate(self.student)
+
+        en = self.client.get("/api/notifications/", HTTP_ACCEPT_LANGUAGE="en").data
+        ka = self.client.get("/api/notifications/", HTTP_ACCEPT_LANGUAGE="ka").data
+
+        self.assertEqual(en["results"][0]["title"], "New announcement")
+        self.assertEqual(ka["results"][0]["title"], "ახალი განცხადება")
+        self.assertEqual(en["results"][0]["data"], {"type": "announcement", "id": 7})
+        self.assertFalse(en["results"][0]["read"])
+        self.assertEqual(en["unread"], 1)
+        self.assertEqual(UserNotification.objects.filter(user=self.parent).count(), 1)
+
+    def test_unread_summary_counts_per_kind(self):
+        self.send([self.student.pk])
+        self.send([self.student.pk], kind="mark")
+        self.send([self.student.pk], kind="mark")
+        self.client.force_authenticate(self.student)
+
+        summary = self.client.get("/api/notifications/unread/").data
+
+        self.assertEqual(summary["unread"], 3)
+        self.assertEqual(summary["by_kind"], {"announcement": 1, "mark": 2})
+        self.assertEqual(summary["latest_id"], UserNotification.objects.filter(user=self.student).latest("id").id)
+
+    def test_marking_read_by_id_kind_and_all(self):
+        self.send([self.student.pk])
+        self.send([self.student.pk], kind="mark")
+        self.send([self.student.pk], kind="exam")
+        first = UserNotification.objects.filter(user=self.student, kind="announcement").get()
+        self.client.force_authenticate(self.student)
+
+        self.assertEqual(self.client.post("/api/notifications/read/", {"ids": [first.id]}, format="json").data["unread"], 2)
+        self.assertEqual(self.client.post("/api/notifications/read/", {"kind": "mark"}, format="json").data["by_kind"], {"exam": 1})
+        self.assertEqual(self.client.post("/api/notifications/read/", {"all": True}, format="json").data["unread"], 0)
+        self.assertEqual(self.client.post("/api/notifications/read/", {"ids": "nope"}, format="json").status_code, 400)
+
+    def test_nobody_sees_or_reads_someone_elses_notifications(self):
+        self.send([self.parent.pk])
+        theirs = UserNotification.objects.get(user=self.parent)
+        self.client.force_authenticate(self.student)
+
+        self.assertEqual(self.client.get("/api/notifications/").data["results"], [])
+        self.client.post("/api/notifications/read/", {"ids": [theirs.id]}, format="json")
+        theirs.refresh_from_db()
+        self.assertIsNone(theirs.read_at)
+
+    def test_spectators_can_look_but_not_mark_read(self):
+        spectator = User.objects.create_user(email="spectator@school.edu", role=User.Role.SPECTATOR)
+        spectator.spectator_views.add(self.student)
+        self.send([self.student.pk])
+        access = self.client.post("/api/spectator/login/", {}, format="json").data["access"]
+        self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {access}")
+
+        self.assertEqual(self.client.get("/api/notifications/").data["unread"], 1)
+        self.assertEqual(self.client.post("/api/notifications/read/", {"all": True}, format="json").status_code, 403)
 
 
 class DashboardSessionTests(BaseAPITestCase):

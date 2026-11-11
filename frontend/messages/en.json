@@ -711,7 +711,14 @@
       "minutes": "{count} min",
       "hour": "1 h",
       "autoAccentHint": "The accent can cycle through all six colors on its own, starting from the one you picked.",
-      "autoAccentNext": "Next color at {time}. Picking a color yourself turns this off."
+      "autoAccentNext": "Next color at {time}. Picking a color yourself turns this off.",
+      "notifyCorner": "Notification pop-ups",
+      "corners": {
+        "topLeft": "Top left",
+        "topRight": "Top right",
+        "bottomLeft": "Bottom left",
+        "bottomRight": "Bottom right"
+      }
     },
     "study": {
       "title": "Study dock",
@@ -788,6 +795,19 @@
       "resendIn": "Resend code in {seconds}s",
       "resend": "Resend code",
       "step": "Step {current} of {total}"
+    },
+    "notifications": {
+      "title": "Notifications",
+      "unreadCount": "{count} unread",
+      "unread": "Unread",
+      "markAll": "Mark all as read",
+      "empty": "You're all caught up.",
+      "alertsPrompt": "Get a desktop alert when something new arrives while this tab is in the background.",
+      "alertsTurnOn": "Turn on",
+      "alertsOn": "Desktop alerts are on.",
+      "alertsTurnOff": "Turn off",
+      "alertsBlocked": "Desktop alerts are blocked in this browser's site settings.",
+      "dismiss": "Dismiss"
     }
   },
   "Spectator": {

@@ -30,6 +30,7 @@ import api from "@/interceptors";
 import { clearTokens, getRefreshToken } from "@/lib/auth";
 import { ACCENTS, resolvedTheme, setAppearance, toggleTheme, useAppearance, useEffectiveAccent } from "@/lib/appearance";
 import { focusTimer, useFocusTimer } from "@/lib/focusTimer";
+import { formatCount, NAV_KIND, resetNotifications, useNotifications } from "@/lib/notifications";
 import { useLiquidLens } from "@/lib/liquidLens";
 import { UserMeData } from "./profile/interface";
 import LanguageSwitcher, { LANGUAGE_OPTIONS, pathForLocale } from "../components/LanguageSwitcher/LanguageSwitcher";
@@ -45,6 +46,7 @@ import {
   useAppScrolled,
 } from "./components/shell/HeaderBits";
 import MobileDock from "./components/shell/MobileDock";
+import { NotificationBell, NotificationToasts, useNotificationRuntime } from "./components/shell/Notifications";
 import ShortcutsHelp from "./components/shell/ShortcutsHelp";
 import SpectatorBar from "./components/shell/SpectatorBar";
 import StudyDock from "./components/shell/StudyDock";
@@ -102,7 +104,18 @@ export default function MainLayout({ children }: { children: ReactNode }) {
   const navItems = useMemo(() => buildNavItems(role, locale, tNav), [role, locale, tNav]);
   const profile = useMemo(() => profileItem(locale, tNav), [locale, tNav]);
   const current = [...navItems, profile].find((item) => isActivePath(pathname ?? "", item.href, locale)) ?? null;
-  const dockItems = navItems.filter((item) => item.dock);
+  // Unread notifications: badges on menu items, the bell, pop-ups and the tab title.
+  const notifications = useNotifications();
+  const badgeFor = (key: string) => (NAV_KIND[key] ? (notifications.by_kind[NAV_KIND[key]] ?? 0) : 0);
+  const canMarkRead = Boolean(userMe) && !userMe?.spectator;
+  const notificationRuntime = useNotificationRuntime({
+    enabled: Boolean(userMe),
+    canMark: canMarkRead,
+    locale,
+    pathname: pathname ?? "",
+  });
+  const dockItems = navItems.filter((item) => item.dock).map((item) => ({ ...item, badge: badgeFor(item.key) }));
+  const moreBadge = navItems.filter((item) => !item.dock).reduce((sum, item) => sum + badgeFor(item.key), 0);
   const examInProgress = /^\/exam\/[^/]+\/start/.test(cleanPath);
   // Like an iOS large title: the page names itself, and the header takes over once that scrolls away.
   const showCrumb = useAppScrolled(56, pathname ?? "");
@@ -120,6 +133,7 @@ export default function MainLayout({ children }: { children: ReactNode }) {
       console.log("Logout failed:", err);
     } finally {
       clearTokens();
+      resetNotifications();
       router.push(`/${locale}/login`);
     }
   };
@@ -300,6 +314,9 @@ export default function MainLayout({ children }: { children: ReactNode }) {
                 >
                   <item.Icon className={styles.navIcon} size={19} strokeWidth={active ? 2.3 : 2} />
                   <span className={styles.navLabel}>{item.label}</span>
+                  {badgeFor(item.key) > 0 ? (
+                    <span className={styles.navBadge}>{formatCount(badgeFor(item.key))}</span>
+                  ) : null}
                 </Link>
               );
             })}
@@ -371,6 +388,8 @@ export default function MainLayout({ children }: { children: ReactNode }) {
             <FocusChip onClick={() => setStudyOpen(true)} />
             <HeaderClock />
 
+            <NotificationBell canMark={canMarkRead} onOpen={notificationRuntime.open} />
+
             <Dropdown trigger={["click"]} menu={{ items: accountMenu, onClick: onDropdownClick }} placement="bottomRight">
               <button type="button" className={styles.avatarButton} aria-label={tg("nav.profile")}>
                 <Avatar src={userMe?.profilePic ?? undefined} className={styles.avatar} sx={{ width: 38, height: 38 }} />
@@ -398,11 +417,18 @@ export default function MainLayout({ children }: { children: ReactNode }) {
           moreActive={sidebarOpen || (current !== null && !current.dock)}
           moreLabel={tg("header.more")}
           onMore={() => setSidebarOpen(true)}
+          moreBadge={moreBadge}
           label={tg("header.menu")}
         />
 
         <StudyDock open={studyOpen} onOpenChange={setStudyOpen} hidden={examInProgress} />
         <ConnectionPill />
+        <NotificationToasts
+          toasts={notificationRuntime.toasts}
+          corner={appearance.notifyCorner}
+          onOpen={notificationRuntime.open}
+          onDismiss={notificationRuntime.dismiss}
+        />
 
         <CommandPalette open={panel === "palette"} onClose={closePanel} navItems={[...navItems, profile]} actions={paletteActions} />
         <AppearancePanel open={panel === "appearance"} onClose={closePanel} />

@@ -473,3 +473,27 @@ export interface SearchResults {
     subject__name: Localized;
   }[];
 }
+
+// --- Notifications (the in-app inbox: every push is also saved here) ----------
+
+export type NotificationKind = "announcement" | "exercise" | "exam" | "mark" | "attendance";
+
+export interface AppNotification {
+  id: number;
+  kind: NotificationKind | "";
+  /** Already in the language the request asked for (Accept-Language). */
+  title: string;
+  body: string;
+  /** The same payload the push carried: `type`, and `id`/`date`/`comment` where relevant. */
+  data: { type?: string; id?: number; date?: string; comment?: number };
+  created_at: string;
+  read: boolean;
+}
+
+export interface NotificationSummary {
+  unread: number;
+  by_kind: Partial<Record<NotificationKind, number>>;
+  latest_id: number;
+}
+
+export type NotificationReadRequest = { ids: number[] } | { kind: NotificationKind } | { all: true };

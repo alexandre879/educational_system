@@ -238,6 +238,37 @@ class PushDevice(models.Model):
         return f"{self.user.email} ({self.platform or 'unknown'})"
 
 
+class UserNotification(models.Model):
+    """
+    One notification in someone's inbox (the bell on the website and in the app). Saved for every
+    notification sent through api.push, in all languages, so it shows in whichever one is chosen.
+    """
+
+    user = models.ForeignKey(
+        User,
+        verbose_name=_("User"),
+        on_delete=models.CASCADE,
+        related_name="notifications",
+    )
+    # announcement, exercise, exam, mark or attendance: what the notification is about.
+    kind = models.CharField(_("Kind"), max_length=32, blank=True)
+    title = models.JSONField(_("Title"), default=dict)
+    body = models.JSONField(_("Body"), default=dict)
+    # What to open (the same data the phone notification carries).
+    data = models.JSONField(_("Data"), default=dict, blank=True)
+    created_at = models.DateTimeField(_("Created at"), auto_now_add=True, db_index=True)
+    read_at = models.DateTimeField(_("Read at"), null=True, blank=True)
+
+    class Meta:
+        verbose_name = _("Notification")
+        verbose_name_plural = _("Notifications")
+        ordering = ["-created_at", "-id"]
+        indexes = [models.Index(fields=["user", "read_at"], name="notification_user_unread")]
+
+    def __str__(self):
+        return f"{self.user.email}: {self.kind or 'notification'}"
+
+
 class ParentStudent(models.Model):
     parent = models.ForeignKey(
         User,

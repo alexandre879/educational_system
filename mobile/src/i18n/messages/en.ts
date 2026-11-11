@@ -390,6 +390,14 @@ export const en = {
     announcements: "Announcements",
     exercises: "Homework",
   },
+  notifications: {
+    title: "Notifications",
+    unreadCount: "{count} unread",
+    unread: "Unread",
+    markAll: "Mark all as read",
+    empty: "You're all caught up.",
+    emptyHint: "New marks, exercises, exams and announcements show up here.",
+  },
   spectator: {
     signIn: "View as spectator",
     or: "or",

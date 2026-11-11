@@ -6,6 +6,7 @@ import * as session from "./session";
 import type {
   Announcement,
   AnnouncementList,
+  AppNotification,
   AttendanceHistory,
   CalendarData,
   ChatTurn,
@@ -21,6 +22,8 @@ import type {
   LeaderboardEntry,
   MarkEntry,
   MySubject,
+  NotificationReadRequest,
+  NotificationSummary,
   Schedule,
   SearchResults,
   SpectatorRole,
@@ -347,5 +350,22 @@ export async function fetchCalendar(start: string, end: string, studentId?: numb
 
 export async function search(query: string): Promise<SearchResults> {
   const { data } = await api.get<SearchResults>("/search/", { params: { q: query } });
+  return data;
+}
+
+// --- Notifications ----------------------------------------------------------
+
+export async function fetchNotifications(): Promise<NotificationSummary & { results: AppNotification[] }> {
+  const { data } = await api.get<NotificationSummary & { results: AppNotification[] }>("/notifications/");
+  return data;
+}
+
+export async function fetchNotificationSummary(): Promise<NotificationSummary> {
+  const { data } = await api.get<NotificationSummary>("/notifications/unread/");
+  return data;
+}
+
+export async function markNotificationsRead(request: NotificationReadRequest): Promise<NotificationSummary> {
+  const { data } = await api.post<NotificationSummary>("/notifications/read/", request);
   return data;
 }

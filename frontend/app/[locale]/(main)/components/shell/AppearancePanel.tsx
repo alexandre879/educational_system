@@ -3,7 +3,7 @@
 import type { ReactNode } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
-import { Moon, Sun, SunMoon, X } from "lucide-react";
+import { ArrowDownLeft, ArrowDownRight, ArrowUpLeft, ArrowUpRight, Moon, Sun, SunMoon, X } from "lucide-react";
 
 import {
   ACCENTS,
@@ -12,6 +12,7 @@ import {
   type Backdrop,
   type GlassLevel,
   type MotionPref,
+  type NotifyCorner,
   type ThemePref,
   nextAccentChange,
   resetAppearance,
@@ -150,6 +151,20 @@ export default function AppearancePanel({ open, onClose }: { open: boolean; onCl
               { value: "system", label: t("system") },
               { value: "full", label: t("motionFull") },
               { value: "reduced", label: t("motionReduced") },
+            ]}
+          />
+        </Section>
+
+        <Section label={t("notifyCorner")}>
+          <Segmented<NotifyCorner>
+            label={t("notifyCorner")}
+            value={appearance.notifyCorner}
+            onChange={(notifyCorner) => setAppearance({ notifyCorner })}
+            options={[
+              { value: "top-left", label: t("corners.topLeft"), icon: <ArrowUpLeft size={14} /> },
+              { value: "top-right", label: t("corners.topRight"), icon: <ArrowUpRight size={14} /> },
+              { value: "bottom-left", label: t("corners.bottomLeft"), icon: <ArrowDownLeft size={14} /> },
+              { value: "bottom-right", label: t("corners.bottomRight"), icon: <ArrowDownRight size={14} /> },
             ]}
           />
         </Section>

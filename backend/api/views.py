@@ -29,7 +29,6 @@ from api import push
 from api.telegram import send_login_code
 
 from .models import (
-    MAX_MARK,
     Announcement,
     Comment,
     CommentReaction,
@@ -39,6 +38,7 @@ from .models import (
     Grade,
     GradeCategory,
     LessonAttendance,
+    MAX_MARK,
     Mark,
     Option,
     ParentStudent,
@@ -49,6 +49,7 @@ from .models import (
     User,
     UserAnswer,
     UserExamSession,
+    UserNotification,
     UserSubjectPoints,
     WeeklyLesson,
     visible_comment_count,
@@ -624,6 +625,77 @@ class PushDeviceUnregisterView(APIView):
 # ---------------------------------------------------------------------------
 # Profile
 # ---------------------------------------------------------------------------
+
+# ---------------------------------------------------------------------------
+# Notifications (the bell, menu badges, tab title): what was sent through api.push, newest first
+# ---------------------------------------------------------------------------
+
+NOTIFICATIONS_PAGE = 30
+NOTIFICATION_KINDS = {"announcement", "exercise", "exam", "mark", "attendance"}
+
+
+def _notification_payload(notification: UserNotification, language: str) -> dict[str, Any]:
+    return {
+        "id": notification.pk,
+        "kind": notification.kind,
+        "title": get_localized_json_value(notification.title, language),
+        "body": get_localized_json_value(notification.body, language),
+        "data": notification.data,
+        "created_at": notification.created_at,
+        "read": notification.read_at is not None,
+    }
+
+
+def _unread_summary(user: User) -> dict[str, Any]:
+    """Unread count, per kind (for the menu badges), and the newest id (to notice new ones)."""
+    unread = UserNotification.objects.filter(user=user, read_at__isnull=True)
+    by_kind = {
+        row["kind"]: row["n"]
+        for row in unread.order_by().values("kind").annotate(n=Count("id"))
+        if row["kind"]
+    }
+    latest = UserNotification.objects.filter(user=user).order_by("-id").values_list("id", flat=True).first()
+    return {"unread": sum(by_kind.values()) + unread.filter(kind="").count(), "by_kind": by_kind, "latest_id": latest or 0}
+
+
+class NotificationListView(APIView):
+    """GET /notifications/ — the latest notifications in the request's language, plus the unread summary."""
+
+    def get(self, request: Request) -> Response:
+        items = UserNotification.objects.filter(user=request.user)[:NOTIFICATIONS_PAGE]
+        return Response({
+            "results": [_notification_payload(item, request.LANGUAGE_CODE) for item in items],
+            **_unread_summary(request.user),
+        })
+
+
+class NotificationUnreadView(APIView):
+    """GET /notifications/unread/ — only the summary, cheap enough to poll for the badges."""
+
+    def get(self, request: Request) -> Response:
+        return Response(_unread_summary(request.user))
+
+
+class NotificationReadView(APIView):
+    """POST /notifications/read/ with {"ids": [...]}, {"kind": "announcement"} or {"all": true}."""
+
+    def post(self, request: Request) -> Response:
+        unread = UserNotification.objects.filter(user=request.user, read_at__isnull=True)
+        ids, kind = request.data.get("ids"), request.data.get("kind")
+        if request.data.get("all") is True:
+            target = unread
+        elif kind in NOTIFICATION_KINDS:
+            target = unread.filter(kind=kind)
+        elif isinstance(ids, list) and ids and all(isinstance(i, int) for i in ids):
+            target = unread.filter(pk__in=ids[:200])
+        else:
+            return Response(
+                {"error": "Send ids (a list of numbers), a kind, or all: true."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        target.update(read_at=timezone.now())
+        return Response(_unread_summary(request.user))
+
 
 class UserMeView(APIView):
     def get(self, request: Request) -> Response:

@@ -17,6 +17,9 @@ export type AccentCycle = (typeof ACCENT_CYCLES)[number];
 export type GlassLevel = "clear" | "regular" | "frosted";
 export type Backdrop = "aurora" | "mesh" | "minimal";
 export type MotionPref = "system" | "full" | "reduced";
+/** Which corner new-notification pop-ups slide in from. */
+export type NotifyCorner = "top-right" | "top-left" | "bottom-right" | "bottom-left";
+export const NOTIFY_CORNERS: NotifyCorner[] = ["top-right", "top-left", "bottom-right", "bottom-left"];
 
 export interface Appearance {
   theme: ThemePref;
@@ -25,6 +28,7 @@ export interface Appearance {
   glass: GlassLevel;
   backdrop: Backdrop;
   motion: MotionPref;
+  notifyCorner: NotifyCorner;
   sidebarCollapsed: boolean;
 }
 
@@ -45,6 +49,7 @@ const DEFAULTS: Appearance = {
   glass: "regular",
   backdrop: "aurora",
   motion: "system",
+  notifyCorner: "top-right",
   sidebarCollapsed: false,
 };
 
@@ -60,6 +65,7 @@ function read(): Appearance {
     // Anything unexpected in storage falls back to "off" rather than an odd interval.
     if (!ACCENT_CYCLES.includes(merged.accentCycle)) merged.accentCycle = 0;
     if (!ACCENT_ORDER.includes(merged.accent)) merged.accent = DEFAULTS.accent;
+    if (!NOTIFY_CORNERS.includes(merged.notifyCorner)) merged.notifyCorner = DEFAULTS.notifyCorner;
     return merged;
   } catch {
     return DEFAULTS;
@@ -208,8 +214,8 @@ export function setAppearance(patch: Partial<Appearance>) {
 
 /** Back to the defaults, keeping the sidebar as it is. */
 export function resetAppearance() {
-  const { theme, accent, accentCycle, glass, backdrop, motion } = DEFAULTS;
-  setAppearance({ theme, accent, accentCycle, glass, backdrop, motion });
+  const { theme, accent, accentCycle, glass, backdrop, motion, notifyCorner } = DEFAULTS;
+  setAppearance({ theme, accent, accentCycle, glass, backdrop, motion, notifyCorner });
 }
 
 /** Flip between light and dark (leaving "system" for an explicit choice). */

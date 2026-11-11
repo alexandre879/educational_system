@@ -5,6 +5,7 @@ import Link from "next/link";
 import { LayoutGrid } from "lucide-react";
 
 import { useLiquidLens } from "@/lib/liquidLens";
+import { formatCount } from "@/lib/notifications";
 import type { NavItem } from "./navItems";
 import styles from "./shell.module.scss";
 
@@ -18,6 +19,7 @@ export default function MobileDock({
   moreLabel,
   moreActive,
   onMore,
+  moreBadge = 0,
   label,
 }: {
   items: NavItem[];
@@ -25,6 +27,8 @@ export default function MobileDock({
   moreLabel: string;
   moreActive: boolean;
   onMore: () => void;
+  /** Unread notifications in sections that only live behind "More" (shown as a dot). */
+  moreBadge?: number;
   label: string;
 }) {
   const dockRef = useRef<HTMLElement>(null);
@@ -52,7 +56,10 @@ export default function MobileDock({
             className={`${styles.dockItem} ${active ? styles.dockItemActive : ""}`}
             aria-current={active ? "page" : undefined}
           >
-            <item.Icon size={21} strokeWidth={active ? 2.3 : 2} />
+            <span className={styles.dockIconWrap}>
+              <item.Icon size={21} strokeWidth={active ? 2.3 : 2} />
+              {item.badge ? <span className={styles.dockBadge}>{formatCount(item.badge)}</span> : null}
+            </span>
             <span>{item.label}</span>
           </Link>
         );
@@ -63,7 +70,10 @@ export default function MobileDock({
         className={`${styles.dockItem} ${moreActive ? styles.dockItemActive : ""}`}
         onClick={onMore}
       >
-        <LayoutGrid size={21} />
+        <span className={styles.dockIconWrap}>
+          <LayoutGrid size={21} />
+          {moreBadge ? <span className={styles.dockBadge} /> : null}
+        </span>
         <span>{moreLabel}</span>
       </button>
     </nav>

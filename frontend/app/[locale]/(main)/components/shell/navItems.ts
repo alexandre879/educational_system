@@ -25,6 +25,8 @@ export interface NavItem {
   hotkey: string;
   /** Shown in the floating dock on phones. */
   dock: boolean;
+  /** Unread notifications for this section. */
+  badge?: number;
 }
 
 type Role = UserMeData["role"] | undefined;

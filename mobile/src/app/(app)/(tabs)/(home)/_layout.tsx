@@ -12,6 +12,7 @@ export default function HomeStack() {
       {/* The gradient hero opens the screen, so no title bar. */}
       <Stack.Screen name="index" options={{ title: t("home.title"), headerShown: false }} />
       <Stack.Screen name="child/[id]" options={{ title: "", headerLargeTitleEnabled: false }} />
+      <Stack.Screen name="notifications" options={{ title: t("notifications.title"), headerLargeTitleEnabled: false }} />
     </Stack>
   );
 }

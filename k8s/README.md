@@ -89,6 +89,9 @@ that commit.
   that are on `main`.
 - **The server fetches the code from GitHub itself.** No secrets pass through GitHub; the cluster keeps
   the ones it has. To change `backend/.env` values, run `./k8s/production/deploy.sh` from your Mac.
+- **Automatic deploys only rebuild the code and restart the apps.** They never apply the files in `k8s/`,
+  because a malicious manifest could take over the server (and ppops on it). Changes to `k8s/` go out
+  with `./k8s/production/deploy.sh`.
 - **Deploys queue, they don't overlap.** If two pushes finish out of order, an older commit never
   replaces a newer one.
 - **To change the server's script:** edit `production/server-deploy.sh` and copy it to the server:

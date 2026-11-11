@@ -16,6 +16,9 @@ EXPO_PUSH_URL = "https://exp.host/--/api/v2/push/send"
 BATCH_SIZE = 100
 
 DEFAULT_LANGUAGE = "ka"
+LANGUAGES = ("ka", "en", "ru")
+# The inbox keeps this many days of notifications.
+INBOX_DAYS = 90
 
 # Builds (title, body) in the device's language.
 MessageBuilder = Callable[[str], tuple[str, str]]
@@ -56,8 +59,12 @@ def send(notifications: Iterable[Notification]) -> None:
     Telegram of people who connected it. Never raises: failures are logged so callers (usually
     request handlers) are unaffected.
     """
-    # Both channels read the recipients, so they can't be a one-shot iterator.
+    # Every channel reads the recipients, so they can't be a one-shot iterator.
     notifications = [Notification(set(n.user_ids), n.build_message, n.data) for n in notifications]
+    try:
+        _save_to_inbox(notifications)
+    except Exception:
+        logger.exception("Couldn't save notifications to the inbox")
     if settings.TELEGRAM_NOTIFICATIONS_ENABLED:
         from . import telegram
 
@@ -67,6 +74,31 @@ def send(notifications: Iterable[Notification]) -> None:
             logger.exception("Couldn't forward notifications to Telegram")
     if settings.PUSH_NOTIFICATIONS_ENABLED:
         _send_to_phones(notifications)
+
+
+def _save_to_inbox(notifications: list[Notification]) -> None:
+    """The bell's list: one row per person, with the text in every language."""
+    from datetime import timedelta
+
+    from django.utils import timezone
+
+    from .models import UserNotification
+
+    rows = []
+    for notification in notifications:
+        if not notification.user_ids:
+            continue
+        texts = {language: notification.build_message(language) for language in LANGUAGES}
+        title = {language: text[0] for language, text in texts.items()}
+        body = {language: text[1] for language, text in texts.items()}
+        data = notification.data or {}
+        rows.extend(
+            UserNotification(user_id=user_id, kind=str(data.get("type", "")), title=title, body=body, data=data)
+            for user_id in notification.user_ids
+        )
+    if rows:
+        UserNotification.objects.bulk_create(rows, batch_size=500)
+        UserNotification.objects.filter(created_at__lt=timezone.now() - timedelta(days=INBOX_DAYS)).delete()
 
 
 def _send_to_phones(notifications: list[Notification]) -> None:

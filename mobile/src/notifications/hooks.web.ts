@@ -4,3 +4,5 @@
 export function usePushRegistration(): void {}
 
 export function useNotificationRouting(): void {}
+
+export function useInboxSync(_unread: number, _enabled: boolean): void {}

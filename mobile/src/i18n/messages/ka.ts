@@ -392,6 +392,14 @@ export const ka: Messages = {
     announcements: "განცხადებები",
     exercises: "დავალებები",
   },
+  notifications: {
+    title: "შეტყობინებები",
+    unreadCount: "{count} წაუკითხავი",
+    unread: "წაუკითხავი",
+    markAll: "ყველას წაკითხულად მონიშვნა",
+    empty: "ყველაფერი წაკითხული გაქვს.",
+    emptyHint: "ახალი ნიშნები, დავალებები, გამოცდები და განცხადებები აქ გამოჩნდება.",
+  },
   spectator: {
     signIn: "შესვლა დამთვალიერებლად",
     or: "ან",

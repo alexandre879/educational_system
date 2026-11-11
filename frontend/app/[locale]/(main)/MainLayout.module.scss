@@ -203,6 +203,23 @@ $header-height: 64px;
   text-overflow: ellipsis;
 }
 
+// Unread notifications for a section.
+.navBadge {
+  min-width: 20px;
+  height: 20px;
+  margin-left: auto;
+  padding: 0 6px;
+  border-radius: 999px;
+  color: #fff;
+  background: var(--bad);
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 20px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  box-shadow: 0 4px 12px -4px var(--bad);
+}
+
 .sidebarFooter {
   display: flex;
   flex-direction: column;
@@ -275,6 +292,18 @@ $header-height: 64px;
     .navLink {
       justify-content: center;
       padding: 0;
+    }
+
+    // On the narrow rail the count becomes a dot on the icon.
+    .navBadge {
+      position: absolute;
+      top: 9px;
+      right: 12px;
+      min-width: 9px;
+      height: 9px;
+      padding: 0;
+      font-size: 0;
+      box-shadow: 0 0 0 2px var(--bg);
     }
 
     .footerButtons {
