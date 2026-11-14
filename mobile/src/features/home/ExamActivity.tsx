@@ -10,6 +10,7 @@ import { Card } from "@/components/Card";
 import { useI18n } from "@/i18n";
 import { formatDay, formatTime, toISODate } from "@/lib/dates";
 import { localize } from "@/lib/localize";
+import { mtavruli } from "@/lib/mtavruli";
 import { radius, spacing, subjectColor, useTheme, withAlpha } from "@/theme";
 
 /** Ticks every second while `active`, so countdowns stay live. */
@@ -116,7 +117,7 @@ export function ExamTimeline({ sessions }: { sessions: SessionMini[] }) {
       {groups.map((group) => (
         <View key={group.key} style={styles.day}>
           <AppText variant="caption" tone="muted" style={styles.dayLabel}>
-            {group.label.toUpperCase()}
+            {mtavruli(group.label.toUpperCase())}
           </AppText>
           <View>
             {/* The line runs through every dot of the day. */}
