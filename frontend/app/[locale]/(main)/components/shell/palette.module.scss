@@ -68,6 +68,7 @@
   font-weight: 800;
   letter-spacing: 0.07em;
   text-transform: uppercase;
+  --font-ui: var(--font-caps); // Georgian in capitals (Mtavruli), see globals.css
   color: var(--text-muted);
 }
 

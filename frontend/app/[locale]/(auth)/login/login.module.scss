@@ -560,6 +560,7 @@
   font-size: 12px;
   font-weight: 700;
   text-transform: uppercase;
+  --font-ui: var(--font-caps); // Georgian in capitals (Mtavruli), see globals.css
   letter-spacing: 0.06em;
 
   &::before,

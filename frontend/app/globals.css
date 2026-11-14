@@ -13,7 +13,105 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  /* --font-ui is set where Georgian shows in capitals (see "Georgian capitals" below). */
+  font-family: var(--font-ui, var(--font-stack));
+}
+
+/* --------------------------------------------------------------------------
+   Georgian capitals (Mtavruli)
+   On the Georgian site, headings, titles, menus, buttons, tabs, labels, chips and table headers
+   show in Mtavruli, the capital alphabet whose letters are all one height. "Georgian Caps" draws
+   the everyday letters (Mkhedruli) as capitals, so the text itself stays ordinary Georgian for
+   copying, search and screen readers (scripts/georgian-caps-font.py builds it from Noto Sans
+   Georgian). Sentences, messages and typing stay in everyday letters, which read better.
+   -------------------------------------------------------------------------- */
+@font-face {
+  font-family: "Georgian Caps";
+  src: url("/fonts/georgian-caps.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+10D0-10FF, U+1C90-1CBF;
+}
+
+/* The same drawings for real Mtavruli letters typed into content, so all capitals look alike,
+   also on devices whose own fonts have none. */
+@font-face {
+  font-family: "Georgian Mtavruli";
+  src: url("/fonts/georgian-caps.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+1C90-1CBF;
+}
+
+:root {
+  --font-stack: "Georgian Mtavruli", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  /* Also for anything styled `text-transform: uppercase`: Chrome turns Georgian capitals back into
+     everyday letters there, so set `--font-ui: var(--font-caps)` next to it and let the font do it. */
+  --font-caps: "Georgian Caps", var(--font-stack);
+}
+
+/* Everyday letters for running text, even inside a capitals area… */
+:lang(ka)
+  :is(
+    p,
+    [class*="subtitle" i],
+    [class*="desc" i],
+    [class*="body" i],
+    [class*="message" i],
+    [class*="content" i],
+    [class*="text" i],
+    [class*="hint" i],
+    [class*="caption" i],
+    [class*="note" i]
+  ) {
+  --font-ui: initial;
+}
+
+/* …capitals for headings, titles, navigation, buttons, tabs, labels, chips and table headers… */
+:lang(ka)
+  :is(
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6,
+    th,
+    label,
+    legend,
+    nav a,
+    nav button,
+    [role="tab"],
+    [role="menuitem"],
+    [role="columnheader"],
+    .ant-tag,
+    [class*="title" i]:not([class*="subtitle" i]),
+    [class*="heading" i],
+    [class*="brand" i],
+    [class*="label" i],
+    [class*="button" i],
+    [class*="btn" i],
+    [class*="chip" i],
+    [class*="pill" i],
+    [class*="badge" i],
+    [class*="weekday" i],
+    [class*="_tag" i],
+    [class*="Tag"]
+  ) {
+  --font-ui: var(--font-caps);
+}
+
+/* …and never while typing. */
+:lang(ka) :is(input, textarea, select, [contenteditable="true"]) {
+  --font-ui: initial !important;
+}
+
+/* MUI (home page, avatars) brings its own Roboto stack; use ours so the above reaches it too.
+   (antd gets the same through its theme in the (main) layout.) */
+:root [class*="Mui"] {
+  font-family: var(--font-ui, var(--font-stack));
 }
 
 @property --lg-spot {

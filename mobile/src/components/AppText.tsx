@@ -1,5 +1,7 @@
+import { Children, type ReactNode } from "react";
 import { StyleSheet, Text, type TextProps } from "react-native";
 
+import { mtavruli } from "@/lib/mtavruli";
 import { useTheme, type Colors } from "@/theme";
 
 type Variant = "display" | "title" | "heading" | "subheading" | "body" | "bodyStrong" | "caption" | "label";
@@ -22,14 +24,25 @@ export interface AppTextProps extends TextProps {
   center?: boolean;
 }
 
-export function AppText({ variant = "body", tone = "text", center, style, ...rest }: AppTextProps) {
+export function AppText({ variant = "body", tone = "text", center, style, children, ...rest }: AppTextProps) {
   const { colors } = useTheme();
+  // Text styled in capitals shows Georgian in its capital alphabet, Mtavruli (see lib/mtavruli).
+  const uppercase = variant === "label" || (style != null && StyleSheet.flatten(style)?.textTransform === "uppercase");
+
   return (
     <Text
       style={[styles[variant], { color: colors[TONE_TO_COLOR[tone]] as string }, center && styles.center, style]}
       {...rest}
-    />
+    >
+      {uppercase ? toMtavruli(children) : children}
+    </Text>
   );
+}
+
+function toMtavruli(children: ReactNode): ReactNode {
+  return typeof children === "string"
+    ? mtavruli(children)
+    : Children.map(children, (child) => (typeof child === "string" ? mtavruli(child) : child));
 }
 
 const styles = StyleSheet.create({

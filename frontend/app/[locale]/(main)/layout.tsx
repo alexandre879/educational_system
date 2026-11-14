@@ -53,6 +53,9 @@ import StudyDock from "./components/shell/StudyDock";
 import { buildNavItems, isActivePath, profileItem } from "./components/shell/navItems";
 import { isMac, useHotkeys } from "./components/shell/useHotkeys";
 
+// antd's own font setting, pointed at globals.css so Georgian capitals (Mtavruli) reach its components too.
+const ANTD_FONT = "var(--font-ui, var(--font-stack))";
+
 type Panel = "palette" | "appearance" | "shortcuts" | null;
 
 export default function MainLayout({ children }: { children: ReactNode }) {
@@ -265,12 +268,14 @@ export default function MainLayout({ children }: { children: ReactNode }) {
           ? {
               colorPrimary: primary,
               borderRadius: 12,
+              fontFamily: ANTD_FONT,
               colorBgContainer: "rgba(255, 255, 255, 0.045)",
               colorBgElevated: "rgba(22, 27, 40, 0.8)",
             }
           : {
               colorPrimary: primary,
               borderRadius: 12,
+              fontFamily: ANTD_FONT,
               colorBgContainer: "rgba(255, 255, 255, 0.62)",
               colorBgElevated: "rgba(255, 255, 255, 0.84)",
             },

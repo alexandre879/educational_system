@@ -58,6 +58,10 @@ export default async function LocaleLayout({
     <html lang={locale} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: APPEARANCE_BOOT_SCRIPT }} />
+        {/* Georgian pages show headings, menus and buttons in capitals (Mtavruli): see globals.css. */}
+        {locale === "ka" ? (
+          <link rel="preload" href="/fonts/georgian-caps.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
+        ) : null}
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
         <AppearanceSync />

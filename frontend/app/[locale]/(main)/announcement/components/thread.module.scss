@@ -243,6 +243,7 @@ $danger: #e5484d;
   font-weight: 800;
   letter-spacing: 0.04em;
   text-transform: uppercase;
+  --font-ui: var(--font-caps); // Georgian in capitals (Mtavruli), see globals.css
 }
 
 .quote {

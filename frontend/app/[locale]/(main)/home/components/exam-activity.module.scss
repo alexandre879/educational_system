@@ -67,6 +67,7 @@
   font-weight: 850;
   letter-spacing: 0.08em;
   text-transform: uppercase;
+  --font-ui: var(--font-caps); // Georgian in capitals (Mtavruli), see globals.css
 }
 
 .livePulse {
@@ -212,6 +213,7 @@
   font-weight: 800;
   letter-spacing: 0.08em;
   text-transform: uppercase;
+  --font-ui: var(--font-caps); // Georgian in capitals (Mtavruli), see globals.css
 }
 
 // The line runs through every dot of the day.
